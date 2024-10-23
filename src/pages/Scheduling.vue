@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Scheduling',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Scheduling
+  </section>
 </template>

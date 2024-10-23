@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Dashboard',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Dashboard
+  </section>
 </template>

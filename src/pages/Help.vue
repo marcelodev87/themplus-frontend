@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Help',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Help
+  </section>
 </template>

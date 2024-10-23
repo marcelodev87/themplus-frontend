@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Movement',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Movement
+  </section>
 </template>

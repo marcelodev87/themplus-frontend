@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Auth',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Autenticação
+  </section>
 </template>

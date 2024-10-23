@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'ErrorNotFound',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Error Not Found
+  </section>
 </template>

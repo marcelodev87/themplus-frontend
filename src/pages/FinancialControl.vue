@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'FinancialControl',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    FinancialControl
+  </section>
 </template>

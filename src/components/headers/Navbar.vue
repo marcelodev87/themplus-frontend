@@ -1,8 +1,11 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Navbar',
 });
 </script>
 <template>
-  <router-view />
+  <nav>
+    <div class="text-black"> Navbar</div>
+
+  </nav>
 </template>

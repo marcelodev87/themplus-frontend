@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Account',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Account
+  </section>
 </template>

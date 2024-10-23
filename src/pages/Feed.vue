@@ -1,8 +1,10 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'App',
+  name: 'Feed',
 });
 </script>
 <template>
-  <router-view />
+  <section>
+    Feed
+  </section>
 </template>
