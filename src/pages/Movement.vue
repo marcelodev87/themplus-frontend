@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import TitlePage from 'src/components/shared/TitlePage.vue';
+
 defineOptions({
   name: 'Movement',
 });
 </script>
 <template>
   <section>
-    Movement
+    <TitlePage title="Gerenciamento de movimentações"/>
   </section>
 </template>

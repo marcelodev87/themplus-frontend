@@ -81,7 +81,7 @@ const isActive = (routeName: string) => route.name === routeName;
       side="left"
       behavior="desktop"
       bordered
-      class="text-black column justify-between"
+      class="text-black"
       :width="200"
     >
       <q-list>
@@ -102,19 +102,6 @@ const isActive = (routeName: string) => route.name === routeName;
             </q-item-section>
           </q-item>
       </q-list>
-      <div class="border-top">
-        <q-item
-              clickable
-              v-ripple
-            >
-              <q-item-section avatar>
-                <q-icon name="logout" color="red-10" />
-              </q-item-section>
-              <q-item-section class="text-red-10">
-                Sair
-              </q-item-section>
-        </q-item>
-      </div>
     </q-drawer>
 
     <q-page-container>
@@ -122,8 +109,3 @@ const isActive = (routeName: string) => route.name === routeName;
     </q-page-container>
   </q-layout>
 </template>
-<style scoped lang="scss">
-.border-top {
-  border-top: 1px solid rgb(197, 197, 197);
-}
-</style>
