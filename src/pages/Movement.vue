@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
+import FormCategoryMovement from 'src/components/forms/FormCategoryMovement.vue';
+import { ref } from 'vue';
 
 defineOptions({
   name: 'Movement',
 });
+
+const showFormCategoryMovement = ref<boolean>(false);
+
+const openFormCategoryMovement = ():void => {
+  showFormCategoryMovement.value = true;
+};
+const closeFormCategoryMovement = ():void => {
+  showFormCategoryMovement.value = false;
+};
 </script>
 <template>
   <section>
@@ -12,7 +23,15 @@ defineOptions({
         <TitlePage title="Gerenciamento de movimentações"/>
       </div>
       <div class="col-4 row items-center justify-end q-gutter-x-sm">
-        <q-btn flat color="black" icon-right="settings" label="Categorias" unelevated no-caps/>
+        <q-btn
+          @click="openFormCategoryMovement"
+          flat
+          color="black"
+          icon-right="settings"
+          label="Categorias"
+          unelevated
+          no-caps
+        />
         <q-btn color="negative" icon-right="remove" label="Saida" unelevated no-caps/>
         <q-btn
           color="positive"
@@ -24,5 +43,11 @@ defineOptions({
         />
       </div>
     </header>
+    <main>
+      <FormCategoryMovement
+        :open="showFormCategoryMovement"
+        @update:open="closeFormCategoryMovement"
+      />
+    </main>
   </section>
 </template>
