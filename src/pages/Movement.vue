@@ -3,6 +3,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormCategoryMovement from 'src/components/forms/FormCategoryMovement.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
+import FormTransfer from 'src/components/forms/FormTransfer.vue';
 import { ref } from 'vue';
 
 defineOptions({
@@ -10,6 +11,7 @@ defineOptions({
 });
 
 const showFormCategoryMovement = ref<boolean>(false);
+const showFormTransfer = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 
@@ -18,6 +20,12 @@ const openFormCategoryMovement = ():void => {
 };
 const closeFormCategoryMovement = ():void => {
   showFormCategoryMovement.value = false;
+};
+const openFormTransfer = (): void => {
+  showFormTransfer.value = true;
+};
+const closeFormTransfer = (): void => {
+  showFormTransfer.value = false;
 };
 const openFormEntry = ():void => {
   showFormEntry.value = true;
@@ -49,6 +57,7 @@ const closeFormOut = ():void => {
           no-caps
         />
         <q-btn
+          @click="openFormTransfer"
           color="blue-8"
           icon-right="assured_workload"
           label="Transferências"
@@ -78,6 +87,10 @@ const closeFormOut = ():void => {
       <FormCategoryMovement
         :open="showFormCategoryMovement"
         @update:open="closeFormCategoryMovement"
+      />
+      <FormTransfer
+        :open="showFormTransfer"
+        @update:open="closeFormTransfer"
       />
       <FormEntry
         :open="showFormEntry"

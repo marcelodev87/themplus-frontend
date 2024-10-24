@@ -131,7 +131,7 @@ watch(open, () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="category" color="grey" size="20px" />
+              <q-icon name="category" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -145,7 +145,7 @@ watch(open, () => {
             type="number"
           >
             <template v-slot:prepend>
-              <q-icon name="attach_money" color="grey" size="20px" />
+              <q-icon name="attach_money" color="black" size="20px" />
             </template>
           </q-input>
           <q-select
@@ -161,7 +161,7 @@ watch(open, () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="account_balance" color="grey" size="20px" />
+              <q-icon name="account_balance" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -173,7 +173,7 @@ watch(open, () => {
             dense
           >
             <template v-slot:prepend>
-              <q-icon name="calendar_today" class="cursor-pointer" color="grey" size="20px">
+              <q-icon name="calendar_today" class="cursor-pointer" color="black" size="20px">
                 <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                   <q-date v-model="dataEntry.date" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
@@ -194,7 +194,7 @@ watch(open, () => {
             clearable
           >
             <template v-slot:prepend>
-              <q-icon name="attach_file" color="grey" size="20px"/>
+              <q-icon name="attach_file" color="black" size="20px"/>
             </template>
           </q-file>
           <q-input
@@ -210,7 +210,7 @@ watch(open, () => {
             class="no-resize"
           >
             <template v-slot:prepend>
-              <q-icon name="description" color="grey" size="20px" />
+              <q-icon name="description" color="black" size="20px" />
             </template>
           </q-input>
         </q-form>
