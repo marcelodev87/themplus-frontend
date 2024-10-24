@@ -2,6 +2,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormCategoryMovement from 'src/components/forms/FormCategoryMovement.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
+import FormOut from 'src/components/forms/FormOut.vue';
 import { ref } from 'vue';
 
 defineOptions({
@@ -10,6 +11,7 @@ defineOptions({
 
 const showFormCategoryMovement = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
+const showFormOut = ref<boolean>(false);
 
 const openFormCategoryMovement = ():void => {
   showFormCategoryMovement.value = true;
@@ -22,6 +24,12 @@ const openFormEntry = ():void => {
 };
 const closeFormEntry = ():void => {
   showFormEntry.value = false;
+};
+const openFormOut = ():void => {
+  showFormOut.value = true;
+};
+const closeFormOut = ():void => {
+  showFormOut.value = false;
 };
 </script>
 <template>
@@ -47,7 +55,14 @@ const closeFormEntry = ():void => {
           unelevated
           no-caps
         />
-        <q-btn color="negative" icon-right="remove" label="Saida" unelevated no-caps/>
+        <q-btn
+          @click="openFormOut"
+          color="negative"
+          icon-right="remove"
+          label="Saida"
+          unelevated
+          no-caps
+        />
         <q-btn
           @click="openFormEntry"
           color="positive"
@@ -67,6 +82,10 @@ const closeFormEntry = ():void => {
       <FormEntry
         :open="showFormEntry"
         @update:open="closeFormEntry"
+      />
+      <FormOut
+        :open="showFormOut"
+        @update:open="closeFormOut"
       />
     </main>
   </section>

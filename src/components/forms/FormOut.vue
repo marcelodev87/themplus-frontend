@@ -4,10 +4,10 @@ import {
 } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
-import { DataEntry } from 'src/ts/interfaces/data/Entry';
+import { DataOut } from 'src/ts/interfaces/data/Out';
 
 defineOptions({
-  name: 'FormEntry',
+  name: 'FormOut',
 });
 
 const props = defineProps<{
@@ -17,7 +17,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const dataEntry = reactive<DataEntry>({
+const dataOut = reactive<DataOut>({
   category: null,
   value: null,
   date: null,
@@ -89,7 +89,7 @@ const save = () => {
   }
 };
 const clear = (): void => {
-  Object.assign(dataEntry, {
+  Object.assign(dataOut, {
     category: null,
     value: null,
     date: null,
@@ -109,12 +109,12 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Registre uma entrada"/>
+        <TitlePage title="Registre uma saída"/>
       </q-card-section>
       <q-card-section class="q-pa-sm ">
         <q-form class="q-gutter-y-sm">
           <q-select
-            v-model="dataEntry.category"
+            v-model="dataOut.category"
             :options="options"
             label="Categoria"
             filled
@@ -130,7 +130,7 @@ watch(open, () => {
             </template>
           </q-select>
           <q-input
-            v-model="dataEntry.value"
+            v-model="dataOut.value"
             bg-color="white"
             label-color="black"
             filled
@@ -144,7 +144,7 @@ watch(open, () => {
             </template>
           </q-input>
           <q-select
-            v-model="dataEntry.account"
+            v-model="dataOut.account"
             :options="optionsConta"
             label="Conta"
             filled
@@ -160,7 +160,7 @@ watch(open, () => {
             </template>
           </q-select>
           <q-input
-            v-model="dataEntry.date"
+            v-model="dataOut.date"
             bg-color="white"
             label-color="black"
             label="Selecione uma data"
@@ -170,7 +170,7 @@ watch(open, () => {
             <template v-slot:prepend>
               <q-icon name="calendar_today" class="cursor-pointer" color="grey" size="20px">
                 <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="dataEntry.date" mask="DD/MM/YYYY">
+                  <q-date v-model="dataOut.date" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                     </div>
@@ -180,7 +180,7 @@ watch(open, () => {
             </template>
           </q-input>
           <q-file
-            v-model="dataEntry.file"
+            v-model="dataOut.file"
             filled
             bg-color="white"
             label-color="black"
@@ -193,7 +193,7 @@ watch(open, () => {
             </template>
           </q-file>
           <q-input
-            v-model="dataEntry.description"
+            v-model="dataOut.description"
             style="height: 150px; max-height: 130px;"
             bg-color="white"
             label-color="black"
