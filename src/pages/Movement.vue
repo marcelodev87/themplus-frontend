@@ -19,16 +19,23 @@ const closeFormCategoryMovement = ():void => {
 <template>
   <section>
     <header class="row justify-between no-wrap bg-grey-3">
-      <div class="col-8">
+      <div class="col-5">
         <TitlePage title="Gerenciamento de movimentações"/>
       </div>
-      <div class="col-4 row items-center justify-end q-gutter-x-sm">
+      <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn
           @click="openFormCategoryMovement"
           flat
           color="black"
           icon-right="settings"
           label="Categorias"
+          unelevated
+          no-caps
+        />
+        <q-btn
+          color="blue-8"
+          icon-right="assured_workload"
+          label="Transferências"
           unelevated
           no-caps
         />
