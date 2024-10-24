@@ -22,3 +22,17 @@
   width: 900px;
   max-width: 96%;
 }
+
+.no-spinners::-webkit-outer-spin-button,
+.no-spinners::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinners {
+  -moz-appearance: textfield;
+}
+
+.no-resize {
+  resize: none !important;
+}

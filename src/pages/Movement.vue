@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormCategoryMovement from 'src/components/forms/FormCategoryMovement.vue';
+import FormEntry from 'src/components/forms/FormEntry.vue';
 import { ref } from 'vue';
 
 defineOptions({
@@ -8,12 +9,19 @@ defineOptions({
 });
 
 const showFormCategoryMovement = ref<boolean>(false);
+const showFormEntry = ref<boolean>(false);
 
 const openFormCategoryMovement = ():void => {
   showFormCategoryMovement.value = true;
 };
 const closeFormCategoryMovement = ():void => {
   showFormCategoryMovement.value = false;
+};
+const openFormEntry = ():void => {
+  showFormEntry.value = true;
+};
+const closeFormEntry = ():void => {
+  showFormEntry.value = false;
 };
 </script>
 <template>
@@ -41,6 +49,7 @@ const closeFormCategoryMovement = ():void => {
         />
         <q-btn color="negative" icon-right="remove" label="Saida" unelevated no-caps/>
         <q-btn
+          @click="openFormEntry"
           color="positive"
           icon-right="add"
           label="Entrada"
@@ -54,6 +63,10 @@ const closeFormCategoryMovement = ():void => {
       <FormCategoryMovement
         :open="showFormCategoryMovement"
         @update:open="closeFormCategoryMovement"
+      />
+      <FormEntry
+        :open="showFormEntry"
+        @update:open="closeFormEntry"
       />
     </main>
   </section>

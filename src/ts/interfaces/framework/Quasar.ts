@@ -9,3 +9,8 @@ export interface QuasarTable {
   sort?: ((a: any, b: any, rowA: any, rowB: any) => number);
   headerClasses?: string;
 }
+
+export interface QuasarSelect<T>{
+  label: string
+  value: T
+}
