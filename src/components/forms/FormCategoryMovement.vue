@@ -80,7 +80,6 @@ const checkData = (): {status: boolean, message?: string} => {
 const save = () => {
   const check = checkData();
   if (check.status) {
-    console.log('Executar save');
     emit('update:open');
   } else {
     Notify.create({

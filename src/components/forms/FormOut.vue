@@ -68,18 +68,23 @@ const open = computed({
 });
 
 const checkData = (): {status: boolean, message?: string} => {
-  if (dataCategoryMovement.name.trim() === '') {
-    return { status: false, message: 'O campo de categoria não pode ser vazio' };
+  if (dataOut.category == null) {
+    return { status: false, message: 'O categoria deve ser selecionada' };
   }
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛãõÃÕçÇ\s]+$/.test(dataCategoryMovement.name)) {
-    return { status: false, message: 'O campo de categoria só pode conter texto' };
+  if (dataOut.value == null) {
+    return { status: false, message: 'O valor deve ser inserido' };
+  }
+  if (dataOut.account == null) {
+    return { status: false, message: 'A conta deve ser selecionada' };
+  }
+  if (dataOut.date?.trim() === '' || (/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).test(dataOut.date ?? '')) {
+    return { status: false, message: 'A data deve ser informada no formato dd/mm/yyyy' };
   }
   return { status: true };
 };
 const save = () => {
   const check = checkData();
   if (check.status) {
-    console.log('Executar save');
     emit('update:open');
   } else {
     Notify.create({
