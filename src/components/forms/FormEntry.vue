@@ -77,7 +77,7 @@ const checkData = (): {status: boolean, message?: string} => {
   if (dataEntry.account == null) {
     return { status: false, message: 'A conta deve ser selecionada' };
   }
-  if (dataEntry.date?.trim() === '' || (/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).test(dataEntry.date ?? '')) {
+  if (dataEntry.date?.trim() === '' || !(/^(0?[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).test(dataEntry.date ?? '')) {
     return { status: false, message: 'A data deve ser informada no formato dd/mm/yyyy' };
   }
   return { status: true };
@@ -189,7 +189,7 @@ watch(open, () => {
             filled
             bg-color="white"
             label-color="black"
-            label="Adicione um documento"
+            label="Adicione um documento (Máx 2Mb)"
             dense
             clearable
           >

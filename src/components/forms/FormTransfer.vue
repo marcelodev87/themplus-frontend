@@ -57,9 +57,10 @@ const checkData = (): {status: boolean, message?: string} => {
   if (dataTransfer.value == null) {
     return { status: false, message: 'Deve ser informado o valor da transferência' };
   }
-  if (dataTransfer.date?.trim() === '' || (/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).test(dataTransfer.date ?? '')) {
+  if (dataTransfer.date?.trim() === '' || !(/^(0?[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).test(dataTransfer.date ?? '')) {
     return { status: false, message: 'A data deve ser informada no formato dd/mm/yyyy' };
   }
+
   return { status: true };
 };
 const save = () => {
