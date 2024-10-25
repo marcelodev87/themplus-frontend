@@ -17,10 +17,10 @@ defineOptions({
       <q-item clickable v-ripple>
         <q-item-section avatar>
           <q-avatar>
-            <q-icon name="settings" />
+            <q-icon name="account_circle" />
           </q-avatar>
         </q-item-section>
-        <q-item-section>Configurações</q-item-section>
+        <q-item-section>Perfil</q-item-section>
       </q-item>
       <q-item clickable v-ripple>
         <q-item-section avatar>
