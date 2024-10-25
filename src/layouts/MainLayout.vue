@@ -62,6 +62,12 @@ const menuList = computed(() => [
     name: 'admin-departments',
   },
   {
+    icon: 'warning',
+    label: 'Alertas',
+    separator: true,
+    name: 'admin-alert',
+  },
+  {
     icon: 'savings',
     label: 'Contabilidade',
     separator: true,
