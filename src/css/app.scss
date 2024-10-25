@@ -1,45 +1,50 @@
-// app global css in SCSS form
 ::-webkit-scrollbar {
   width: 10px;
 }
-
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb {
   background-color: #888;
   border-radius: 10px;
   border: 2px solid #f1f1f1;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
-
 .form-basic {
   width: 900px;
   max-width: 96%;
 }
-
 .no-spinners::-webkit-outer-spin-button,
 .no-spinners::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 .no-spinners {
   -moz-appearance: textfield;
 }
-
 .no-resize {
   resize: none !important;
 }
-
 .border-red {
   border: 2px solid red;
 }
 .border-green {
   border: 2px solid green;
 }
+.background-auth {
+  background-image: url('/images/background/bg-auth.jpg');
+  background-position: center;
+  background-size: cover;
+}
+.container-view {
+  height: 100vh;
+}
+.form-auth{
+  width: 500px;
+  max-width: 96%;
+  border-radius: 3px;
+}
+

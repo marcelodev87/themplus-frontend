@@ -1,0 +1,118 @@
+<script setup lang="ts">
+import { onMounted, reactive } from 'vue';
+import { Notify } from 'quasar';
+import { useRouter } from 'vue-router';
+import { DataLogin } from 'src/ts/interfaces/data/User';
+
+defineOptions({
+  name: 'Login',
+});
+
+const emit = defineEmits<{
+  'update:changeRender': ['login' | 'reset'];
+}>();
+
+const router = useRouter();
+const dataLogin = reactive<DataLogin>({
+  email: '',
+  password: '',
+});
+
+const clear = (): void => {
+  Object.assign(dataLogin, {
+    email: '',
+    password: '',
+  });
+};
+const changeRender = (render: 'login' | 'reset'): void => {
+  emit('update:changeRender', render);
+};
+const checkData = (): {status: boolean, message?: string} => {
+  if (dataLogin.email.trim() === '') {
+    return { status: false, message: 'Deve ser informado o e-mail' };
+  }
+  if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(dataLogin.email.trim())) {
+    return { status: false, message: 'Informe um e-mail válido' };
+  }
+  if (dataLogin.password.trim() === '') {
+    return { status: false, message: 'Deve ser informado uma senha' };
+  }
+  return { status: true };
+};
+const login = () => {
+  const check = checkData();
+  if (check.status) {
+    router.push({ name: 'admin-feed' });
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+
+onMounted(() => {
+  clear();
+});
+</script>
+
+<template>
+  <q-form class="form-auth rounded-borders bg-grey-3">
+    <div class="row justify-center items-center q-pa-md">
+      <q-img
+        src="/images/logo.png"
+        spinner-color="white"
+        width="250px"
+      />
+    </div>
+    <div class="q-pb-sm q-px-md q-gutter-y-sm">
+      <q-input
+        v-model="dataLogin.email"
+        bg-color="white"
+        label-color="black"
+        filled
+        label="Digite seu e-mail"
+        dense
+        input-class="text-black"
+      >
+        <template v-slot:prepend>
+          <q-icon name="email" color="black" size="20px" />
+        </template>
+      </q-input>
+      <q-input
+        v-model="dataLogin.password"
+        bg-color="white"
+        label-color="black"
+        filled
+        label="Digite sua senha"
+        dense
+        input-class="text-black"
+        type="password"
+      >
+        <template v-slot:prepend>
+          <q-icon name="key" color="black" size="20px" />
+        </template>
+      </q-input>
+    </div>
+    <div class="q-pb-sm q-px-md row justify-end items-center q-gutter-x-sm">
+      <q-btn
+        color="black"
+        label="Esqueceu senha"
+        size="md"
+        flat
+        @click="changeRender('reset')"
+        :disable="false"
+        no-caps
+      />
+      <q-btn
+        @click="login"
+        color="red-6"
+        label="Entrar"
+        size="md"
+        :loading="false"
+        unelevated
+        no-caps
+      />
+    </div>
+  </q-form>
+</template>

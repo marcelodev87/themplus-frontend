@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+
 import { ref } from 'vue';
 
 defineOptions({
@@ -9,12 +11,16 @@ const emit = defineEmits<{
   'update:openFormPerfil': [void];
 }>();
 
+const router = useRouter();
 const dropdown = ref(null);
 
 const openPerfil = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dropdown.value as any).hide();
   emit('update:openFormPerfil');
+};
+const logout = (): void => {
+  router.push({ name: 'auth' });
 };
 </script>
 
@@ -42,7 +48,7 @@ const openPerfil = () => {
       </q-item-section>
       <q-item-section>Perfil</q-item-section>
     </q-item>
-    <q-item clickable v-ripple>
+    <q-item clickable v-ripple @click="logout">
       <q-item-section avatar>
         <q-avatar>
           <q-icon name="logout" />

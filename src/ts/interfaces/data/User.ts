@@ -13,3 +13,8 @@ export interface DataPerfil {
   passwordNew: string;
   passwordNewConfirm: string;
 }
+
+export interface DataLogin {
+  email: string;
+  password: string;
+}
