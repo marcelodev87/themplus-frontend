@@ -94,10 +94,14 @@ const closeFormOut = ():void => {
       />
       <FormEntry
         :open="showFormEntry"
+        title="Registre uma entrada"
+        mode="movement"
         @update:open="closeFormEntry"
       />
       <FormOut
         :open="showFormOut"
+        title="Registre uma saída"
+        mode="movement"
         @update:open="closeFormOut"
       />
     </main>

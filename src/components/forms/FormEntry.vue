@@ -5,6 +5,7 @@ import {
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataEntry } from 'src/ts/interfaces/data/Entry';
+import { MovementOrSchedule } from 'src/ts/types/FormMode';
 
 defineOptions({
   name: 'FormEntry',
@@ -12,6 +13,8 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  title: string;
+  mode: MovementOrSchedule;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -114,7 +117,7 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Registre uma entrada"/>
+        <TitlePage :title="props.title"/>
       </q-card-section>
       <q-card-section class="q-pa-sm ">
         <q-form class="q-gutter-y-sm">
