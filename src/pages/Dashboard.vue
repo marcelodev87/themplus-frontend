@@ -34,7 +34,7 @@ const cardsDashboard = computed<Array<ICardDashboard>>(() => [
 </script>
 <template>
   <section>
-    <header class="row justify-between no-wrap bg-grey-3">
+    <header class="row justify-between no-wrap bg-grey-1">
       <DashboardFilter />
     </header>
     <main>

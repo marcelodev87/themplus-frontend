@@ -109,11 +109,19 @@ const closeFormPerfil = ():void => {
            v-for="(menuItem, index) in menuList"
            :key="index"
             clickable
+            :to="{ name: menuItem.name }"
+            :active="isActive(menuItem.name)"
+            active-class=" text-red text-bold"
+          >
+          <!-- <q-item
+           v-for="(menuItem, index) in menuList"
+           :key="index"
+            clickable
             v-ripple
             :to="{ name: menuItem.name }"
             :active="isActive(menuItem.name)"
             active-class="bg-red-10 text-white"
-          >
+          > -->
             <q-item-section avatar>
               <q-icon :name="menuItem.icon" />
             </q-item-section>

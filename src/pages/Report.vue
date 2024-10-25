@@ -26,7 +26,7 @@ const closeReportFilterPeriod = ():void => {
 </script>
 <template>
   <section>
-    <header class="row justify-between no-wrap bg-grey-3">
+    <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-5">
         <TitlePage title="Gerenciamento de relatórios"/>
       </div>
