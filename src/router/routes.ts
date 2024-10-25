@@ -51,6 +51,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/User.vue'),
       },
       {
+        path: 'departamentos',
+        name: 'admin-departments',
+        component: () => import('src/pages/Department.vue'),
+      },
+      {
         path: 'contabilidade',
         name: 'admin-financial-control',
         component: () => import('src/pages/FinancialControl.vue'),
