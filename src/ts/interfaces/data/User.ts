@@ -5,3 +5,11 @@ export interface DataUser {
   password: string;
   confirmPassword: string;
 }
+
+export interface DataPerfil {
+  name: string;
+  email: string;
+  passwordActual: string;
+  passwordNew: string;
+  passwordNewConfirm: string;
+}

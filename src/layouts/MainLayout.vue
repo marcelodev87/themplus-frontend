@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FormPerfil from 'src/components/forms/FormPerfil.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -8,7 +9,8 @@ defineOptions({
 });
 
 const route = useRoute();
-const leftDrawerOpen = ref(false);
+const leftDrawerOpen = ref<boolean>(false);
+const showFormPerfil = ref<boolean>(false);
 
 const menuList = computed(() => [
   {
@@ -68,11 +70,17 @@ const menuList = computed(() => [
 ]);
 
 const isActive = (routeName: string) => route.name === routeName;
+const openFormPerfil = ():void => {
+  showFormPerfil.value = true;
+};
+const closeFormPerfil = ():void => {
+  showFormPerfil.value = false;
+};
 </script>
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header class="bg-grey-2">
-      <Navbar />
+      <Navbar @update:open-form-perfil="openFormPerfil"/>
     </q-header>
 
     <q-drawer
@@ -106,6 +114,10 @@ const isActive = (routeName: string) => route.name === routeName;
 
     <q-page-container>
       <router-view />
+      <FormPerfil
+        :open="showFormPerfil"
+        @update:open="closeFormPerfil"
+      />
     </q-page-container>
   </q-layout>
 </template>
