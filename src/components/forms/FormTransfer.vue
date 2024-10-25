@@ -98,17 +98,17 @@ watch(open, () => {
       <q-card-section class="q-pa-sm ">
         <q-form class="q-gutter-y-sm column items-center">
             <q-select
-            v-model="dataTransfer.account_out"
-            :options="optionsConta"
-            label="De onde está saindo?"
-            filled
-            clearable
-            dense
-            options-dense
-            map-options
-            bg-color="red-2"
-            label-color="black"
-            class="full-width"
+              v-model="dataTransfer.account_out"
+              :options="optionsConta"
+              label="De onde está saindo?"
+              filled
+              clearable
+              dense
+              options-dense
+              map-options
+              bg-color="red-2"
+              label-color="black"
+              class="full-width"
             >
             <template v-slot:prepend>
                 <q-icon name="account_balance" color="black" size="20px" />

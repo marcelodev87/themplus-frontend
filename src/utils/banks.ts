@@ -1,4 +1,4 @@
-export const banks = [
+export const banks:string[] = [
   'Banco BTG',
   'Banco C6',
   'Banco Daycoval',
