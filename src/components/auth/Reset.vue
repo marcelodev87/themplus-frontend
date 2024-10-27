@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { Notify } from 'quasar';
 import { RenderAuth } from 'src/ts/types/FormMode';
+import TitleAuth from '../shared/TitleAuth.vue';
 
 defineOptions({
   name: 'ResetPassword',
@@ -64,6 +65,9 @@ onMounted(() => {
         spinner-color="white"
         width="250px"
       />
+    </div>
+    <div class="q-px-md">
+      <TitleAuth title="Recupere sua senha"/>
     </div>
     <div class="q-pb-sm q-px-md q-gutter-y-sm">
       <q-input

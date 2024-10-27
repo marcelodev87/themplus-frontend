@@ -4,6 +4,7 @@ import { Notify } from 'quasar';
 import { useRouter } from 'vue-router';
 import { DataRegister } from 'src/ts/interfaces/data/User';
 import { RenderAuth } from 'src/ts/types/FormMode';
+import TitleAuth from '../shared/TitleAuth.vue';
 
 defineOptions({
   name: 'Register',
@@ -89,6 +90,9 @@ onMounted(() => {
         spinner-color="white"
         width="250px"
       />
+    </div>
+    <div class="q-px-md">
+      <TitleAuth title="Faça seu cadastro"/>
     </div>
     <div class="q-pb-sm q-px-md q-gutter-y-sm">
       <q-input
