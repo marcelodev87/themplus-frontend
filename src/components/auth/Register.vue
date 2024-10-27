@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
 import { Notify } from 'quasar';
-import { useRouter } from 'vue-router';
 import { DataRegister } from 'src/ts/interfaces/data/User';
 import { RenderAuth } from 'src/ts/types/FormMode';
+import { doRegisterService } from 'src/services/auth-service';
 import TitleAuth from '../shared/TitleAuth.vue';
 
 defineOptions({
@@ -14,7 +14,6 @@ const emit = defineEmits<{
   'update:changeRender': [RenderAuth];
 }>();
 
-const router = useRouter();
 const dataRegister = reactive<DataRegister>({
   name: '',
   email: '',
@@ -65,10 +64,15 @@ const checkData = (): {status: boolean, message?: string} => {
   }
   return { status: true };
 };
-const register = () => {
+const register = async () => {
   const check = checkData();
   if (check.status) {
-    router.push({ name: 'admin-feed' });
+    await doRegisterService(
+      dataRegister.name,
+      dataRegister.email,
+      dataRegister.password,
+      dataRegister.nameEnterprise,
+    );
   } else {
     Notify.create({
       message: check.message,

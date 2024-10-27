@@ -19,6 +19,7 @@ export const doRegisterService = (
   data: {
       user: User;
       token: string;
+      message: string;
   };
 }> => api.post('/register', {
   email,
@@ -26,6 +27,3 @@ export const doRegisterService = (
   name,
   nameEnterprise,
 });
-// export const forgotService = (email: string) => api.post('/password/forgot', {
-//   email,
-// });

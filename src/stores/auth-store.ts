@@ -58,9 +58,14 @@ export const useAuthStore = defineStore('auth', {
       const router = useRouter();
       try {
         const response = await doRegisterService(name, email, password, nameEnterprise);
-        if (response.status === 200) {
+        if (response.status === 201) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
+
+          Notify.create({
+            message: response.data.message,
+            type: 'positive',
+          });
           router.push({ name: 'admin-feed' });
         }
 
