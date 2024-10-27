@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { Notify } from 'quasar';
+import { RenderAuth } from 'src/ts/types/FormMode';
 
 defineOptions({
   name: 'ResetPassword',
 });
 
 const emit = defineEmits<{
-  'update:changeRender': ['login' | 'reset'];
+  'update:changeRender': [RenderAuth];
 }>();
 
 const emailRegex = ref<RegExp>(
@@ -31,7 +32,7 @@ const clear = (): void => {
     email: '',
   });
 };
-const changeRender = (render: 'login' | 'reset'): void => {
+const changeRender = (render: RenderAuth): void => {
   emit('update:changeRender', render);
 };
 const sendEmailReset = async () => {
@@ -80,6 +81,15 @@ onMounted(() => {
       </q-input>
     </div>
     <div class="q-pb-sm q-px-md row justify-end items-center q-gutter-x-sm">
+      <q-btn
+        @click="changeRender('register')"
+        color="black"
+        label="Cadastrar"
+        size="md"
+        :disable="false"
+        no-caps
+        flat
+      />
       <q-btn
         @click="changeRender('login')"
         color="black"

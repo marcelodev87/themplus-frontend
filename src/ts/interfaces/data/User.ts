@@ -6,6 +6,14 @@ export interface DataUser {
   confirmPassword: string;
 }
 
+export interface DataRegister {
+  name: string;
+  email:string;
+  password: string;
+  confirmPassword: string;
+  nameEnterprise: string;
+}
+
 export interface DataPerfil {
   name: string;
   email: string;

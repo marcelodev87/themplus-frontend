@@ -3,13 +3,14 @@ import { onMounted, reactive } from 'vue';
 import { Notify } from 'quasar';
 import { useRouter } from 'vue-router';
 import { DataLogin } from 'src/ts/interfaces/data/User';
+import { RenderAuth } from 'src/ts/types/FormMode';
 
 defineOptions({
   name: 'Login',
 });
 
 const emit = defineEmits<{
-  'update:changeRender': ['login' | 'reset'];
+  'update:changeRender': [RenderAuth];
 }>();
 
 const router = useRouter();
@@ -24,7 +25,7 @@ const clear = (): void => {
     password: '',
   });
 };
-const changeRender = (render: 'login' | 'reset'): void => {
+const changeRender = (render: RenderAuth): void => {
   emit('update:changeRender', render);
 };
 const checkData = (): {status: boolean, message?: string} => {
@@ -103,6 +104,16 @@ onMounted(() => {
         @click="changeRender('reset')"
         :disable="false"
         no-caps
+      />
+      <q-btn
+        @click="changeRender('register')"
+        color="black"
+        label="Cadastrar"
+        size="md"
+        :loading="false"
+        unelevated
+        no-caps
+        flat
       />
       <q-btn
         @click="login"
