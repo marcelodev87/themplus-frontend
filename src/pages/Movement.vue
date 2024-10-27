@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormCategoryMovement from 'src/components/forms/FormCategoryMovement.vue';
+import FormCategory from 'src/components/forms/FormCategory.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
 import FormTransfer from 'src/components/forms/FormTransfer.vue';
@@ -10,16 +10,16 @@ defineOptions({
   name: 'Movement',
 });
 
-const showFormCategoryMovement = ref<boolean>(false);
+const showFormCategory = ref<boolean>(false);
 const showFormTransfer = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 
-const openFormCategoryMovement = ():void => {
-  showFormCategoryMovement.value = true;
+const openFormCategory = ():void => {
+  showFormCategory.value = true;
 };
-const closeFormCategoryMovement = ():void => {
-  showFormCategoryMovement.value = false;
+const closeFormCategory = ():void => {
+  showFormCategory.value = false;
 };
 const openFormTransfer = (): void => {
   showFormTransfer.value = true;
@@ -48,7 +48,7 @@ const closeFormOut = ():void => {
       </div>
       <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn
-          @click="openFormCategoryMovement"
+          @click="openFormCategory"
           flat
           color="black"
           icon-right="settings"
@@ -84,9 +84,9 @@ const closeFormOut = ():void => {
       </div>
     </header>
     <main>
-      <FormCategoryMovement
-        :open="showFormCategoryMovement"
-        @update:open="closeFormCategoryMovement"
+      <FormCategory
+        :open="showFormCategory"
+        @update:open="closeFormCategory"
       />
       <FormTransfer
         :open="showFormTransfer"

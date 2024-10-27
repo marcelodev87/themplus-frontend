@@ -3,12 +3,12 @@ import {
   computed, reactive, ref, watch,
 } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import { DataCategoryMovement } from 'src/ts/interfaces/data/Category';
+import { DataCategory } from 'src/ts/interfaces/data/Category';
 import { Notify } from 'quasar';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 
 defineOptions({
-  name: 'FormCategoryMovement',
+  name: 'FormCategory',
 });
 
 const props = defineProps<{
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const filterCategory = ref<string>('');
-const dataCategoryMovement = reactive<DataCategoryMovement>({
+const dataCategory = reactive<DataCategory>({
   name: '',
 });
 const rowsTeste = reactive([
@@ -40,7 +40,7 @@ const rowsTeste = reactive([
     default: 'Não',
   },
 ]);
-const columnsCategoryMovement = reactive<QuasarTable[]>([
+const columnsCategory = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Categoria',
@@ -69,10 +69,10 @@ const open = computed({
 });
 
 const checkData = (): {status: boolean, message?: string} => {
-  if (dataCategoryMovement.name.trim() === '') {
+  if (dataCategory.name.trim() === '') {
     return { status: false, message: 'O campo de categoria não pode ser vazio' };
   }
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛãõÃÕçÇ\s]+$/.test(dataCategoryMovement.name)) {
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛãõÃÕçÇ\s]+$/.test(dataCategory.name)) {
     return { status: false, message: 'O campo de categoria só pode conter texto' };
   }
   return { status: true };
@@ -89,7 +89,7 @@ const save = () => {
   }
 };
 const clear = (): void => {
-  dataCategoryMovement.name = '';
+  dataCategory.name = '';
 };
 
 watch(open, () => {
@@ -107,7 +107,7 @@ watch(open, () => {
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form>
           <q-input
-              v-model="dataCategoryMovement.name"
+              v-model="dataCategory.name"
               bg-color="white"
               label-color="black"
               filled
@@ -120,7 +120,7 @@ watch(open, () => {
           flat bordered
           dense
           :rows="rowsTeste"
-          :columns="columnsCategoryMovement"
+          :columns="columnsCategory"
           row-key="name"
           :filter="filterCategory"
           no-data-label="Nenhum dado para mostrar"

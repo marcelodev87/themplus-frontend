@@ -18,3 +18,13 @@ export interface DataLogin {
   email: string;
   password: string;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  position: string;
+  enterprise_id: string;
+  department_id: string | null;
+}
