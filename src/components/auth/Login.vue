@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
 import { Notify } from 'quasar';
-import { useRouter } from 'vue-router';
 import { DataLogin } from 'src/ts/interfaces/data/User';
 import { RenderAuth } from 'src/ts/types/FormMode';
 import { storeToRefs } from 'pinia';
@@ -17,8 +16,8 @@ const emit = defineEmits<{
 }>();
 
 const { loadingAuth } = storeToRefs(useAuthStore());
+const { doLogin } = useAuthStore();
 
-const router = useRouter();
 const dataLogin = reactive<DataLogin>({
   email: '',
   password: '',
@@ -45,10 +44,10 @@ const checkData = (): {status: boolean, message?: string} => {
   }
   return { status: true };
 };
-const login = () => {
+const login = async () => {
   const check = checkData();
   if (check.status) {
-    router.push({ name: 'admin-feed' });
+    await doLogin(dataLogin.email, dataLogin.password);
   } else {
     Notify.create({
       message: check.message,

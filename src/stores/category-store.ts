@@ -32,10 +32,8 @@ export const useCategoryStore = defineStore('category', {
     async createCategory(category: string) {
       this.setLoading(true);
       try {
-        const response = await createCategoryService(category);
+        await createCategoryService(category);
         this.clearListCategory();
-
-        console.log('response', response);
       } catch (error) {
         this.createError(error);
       } finally {
