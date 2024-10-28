@@ -4,6 +4,8 @@ import { Notify } from 'quasar';
 import { useRouter } from 'vue-router';
 import { DataLogin } from 'src/ts/interfaces/data/User';
 import { RenderAuth } from 'src/ts/types/FormMode';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
 
 defineOptions({
@@ -13,6 +15,8 @@ defineOptions({
 const emit = defineEmits<{
   'update:changeRender': [RenderAuth];
 }>();
+
+const { loadingAuth } = storeToRefs(useAuthStore());
 
 const router = useRouter();
 const dataLogin = reactive<DataLogin>({
@@ -77,6 +81,7 @@ onMounted(() => {
         label-color="black"
         filled
         label="Digite seu e-mail"
+        autocomplete="new-email"
         dense
         input-class="text-black"
       >
@@ -90,6 +95,7 @@ onMounted(() => {
         label-color="black"
         filled
         label="Digite sua senha"
+        autocomplete="new-password"
         dense
         input-class="text-black"
         type="password"
@@ -106,7 +112,6 @@ onMounted(() => {
         size="md"
         flat
         @click="changeRender('reset')"
-        :disable="false"
         no-caps
       />
       <q-btn
@@ -114,7 +119,6 @@ onMounted(() => {
         color="black"
         label="Cadastrar"
         size="md"
-        :loading="false"
         unelevated
         no-caps
         flat
@@ -124,7 +128,7 @@ onMounted(() => {
         color="red-6"
         label="Entrar"
         size="md"
-        :loading="false"
+        :loading="loadingAuth"
         unelevated
         no-caps
       />

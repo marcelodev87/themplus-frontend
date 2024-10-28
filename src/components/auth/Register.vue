@@ -3,7 +3,8 @@ import { onMounted, reactive } from 'vue';
 import { Notify } from 'quasar';
 import { DataRegister } from 'src/ts/interfaces/data/User';
 import { RenderAuth } from 'src/ts/types/FormMode';
-import { doRegisterService } from 'src/services/auth-service';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
 
 defineOptions({
@@ -13,6 +14,9 @@ defineOptions({
 const emit = defineEmits<{
   'update:changeRender': [RenderAuth];
 }>();
+
+const { loadingAuth } = storeToRefs(useAuthStore());
+const { doRegister } = useAuthStore();
 
 const dataRegister = reactive<DataRegister>({
   name: '',
@@ -67,7 +71,7 @@ const checkData = (): {status: boolean, message?: string} => {
 const register = async () => {
   const check = checkData();
   if (check.status) {
-    await doRegisterService(
+    await doRegister(
       dataRegister.name,
       dataRegister.email,
       dataRegister.password,
@@ -118,6 +122,7 @@ onMounted(() => {
         label-color="black"
         filled
         label="Digite seu e-mail"
+        autocomplete="new-email"
         dense
         input-class="text-black"
       >
@@ -144,6 +149,7 @@ onMounted(() => {
         label-color="black"
         filled
         label="Digite sua senha"
+        autocomplete="new-password"
         dense
         input-class="text-black"
         type="password"
@@ -158,6 +164,7 @@ onMounted(() => {
         label-color="black"
         filled
         label="Confirme sua senha"
+        autocomplete="new-password"
         dense
         input-class="text-black"
         type="password"
@@ -174,7 +181,6 @@ onMounted(() => {
         size="md"
         flat
         @click="changeRender('reset')"
-        :disable="false"
         no-caps
       />
       <q-btn
@@ -182,7 +188,6 @@ onMounted(() => {
         color="black"
         label="Entrar"
         size="md"
-        :loading="false"
         unelevated
         no-caps
         flat
@@ -192,7 +197,7 @@ onMounted(() => {
         color="red-6"
         label="Cadastrar"
         size="md"
-        :loading="false"
+        :loading="loadingAuth"
         unelevated
         no-caps
       />

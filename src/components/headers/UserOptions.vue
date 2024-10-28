@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-
 import { ref } from 'vue';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'UserOptions',
 });
+
+const { setToken, setUser } = useAuthStore();
 
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
@@ -20,6 +22,8 @@ const openPerfil = () => {
   emit('update:openFormPerfil');
 };
 const logout = (): void => {
+  setToken(null);
+  setUser(null);
   router.push({ name: 'auth' });
 };
 </script>

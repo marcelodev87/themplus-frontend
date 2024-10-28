@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue';
 import { Notify } from 'quasar';
 import { RenderAuth } from 'src/ts/types/FormMode';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
 
 defineOptions({
@@ -11,6 +13,8 @@ defineOptions({
 const emit = defineEmits<{
   'update:changeRender': [RenderAuth];
 }>();
+
+const { loadingAuth } = storeToRefs(useAuthStore());
 
 const emailRegex = ref<RegExp>(
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -90,7 +94,6 @@ onMounted(() => {
         color="black"
         label="Cadastrar"
         size="md"
-        :disable="false"
         no-caps
         flat
       />
@@ -99,7 +102,6 @@ onMounted(() => {
         color="black"
         label="Entrar"
         size="md"
-        :disable="false"
         no-caps
         flat
       />
@@ -108,7 +110,7 @@ onMounted(() => {
         color="red-6"
         label="Enviar e-mail de redefinição"
         size="md"
-        :loading="false"
+        :loading="loadingAuth"
         unelevated
         no-caps
       />

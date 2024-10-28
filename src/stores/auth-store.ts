@@ -3,7 +3,6 @@ import { useStorage } from '@vueuse/core';
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { useRouter } from 'vue-router';
 import { User } from 'src/ts/interfaces/data/User';
 import { doLoginService, doRegisterService } from 'src/services/auth-service';
 
@@ -37,16 +36,13 @@ export const useAuthStore = defineStore('auth', {
     },
     async doLogin(email: string, password: string) {
       this.setLoading(true);
-      const router = useRouter();
       try {
         const response = await doLoginService(email, password);
         if (response.status === 200) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
-          router.push({ name: 'admin-feed' });
+          this.router.push({ name: 'admin-feed' });
         }
-
-        console.log('response', response);
       } catch (error) {
         this.createError(error);
       } finally {
@@ -55,7 +51,6 @@ export const useAuthStore = defineStore('auth', {
     },
     async doRegister(name: string, email:string, password: string, nameEnterprise: string) {
       this.setLoading(true);
-      const router = useRouter();
       try {
         const response = await doRegisterService(name, email, password, nameEnterprise);
         if (response.status === 201) {
@@ -66,10 +61,8 @@ export const useAuthStore = defineStore('auth', {
             message: response.data.message,
             type: 'positive',
           });
-          router.push({ name: 'admin-feed' });
+          this.router.push({ name: 'admin-feed' });
         }
-
-        console.log('response', response);
       } catch (error) {
         this.createError(error);
       } finally {
