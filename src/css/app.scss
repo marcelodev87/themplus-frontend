@@ -15,7 +15,7 @@
 }
 .form-basic {
   width: 900px;
-  max-width: 96%;
+  max-width: 98%;
 }
 .no-spinners::-webkit-outer-spin-button,
 .no-spinners::-webkit-inner-spin-button {
@@ -46,5 +46,12 @@
   width: 500px;
   max-width: 96%;
   border-radius: 3px;
+}
+.capitalize {
+  text-transform: lowercase;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
 }
 

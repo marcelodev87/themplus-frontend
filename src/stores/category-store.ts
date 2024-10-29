@@ -2,8 +2,12 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { createCategoryService } from 'src/services/category-service';
 import { Category } from 'src/ts/interfaces/data/Category';
+import {
+  createCategoryService,
+  getCategoriesService,
+  deleteCategoryService,
+} from 'src/services/category-service';
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -16,6 +20,9 @@ export const useCategoryStore = defineStore('category', {
     },
     setLoading(loading: boolean) {
       this.loadingCategory = loading;
+    },
+    setListCategory(categories : Category[]) {
+      categories.map((item) => this.listCategory.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -35,13 +42,41 @@ export const useCategoryStore = defineStore('category', {
         type: 'positive',
       });
     },
+    async getCategories() {
+      this.setLoading(true);
+      try {
+        const response = await getCategoriesService();
+        if (response.status === 200) {
+          this.clearListCategory();
+          this.setListCategory(response.data.categories);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async createCategory(category: string, type: 'Entrada' | 'Saída') {
       this.setLoading(true);
       try {
         const response = await createCategoryService(category, type.toLowerCase());
         if (response.status === 201) {
           this.clearListCategory();
-          this.listCategory = response.data.categories;
+          this.setListCategory(response.data.categories);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteCategory(categoryId: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteCategoryService(categoryId);
+        if (response.status === 200) {
+          this.listCategory = this.listCategory.filter((item) => item.id !== categoryId);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -20,32 +20,15 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { createCategory } = useCategoryStore();
-const { loadingCategory } = storeToRefs(useCategoryStore());
+const { createCategory, getCategories, deleteCategory } = useCategoryStore();
+const { loadingCategory, listCategory } = storeToRefs(useCategoryStore());
 
 const filterCategory = ref<string>('');
 const dataCategory = reactive<DataCategory>({
   name: '',
   type: 'Entrada',
 });
-const rowsTeste = reactive([
-  {
-    name: 'Categoria 1',
-    default: 'Sim',
-  },
-  {
-    name: 'Categoria 2',
-    default: 'Sim',
-  },
-  {
-    name: 'Categoria 3',
-    default: 'Não',
-  },
-  {
-    name: 'Categoria 4',
-    default: 'Não',
-  },
-]);
+
 const columnsCategory = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -58,6 +41,13 @@ const columnsCategory = reactive<QuasarTable[]>([
     name: 'default',
     label: 'Padrão',
     field: 'default',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'type',
+    label: 'Tipo',
+    field: 'type',
     align: 'left',
     sortable: true,
   },
@@ -88,6 +78,7 @@ const checkData = (): {status: boolean, message?: string} => {
 const clear = (): void => {
   dataCategory.name = '';
   dataCategory.type = 'Entrada';
+  filterCategory.value = '';
 };
 const save = async () => {
   const check = checkData();
@@ -101,10 +92,15 @@ const save = async () => {
     });
   }
 };
+const exclude = async (id: string) => {
+  clear();
+  await deleteCategory(id);
+};
 
-watch(open, () => {
+watch(open, async () => {
   if (open.value) {
     clear();
+    await getCategories();
   }
 });
 </script>
@@ -129,7 +125,6 @@ watch(open, () => {
               <q-icon name="category" color="black" size="20px" />
             </template>
             </q-input>
-            data {{ dataCategory }}
             <q-select
               v-model="dataCategory.type"
               :options="optionsTypeCategory"
@@ -147,13 +142,15 @@ watch(open, () => {
           </q-select>
         </q-form>
         <q-table
+          :rows="loadingCategory ? [] : listCategory"
+          :columns="columnsCategory"
+          :filter="filterCategory"
+          :loading="loadingCategory"
+          style="max-height: 400px;"
           flat bordered
           dense
-          :rows="rowsTeste"
-          :columns="columnsCategory"
           row-key="name"
-          :filter="filterCategory"
-          no-data-label="Nenhum dado para mostrar"
+          no-data-label="Nenhuma categoria para mostrar"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de categorias</span>
@@ -178,9 +175,18 @@ watch(open, () => {
                     :props="props"
                     class="text-left"
                 >
-                  {{ props.row.default }}
+                  {{ props.row.enterprise_id === null ? 'Sim' : 'Não' }}
                 </q-td>
-                <q-td key="action" :props="props">
+                <q-td
+                    key="type"
+                    :props="props"
+                    class="text-left capitalize"
+                >
+                  {{ props.row.type }}
+                </q-td>
+                <q-td key="action"
+                :props="props"
+                >
                   <q-btn
                       size="sm"
                       flat
@@ -189,14 +195,16 @@ watch(open, () => {
                       icon="edit"
                       :disabled="false"
                   />
-                    <q-btn
-                        size="sm"
-                        flat
-                        round
-                        color="negative"
-                        icon="delete"
-                        :disabled="false"
-                    />
+                  <q-btn
+                    @click="exclude(props.row.id)"
+                    v-show="props.row.enterprise_id !== null"
+                    size="sm"
+                    flat
+                    round
+                    color="negative"
+                    icon="delete"
+                    :disabled="false"
+                  />
                 </q-td>
             </q-tr>
           </template>
