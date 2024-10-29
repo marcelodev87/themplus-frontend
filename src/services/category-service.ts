@@ -13,14 +13,15 @@ const baseUrl = 'category';
 //     return await api.get(`${baseUrl}`);
 // };
 export const createCategoryService = (
-  payload: string,
+  name: string,
+  type: string,
 ): Promise<{
     status: number;
     data: {
         categories: Category[];
         message: string;
     };
-}> => api.post(`${baseUrl}/`, payload);
+}> => api.post(`${baseUrl}/`, { name, type });
 // export const updateDepartmentService = async (payload: {
 //     id: string;
 //     name: string;

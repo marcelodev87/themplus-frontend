@@ -6,6 +6,8 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { DataCategory } from 'src/ts/interfaces/data/Category';
 import { Notify } from 'quasar';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { useCategoryStore } from 'src/stores/category-store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'FormCategory',
@@ -18,9 +20,13 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { createCategory } = useCategoryStore();
+const { loadingCategory } = storeToRefs(useCategoryStore());
+
 const filterCategory = ref<string>('');
 const dataCategory = reactive<DataCategory>({
   name: '',
+  type: 'Entrada',
 });
 const rowsTeste = reactive([
   {
@@ -63,6 +69,8 @@ const columnsCategory = reactive<QuasarTable[]>([
   },
 ]);
 
+const optionsTypeCategory = reactive<string[]>(['Entrada', 'Saída']);
+
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
@@ -72,24 +80,26 @@ const checkData = (): {status: boolean, message?: string} => {
   if (dataCategory.name.trim() === '') {
     return { status: false, message: 'O campo de categoria não pode ser vazio' };
   }
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛãõÃÕçÇ\s]+$/.test(dataCategory.name)) {
-    return { status: false, message: 'O campo de categoria só pode conter texto' };
+  if (dataCategory.name.trim().length < 3) {
+    return { status: false, message: 'O campo de categoria deve conter pelo menos 3 caracteres' };
   }
   return { status: true };
 };
-const save = () => {
+const clear = (): void => {
+  dataCategory.name = '';
+  dataCategory.type = 'Entrada';
+};
+const save = async () => {
   const check = checkData();
   if (check.status) {
-    emit('update:open');
+    await createCategory(dataCategory.name, dataCategory.type);
+    clear();
   } else {
     Notify.create({
       message: check.message,
       type: 'negative',
     });
   }
-};
-const clear = (): void => {
-  dataCategory.name = '';
 };
 
 watch(open, () => {
@@ -105,7 +115,7 @@ watch(open, () => {
         <TitlePage title="Cadastro de categorias de movimentações"/>
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
-        <q-form>
+        <q-form class="q-gutter-y-sm">
           <q-input
               v-model="dataCategory.name"
               bg-color="white"
@@ -114,7 +124,27 @@ watch(open, () => {
               label="Crie uma nova categoria"
               dense
               input-class="text-black"
-            />
+            >
+            <template v-slot:prepend>
+              <q-icon name="category" color="black" size="20px" />
+            </template>
+            </q-input>
+            data {{ dataCategory }}
+            <q-select
+              v-model="dataCategory.type"
+              :options="optionsTypeCategory"
+              label="Tipo"
+              filled
+              dense
+              options-dense
+              bg-color="white"
+              label-color="black"
+              class="full-width"
+            >
+            <template v-slot:prepend>
+                <q-icon name="sync_alt" color="black" size="20px" />
+            </template>
+          </q-select>
         </q-form>
         <q-table
           flat bordered
@@ -180,16 +210,15 @@ watch(open, () => {
             size="md"
             flat
             @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
           <q-btn
             @click="save"
+            :loading="loadingCategory"
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
             unelevated
             no-caps
           />

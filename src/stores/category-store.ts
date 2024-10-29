@@ -29,11 +29,21 @@ export const useCategoryStore = defineStore('category', {
         type: 'negative',
       });
     },
-    async createCategory(category: string) {
+    createSuccess(message: string) {
+      Notify.create({
+        message,
+        type: 'positive',
+      });
+    },
+    async createCategory(category: string, type: 'Entrada' | 'Saída') {
       this.setLoading(true);
       try {
-        await createCategoryService(category);
-        this.clearListCategory();
+        const response = await createCategoryService(category, type.toLowerCase());
+        if (response.status === 201) {
+          this.clearListCategory();
+          this.listCategory = response.data.categories;
+          this.createSuccess(response.data.message);
+        }
       } catch (error) {
         this.createError(error);
       } finally {
