@@ -29,8 +29,8 @@ export const createAccountService = (
 export const updateAccountService = (
   id: string,
   name: string,
-  accountNumber: string,
-  agencyNumber: string,
+  accountNumber: string | null,
+  agencyNumber: string | null,
   description: string | null,
 ): Promise<{
     status: number;
@@ -39,7 +39,7 @@ export const updateAccountService = (
       message: string;
     };
 }> => api.put(`${baseUrl}/`, {
-  id, accountNumber, agencyNumber, description,
+  id, name, accountNumber, agencyNumber, description,
 });
 
 export const deleteAccountService = (

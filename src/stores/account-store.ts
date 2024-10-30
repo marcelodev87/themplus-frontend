@@ -2,8 +2,9 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { createAccountService, getAccountsService, updateAccountService } from 'src/services/account-service';
-import { deleteCategoryService } from 'src/services/category-service';
+import {
+  createAccountService, getAccountsService, updateAccountService, deleteAccountService,
+} from 'src/services/account-service';
 import { Account } from 'src/ts/interfaces/data/Account';
 
 export const useAccountStore = defineStore('account', {
@@ -76,8 +77,8 @@ export const useAccountStore = defineStore('account', {
     async updateAccount(
       id: string,
       name: string,
-      accountNumber: string,
-      agencyNumber: string,
+      accountNumber: string | null,
+      agencyNumber: string | null,
       description: string | null,
     ) {
       this.setLoading(true);
@@ -103,7 +104,7 @@ export const useAccountStore = defineStore('account', {
     async deleteAccount(accountId: string) {
       this.setLoading(true);
       try {
-        const response = await deleteCategoryService(accountId);
+        const response = await deleteAccountService(accountId);
         if (response.status === 200) {
           this.listAccount = this.listAccount.filter((item) => item.id !== accountId);
           this.createSuccess(response.data.message);

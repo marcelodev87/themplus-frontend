@@ -4,7 +4,7 @@ import {
 } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
-import { DataAccount } from 'src/ts/interfaces/data/Account';
+import { Account, DataAccount } from 'src/ts/interfaces/data/Account';
 import { useAccountStore } from 'src/stores/account-store';
 import { storeToRefs } from 'pinia';
 import { banks } from 'src/utils/banks';
@@ -15,6 +15,7 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  dataEdit: Account | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -69,6 +70,7 @@ const clear = (): void => {
     account: '',
     description: '',
   });
+  selectedBank.value = null;
 };
 const filterBank = (val: string, update: (arg0: { (): void; (): void; }) => void) => {
   if (val === '') {
@@ -83,6 +85,39 @@ const filterBank = (val: string, update: (arg0: { (): void; (): void; }) => void
     optionsBanks.value = banks.filter((v) => v.toLowerCase().indexOf(needle) > -1);
   });
 };
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateAccount(
+      props.dataEdit?.id ?? '',
+      selectedBank.value !== null ? selectedBank.value : dataAccount.name,
+      dataAccount.account.trim() === '' ? null : dataAccount.account,
+      dataAccount.agency.trim() === '' ? null : dataAccount.agency,
+      dataAccount.description.trim() === '' ? null : dataAccount.description,
+    );
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+const checkDataEdit = () => {
+  if (props.dataEdit !== null) {
+    Object.assign(dataAccount, {
+      name: props.dataEdit.name,
+      agency: props.dataEdit.account_number ?? '',
+      account: props.dataEdit.agency_number ?? '',
+      description: props.dataEdit.description ?? '',
+    });
+  }
+};
+const exclude = async () => {
+  await deleteAccount(props.dataEdit?.id ?? '');
+  clear();
+  emit('update:open');
+};
 
 watch(selectedBank, () => {
   if (selectedBank.value !== null) {
@@ -92,6 +127,7 @@ watch(selectedBank, () => {
 watch(open, () => {
   if (open.value) {
     clear();
+    checkDataEdit();
   }
 });
 </script>
@@ -202,10 +238,31 @@ watch(open, () => {
             no-caps
           />
           <q-btn
+            @click="exclude"
+            v-show="props.dataEdit !== null"
+            :loading="loadingAccount"
+            color="red"
+            label="Excluir"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-if="props.dataEdit === null"
             @click="save"
             :loading="loadingAccount"
             color="primary"
             label="Salvar"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            :loading="loadingAccount"
+            color="primary"
+            label="Atualizar"
             size="md"
             unelevated
             no-caps

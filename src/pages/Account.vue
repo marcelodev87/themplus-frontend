@@ -15,6 +15,7 @@ const { getAccounts } = useAccountStore();
 const { loadingAccount, listAccount } = storeToRefs(useAccountStore());
 
 const showFormAccount = ref<boolean>(false);
+const selectedDataEdit = ref<Account|null>(null);
 const filterAccount = ref<string>('');
 const columnsAccount = reactive<QuasarTable[]>([
   {
@@ -64,9 +65,11 @@ const openFormAccount = (): void => {
 };
 const closeFormAccount = (): void => {
   showFormAccount.value = false;
+  selectedDataEdit.value = null;
 };
 const handleEdit = (account : Account) => {
-  console.log('account ', account);
+  selectedDataEdit.value = account;
+  openFormAccount();
 };
 
 onMounted(async () => {
@@ -167,6 +170,7 @@ onMounted(async () => {
         </q-table>
       <FormAccount
         :open="showFormAccount"
+        :data-edit="selectedDataEdit"
         @update:open="closeFormAccount"
       />
     </main>
