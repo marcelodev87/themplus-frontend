@@ -7,6 +7,7 @@ import {
   createCategoryService,
   getCategoriesService,
   deleteCategoryService,
+  updateCategoryService,
 } from 'src/services/category-service';
 
 export const useCategoryStore = defineStore('category', {
@@ -61,6 +62,26 @@ export const useCategoryStore = defineStore('category', {
       try {
         const response = await createCategoryService(category, type.toLowerCase());
         if (response.status === 201) {
+          this.clearListCategory();
+          this.setListCategory(response.data.categories);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateCategory(id: string, category: string, type: 'Entrada' | 'Saída', enterpriseId: string) {
+      this.setLoading(true);
+      try {
+        const response = await updateCategoryService(
+          id,
+          category,
+          type.toLowerCase(),
+          enterpriseId,
+        );
+        if (response.status === 200) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
           this.createSuccess(response.data.message);

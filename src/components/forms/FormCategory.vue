@@ -3,7 +3,7 @@ import {
   computed, reactive, ref, watch,
 } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import { DataCategory } from 'src/ts/interfaces/data/Category';
+import { Category, DataCategory } from 'src/ts/interfaces/data/Category';
 import { Notify } from 'quasar';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useCategoryStore } from 'src/stores/category-store';
@@ -20,7 +20,9 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { createCategory, getCategories, deleteCategory } = useCategoryStore();
+const {
+  createCategory, getCategories, deleteCategory, updateCategory,
+} = useCategoryStore();
 const { loadingCategory, listCategory } = storeToRefs(useCategoryStore());
 
 const filterCategory = ref<string>('');
@@ -28,7 +30,6 @@ const dataCategory = reactive<DataCategory>({
   name: '',
   type: 'Entrada',
 });
-
 const columnsCategory = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -58,8 +59,9 @@ const columnsCategory = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
-
 const optionsTypeCategory = reactive<string[]>(['Entrada', 'Saída']);
+const categoryEdit = ref<Category | null>(null);
+const showModeEdit = ref<boolean>(false);
 
 const open = computed({
   get: () => props.open,
@@ -80,6 +82,27 @@ const clear = (): void => {
   dataCategory.type = 'Entrada';
   filterCategory.value = '';
 };
+const exclude = async (id: string) => {
+  clear();
+  await deleteCategory(id);
+};
+const openModeEdit = (): void => {
+  showModeEdit.value = true;
+};
+const closeModeEdit = (): void => {
+  showModeEdit.value = false;
+  categoryEdit.value = null;
+  clear();
+};
+const handleEdit = (category: Category) => {
+  clear();
+  categoryEdit.value = category;
+  Object.assign(dataCategory, {
+    name: category.name,
+    type: category.type === 'entrada' ? 'Entrada' : 'Saída',
+  });
+  openModeEdit();
+};
 const save = async () => {
   const check = checkData();
   if (check.status) {
@@ -92,13 +115,28 @@ const save = async () => {
     });
   }
 };
-const exclude = async (id: string) => {
-  clear();
-  await deleteCategory(id);
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateCategory(
+      categoryEdit.value?.id ?? '',
+      dataCategory.name,
+      dataCategory.type,
+      categoryEdit.value?.enterprise_id ?? '',
+    );
+    clear();
+    closeModeEdit();
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
 };
 
 watch(open, async () => {
   if (open.value) {
+    closeModeEdit();
     clear();
     await getCategories();
   }
@@ -142,6 +180,7 @@ watch(open, async () => {
           </q-select>
         </q-form>
         <q-table
+          v-show="!showModeEdit"
           :rows="loadingCategory ? [] : listCategory"
           :columns="columnsCategory"
           :filter="filterCategory"
@@ -188,12 +227,14 @@ watch(open, async () => {
                 :props="props"
                 >
                   <q-btn
-                      size="sm"
-                      flat
-                      round
-                      color="black"
-                      icon="edit"
-                      :disabled="false"
+                    @click="handleEdit(props.row)"
+                    v-show="props.row.enterprise_id !== null"
+                    size="sm"
+                    flat
+                    round
+                    color="black"
+                    icon="edit"
+                    :disabled="false"
                   />
                   <q-btn
                     @click="exclude(props.row.id)"
@@ -222,6 +263,26 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            @click="closeModeEdit"
+            v-show="showModeEdit"
+            color="grey-8"
+            label="Voltar"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-if="categoryEdit"
+            @click="update"
+            :loading="loadingCategory"
+            color="primary"
+            label="Atualizar"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
             @click="save"
             :loading="loadingCategory"
             color="primary"

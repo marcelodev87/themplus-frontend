@@ -22,6 +22,21 @@ export const createCategoryService = (
     };
 }> => api.post(`${baseUrl}/`, { name, type });
 
+export const updateCategoryService = (
+  id: string,
+  name: string,
+  type: string,
+  enterpriseId: string,
+): Promise<{
+    status: number;
+    data: {
+      categories: Category[];
+      message: string;
+    };
+}> => api.put(`${baseUrl}/`, {
+  id, name, type, enterpriseId,
+});
+
 export const deleteCategoryService = (
   id: string,
 ): Promise<{
