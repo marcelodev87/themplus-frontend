@@ -13,7 +13,7 @@ export const getAccountsService = (): Promise<{
 
 export const createAccountService = (
   name: string,
-  accountNumber: string,
+  accountNumber: string | null,
   agencyNumber: string | null,
   description: string | null,
 ): Promise<{

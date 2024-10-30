@@ -55,7 +55,7 @@ export const useAccountStore = defineStore('account', {
     },
     async createAccount(
       name: string,
-      accountNumber: string,
+      accountNumber: string | null,
       agencyNumber: string | null,
       description: string | null,
     ) {

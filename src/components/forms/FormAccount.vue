@@ -43,9 +43,6 @@ const checkData = (): {status: boolean, message?: string} => {
   if (selectedBank.value === null && dataAccount.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do banco' };
   }
-  if (dataAccount.account.trim() === '') {
-    return { status: false, message: 'Deve ser informada a conta' };
-  }
   return { status: true };
 };
 const save = async () => {
@@ -53,7 +50,7 @@ const save = async () => {
   if (check.status) {
     await createAccount(
       selectedBank.value !== null ? selectedBank.value : dataAccount.name,
-      dataAccount.account,
+      dataAccount.account.trim() === '' ? null : dataAccount.account,
       dataAccount.agency.trim() === '' ? null : dataAccount.agency,
       dataAccount.description.trim() === '' ? null : dataAccount.description,
     );
