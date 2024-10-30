@@ -8,7 +8,7 @@ export interface DataUser {
 
 export interface DataRegister {
   name: string;
-  email:string;
+  email: string;
   password: string;
   confirmPassword: string;
   nameEnterprise: string;

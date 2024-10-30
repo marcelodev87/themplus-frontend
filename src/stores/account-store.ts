@@ -3,7 +3,10 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
-  createAccountService, getAccountsService, updateAccountService, deleteAccountService,
+  createAccountService,
+  getAccountsService,
+  updateAccountService,
+  deleteAccountService,
 } from 'src/services/account-service';
 import { Account } from 'src/ts/interfaces/data/Account';
 
@@ -19,7 +22,7 @@ export const useAccountStore = defineStore('account', {
     setLoading(loading: boolean) {
       this.loadingAccount = loading;
     },
-    setListAccount(accounts : Account[]) {
+    setListAccount(accounts: Account[]) {
       accounts.map((item) => this.listAccount.push(item));
     },
     createError(error: any) {
@@ -58,11 +61,16 @@ export const useAccountStore = defineStore('account', {
       name: string,
       accountNumber: string | null,
       agencyNumber: string | null,
-      description: string | null,
+      description: string | null
     ) {
       this.setLoading(true);
       try {
-        const response = await createAccountService(name, accountNumber, agencyNumber, description);
+        const response = await createAccountService(
+          name,
+          accountNumber,
+          agencyNumber,
+          description
+        );
         if (response.status === 201) {
           this.clearListAccount();
           this.setListAccount(response.data.accounts);
@@ -79,7 +87,7 @@ export const useAccountStore = defineStore('account', {
       name: string,
       accountNumber: string | null,
       agencyNumber: string | null,
-      description: string | null,
+      description: string | null
     ) {
       this.setLoading(true);
       try {
@@ -88,7 +96,7 @@ export const useAccountStore = defineStore('account', {
           name,
           accountNumber,
           agencyNumber,
-          description,
+          description
         );
         if (response.status === 200) {
           this.clearListAccount();
@@ -106,7 +114,9 @@ export const useAccountStore = defineStore('account', {
       try {
         const response = await deleteAccountService(accountId);
         if (response.status === 200) {
-          this.listAccount = this.listAccount.filter((item) => item.id !== accountId);
+          this.listAccount = this.listAccount.filter(
+            (item) => item.id !== accountId
+          );
           this.createSuccess(response.data.message);
         }
       } catch (error) {

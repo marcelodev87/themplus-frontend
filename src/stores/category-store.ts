@@ -22,7 +22,7 @@ export const useCategoryStore = defineStore('category', {
     setLoading(loading: boolean) {
       this.loadingCategory = loading;
     },
-    setListCategory(categories : Category[]) {
+    setListCategory(categories: Category[]) {
       categories.map((item) => this.listCategory.push(item));
     },
     createError(error: any) {
@@ -60,7 +60,10 @@ export const useCategoryStore = defineStore('category', {
     async createCategory(category: string, type: 'Entrada' | 'Saída') {
       this.setLoading(true);
       try {
-        const response = await createCategoryService(category, type.toLowerCase());
+        const response = await createCategoryService(
+          category,
+          type.toLowerCase()
+        );
         if (response.status === 201) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
@@ -72,13 +75,17 @@ export const useCategoryStore = defineStore('category', {
         this.setLoading(false);
       }
     },
-    async updateCategory(id: string, category: string, type: 'Entrada' | 'Saída') {
+    async updateCategory(
+      id: string,
+      category: string,
+      type: 'Entrada' | 'Saída'
+    ) {
       this.setLoading(true);
       try {
         const response = await updateCategoryService(
           id,
           category,
-          type.toLowerCase(),
+          type.toLowerCase()
         );
         if (response.status === 200) {
           this.clearListCategory();
@@ -96,7 +103,9 @@ export const useCategoryStore = defineStore('category', {
       try {
         const response = await deleteCategoryService(categoryId);
         if (response.status === 200) {
-          this.listCategory = this.listCategory.filter((item) => item.id !== categoryId);
+          this.listCategory = this.listCategory.filter(
+            (item) => item.id !== categoryId
+          );
           this.createSuccess(response.data.message);
         }
       } catch (error) {

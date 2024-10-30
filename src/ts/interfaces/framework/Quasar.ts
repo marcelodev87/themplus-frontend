@@ -6,11 +6,11 @@ export interface QuasarTable {
   required?: boolean;
   align?: 'center' | 'left' | 'right';
   sortable?: boolean;
-  sort?: ((a: any, b: any, rowA: any, rowB: any) => number);
+  sort?: (a: any, b: any, rowA: any, rowB: any) => number;
   headerClasses?: string;
 }
 
-export interface QuasarSelect<T>{
-  label: string
-  value: T
+export interface QuasarSelect<T> {
+  label: string;
+  value: T;
 }

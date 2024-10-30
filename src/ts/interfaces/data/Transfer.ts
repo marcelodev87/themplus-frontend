@@ -1,6 +1,6 @@
 import { QuasarSelect } from '../framework/Quasar';
 
-export interface DataTransfer{
+export interface DataTransfer {
   value: number | null;
   date: string | null;
   account_out: QuasarSelect<string> | null;
