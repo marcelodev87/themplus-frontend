@@ -26,7 +26,6 @@ export const updateCategoryService = (
   id: string,
   name: string,
   type: string,
-  enterpriseId: string,
 ): Promise<{
     status: number;
     data: {
@@ -34,7 +33,7 @@ export const updateCategoryService = (
       message: string;
     };
 }> => api.put(`${baseUrl}/`, {
-  id, name, type, enterpriseId,
+  id, name, type,
 });
 
 export const deleteCategoryService = (

@@ -72,14 +72,13 @@ export const useCategoryStore = defineStore('category', {
         this.setLoading(false);
       }
     },
-    async updateCategory(id: string, category: string, type: 'Entrada' | 'Saída', enterpriseId: string) {
+    async updateCategory(id: string, category: string, type: 'Entrada' | 'Saída') {
       this.setLoading(true);
       try {
         const response = await updateCategoryService(
           id,
           category,
           type.toLowerCase(),
-          enterpriseId,
         );
         if (response.status === 200) {
           this.clearListCategory();

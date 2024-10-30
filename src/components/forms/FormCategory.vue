@@ -122,7 +122,6 @@ const update = async () => {
       categoryEdit.value?.id ?? '',
       dataCategory.name,
       dataCategory.type,
-      categoryEdit.value?.enterprise_id ?? '',
     );
     clear();
     closeModeEdit();
