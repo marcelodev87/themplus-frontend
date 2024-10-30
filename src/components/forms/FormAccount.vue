@@ -5,6 +5,8 @@ import {
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataAccount } from 'src/ts/interfaces/data/Account';
+import { useAccountStore } from 'src/stores/account-store';
+import { storeToRefs } from 'pinia';
 import { banks } from 'src/utils/banks';
 
 defineOptions({
@@ -17,6 +19,11 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:open': [void];
 }>();
+
+const {
+  createAccount, deleteAccount, updateAccount,
+} = useAccountStore();
+const { loadingAccount } = storeToRefs(useAccountStore());
 
 const selectedBank = ref<string | null>(null);
 const dataAccount = reactive<DataAccount>({
@@ -33,20 +40,23 @@ const open = computed({
 });
 
 const checkData = (): {status: boolean, message?: string} => {
-  if (dataAccount.name.trim() === '') {
+  if (selectedBank.value === null && dataAccount.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do banco' };
-  }
-  if (dataAccount.agency.trim() === '') {
-    return { status: false, message: 'Deve ser informado a agência' };
   }
   if (dataAccount.account.trim() === '') {
     return { status: false, message: 'Deve ser informada a conta' };
   }
   return { status: true };
 };
-const save = () => {
+const save = async () => {
   const check = checkData();
   if (check.status) {
+    await createAccount(
+      selectedBank.value !== null ? selectedBank.value : dataAccount.name,
+      dataAccount.account,
+      dataAccount.agency.trim() === '' ? null : dataAccount.agency,
+      dataAccount.description.trim() === '' ? null : dataAccount.description,
+    );
     emit('update:open');
   } else {
     Notify.create({
@@ -57,10 +67,10 @@ const save = () => {
 };
 const clear = (): void => {
   Object.assign(dataAccount, {
-    name: null,
-    agency: null,
-    account: null,
-    description: null,
+    name: '',
+    agency: '',
+    account: '',
+    description: '',
   });
 };
 const filterBank = (val: string, update: (arg0: { (): void; (): void; }) => void) => {
@@ -140,11 +150,11 @@ watch(open, () => {
                 </template>
             </q-input>
             <q-input
-              v-model="dataAccount.agency"
+              v-model="dataAccount.account"
               bg-color="white"
               label-color="black"
               filled
-              label="Digite a agência do banco"
+              label="Digite a conta do banco"
               dense
               input-class="text-black"
             >
@@ -153,11 +163,11 @@ watch(open, () => {
                 </template>
             </q-input>
             <q-input
-              v-model="dataAccount.account"
+              v-model="dataAccount.agency"
               bg-color="white"
               label-color="black"
               filled
-              label="Digite a conta do banco"
+              label="Digite a agência do banco"
               dense
               input-class="text-black"
             >
@@ -191,16 +201,15 @@ watch(open, () => {
             size="md"
             flat
             @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
           <q-btn
             @click="save"
+            :loading="loadingAccount"
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
             unelevated
             no-caps
           />

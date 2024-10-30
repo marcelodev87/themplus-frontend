@@ -14,7 +14,7 @@ export const getAccountsService = (): Promise<{
 export const createAccountService = (
   name: string,
   accountNumber: string,
-  agencyNumber: string,
+  agencyNumber: string | null,
   description: string | null,
 ): Promise<{
     status: number;
