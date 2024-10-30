@@ -34,13 +34,14 @@ module.exports = {
     // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
     // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
-    'airbnb-base'
-
+    'airbnb-base',
+    'plugin:prettier/recommended'
   ],
 
   plugins: [
     // required to apply rules which need type information
     '@typescript-eslint',
+    'prettier',
 
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-files
     // required to lint *.vue files
@@ -63,7 +64,7 @@ module.exports = {
 
   // add your custom rules here
   rules: {
-
+    'prettier/prettier': 'error',
     'no-plusplus': 'off',
     'no-param-reassign': 'off',
     'no-void': 'off',

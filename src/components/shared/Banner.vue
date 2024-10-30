@@ -20,20 +20,20 @@ const slideBanner = ref<number>(1);
         :autoplay="4000"
         transition-prev="slide-right"
         transition-next="slide-left"
-        class="q-pa-none "
+        class="q-pa-none"
       >
         <q-carousel-slide :name="1" class="q-pa-none">
           <q-img
             src="/images/banner/frame-1.png"
             fit="contain"
-            class="img-banner "
+            class="img-banner"
           />
         </q-carousel-slide>
         <q-carousel-slide :name="2" class="q-pa-none">
           <q-img
             src="/images/banner/frame-2.png"
             fit="contain"
-            class="img-banner "
+            class="img-banner"
           />
         </q-carousel-slide>
       </q-carousel>

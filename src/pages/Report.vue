@@ -11,16 +11,16 @@ defineOptions({
 const showReportFilterMonth = ref<boolean>(false);
 const showReportFilterPeriod = ref<boolean>(false);
 
-const openReportFilterMonth = ():void => {
+const openReportFilterMonth = (): void => {
   showReportFilterMonth.value = true;
 };
-const closeReportFilterMonth = ():void => {
+const closeReportFilterMonth = (): void => {
   showReportFilterMonth.value = false;
 };
-const openReportFilterPeriod = ():void => {
+const openReportFilterPeriod = (): void => {
   showReportFilterPeriod.value = true;
 };
-const closeReportFilterPeriod = ():void => {
+const closeReportFilterPeriod = (): void => {
   showReportFilterPeriod.value = false;
 };
 </script>
@@ -28,7 +28,7 @@ const closeReportFilterPeriod = ():void => {
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-5">
-        <TitlePage title="Gerenciamento de relatórios"/>
+        <TitlePage title="Gerenciamento de relatórios" />
       </div>
       <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn

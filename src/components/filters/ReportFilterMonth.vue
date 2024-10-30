@@ -21,7 +21,7 @@ const dataFilter = reactive({
   mode: 'enter_out' as 'enter_out' | 'out' | 'enter',
 });
 
-const optionsMode = reactive<{label: string, value: string}[]>([
+const optionsMode = reactive<{ label: string; value: string }[]>([
   {
     label: 'Entrada',
     value: 'enter',
@@ -41,7 +41,7 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-const checkData = (): {status: boolean, message?: string} => {
+const checkData = (): { status: boolean; message?: string } => {
   if (dataFilter.month === null) {
     return { status: false, message: 'Deve ser selecionado o mês' };
   }
@@ -80,58 +80,58 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Filtro de relatório por mês"/>
+        <TitlePage title="Filtro de relatório por mês" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form class="q-gutter-y-sm">
           <q-select
-              v-model="dataFilter.month"
-              :options="months"
-              label="Mês"
-              filled
-              clearable
-              dense
-              options-dense
-              map-options
-              bg-color="white"
-              label-color="black"
-              class="full-width"
-            >
+            v-model="dataFilter.month"
+            :options="months"
+            label="Mês"
+            filled
+            clearable
+            dense
+            options-dense
+            map-options
+            bg-color="white"
+            label-color="black"
+            class="full-width"
+          >
             <template v-slot:prepend>
-                <q-icon name="calendar_today" color="black" size="20px" />
+              <q-icon name="calendar_today" color="black" size="20px" />
             </template>
           </q-select>
           <q-select
-              v-model="dataFilter.year"
-              :options="['2020','2021','2022','2023','2024']"
-              label="Ano"
-              filled
-              clearable
-              dense
-              options-dense
-              map-options
-              bg-color="white"
-              label-color="black"
-              class="full-width"
-            >
+            v-model="dataFilter.year"
+            :options="['2020', '2021', '2022', '2023', '2024']"
+            label="Ano"
+            filled
+            clearable
+            dense
+            options-dense
+            map-options
+            bg-color="white"
+            label-color="black"
+            class="full-width"
+          >
             <template v-slot:prepend>
-                <q-icon name="calendar_today" color="black" size="20px" />
+              <q-icon name="calendar_today" color="black" size="20px" />
             </template>
           </q-select>
           <q-select
-              v-model="dataFilter.mode"
-              :options="optionsMode"
-              label="Tipo de movimentação"
-              filled
-              dense
-              options-dense
-              map-options
-              bg-color="white"
-              label-color="black"
-              class="full-width"
-            >
+            v-model="dataFilter.mode"
+            :options="optionsMode"
+            label="Tipo de movimentação"
+            filled
+            dense
+            options-dense
+            map-options
+            bg-color="white"
+            label-color="black"
+            class="full-width"
+          >
             <template v-slot:prepend>
-                <q-icon name="tune" color="black" size="20px" />
+              <q-icon name="tune" color="black" size="20px" />
             </template>
           </q-select>
         </q-form>

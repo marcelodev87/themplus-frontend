@@ -4,7 +4,5 @@ defineOptions({
 });
 </script>
 <template>
-  <section>
-    Error Not Found
-  </section>
+  <section>Error Not Found</section>
 </template>

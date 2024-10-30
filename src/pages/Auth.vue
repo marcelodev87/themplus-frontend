@@ -17,7 +17,9 @@ const handleChangeRender = (value: RenderAuth) => {
 };
 </script>
 <template>
-  <section class="container-view row justify-center items-center background-auth">
+  <section
+    class="container-view row justify-center items-center background-auth"
+  >
     <Login
       v-if="render == 'login'"
       @update:change-render="handleChangeRender"
@@ -26,9 +28,6 @@ const handleChangeRender = (value: RenderAuth) => {
       v-else-if="render == 'register'"
       @update:change-render="handleChangeRender"
     />
-    <Reset
-      v-else
-      @update:change-render="handleChangeRender"
-    />
+    <Reset v-else @update:change-render="handleChangeRender" />
   </section>
 </template>

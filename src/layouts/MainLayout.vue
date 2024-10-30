@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormPerfil from 'src/components/forms/FormPerfil.vue';
+import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -11,6 +12,7 @@ defineOptions({
 const route = useRoute();
 const leftDrawerOpen = ref<boolean>(false);
 const showFormPerfil = ref<boolean>(false);
+const showFormEnterprise = ref<boolean>(false);
 
 const menuList = computed(() => [
   {
@@ -82,21 +84,30 @@ const menuList = computed(() => [
 ]);
 
 const isActive = (routeName: string) => route.name === routeName;
-const openFormPerfil = ():void => {
+const openFormPerfil = (): void => {
   showFormPerfil.value = true;
 };
-const closeFormPerfil = ():void => {
+const closeFormPerfil = (): void => {
   showFormPerfil.value = false;
+};
+const openFormEnterprise = (): void => {
+  showFormEnterprise.value = true;
+};
+const closeFormEnterprise = (): void => {
+  showFormEnterprise.value = false;
 };
 </script>
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header class="bg-grey-2">
-      <Navbar @update:open-form-perfil="openFormPerfil"/>
+      <Navbar
+        @update:open-form-perfil="openFormPerfil"
+        @update:open-form-enterprise="openFormEnterprise"
+      />
     </q-header>
 
     <q-drawer
-    show-if-above
+      show-if-above
       v-model="leftDrawerOpen"
       side="left"
       behavior="desktop"
@@ -105,38 +116,30 @@ const closeFormPerfil = ():void => {
       :width="200"
     >
       <q-list>
-          <q-item
-           v-for="(menuItem, index) in menuList"
-           :key="index"
-            clickable
-            :to="{ name: menuItem.name }"
-            :active="isActive(menuItem.name)"
-            active-class=" text-red text-bold"
-          >
-          <!-- <q-item
-           v-for="(menuItem, index) in menuList"
-           :key="index"
-            clickable
-            v-ripple
-            :to="{ name: menuItem.name }"
-            :active="isActive(menuItem.name)"
-            active-class="bg-red-10 text-white"
-          > -->
-            <q-item-section avatar>
-              <q-icon :name="menuItem.icon" />
-            </q-item-section>
-            <q-item-section>
-              {{ menuItem.label }}
-            </q-item-section>
-          </q-item>
+        <q-item
+          v-for="(menuItem, index) in menuList"
+          :key="index"
+          clickable
+          :to="{ name: menuItem.name }"
+          :active="isActive(menuItem.name)"
+          active-class=" text-red text-bold"
+        >
+          <q-item-section avatar>
+            <q-icon :name="menuItem.icon" />
+          </q-item-section>
+          <q-item-section>
+            {{ menuItem.label }}
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
     <q-page-container>
       <router-view />
-      <FormPerfil
-        :open="showFormPerfil"
-        @update:open="closeFormPerfil"
+      <FormPerfil :open="showFormPerfil" @update:open="closeFormPerfil" />
+      <FormEnterprise
+        :open="showFormEnterprise"
+        @update:open="closeFormEnterprise"
       />
     </q-page-container>
   </q-layout>

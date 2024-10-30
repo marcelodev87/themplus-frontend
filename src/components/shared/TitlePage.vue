@@ -4,7 +4,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  title: string
+  title: string;
 }>();
 </script>
 

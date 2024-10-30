@@ -32,11 +32,15 @@ const clear = (): void => {
 const changeRender = (render: RenderAuth): void => {
   emit('update:changeRender', render);
 };
-const checkData = (): {status: boolean, message?: string} => {
+const checkData = (): { status: boolean; message?: string } => {
   if (dataLogin.email.trim() === '') {
     return { status: false, message: 'Deve ser informado o e-mail' };
   }
-  if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(dataLogin.email.trim())) {
+  if (
+    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+      dataLogin.email.trim()
+    )
+  ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
   if (dataLogin.password.trim() === '') {
@@ -64,14 +68,10 @@ onMounted(() => {
 <template>
   <q-form class="form-auth rounded-borders bg-grey-3">
     <div class="row justify-center items-center q-pa-md">
-      <q-img
-        src="/images/logo.png"
-        spinner-color="white"
-        width="250px"
-      />
+      <q-img src="/images/logo.png" spinner-color="white" width="250px" />
     </div>
     <div class="q-px-md">
-      <TitleAuth title="Faça seu login"/>
+      <TitleAuth title="Faça seu login" />
     </div>
     <div class="q-pb-sm q-px-md q-gutter-y-sm">
       <q-input

@@ -11,6 +11,7 @@ const { setToken, setUser } = useAuthStore();
 
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
+  'update:openFormEnterprise': [void];
 }>();
 
 const router = useRouter();
@@ -21,6 +22,11 @@ const openPerfil = () => {
   (dropdown.value as any).hide();
   emit('update:openFormPerfil');
 };
+const openEnterprise = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dropdown.value as any).hide();
+  emit('update:openFormEnterprise');
+};
 const logout = (): void => {
   setToken(null);
   setUser(null);
@@ -30,36 +36,44 @@ const logout = (): void => {
 
 <template>
   <q-btn-dropdown
-  rounded
-  flat
-  class="q-pa-none q-px-md q-mr-sm text-black"
-  label="Carlos Davi"
-  ref="dropdown"
->
-  <template v-slot:label>
-    <div class="row items-center no-wrap q-pa-none">
-      <q-avatar class="q-ml-sm">
-        <q-img size="sm" src="/images/user.png" />
-      </q-avatar>
-    </div>
-  </template>
-  <q-list>
-    <q-item clickable v-ripple @click="openPerfil">
-      <q-item-section avatar>
-        <q-avatar>
-          <q-icon name="account_circle" />
+    rounded
+    flat
+    class="q-pa-none q-px-md q-mr-sm text-black"
+    label="Carlos Davi"
+    ref="dropdown"
+  >
+    <template v-slot:label>
+      <div class="row items-center no-wrap q-pa-none">
+        <q-avatar class="q-ml-sm">
+          <q-img size="sm" src="/images/user.png" />
         </q-avatar>
-      </q-item-section>
-      <q-item-section>Perfil</q-item-section>
-    </q-item>
-    <q-item clickable v-ripple @click="logout">
-      <q-item-section avatar>
-        <q-avatar>
-          <q-icon name="logout" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>Sair</q-item-section>
-    </q-item>
-  </q-list>
-</q-btn-dropdown>
+      </div>
+    </template>
+    <q-list>
+      <q-item clickable v-ripple @click="openEnterprise">
+        <q-item-section avatar>
+          <q-avatar>
+            <q-icon name="groups" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>Organização</q-item-section>
+      </q-item>
+      <q-item clickable v-ripple @click="openPerfil">
+        <q-item-section avatar>
+          <q-avatar>
+            <q-icon name="account_circle" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>Perfil</q-item-section>
+      </q-item>
+      <q-item clickable v-ripple @click="logout">
+        <q-item-section avatar>
+          <q-avatar>
+            <q-icon name="logout" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>Sair</q-item-section>
+      </q-item>
+    </q-list>
+  </q-btn-dropdown>
 </template>

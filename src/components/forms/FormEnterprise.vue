@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
-import { DataUser } from 'src/ts/interfaces/data/User';
-import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import { DataPerfil } from 'src/ts/interfaces/data/User';
 
 defineOptions({
-  name: 'FormUser',
+  name: 'FormEnterprise',
 });
 
 const props = defineProps<{
@@ -16,26 +15,12 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const dataUser = reactive<DataUser>({
+const dataPerfil = reactive<DataPerfil>({
   name: '',
-  position: 'common_user',
   email: '',
-  password: '',
-  confirmPassword: '',
-});
-const optionsUserPositions = reactive([
-  {
-    label: 'Administrador',
-    value: 'admin',
-  },
-  {
-    label: 'Usuário comum',
-    value: 'common_user',
-  },
-]);
-const selectedUserPosition = ref<QuasarSelect<string>>({
-  label: 'Usuário comum',
-  value: 'common_user',
+  passwordActual: '',
+  passwordNew: '',
+  passwordNewConfirm: '',
 });
 
 const open = computed({
@@ -44,36 +29,55 @@ const open = computed({
 });
 
 const checkData = (): { status: boolean; message?: string } => {
-  if (dataUser.name.trim() === '') {
+  if (dataPerfil.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do usuário' };
   }
-  if (dataUser.name.trim().length < 2) {
+  if (dataPerfil.name.trim().length < 2) {
     return {
       status: false,
       message: 'Nome de usuário deve ter mais de 2 caracteres',
     };
   }
-  if (dataUser.email.trim() === '') {
+  if (dataPerfil.email.trim() === '') {
     return { status: false, message: 'Deve ser informado o e-mail do usuário' };
   }
   if (
     !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-      dataUser.email.trim()
+      dataPerfil.email.trim()
     )
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
-  if (dataUser.password.trim() === '') {
-    return { status: false, message: 'Deve ser informado a senha do usuário' };
-  }
-  if (dataUser.password.trim().length < 7) {
-    return {
-      status: false,
-      message: 'A senha deve conter mais de 7 caracteres',
-    };
-  }
-  if (dataUser.password.trim() !== dataUser.confirmPassword.trim()) {
-    return { status: false, message: 'As senhas não coincidem' };
+  if (dataPerfil.passwordActual.trim().length > 0) {
+    if (dataPerfil.passwordActual.trim() === '') {
+      return {
+        status: false,
+        message: 'Deve ser informado a senha do usuário',
+      };
+    }
+    if (dataPerfil.passwordActual.trim().length < 7) {
+      return {
+        status: false,
+        message: 'A senha deve conter mais de 7 caracteres',
+      };
+    }
+    if (dataPerfil.passwordNew.trim() === '') {
+      return {
+        status: false,
+        message: 'Deve ser informado a nova senha do usuário',
+      };
+    }
+    if (dataPerfil.passwordActual.trim().length < 7) {
+      return {
+        status: false,
+        message: 'A nova senha deve conter mais de 7 caracteres',
+      };
+    }
+    if (
+      dataPerfil.passwordNew.trim() !== dataPerfil.passwordNewConfirm.trim()
+    ) {
+      return { status: false, message: 'As novas senhas não coincidem' };
+    }
   }
   return { status: true };
 };
@@ -89,7 +93,7 @@ const save = () => {
   }
 };
 const clear = (): void => {
-  Object.assign(dataUser, {
+  Object.assign(dataPerfil, {
     name: '',
     position: 'common_user',
     email: '',
@@ -98,6 +102,15 @@ const clear = (): void => {
   });
 };
 
+watch(
+  () => dataPerfil.passwordActual,
+  (password) => {
+    if (password.trim().length === 0) {
+      dataPerfil.passwordNew = '';
+      dataPerfil.passwordNewConfirm = '';
+    }
+  }
+);
 watch(open, () => {
   if (open.value) {
     clear();
@@ -108,16 +121,16 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastre um usuário" />
+        <TitlePage title="Dados do perfil" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
           <q-input
-            v-model="dataUser.name"
+            v-model="dataPerfil.name"
             bg-color="white"
             label-color="black"
             filled
-            label="Digite o nome do usuário"
+            label="Nome do usuário"
             dense
             input-class="text-black"
           >
@@ -126,11 +139,11 @@ watch(open, () => {
             </template>
           </q-input>
           <q-input
-            v-model="dataUser.email"
+            v-model="dataPerfil.email"
             bg-color="white"
             label-color="black"
             filled
-            label="Digite o e-mail do usuário"
+            label="E-mail do usuário"
             dense
             input-class="text-black"
           >
@@ -138,28 +151,12 @@ watch(open, () => {
               <q-icon name="mail" color="black" size="20px" />
             </template>
           </q-input>
-          <q-select
-            filled
-            v-model="selectedUserPosition"
-            label="Selecione o cargo"
-            :options="optionsUserPositions"
-            bg-color="white"
-            dense
-            options-dense
-            map-options
-            label-color="black"
-            class="full-width"
-          >
-            <template v-slot:prepend>
-              <q-icon name="supervisor_account" color="black" size="20px" />
-            </template>
-          </q-select>
           <q-input
-            v-model="dataUser.password"
+            v-model="dataPerfil.passwordActual"
             bg-color="white"
             label-color="black"
             filled
-            label="Digite a senha do usuário"
+            label="Digite a senha do atual"
             dense
             input-class="text-black"
           >
@@ -168,13 +165,28 @@ watch(open, () => {
             </template>
           </q-input>
           <q-input
-            v-model="dataUser.confirmPassword"
+            v-model="dataPerfil.passwordNew"
             bg-color="white"
             label-color="black"
             filled
-            label="Confirme a senha do usuário"
+            label="Digite a nova senha"
             dense
             input-class="text-black"
+            :readonly="dataPerfil.passwordActual.trim().length == 0"
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataPerfil.passwordNewConfirm"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Confirme a nova senha"
+            dense
+            input-class="text-black"
+            :readonly="dataPerfil.passwordActual.trim().length == 0"
           >
             <template v-slot:prepend>
               <q-icon name="lock" color="black" size="20px" />

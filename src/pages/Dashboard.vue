@@ -40,25 +40,25 @@ const cardsDashboard = computed<Array<ICardDashboard>>(() => [
     <main>
       <div class="row justify-between q-gutter-sm q-pa-md">
         <CardDashboard
-            v-for="(item, index) in cardsDashboard"
-            :key="index"
-            :src="item.src"
-            :title="item.title"
-            :value-title="item.valueTitle"
-            :width="item.width"
-            :color="item.color"
-          />
+          v-for="(item, index) in cardsDashboard"
+          :key="index"
+          :src="item.src"
+          :title="item.title"
+          :value-title="item.valueTitle"
+          :width="item.width"
+          :color="item.color"
+        />
       </div>
       <div class="row justify-between q-gutter-sm q-pa-md">
         <CardDashboard
-            v-for="(item, index) in cardsDashboard"
-            :key="index"
-            :src="item.src"
-            :title="item.title"
-            :value-title="item.valueTitle"
-            :width="item.width"
-            :color="item.color"
-          />
+          v-for="(item, index) in cardsDashboard"
+          :key="index"
+          :src="item.src"
+          :title="item.title"
+          :value-title="item.valueTitle"
+          :width="item.width"
+          :color="item.color"
+        />
       </div>
     </main>
   </section>

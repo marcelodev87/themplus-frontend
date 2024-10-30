@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
-  computed, reactive, watch,
-} from 'vue';
+import { computed, reactive, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataEntry } from 'src/ts/interfaces/data/Entry';
@@ -70,7 +68,7 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-const checkData = (): {status: boolean, message?: string} => {
+const checkData = (): { status: boolean; message?: string } => {
   if (dataEntry.category == null) {
     return { status: false, message: 'O categoria deve ser selecionada' };
   }
@@ -80,8 +78,16 @@ const checkData = (): {status: boolean, message?: string} => {
   if (dataEntry.account == null) {
     return { status: false, message: 'A conta deve ser selecionada' };
   }
-  if (dataEntry.date?.trim() === '' || !(/^(0?[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).test(dataEntry.date ?? '')) {
-    return { status: false, message: 'A data deve ser informada no formato dd/mm/yyyy' };
+  if (
+    dataEntry.date?.trim() === '' ||
+    !/^(0?[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/.test(
+      dataEntry.date ?? ''
+    )
+  ) {
+    return {
+      status: false,
+      message: 'A data deve ser informada no formato dd/mm/yyyy',
+    };
   }
   return { status: true };
 };
@@ -117,9 +123,9 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic border-green">
       <q-card-section class="q-pa-none">
-        <TitlePage :title="props.title"/>
+        <TitlePage :title="props.title" />
       </q-card-section>
-      <q-card-section class="q-pa-sm ">
+      <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
           <q-select
             v-model="dataEntry.category"
@@ -176,11 +182,25 @@ watch(open, () => {
             dense
           >
             <template v-slot:prepend>
-              <q-icon name="calendar_today" class="cursor-pointer" color="black" size="20px">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+              <q-icon
+                name="calendar_today"
+                class="cursor-pointer"
+                color="black"
+                size="20px"
+              >
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
                   <q-date v-model="dataEntry.date" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Fechar" color="primary" flat />
+                      <q-btn
+                        v-close-popup
+                        label="Fechar"
+                        color="primary"
+                        flat
+                      />
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -197,12 +217,12 @@ watch(open, () => {
             clearable
           >
             <template v-slot:prepend>
-              <q-icon name="attach_file" color="black" size="20px"/>
+              <q-icon name="attach_file" color="black" size="20px" />
             </template>
           </q-file>
           <q-input
             v-model="dataEntry.description"
-            style="height: 150px; max-height: 130px;"
+            style="height: 150px; max-height: 130px"
             bg-color="white"
             label-color="black"
             filled

@@ -15,10 +15,10 @@ const showFormTransfer = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 
-const openFormCategory = ():void => {
+const openFormCategory = (): void => {
   showFormCategory.value = true;
 };
-const closeFormCategory = ():void => {
+const closeFormCategory = (): void => {
   showFormCategory.value = false;
 };
 const openFormTransfer = (): void => {
@@ -27,16 +27,16 @@ const openFormTransfer = (): void => {
 const closeFormTransfer = (): void => {
   showFormTransfer.value = false;
 };
-const openFormEntry = ():void => {
+const openFormEntry = (): void => {
   showFormEntry.value = true;
 };
-const closeFormEntry = ():void => {
+const closeFormEntry = (): void => {
   showFormEntry.value = false;
 };
-const openFormOut = ():void => {
+const openFormOut = (): void => {
   showFormOut.value = true;
 };
-const closeFormOut = ():void => {
+const closeFormOut = (): void => {
   showFormOut.value = false;
 };
 </script>
@@ -44,7 +44,7 @@ const closeFormOut = ():void => {
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-5">
-        <TitlePage title="Gerenciamento de movimentações"/>
+        <TitlePage title="Gerenciamento de movimentações" />
       </div>
       <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn
@@ -84,14 +84,8 @@ const closeFormOut = ():void => {
       </div>
     </header>
     <main>
-      <FormCategory
-        :open="showFormCategory"
-        @update:open="closeFormCategory"
-      />
-      <FormTransfer
-        :open="showFormTransfer"
-        @update:open="closeFormTransfer"
-      />
+      <FormCategory :open="showFormCategory" @update:open="closeFormCategory" />
+      <FormTransfer :open="showFormTransfer" @update:open="closeFormTransfer" />
       <FormEntry
         :open="showFormEntry"
         title="Registre uma entrada"

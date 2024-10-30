@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
-  computed, reactive, ref, watch,
-} from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataDepartment } from 'src/ts/interfaces/data/Department';
@@ -28,9 +26,12 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-const checkData = (): {status: boolean, message?: string} => {
+const checkData = (): { status: boolean; message?: string } => {
   if (dataDepartment.name.trim() === '') {
-    return { status: false, message: 'Deve ser informado o nome do departamento' };
+    return {
+      status: false,
+      message: 'Deve ser informado o nome do departamento',
+    };
   }
   return { status: true };
 };
@@ -62,24 +63,24 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastre um departamento"/>
+        <TitlePage title="Cadastre um departamento" />
       </q-card-section>
-      <q-card-section class="q-pa-sm ">
+      <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
-            <q-input
-              v-model="dataDepartment.name"
-              bg-color="white"
-              label-color="black"
-              filled
-              label="Digite o nome do departamento"
-              dense
-              input-class="text-black"
-              :readonly="selectedBank !== null"
-            >
-                <template v-slot:prepend>
-                    <q-icon name="groups" color="black" size="20px" />
-                </template>
-            </q-input>
+          <q-input
+            v-model="dataDepartment.name"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite o nome do departamento"
+            dense
+            input-class="text-black"
+            :readonly="selectedBank !== null"
+          >
+            <template v-slot:prepend>
+              <q-icon name="groups" color="black" size="20px" />
+            </template>
+          </q-input>
         </q-form>
       </q-card-section>
       <q-card-actions align="right">

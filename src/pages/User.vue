@@ -9,10 +9,10 @@ defineOptions({
 
 const showFormUser = ref<boolean>(false);
 
-const openFormUser = ():void => {
+const openFormUser = (): void => {
   showFormUser.value = true;
 };
-const closeFormUser = ():void => {
+const closeFormUser = (): void => {
   showFormUser.value = false;
 };
 </script>
@@ -20,7 +20,7 @@ const closeFormUser = ():void => {
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-6">
-        <TitlePage title="Gerenciamento de usuários"/>
+        <TitlePage title="Gerenciamento de usuários" />
       </div>
       <div class="col-6 row items-center justify-end q-gutter-x-sm">
         <q-btn
@@ -35,10 +35,7 @@ const closeFormUser = ():void => {
       </div>
     </header>
     <main>
-      <FormUser
-        :open="showFormUser"
-        @update:open="closeFormUser"
-      />
+      <FormUser :open="showFormUser" @update:open="closeFormUser" />
     </main>
   </section>
 </template>

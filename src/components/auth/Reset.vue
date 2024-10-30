@@ -17,7 +17,7 @@ const emit = defineEmits<{
 const { loadingAuth } = storeToRefs(useAuthStore());
 
 const emailRegex = ref<RegExp>(
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 );
 const dataReset = reactive({
   email: '' as string,
@@ -26,7 +26,8 @@ const dataReset = reactive({
 const checkDataReset = () => {
   if (dataReset.email.trim() === '') {
     return { status: false, message: 'Campo de e-mail não pode ser vazio' };
-  } if (!emailRegex.value.test(dataReset.email)) {
+  }
+  if (!emailRegex.value.test(dataReset.email)) {
     return { status: false, message: 'O e-mail não é válido' };
   }
   return { status: true };
@@ -64,14 +65,10 @@ onMounted(() => {
 <template>
   <q-form class="form-auth rounded-borders bg-grey-3">
     <div class="row justify-center items-center q-pa-md">
-      <q-img
-        src="/images/logo.png"
-        spinner-color="white"
-        width="250px"
-      />
+      <q-img src="/images/logo.png" spinner-color="white" width="250px" />
     </div>
     <div class="q-px-md">
-      <TitleAuth title="Recupere sua senha"/>
+      <TitleAuth title="Recupere sua senha" />
     </div>
     <div class="q-pb-sm q-px-md q-gutter-y-sm">
       <q-input

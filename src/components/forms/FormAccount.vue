@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
-  computed, reactive, ref, watch,
-} from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { Account, DataAccount } from 'src/ts/interfaces/data/Account';
@@ -21,9 +19,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const {
-  createAccount, deleteAccount, updateAccount,
-} = useAccountStore();
+const { createAccount, deleteAccount, updateAccount } = useAccountStore();
 const { loadingAccount } = storeToRefs(useAccountStore());
 
 const selectedBank = ref<string | null>(null);
@@ -40,7 +36,7 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-const checkData = (): {status: boolean, message?: string} => {
+const checkData = (): { status: boolean; message?: string } => {
   if (selectedBank.value === null && dataAccount.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do banco' };
   }
@@ -53,7 +49,7 @@ const save = async () => {
       selectedBank.value !== null ? selectedBank.value : dataAccount.name,
       dataAccount.account.trim() === '' ? null : dataAccount.account,
       dataAccount.agency.trim() === '' ? null : dataAccount.agency,
-      dataAccount.description.trim() === '' ? null : dataAccount.description,
+      dataAccount.description.trim() === '' ? null : dataAccount.description
     );
     emit('update:open');
   } else {
@@ -72,7 +68,10 @@ const clear = (): void => {
   });
   selectedBank.value = null;
 };
-const filterBank = (val: string, update: (arg0: { (): void; (): void; }) => void) => {
+const filterBank = (
+  val: string,
+  update: (arg0: { (): void; (): void }) => void
+) => {
   if (val === '') {
     update(() => {
       optionsBanks.value = banks;
@@ -82,7 +81,9 @@ const filterBank = (val: string, update: (arg0: { (): void; (): void; }) => void
 
   update(() => {
     const needle = val.toLowerCase();
-    optionsBanks.value = banks.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+    optionsBanks.value = banks.filter(
+      (v) => v.toLowerCase().indexOf(needle) > -1
+    );
   });
 };
 const update = async () => {
@@ -93,7 +94,7 @@ const update = async () => {
       selectedBank.value !== null ? selectedBank.value : dataAccount.name,
       dataAccount.account.trim() === '' ? null : dataAccount.account,
       dataAccount.agency.trim() === '' ? null : dataAccount.agency,
-      dataAccount.description.trim() === '' ? null : dataAccount.description,
+      dataAccount.description.trim() === '' ? null : dataAccount.description
     );
     emit('update:open');
   } else {
@@ -135,9 +136,9 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Registre uma entrada"/>
+        <TitlePage title="Registre uma entrada" />
       </q-card-section>
-      <q-card-section class="q-pa-sm ">
+      <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
           <q-select
             filled
@@ -168,58 +169,58 @@ watch(open, () => {
               </q-item>
             </template>
           </q-select>
-            <q-input
-              v-model="dataAccount.name"
-              bg-color="white"
-              label-color="black"
-              filled
-              label="Digite o nome do banco"
-              dense
-              input-class="text-black"
-              :readonly="selectedBank !== null"
-            >
-                <template v-slot:prepend>
-                    <q-icon name="assured_workload" color="black" size="20px" />
-                </template>
-            </q-input>
-            <q-input
-              v-model="dataAccount.account"
-              bg-color="white"
-              label-color="black"
-              filled
-              label="Digite a conta do banco"
-              dense
-              input-class="text-black"
-            >
-                <template v-slot:prepend>
-                    <q-icon name="info" color="black" size="20px" />
-                </template>
-            </q-input>
-            <q-input
-              v-model="dataAccount.agency"
-              bg-color="white"
-              label-color="black"
-              filled
-              label="Digite a agência do banco"
-              dense
-              input-class="text-black"
-            >
-                <template v-slot:prepend>
-                    <q-icon name="info" color="black" size="20px" />
-                </template>
-            </q-input>
-            <q-input
-                v-model="dataAccount.description"
-                style="height: 150px; max-height: 130px;"
-                bg-color="white"
-                label-color="black"
-                filled
-                label="Digite uma descrição"
-                dense
-                input-class="text-black no-resize"
-                type="textarea"
-                class="no-resize"
-            >
+          <q-input
+            v-model="dataAccount.name"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite o nome do banco"
+            dense
+            input-class="text-black"
+            :readonly="selectedBank !== null"
+          >
+            <template v-slot:prepend>
+              <q-icon name="assured_workload" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataAccount.account"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite a conta do banco"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="info" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataAccount.agency"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite a agência do banco"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="info" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataAccount.description"
+            style="height: 150px; max-height: 130px"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite uma descrição"
+            dense
+            input-class="text-black no-resize"
+            type="textarea"
+            class="no-resize"
+          >
             <template v-slot:prepend>
               <q-icon name="description" color="black" size="20px" />
             </template>

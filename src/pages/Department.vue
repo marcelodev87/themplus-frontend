@@ -9,19 +9,18 @@ defineOptions({
 
 const showFormDepartment = ref<boolean>(false);
 
-const openFormDepartment = ():void => {
+const openFormDepartment = (): void => {
   showFormDepartment.value = true;
 };
-const closeFormDepartment = ():void => {
+const closeFormDepartment = (): void => {
   showFormDepartment.value = false;
 };
-
 </script>
 <template>
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-5">
-        <TitlePage title="Gerenciamento de departamentos"/>
+        <TitlePage title="Gerenciamento de departamentos" />
       </div>
       <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn

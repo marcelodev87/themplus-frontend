@@ -4,12 +4,12 @@ defineOptions({
 });
 
 const props = defineProps<{
-  title: string
+  title: string;
 }>();
 </script>
 
 <template>
-  <q-toolbar >
+  <q-toolbar>
     <q-toolbar-title>{{ props.title }}</q-toolbar-title>
   </q-toolbar>
 </template>

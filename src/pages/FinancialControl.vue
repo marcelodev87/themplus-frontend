@@ -7,6 +7,6 @@ defineOptions({
 </script>
 <template>
   <section>
-    <TitlePage title="Controle contábil"/>
+    <TitlePage title="Controle contábil" />
   </section>
 </template>

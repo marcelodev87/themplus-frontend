@@ -10,7 +10,7 @@ defineOptions({
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-5">
-        <TitlePage title="Painel de notícias"/>
+        <TitlePage title="Painel de notícias" />
       </div>
     </header>
     <main>

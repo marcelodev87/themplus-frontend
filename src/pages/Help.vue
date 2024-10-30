@@ -7,6 +7,6 @@ defineOptions({
 </script>
 <template>
   <section>
-    <TitlePage title="Painel de ajuda"/>
+    <TitlePage title="Painel de ajuda" />
   </section>
 </template>

@@ -13,22 +13,22 @@ const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 
-const openFormEntry = ():void => {
+const openFormEntry = (): void => {
   showFormEntry.value = true;
 };
-const closeFormEntry = ():void => {
+const closeFormEntry = (): void => {
   showFormEntry.value = false;
 };
-const openFormOut = ():void => {
+const openFormOut = (): void => {
   showFormOut.value = true;
 };
-const closeFormOut = ():void => {
+const closeFormOut = (): void => {
   showFormOut.value = false;
 };
-const openFormCategory = ():void => {
+const openFormCategory = (): void => {
   showFormCategory.value = true;
 };
-const closeFormCategory = ():void => {
+const closeFormCategory = (): void => {
   showFormCategory.value = false;
 };
 </script>
@@ -36,7 +36,7 @@ const closeFormCategory = ():void => {
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div class="col-5">
-        <TitlePage title="Gerenciamento de agendamentos"/>
+        <TitlePage title="Gerenciamento de agendamentos" />
       </div>
       <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn
@@ -80,10 +80,7 @@ const closeFormCategory = ():void => {
         mode="schedule"
         @update:open="closeFormOut"
       />
-      <FormCategory
-        :open="showFormCategory"
-        @update:open="closeFormCategory"
-      />
+      <FormCategory :open="showFormCategory" @update:open="closeFormCategory" />
     </main>
   </section>
 </template>

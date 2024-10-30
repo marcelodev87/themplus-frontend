@@ -38,30 +38,46 @@ const clear = (): void => {
 const changeRender = (render: RenderAuth): void => {
   emit('update:changeRender', render);
 };
-const checkData = (): {status: boolean, message?: string} => {
+const checkData = (): { status: boolean; message?: string } => {
   if (dataRegister.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome de usuário' };
   }
   if (dataRegister.name.trim().length < 3) {
-    return { status: false, message: 'O nome de usuário deve conter pelo menos 3 caracteres' };
+    return {
+      status: false,
+      message: 'O nome de usuário deve conter pelo menos 3 caracteres',
+    };
   }
   if (dataRegister.email.trim() === '') {
     return { status: false, message: 'Deve ser informado o e-mail' };
   }
-  if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(dataRegister.email.trim())) {
+  if (
+    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+      dataRegister.email.trim()
+    )
+  ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
   if (dataRegister.nameEnterprise.trim() === '') {
-    return { status: false, message: 'Deve ser informado o nome de sua organização' };
+    return {
+      status: false,
+      message: 'Deve ser informado o nome de sua organização',
+    };
   }
   if (dataRegister.nameEnterprise.trim().length < 3) {
-    return { status: false, message: 'O nome da organização deve conter pelo menos 3 caracteres' };
+    return {
+      status: false,
+      message: 'O nome da organização deve conter pelo menos 3 caracteres',
+    };
   }
   if (dataRegister.password.trim() === '') {
     return { status: false, message: 'Deve ser informado uma senha' };
   }
   if (dataRegister.password.trim().length < 8) {
-    return { status: false, message: 'A senha deve conter pelo menos 8 caracteres' };
+    return {
+      status: false,
+      message: 'A senha deve conter pelo menos 8 caracteres',
+    };
   }
   if (dataRegister.confirmPassword.trim() !== dataRegister.password.trim()) {
     return { status: false, message: 'As senhas devem ser iguais' };
@@ -75,7 +91,7 @@ const register = async () => {
       dataRegister.name,
       dataRegister.email,
       dataRegister.password,
-      dataRegister.nameEnterprise,
+      dataRegister.nameEnterprise
     );
   } else {
     Notify.create({
@@ -93,14 +109,10 @@ onMounted(() => {
 <template>
   <q-form class="form-auth rounded-borders bg-grey-3">
     <div class="row justify-center items-center q-pa-md">
-      <q-img
-        src="/images/logo.png"
-        spinner-color="white"
-        width="250px"
-      />
+      <q-img src="/images/logo.png" spinner-color="white" width="250px" />
     </div>
     <div class="q-px-md">
-      <TitleAuth title="Faça seu cadastro"/>
+      <TitleAuth title="Faça seu cadastro" />
     </div>
     <div class="q-pb-sm q-px-md q-gutter-y-sm">
       <q-input
