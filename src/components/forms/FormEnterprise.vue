@@ -136,8 +136,18 @@ const update = async (password: string) => {
     await updateEnterprise({
       id: dataEnterprise.id,
       name: dataEnterprise.name,
-      cnpj: selectedIdentifier.value === 'CNPJ' ? dataEnterprise.cnpj : null,
-      cpf: selectedIdentifier.value === 'CPF' ? dataEnterprise.cpf : null,
+      cnpj:
+        selectedIdentifier.value === 'CNPJ'
+          ? dataEnterprise.cnpj.trim() === ''
+            ? null
+            : dataEnterprise.cnpj
+          : null,
+      cpf:
+        selectedIdentifier.value === 'CPF'
+          ? dataEnterprise.cpf.trim() === ''
+            ? null
+            : dataEnterprise.cpf
+          : null,
       cep: dataEnterprise.cep.trim() === '' ? null : dataEnterprise.cep,
       state: dataEnterprise.state.trim() === '' ? null : dataEnterprise.state,
       city: dataEnterprise.city.trim() === '' ? null : dataEnterprise.city,
@@ -210,10 +220,18 @@ watch(
     loading.value = false;
   }
 );
-watch([() => dataEnterprise.cpf, () => dataEnterprise.cnpj], ([cpf, cnpj]) => {
-  dataEnterprise.cpf = cpf.replace(/\D/g, '');
-  dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
-});
+watch(
+  [
+    () => dataEnterprise.cpf,
+    () => dataEnterprise.cnpj,
+    () => dataEnterprise.phone,
+  ],
+  ([cpf, cnpj, phone]) => {
+    dataEnterprise.cpf = cpf.replace(/\D/g, '');
+    dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
+    dataEnterprise.phone = phone.replace(/\D/g, '');
+  }
+);
 watch(
   selectedIdentifier,
   (identifier: string) => {
@@ -275,6 +293,7 @@ watch(open, () => {
             label="Telefone da organização"
             dense
             input-class="text-black"
+            maxlength="15"
           >
             <template v-slot:prepend>
               <q-icon name="call" color="black" size="20px" />
