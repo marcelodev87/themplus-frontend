@@ -17,6 +17,7 @@ export const searchCep = async (
     gia: string;
     ddd: string;
     siafi: string;
+    estado: string;
   };
 }> => {
   const url = `${baseUrl}/${cep}/json/`;

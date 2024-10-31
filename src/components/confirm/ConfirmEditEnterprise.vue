@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
+import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'ConfirmEditEnterprise',
@@ -9,9 +11,11 @@ defineOptions({
 
 const emit = defineEmits<{
   'update:open': [void];
+  'update:ok': [password: string];
 }>();
 
-const loading = ref<boolean>(false);
+const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
+
 const dataPassword = reactive({
   passwordActual: '' as string,
   passwordConfirm: '' as string,
@@ -32,7 +36,7 @@ const checkData = (): { status: boolean; message?: string } => {
 const save = () => {
   const check = checkData();
   if (check.status) {
-    emit('update:open');
+    emit('update:ok', dataPassword.passwordActual);
   } else {
     Notify.create({
       message: check.message,
@@ -109,10 +113,10 @@ onMounted(() => {
         />
         <q-btn
           @click="save"
+          :loading="loadingEnterprise"
           color="primary"
           label="Salvar"
           size="md"
-          :loading="loading"
           unelevated
           no-caps
         />

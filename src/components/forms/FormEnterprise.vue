@@ -4,6 +4,8 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataEnterprise } from 'src/ts/interfaces/data/Enterprise';
 import { searchCep } from 'src/services/cep-service';
+import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { storeToRefs } from 'pinia';
 import ConfirmEditEnterprise from '../confirm/ConfirmEditEnterprise.vue';
 
 defineOptions({
@@ -17,23 +19,26 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { updateEnterprise, getEnterprise } = useEnterpriseStore();
+const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
+
 const selectedIdentifier = ref<string>('CPF');
 const showConfirmEditEnterprise = ref<boolean>(false);
-const cep = ref<string>('');
 const loading = ref<boolean>(false);
 const dataEnterprise = reactive<DataEnterprise>({
+  id: '',
   name: '',
   email: '',
   cnpj: '',
   cpf: '',
+  cep: '',
   state: '',
   city: '',
+  neighborhood: '',
   address: '',
-  phone: '',
   numberAddress: '',
   complement: '',
-  neighborhood: '',
-  cep: '',
+  phone: '',
 });
 const optionsIdentifier = reactive<string[]>(['CNPJ', 'CPF']);
 
@@ -41,7 +46,6 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
-
 const checkData = (): { status: boolean; message?: string } => {
   if (dataEnterprise.name.trim() === '') {
     return {
@@ -63,11 +67,41 @@ const checkData = (): { status: boolean; message?: string } => {
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
+  if (
+    dataEnterprise.cep.trim() !== '' &&
+    dataEnterprise.cep.trim().length !== 8
+  ) {
+    return {
+      status: false,
+      message: 'Informe um CEP válido',
+    };
+  }
+  if (
+    selectedIdentifier.value === 'CPF' &&
+    dataEnterprise.cpf.trim() !== '' &&
+    dataEnterprise.cpf.trim().length !== 11
+  ) {
+    return {
+      status: false,
+      message: 'Informe um CPF válido',
+    };
+  }
+  if (
+    selectedIdentifier.value === 'CNPJ' &&
+    dataEnterprise.cnpj.trim() !== '' &&
+    dataEnterprise.cnpj.trim().length !== 14
+  ) {
+    return {
+      status: false,
+      message: 'Informe um CNPJ válido',
+    };
+  }
 
   return { status: true };
 };
 const clear = (): void => {
   Object.assign(dataEnterprise, {
+    id: '',
     name: '',
     cnpj: '',
     cpf: '',
@@ -81,7 +115,6 @@ const clear = (): void => {
     neighborhood: '',
     cep: '',
   });
-  cep.value = '';
 };
 const openConfirmEditEnterprise = (): void => {
   const check = checkData();
@@ -97,29 +130,111 @@ const openConfirmEditEnterprise = (): void => {
 const closeConfirmEditEnterprise = (): void => {
   showConfirmEditEnterprise.value = false;
 };
+const update = async (password: string) => {
+  const check = checkData();
+  if (check.status) {
+    await updateEnterprise({
+      id: dataEnterprise.id,
+      name: dataEnterprise.name,
+      cnpj: selectedIdentifier.value === 'CNPJ' ? dataEnterprise.cnpj : null,
+      cpf: selectedIdentifier.value === 'CPF' ? dataEnterprise.cpf : null,
+      cep: dataEnterprise.cep.trim() === '' ? null : dataEnterprise.cep,
+      state: dataEnterprise.state.trim() === '' ? null : dataEnterprise.state,
+      city: dataEnterprise.city.trim() === '' ? null : dataEnterprise.city,
+      neighborhood:
+        dataEnterprise.neighborhood.trim() === ''
+          ? null
+          : dataEnterprise.neighborhood,
+      address:
+        dataEnterprise.address.trim() === '' ? null : dataEnterprise.address,
+      complement:
+        dataEnterprise.complement.trim() === ''
+          ? null
+          : dataEnterprise.complement,
+      number_address:
+        dataEnterprise.numberAddress.trim() === ''
+          ? null
+          : dataEnterprise.numberAddress,
+      email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
+      phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
+      password,
+    });
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+const fetchEnterprise = async () => {
+  const response = await getEnterprise();
+  if (response?.status === 200) {
+    Object.assign(dataEnterprise, {
+      id: enterprise.value?.id,
+      name: enterprise.value?.name,
+      cnpj: enterprise.value?.cnpj ?? '',
+      cpf: enterprise.value?.cpf ?? '',
+      state: enterprise.value?.state ?? '',
+      city: enterprise.value?.city ?? '',
+      address: enterprise.value?.address ?? '',
+      email: enterprise.value?.email ?? '',
+      phone: enterprise.value?.phone ?? '',
+      numberAddress: enterprise.value?.number_address ?? '',
+      complement: enterprise.value?.complement ?? '',
+      neighborhood: enterprise.value?.neighborhood ?? '',
+      cep: enterprise.value?.cep ?? '',
+    });
+  }
+};
 
 watch(
-  cep,
-  async () => {
-    if (cep.value.trim().length > 7) {
+  () => dataEnterprise.cep,
+  async (cep: string) => {
+    dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
+    if (cep.trim().length === 8) {
       loading.value = true;
-      const response = await searchCep(cep.value);
-      console.log('response ', response);
-      loading.value = false;
+      const response = await searchCep(cep);
+      if (response.status === 200) {
+        dataEnterprise.neighborhood = response.data.bairro;
+        dataEnterprise.state = response.data.estado;
+        dataEnterprise.city = response.data.localidade;
+        dataEnterprise.address = response.data.logradouro;
+      }
+    } else {
+      dataEnterprise.neighborhood = '';
+      dataEnterprise.state = '';
+      dataEnterprise.city = '';
+      dataEnterprise.address = '';
+    }
+    loading.value = false;
+  }
+);
+watch([() => dataEnterprise.cpf, () => dataEnterprise.cnpj], ([cpf, cnpj]) => {
+  dataEnterprise.cpf = cpf.replace(/\D/g, '');
+  dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
+});
+watch(
+  selectedIdentifier,
+  (identifier: string) => {
+    if (identifier === 'CPF') {
+      dataEnterprise.cnpj = '';
+    } else {
+      dataEnterprise.cpf = '';
     }
   },
   { immediate: true }
 );
-
 watch(open, () => {
   if (open.value) {
     clear();
     closeConfirmEditEnterprise();
+    fetchEnterprise();
   }
 });
 </script>
 <template>
-  <q-dialog v-model="open">
+  <q-dialog v-model="open" persistent>
     <q-card v-if="!showConfirmEditEnterprise" class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
         <TitlePage title="Dados da organização" />
@@ -191,6 +306,7 @@ watch(open, () => {
               dense
               input-class="text-black"
               class="input-divider"
+              maxlength="14"
             >
               <template v-slot:prepend>
                 <q-icon name="badge" color="black" size="20px" />
@@ -206,6 +322,7 @@ watch(open, () => {
               dense
               input-class="text-black"
               class="input-divider"
+              maxlength="11"
             >
               <template v-slot:prepend>
                 <q-icon name="badge" color="black" size="20px" />
@@ -213,15 +330,15 @@ watch(open, () => {
             </q-input>
           </div>
           <q-input
-            v-model="cep"
+            v-model="dataEnterprise.cep"
             bg-color="white"
             label-color="black"
             filled
             label="Digite o CEP"
             dense
             input-class="text-black"
-            :debounce="500"
             :loading="loading"
+            maxlength="8"
           >
             <template v-slot:prepend>
               <q-icon name="search" color="black" size="20px" />
@@ -317,47 +434,6 @@ watch(open, () => {
               </template>
             </q-input>
           </div>
-          <!-- <q-input
-            v-model="dataPerfil.passwordActual"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Digite a senha do atual"
-            dense
-            input-class="text-black"
-          >
-            <template v-slot:prepend>
-              <q-icon name="lock" color="black" size="20px" />
-            </template>
-          </q-input>
-          <q-input
-            v-model="dataPerfil.passwordNew"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Digite a nova senha"
-            dense
-            input-class="text-black"
-            :readonly="dataPerfil.passwordActual.trim().length == 0"
-          >
-            <template v-slot:prepend>
-              <q-icon name="lock" color="black" size="20px" />
-            </template>
-          </q-input>
-          <q-input
-            v-model="dataPerfil.passwordNewConfirm"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Confirme a nova senha"
-            dense
-            input-class="text-black"
-            :readonly="dataPerfil.passwordActual.trim().length == 0"
-          >
-            <template v-slot:prepend>
-              <q-icon name="lock" color="black" size="20px" />
-            </template>
-          </q-input> -->
         </q-form>
       </q-card-section>
       <q-card-actions align="right">
@@ -368,7 +444,6 @@ watch(open, () => {
             size="md"
             flat
             @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
@@ -377,15 +452,27 @@ watch(open, () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
+            :loading="loadingEnterprise"
             unelevated
             no-caps
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingEnterprise"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
+
     <div v-else>
-      <ConfirmEditEnterprise @update:open="closeConfirmEditEnterprise" />
+      <ConfirmEditEnterprise
+        @update:open="closeConfirmEditEnterprise"
+        @update:ok="update"
+      />
     </div>
   </q-dialog>
 </template>

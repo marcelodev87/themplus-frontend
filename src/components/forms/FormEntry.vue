@@ -121,7 +121,7 @@ watch(open, () => {
 </script>
 <template>
   <q-dialog v-model="open" persistent>
-    <q-card class="bg-grey-2 form-basic border-green">
+    <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
         <TitlePage :title="props.title" />
       </q-card-section>
