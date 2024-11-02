@@ -7,4 +7,5 @@ export interface DataEntry {
   account: QuasarSelect<string> | null;
   description: string | null;
   file: File | null;
+  type: string;
 }

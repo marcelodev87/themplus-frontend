@@ -19,12 +19,13 @@ const emit = defineEmits<{
 }>();
 
 const dataEntry = reactive<DataEntry>({
-  category: null,
+  type: 'entrada',
   value: null,
-  date: null,
-  account: null,
   description: '',
   file: null,
+  category: null,
+  account: null,
+  date: null,
 });
 const options = reactive([
   {
