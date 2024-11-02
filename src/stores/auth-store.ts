@@ -4,7 +4,12 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import { User } from 'src/ts/interfaces/data/User';
-import { doLoginService, doRegisterService } from 'src/services/auth-service';
+import {
+  doLoginService,
+  doRegisterService,
+  updateUserDataService,
+  updateUserPasswordService,
+} from 'src/services/auth-service';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -35,8 +40,8 @@ export const useAuthStore = defineStore('auth', {
       });
     },
     async doLogin(email: string, password: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await doLoginService(email, password);
         if (response.status === 200) {
           this.setUser(response.data.user);
@@ -57,6 +62,7 @@ export const useAuthStore = defineStore('auth', {
     ) {
       this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await doRegisterService(
           name,
           email,
@@ -72,6 +78,43 @@ export const useAuthStore = defineStore('auth', {
             type: 'positive',
           });
           this.router.push({ name: 'admin-feed' });
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateUserData(name: string, email: string) {
+      try {
+        this.setLoading(true);
+        const response = await updateUserDataService(name, email);
+        if (response.status === 200) {
+          this.setUser(response.data.user);
+
+          Notify.create({
+            message: response.data.message,
+            type: 'positive',
+          });
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateUserPassword(passwordActual: string, passwordNew: string) {
+      try {
+        this.setLoading(true);
+        const response = await updateUserPasswordService(
+          passwordActual,
+          passwordNew
+        );
+        if (response.status === 200) {
+          Notify.create({
+            message: response.data.message,
+            type: 'positive',
+          });
         }
       } catch (error) {
         this.createError(error);
