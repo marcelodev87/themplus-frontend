@@ -5,25 +5,44 @@ import { Notify } from 'quasar';
 import {
   createMovementService,
   deleteMovementService,
+  getMovementInformationsService,
   getMovementsService,
   updateMovementService,
 } from 'src/services/movement-service';
+import {
+  AccountInformation,
+  CategoryInformation,
+} from 'src/ts/interfaces/data/InformationsForms';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 
 export const useMovementStore = defineStore('movement', {
   state: () => ({
     loadingMovement: false as boolean,
     listMovement: [] as Movement[],
+    listCategory: [] as CategoryInformation[],
+    listAccount: [] as AccountInformation[],
   }),
   actions: {
     clearListMovement() {
       this.listMovement.splice(0, this.listMovement.length);
+    },
+    clearCategories() {
+      this.listCategory.splice(0, this.listCategory.length);
+    },
+    clearAccounts() {
+      this.listAccount.splice(0, this.listAccount.length);
     },
     setLoading(loading: boolean) {
       this.loadingMovement = loading;
     },
     setListMovement(movements: Movement[]) {
       movements.map((item) => this.listMovement.push(item));
+    },
+    setListCategory(categories: CategoryInformation[]) {
+      categories.map((item) => this.listCategory.push(item));
+    },
+    setListAccount(accounts: AccountInformation[]) {
+      accounts.map((item) => this.listAccount.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -50,6 +69,22 @@ export const useMovementStore = defineStore('movement', {
         if (response.status === 200) {
           this.clearListMovement();
           this.setListMovement(response.data.movements);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getMovementInformations() {
+      this.setLoading(true);
+      try {
+        this.clearCategories();
+        this.clearAccounts();
+        const response = await getMovementInformationsService();
+        if (response.status === 200) {
+          this.setListAccount(response.data.accounts);
+          this.setListCategory(response.data.categories);
         }
       } catch (error) {
         this.createError(error);

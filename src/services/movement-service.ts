@@ -1,4 +1,8 @@
 import { api } from 'boot/axios';
+import {
+  AccountInformation,
+  CategoryInformation,
+} from 'src/ts/interfaces/data/InformationsForms';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 
 const baseUrl = 'movement';
@@ -10,6 +14,14 @@ export const getMovementsService = (): Promise<{
     message: string;
   };
 }> => api.get(`${baseUrl}`);
+
+export const getMovementInformationsService = (): Promise<{
+  status: number;
+  data: {
+    categories: CategoryInformation[];
+    accounts: AccountInformation[];
+  };
+}> => api.get(`${baseUrl}/informations`);
 
 export const createMovementService = (
   type: string,
