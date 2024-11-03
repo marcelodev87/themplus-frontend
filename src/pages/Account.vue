@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, reactive, ref } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Account } from 'src/ts/interfaces/data/Account';
+import FormTransfer from 'src/components/forms/FormTransfer.vue';
 
 defineOptions({
   name: 'Account',
@@ -17,6 +18,7 @@ const { loadingAccount, listAccount } = storeToRefs(useAccountStore());
 const showFormAccount = ref<boolean>(false);
 const selectedDataEdit = ref<Account | null>(null);
 const filterAccount = ref<string>('');
+const showFormTransfer = ref<boolean>(false);
 const columnsAccount = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -67,6 +69,12 @@ const closeFormAccount = (): void => {
   showFormAccount.value = false;
   selectedDataEdit.value = null;
 };
+const openFormTransfer = (): void => {
+  showFormTransfer.value = true;
+};
+const closeFormTransfer = (): void => {
+  showFormTransfer.value = false;
+};
 const handleEdit = (account: Account) => {
   selectedDataEdit.value = account;
   openFormAccount();
@@ -82,7 +90,15 @@ onMounted(async () => {
       <div class="col-6">
         <TitlePage title="Gerenciamento de contas" />
       </div>
-      <div class="col-6 row items-center justify-end">
+      <div class="col-6 row items-center justify-end q-gutter-x-sm">
+        <q-btn
+          @click="openFormTransfer"
+          color="blue-8"
+          icon-right="assured_workload"
+          label="Transferências"
+          unelevated
+          no-caps
+        />
         <q-btn
           @click="openFormAccount"
           color="blue-8"
@@ -152,6 +168,7 @@ onMounted(async () => {
         :data-edit="selectedDataEdit"
         @update:open="closeFormAccount"
       />
+      <FormTransfer :open="showFormTransfer" @update:open="closeFormTransfer" />
     </main>
   </section>
 </template>

@@ -3,29 +3,91 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormCategory from 'src/components/forms/FormCategory.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
-import FormTransfer from 'src/components/forms/FormTransfer.vue';
-import { ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useMovementStore } from 'src/stores/movement-store';
+import { storeToRefs } from 'pinia';
+import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 
 defineOptions({
   name: 'Movement',
 });
 
+const { getMovements } = useMovementStore();
+const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
+
 const showFormCategory = ref<boolean>(false);
-const showFormTransfer = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
+const filterMovement = ref<string>('');
+const columnsMovement = reactive<QuasarTable[]>([
+  {
+    name: 'name',
+    label: 'Banco',
+    field: 'account.name',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'account_number',
+    label: 'Conta',
+    field: 'account.account_number',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'agency_number',
+    label: 'Agência',
+    field: 'account.agency_number',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'category',
+    label: 'Categoria',
+    field: 'category.name',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'value',
+    label: 'Valor',
+    field: 'value',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'date_movement',
+    label: 'Data de movimentação',
+    field: 'date_movement',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'description',
+    label: 'Descrição',
+    field: 'description',
+    align: 'left',
+  },
+  {
+    name: 'receipt',
+    label: 'Arquivo',
+    field: 'receipt',
+    align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Ação',
+    field: 'action',
+    align: 'right',
+  },
+]);
 
 const openFormCategory = (): void => {
   showFormCategory.value = true;
 };
 const closeFormCategory = (): void => {
   showFormCategory.value = false;
-};
-const openFormTransfer = (): void => {
-  showFormTransfer.value = true;
-};
-const closeFormTransfer = (): void => {
-  showFormTransfer.value = false;
 };
 const openFormEntry = (): void => {
   showFormEntry.value = true;
@@ -39,6 +101,24 @@ const openFormOut = (): void => {
 const closeFormOut = (): void => {
   showFormOut.value = false;
 };
+const handleEdit = (movement: Movement) => {
+  console.log('edit', movement);
+};
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+const exclude = (id: string) => {
+  console.log('Excluir', id);
+};
+
+onMounted(async () => {
+  await getMovements();
+});
 </script>
 <template>
   <section>
@@ -53,14 +133,6 @@ const closeFormOut = (): void => {
           color="black"
           icon-right="settings"
           label="Categorias"
-          unelevated
-          no-caps
-        />
-        <q-btn
-          @click="openFormTransfer"
-          color="blue-8"
-          icon-right="assured_workload"
-          label="Transferências"
           unelevated
           no-caps
         />
@@ -84,8 +156,80 @@ const closeFormOut = (): void => {
       </div>
     </header>
     <main>
+      <q-table
+        :rows="loadingMovement ? [] : listMovement"
+        :columns="columnsMovement"
+        :filter="filterMovement"
+        :loading="loadingMovement"
+        style="max-height: 400px"
+        flat
+        bordered
+        dense
+        row-key="name"
+        no-data-label="Nenhuma conta para mostrar"
+      >
+        <template v-slot:top>
+          <span class="text-subtitle2">Lista de categorias</span>
+          <q-space />
+          <q-input filled v-model="filterMovement" dense label="Pesquisar">
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
+        <template v-slot:body="props">
+          <q-tr
+            :props="props"
+            style="height: 28px"
+            :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+          >
+            <q-td key="name" :props="props" class="text-left">
+              {{ props.row.account.name }}
+            </q-td>
+            <q-td key="account_number" :props="props" class="text-left">
+              {{ props.row.account.account_number }}
+            </q-td>
+            <q-td key="agency_number" :props="props" class="text-left">
+              {{ props.row.account.agency_number }}
+            </q-td>
+            <q-td key="category" :props="props" class="text-left">
+              {{ props.row.category.name }}
+            </q-td>
+            <q-td key="value" :props="props" class="text-left">
+              {{ `R$ ${props.row.value}` }}
+            </q-td>
+            <q-td key="date_movement" :props="props" class="text-left">
+              {{ formatDate(props.row.date_movement) }}
+            </q-td>
+            <q-td key="description" :props="props" class="text-left">
+              {{ props.row.description }}
+            </q-td>
+            <q-td key="receipt" :props="props" class="text-left">
+              {{ props.row.receipt }}
+            </q-td>
+            <q-td key="action" :props="props">
+              <q-btn
+                @click="handleEdit(props.row)"
+                size="sm"
+                flat
+                round
+                color="black"
+                icon="edit"
+                :disabled="false"
+              />
+              <q-btn
+                @click="exclude(props.row)"
+                size="sm"
+                flat
+                round
+                color="red"
+                icon="delete"
+              />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
       <FormCategory :open="showFormCategory" @update:open="closeFormCategory" />
-      <FormTransfer :open="showFormTransfer" @update:open="closeFormTransfer" />
       <FormEntry
         :open="showFormEntry"
         title="Registre uma entrada"
