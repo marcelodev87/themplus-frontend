@@ -66,9 +66,9 @@ const clear = (): void => {
   Object.assign(dataEntry, {
     category: null,
     value: '',
-    date: null,
+    date: '',
     account: null,
-    description: null,
+    description: '',
     file: null,
   });
 };
@@ -108,7 +108,7 @@ watch(
 watch(open, async () => {
   if (open.value) {
     clear();
-    await getMovementInformations('entrada');
+    await getMovementInformations(dataEntry.type);
   }
 });
 </script>

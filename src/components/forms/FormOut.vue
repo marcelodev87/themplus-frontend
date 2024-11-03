@@ -4,6 +4,8 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataOut } from 'src/ts/interfaces/data/Out';
 import { MovementOrSchedule } from 'src/ts/types/FormMode';
+import { useMovementStore } from 'src/stores/movement-store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'FormOut',
@@ -18,50 +20,19 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { getMovementInformations, createMovement } = useMovementStore();
+const { loadingMovement, listAccount, listCategory } =
+  storeToRefs(useMovementStore());
+
 const dataOut = reactive<DataOut>({
-  category: null,
-  value: null,
-  date: null,
-  account: null,
+  type: 'saída',
+  value: '',
   description: '',
   file: null,
+  category: null,
+  account: null,
+  date: '',
 });
-const options = reactive([
-  {
-    label: 'Categoria 1',
-    value: 'krhbfrhb',
-  },
-  {
-    label: 'Categoria 2',
-    value: 'vrbyvbryuv',
-  },
-  {
-    label: 'Categoria 3',
-    value: 'rgurhguirgnb',
-  },
-  {
-    label: 'Categoria 4',
-    value: 'f34f84jhfm',
-  },
-]);
-const optionsConta = reactive([
-  {
-    label: 'Caixa',
-    value: 'krhbfrhb',
-  },
-  {
-    label: 'Banco do Brasil',
-    value: 'vrbyvbryuv',
-  },
-  {
-    label: 'Bradesco',
-    value: 'rgurhguirgnb',
-  },
-  {
-    label: 'Santander',
-    value: 'f34f84jhfm',
-  },
-]);
 
 const open = computed({
   get: () => props.open,
@@ -91,10 +62,29 @@ const checkData = (): { status: boolean; message?: string } => {
   }
   return { status: true };
 };
-const save = () => {
+const clear = (): void => {
+  Object.assign(dataOut, {
+    category: null,
+    value: '',
+    date: '',
+    account: null,
+    description: '',
+    file: null,
+  });
+};
+const save = async () => {
   const check = checkData();
   if (check.status) {
-    emit('update:open');
+    await createMovement(
+      dataOut.type,
+      dataOut.value,
+      dataOut.date,
+      dataOut.description,
+      dataOut.file,
+      dataOut.category ? dataOut.category.value : '',
+      dataOut.account ? dataOut.account.value : ''
+    );
+    clear();
   } else {
     Notify.create({
       message: check.message,
@@ -102,20 +92,24 @@ const save = () => {
     });
   }
 };
-const clear = (): void => {
-  Object.assign(dataOut, {
-    category: null,
-    value: null,
-    date: null,
-    account: null,
-    description: null,
-    file: null,
-  });
-};
 
-watch(open, () => {
+watch(
+  () => dataOut.value,
+  (value) => {
+    const regex = /^\d*\.?\d{0,2}$/;
+
+    if (!regex.test(value)) {
+      const formattedValue = parseFloat(value).toFixed(2);
+      // eslint-disable-next-line no-restricted-globals
+      dataOut.value = isNaN(Number(formattedValue)) ? '' : formattedValue;
+    }
+  }
+);
+
+watch(open, async () => {
   if (open.value) {
     clear();
+    await getMovementInformations(dataOut.type);
   }
 });
 </script>
@@ -129,7 +123,7 @@ watch(open, () => {
         <q-form class="q-gutter-y-sm">
           <q-select
             v-model="dataOut.category"
-            :options="options"
+            :options="listCategory"
             label="Categoria"
             filled
             clearable
@@ -159,7 +153,7 @@ watch(open, () => {
           </q-input>
           <q-select
             v-model="dataOut.account"
-            :options="optionsConta"
+            :options="listAccount"
             label="Conta"
             filled
             clearable
@@ -261,6 +255,14 @@ watch(open, () => {
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingMovement"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
   </q-dialog>
 </template>
