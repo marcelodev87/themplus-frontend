@@ -14,13 +14,14 @@ import {
   CategoryInformation,
 } from 'src/ts/interfaces/data/InformationsForms';
 import { Movement } from 'src/ts/interfaces/data/Movement';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useMovementStore = defineStore('movement', {
   state: () => ({
     loadingMovement: false as boolean,
     listMovement: [] as Movement[],
-    listCategory: [] as CategoryInformation[],
-    listAccount: [] as AccountInformation[],
+    listCategory: [] as QuasarSelect<string>[],
+    listAccount: [] as QuasarSelect<string>[],
   }),
   actions: {
     clearListMovement() {
@@ -39,10 +40,14 @@ export const useMovementStore = defineStore('movement', {
       movements.map((item) => this.listMovement.push(item));
     },
     setListCategory(categories: CategoryInformation[]) {
-      categories.map((item) => this.listCategory.push(item));
+      categories.map((item) =>
+        this.listCategory.push({ label: item.name, value: item.id })
+      );
     },
     setListAccount(accounts: AccountInformation[]) {
-      accounts.map((item) => this.listAccount.push(item));
+      accounts.map((item) =>
+        this.listAccount.push({ label: item.name, value: item.id })
+      );
     },
     createError(error: any) {
       let message = 'Error';
@@ -76,12 +81,12 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async getMovementInformations() {
+    async getMovementInformations(type: string) {
       this.setLoading(true);
       try {
         this.clearCategories();
         this.clearAccounts();
-        const response = await getMovementInformationsService();
+        const response = await getMovementInformationsService(type);
         if (response.status === 200) {
           this.setListAccount(response.data.accounts);
           this.setListCategory(response.data.categories);

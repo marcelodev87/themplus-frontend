@@ -15,13 +15,15 @@ export const getMovementsService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
-export const getMovementInformationsService = (): Promise<{
+export const getMovementInformationsService = (
+  type: string
+): Promise<{
   status: number;
   data: {
     categories: CategoryInformation[];
     accounts: AccountInformation[];
   };
-}> => api.get(`${baseUrl}/informations`);
+}> => api.get(`${baseUrl}/informations/${type}`);
 
 export const createMovementService = (
   type: string,

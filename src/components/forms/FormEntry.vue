@@ -4,6 +4,8 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataEntry } from 'src/ts/interfaces/data/Entry';
 import { MovementOrSchedule } from 'src/ts/types/FormMode';
+import { useMovementStore } from 'src/stores/movement-store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'FormEntry',
@@ -18,51 +20,19 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { getMovementInformations, createMovement } = useMovementStore();
+const { loadingMovement, listAccount, listCategory } =
+  storeToRefs(useMovementStore());
+
 const dataEntry = reactive<DataEntry>({
   type: 'entrada',
-  value: null,
+  value: '',
   description: '',
   file: null,
   category: null,
   account: null,
-  date: null,
+  date: '',
 });
-const options = reactive([
-  {
-    label: 'Categoria 1',
-    value: 'krhbfrhb',
-  },
-  {
-    label: 'Categoria 2',
-    value: 'vrbyvbryuv',
-  },
-  {
-    label: 'Categoria 3',
-    value: 'rgurhguirgnb',
-  },
-  {
-    label: 'Categoria 4',
-    value: 'f34f84jhfm',
-  },
-]);
-const optionsConta = reactive([
-  {
-    label: 'Caixa',
-    value: 'krhbfrhb',
-  },
-  {
-    label: 'Banco do Brasil',
-    value: 'vrbyvbryuv',
-  },
-  {
-    label: 'Bradesco',
-    value: 'rgurhguirgnb',
-  },
-  {
-    label: 'Santander',
-    value: 'f34f84jhfm',
-  },
-]);
 
 const open = computed({
   get: () => props.open,
@@ -92,10 +62,29 @@ const checkData = (): { status: boolean; message?: string } => {
   }
   return { status: true };
 };
-const save = () => {
+const clear = (): void => {
+  Object.assign(dataEntry, {
+    category: null,
+    value: '',
+    date: null,
+    account: null,
+    description: null,
+    file: null,
+  });
+};
+const save = async () => {
   const check = checkData();
   if (check.status) {
-    emit('update:open');
+    await createMovement(
+      dataEntry.type,
+      dataEntry.value,
+      dataEntry.date,
+      dataEntry.description,
+      dataEntry.file,
+      dataEntry.category ? dataEntry.category.value : '',
+      dataEntry.account ? dataEntry.account.value : ''
+    );
+    clear();
   } else {
     Notify.create({
       message: check.message,
@@ -103,20 +92,23 @@ const save = () => {
     });
   }
 };
-const clear = (): void => {
-  Object.assign(dataEntry, {
-    category: null,
-    value: null,
-    date: null,
-    account: null,
-    description: null,
-    file: null,
-  });
-};
 
-watch(open, () => {
+watch(
+  () => dataEntry.value,
+  (value) => {
+    const regex = /^\d*\.?\d{0,2}$/;
+
+    if (!regex.test(value)) {
+      const formattedValue = parseFloat(value).toFixed(2);
+      // eslint-disable-next-line no-restricted-globals
+      dataEntry.value = isNaN(Number(formattedValue)) ? '' : formattedValue;
+    }
+  }
+);
+watch(open, async () => {
   if (open.value) {
     clear();
+    await getMovementInformations('entrada');
   }
 });
 </script>
@@ -130,7 +122,7 @@ watch(open, () => {
         <q-form class="q-gutter-y-sm">
           <q-select
             v-model="dataEntry.category"
-            :options="options"
+            :options="listCategory"
             label="Categoria"
             filled
             clearable
@@ -160,7 +152,7 @@ watch(open, () => {
           </q-input>
           <q-select
             v-model="dataEntry.account"
-            :options="optionsConta"
+            :options="listAccount"
             label="Conta"
             filled
             clearable
@@ -247,7 +239,6 @@ watch(open, () => {
             size="md"
             flat
             @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
@@ -256,12 +247,20 @@ watch(open, () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
+            :loading="loadingMovement"
             unelevated
             no-caps
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingMovement"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
   </q-dialog>
 </template>
