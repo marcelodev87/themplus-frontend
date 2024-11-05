@@ -128,7 +128,7 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async updateCategory(
+    async updateMovement(
       id: string,
       type: string,
       value: string,

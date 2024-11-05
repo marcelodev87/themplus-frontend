@@ -6,6 +6,7 @@ import { DataEntry } from 'src/ts/interfaces/data/Entry';
 import { MovementOrSchedule } from 'src/ts/types/FormMode';
 import { useMovementStore } from 'src/stores/movement-store';
 import { storeToRefs } from 'pinia';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 
 defineOptions({
   name: 'FormEntry',
@@ -15,12 +16,14 @@ const props = defineProps<{
   open: boolean;
   title: string;
   mode: MovementOrSchedule;
+  dataEdit: Movement | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { getMovementInformations, createMovement } = useMovementStore();
+const { getMovementInformations, createMovement, updateMovement } =
+  useMovementStore();
 const { loadingMovement, listAccount, listCategory } =
   storeToRefs(useMovementStore());
 
@@ -92,6 +95,41 @@ const save = async () => {
     });
   }
 };
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateMovement(
+      props.dataEdit?.id ?? '',
+      dataEntry.type,
+      dataEntry.value,
+      dataEntry.date.replace(/\//g, '-'),
+      dataEntry.description,
+      dataEntry.file,
+      dataEntry.category ? dataEntry.category.value : '',
+      dataEntry.account ? dataEntry.account.value : ''
+    );
+    clear();
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+const mountEdit = (): void => {
+  Object.assign(dataEntry, {
+    category: listCategory.value.find(
+      (item) => item.value === props.dataEdit?.category_id
+    ),
+    value: props.dataEdit?.value ?? '',
+    date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
+    account: listAccount.value.find(
+      (item) => item.value === props.dataEdit?.account_id
+    ),
+    description: props.dataEdit?.description ?? '',
+    file: props.dataEdit?.receipt ?? null,
+  });
+};
 
 watch(
   () => dataEntry.value,
@@ -109,6 +147,9 @@ watch(open, async () => {
   if (open.value) {
     clear();
     await getMovementInformations(dataEntry.type);
+    if (props.dataEdit !== null) {
+      mountEdit();
+    }
   }
 });
 </script>
@@ -243,9 +284,20 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            v-if="props.dataEdit === null"
             @click="save"
             color="primary"
             label="Salvar"
+            size="md"
+            :loading="loadingMovement"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            color="primary"
+            label="Atualizar"
             size="md"
             :loading="loadingMovement"
             unelevated

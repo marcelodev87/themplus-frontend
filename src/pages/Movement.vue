@@ -13,13 +13,14 @@ defineOptions({
   name: 'Movement',
 });
 
-const { getMovements } = useMovementStore();
+const { getMovements, deleteMovement } = useMovementStore();
 const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
 
 const showFormCategory = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const filterMovement = ref<string>('');
+const selectedDataEdit = ref<Movement | null>(null);
 const columnsMovement = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -83,6 +84,9 @@ const columnsMovement = reactive<QuasarTable[]>([
   },
 ]);
 
+const clear = (): void => {
+  selectedDataEdit.value = null;
+};
 const openFormCategory = (): void => {
   showFormCategory.value = true;
 };
@@ -94,15 +98,22 @@ const openFormEntry = (): void => {
 };
 const closeFormEntry = (): void => {
   showFormEntry.value = false;
+  clear();
 };
 const openFormOut = (): void => {
   showFormOut.value = true;
 };
 const closeFormOut = (): void => {
   showFormOut.value = false;
+  clear();
 };
 const handleEdit = (movement: Movement) => {
-  console.log('edit', movement);
+  selectedDataEdit.value = movement;
+  if (selectedDataEdit.value.type === 'entrada') {
+    openFormEntry();
+  } else {
+    openFormOut();
+  }
 };
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -112,8 +123,8 @@ const formatDate = (dateString: string) => {
 
   return `${day}-${month}-${year}`;
 };
-const exclude = (id: string) => {
-  console.log('Excluir', id);
+const exclude = async (id: string) => {
+  await deleteMovement(id);
 };
 
 onMounted(async () => {
@@ -218,7 +229,7 @@ onMounted(async () => {
                 :disabled="false"
               />
               <q-btn
-                @click="exclude(props.row)"
+                @click="exclude(props.row.id)"
                 size="sm"
                 flat
                 round
@@ -232,12 +243,14 @@ onMounted(async () => {
       <FormCategory :open="showFormCategory" @update:open="closeFormCategory" />
       <FormEntry
         :open="showFormEntry"
+        :data-edit="selectedDataEdit"
         title="Registre uma entrada"
         mode="movement"
         @update:open="closeFormEntry"
       />
       <FormOut
         :open="showFormOut"
+        :data-edit="selectedDataEdit"
         title="Registre uma saída"
         mode="movement"
         @update:open="closeFormOut"
