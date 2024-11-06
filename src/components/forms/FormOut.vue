@@ -22,7 +22,8 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { getMovementInformations, createMovement } = useMovementStore();
+const { getMovementInformations, createMovement, updateMovement } =
+  useMovementStore();
 const { loadingMovement, listAccount, listCategory } =
   storeToRefs(useMovementStore());
 
@@ -87,12 +88,49 @@ const save = async () => {
       dataOut.account ? dataOut.account.value : ''
     );
     clear();
+    emit('update:open');
   } else {
     Notify.create({
       message: check.message,
       type: 'negative',
     });
   }
+};
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateMovement(
+      props.dataEdit?.id ?? '',
+      dataOut.type,
+      dataOut.value,
+      dataOut.date.replace(/\//g, '-'),
+      dataOut.description,
+      dataOut.file,
+      dataOut.category ? dataOut.category.value : '',
+      dataOut.account ? dataOut.account.value : ''
+    );
+    clear();
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+const mountEdit = (): void => {
+  Object.assign(dataOut, {
+    category: listCategory.value.find(
+      (item) => item.value === props.dataEdit?.category_id
+    ),
+    value: props.dataEdit?.value ?? '',
+    date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
+    account: listAccount.value.find(
+      (item) => item.value === props.dataEdit?.account_id
+    ),
+    description: props.dataEdit?.description ?? '',
+    file: props.dataEdit?.receipt ?? null,
+  });
 };
 
 watch(
@@ -112,6 +150,9 @@ watch(open, async () => {
   if (open.value) {
     clear();
     await getMovementInformations(dataOut.type);
+    if (props.dataEdit !== null) {
+      mountEdit();
+    }
   }
 });
 </script>
@@ -247,11 +288,22 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            v-if="props.dataEdit === null"
             @click="save"
             color="primary"
             label="Salvar"
             size="md"
             :loading="false"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            color="primary"
+            label="Atualizar"
+            size="md"
+            :loading="loadingMovement"
             unelevated
             no-caps
           />

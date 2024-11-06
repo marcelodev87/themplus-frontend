@@ -88,6 +88,7 @@ const save = async () => {
       dataEntry.account ? dataEntry.account.value : ''
     );
     clear();
+    emit('update:open');
   } else {
     Notify.create({
       message: check.message,
@@ -109,6 +110,7 @@ const update = async () => {
       dataEntry.account ? dataEntry.account.value : ''
     );
     clear();
+    emit('update:open');
   } else {
     Notify.create({
       message: check.message,
