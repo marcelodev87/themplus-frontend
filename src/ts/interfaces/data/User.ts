@@ -6,6 +6,14 @@ export interface DataUser {
   confirmPassword: string;
 }
 
+export interface DataUserMember {
+  name: string;
+  position: 'admin' | 'common_user';
+  email: string;
+  password: string;
+  confirmPassword?: string;
+}
+
 export interface DataRegister {
   name: string;
   email: string;
@@ -35,4 +43,5 @@ export interface User {
   position: string;
   enterprise_id: string;
   department_id: string | null;
+  created_by: string | null;
 }

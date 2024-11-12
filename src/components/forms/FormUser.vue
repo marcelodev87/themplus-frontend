@@ -2,8 +2,10 @@
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
-import { DataUser } from 'src/ts/interfaces/data/User';
+import { DataUserMember } from 'src/ts/interfaces/data/User';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import { storeToRefs } from 'pinia';
+import { useUsersStore } from 'src/stores/users-store';
 
 defineOptions({
   name: 'FormUser',
@@ -16,7 +18,10 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const dataUser = reactive<DataUser>({
+const { loadingUsers } = storeToRefs(useUsersStore());
+const { createUserMember, updateUserMember } = useUsersStore();
+
+const dataUser = reactive<DataUserMember>({
   name: '',
   position: 'common_user',
   email: '',
@@ -72,21 +77,13 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'A senha deve conter mais de 7 caracteres',
     };
   }
-  if (dataUser.password.trim() !== dataUser.confirmPassword.trim()) {
+  if (
+    dataUser.password.trim() !==
+    (dataUser.confirmPassword && dataUser.confirmPassword.trim())
+  ) {
     return { status: false, message: 'As senhas não coincidem' };
   }
   return { status: true };
-};
-const save = () => {
-  const check = checkData();
-  if (check.status) {
-    emit('update:open');
-  } else {
-    Notify.create({
-      message: check.message,
-      type: 'negative',
-    });
-  }
 };
 const clear = (): void => {
   Object.assign(dataUser, {
@@ -96,6 +93,24 @@ const clear = (): void => {
     password: '',
     confirmPassword: '',
   });
+};
+const save = async () => {
+  const check = checkData();
+  if (check.status) {
+    await createUserMember(
+      dataUser.name,
+      dataUser.position,
+      dataUser.email,
+      dataUser.password
+    );
+    clear();
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
 };
 
 watch(open, () => {

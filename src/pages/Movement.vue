@@ -166,7 +166,7 @@ onMounted(async () => {
         />
       </div>
     </header>
-    <main>
+    <main class="q-pa-sm">
       <q-table
         :rows="loadingMovement ? [] : listMovement"
         :columns="columnsMovement"
