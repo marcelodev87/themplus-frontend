@@ -8,6 +8,7 @@ import { Notify } from 'quasar';
 import { DataDepartment, Department } from 'src/ts/interfaces/data/Department';
 import { useDepartmentStore } from 'src/stores/department_store';
 import { storeToRefs } from 'pinia';
+import DepartmentChoose from '../shared/DepartmentChoose.vue';
 
 defineOptions({
   name: 'FormDepartment',
@@ -62,7 +63,7 @@ const save = async () => {
       dataDepartment.parent ?? null
     );
 
-    if (response?.status === 200) {
+    if (response?.status === 201) {
       emit('update:open');
       clear();
     }
@@ -111,7 +112,7 @@ const checkEditDepartment = () => {
     );
 
     Object.assign(dataDepartment, {
-      name: props.departmentEdit.label,
+      name: props.departmentEdit.name,
       parent: parent ? parent.id : null,
       parentName: parent ? parent.label : null,
     });
@@ -175,10 +176,12 @@ watch(
             </template>
           </q-input>
           <q-input
-            filled
             v-model="dataDepartment.parentName"
+            bg-color="white"
+            label-color="black"
+            filled
             type="text"
-            label="Departamento"
+            label="Escolher hierarquia"
             readonly
             disabled
             clearable
@@ -201,21 +204,20 @@ watch(
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
+            @click="open = false"
             color="red"
             label="Fechar"
             size="md"
             flat
-            @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
           <q-btn
             @click="save"
+            :loading="loadingDepartment"
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
             unelevated
             no-caps
           />

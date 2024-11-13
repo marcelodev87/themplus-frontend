@@ -93,14 +93,20 @@ watch(
       </q-card-section>
       <q-card-actions align="right" class="text-primary bg-grey-2">
         <q-btn
-          flat
-          label="Fechar"
           @click="closeShowModal"
-          :disabled="loadingDepartment"
+          color="red"
+          label="Fechar"
+          size="md"
+          flat
+          unelevated
+          no-caps
         />
         <q-btn
-          flat
+          color="primary"
           label="Departamento raiz"
+          size="md"
+          unelevated
+          no-caps
           @click="choseDepartmentRoot"
           :loading="loadingDepartment"
         />

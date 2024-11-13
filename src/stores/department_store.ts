@@ -8,31 +8,44 @@ import {
   getDepartmentsService,
   updateDepartmentService,
 } from 'src/services/department-service';
-import {
-  Department,
-  DepartmentNode,
-  TransformedDepartment,
-} from 'src/ts/interfaces/data/Department';
+import { Department, DepartmentNode } from 'src/ts/interfaces/data/Department';
 
 export const useDepartmentStore = defineStore('department', {
   state: () => ({
     loadingDepartment: false as boolean,
-    listDepartment: [] as DepartmentNode[],
+    listDepartment: [] as Department[],
   }),
   getters: {
     treeDepartment: (state) => {
-      const transformNode = (node: DepartmentNode): TransformedDepartment => {
-        return {
-          id: node.id,
-          label: node.name,
-          icon: 'domain',
-          children:
-            node.children.length > 0
-              ? node.children.map(transformNode)
-              : undefined,
-        };
-      };
-      return state.listDepartment.map(transformNode);
+      function transformToTree(departments: Department[]): DepartmentNode[] {
+        const map: { [key: string]: DepartmentNode } = {};
+
+        // Passo 1: Mapear cada departamento
+        departments.forEach((department) => {
+          map[department.id] = {
+            id: department.id,
+            label: department.name,
+            children: [],
+          };
+        });
+
+        const tree: DepartmentNode[] = [];
+
+        // Passo 2: Construir a árvore de departamentos
+        departments.forEach((department) => {
+          if (department.parent_id && map[department.parent_id]) {
+            // Adiciona como filho se tiver um parent_id válido
+            map[department.parent_id].children.push(map[department.id]);
+          } else {
+            // Adiciona como raiz se não tiver parent_id
+            tree.push(map[department.id]);
+          }
+        });
+
+        return tree;
+      }
+
+      return transformToTree(state.listDepartment);
     },
   },
   actions: {

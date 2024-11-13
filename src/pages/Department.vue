@@ -39,6 +39,7 @@ const openFormDepartment = (key = null): void => {
 };
 const closeFormDepartment = (): void => {
   showFormDepartment.value = false;
+  clear();
 };
 const handleEdit = (department: Department) => {
   departmentEdit.value = department;
@@ -103,29 +104,20 @@ onMounted(async () => {
             <template v-slot:default-header="prop">
               <div class="row full-width wrap justify-between content-start">
                 <div class="row items-center justify-center">
+                  <!-- Verifique se o ícone existe antes de renderizar -->
                   <q-icon
-                    :name="prop.node.icon"
-                    color="primary"
-                    size=" 28px"
+                    name="groups"
+                    color="black"
+                    size="22px"
                     class="q-mr-sm"
                   />
                   <q-btn
                     size="sm"
                     flat
                     rounded
-                    color="primary"
+                    color="black"
                     :disable="loadingDepartment"
                     @click="handleEdit(prop.node)"
-                  >
-                    {{ prop.node.label }}
-                  </q-btn>
-                  <q-btn
-                    @click="exclude(prop.node.id)"
-                    :disable="loadingDepartment"
-                    size="sm"
-                    flat
-                    rounded
-                    color="primary"
                   >
                     {{ prop.node.label }}
                   </q-btn>
@@ -133,15 +125,24 @@ onMounted(async () => {
                 <q-separator />
                 <div class="row items-center justify-center">
                   <q-btn
-                    v-show="prop.node.icon"
                     @click="openFormDepartment(prop.key)"
                     label="Adicionar um sub-departamento"
                     :disable="loadingDepartment"
                     size="sm"
-                    flat
                     rounded
+                    flat
                     color="primary"
                     icon="add"
+                    unelevated
+                  />
+                  <q-btn
+                    @click="exclude(prop.node.id)"
+                    :disable="loadingDepartment"
+                    size="sm"
+                    flat
+                    rounded
+                    color="negative"
+                    icon="delete"
                   />
                 </div>
               </div>
@@ -151,7 +152,7 @@ onMounted(async () => {
             v-show="treeDepartment.length == 0 && !loadingDepartment"
             class="q-pa-md"
           >
-            <q-banner dense inline-actions class="text-white bg-red">
+            <q-banner dense inline-actions class="text-white bg-red" rounded>
               Não há departamentos registrados. Por favor, adicione um novo
               departamento.
             </q-banner>
@@ -175,3 +176,9 @@ onMounted(async () => {
     </main>
   </section>
 </template>
+
+<style>
+.teste {
+  border: 1px solid black;
+}
+</style>

@@ -10,10 +10,11 @@ export interface Department {
   name: string;
   enterprise_id: string;
   parent_id: string;
-  label: any;
 }
 
-export interface DepartmentNode extends Department {
+export interface DepartmentNode {
+  id: string;
+  label: string;
   children: DepartmentNode[];
 }
 
