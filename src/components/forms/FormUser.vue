@@ -2,10 +2,10 @@
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
-import { DataUserMember } from 'src/ts/interfaces/data/User';
+import { DataUserMember, User } from 'src/ts/interfaces/data/User';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { storeToRefs } from 'pinia';
-import { useUsersStore } from 'src/stores/users-store';
+import { useUsersMembersStore } from 'src/stores/users-store';
 
 defineOptions({
   name: 'FormUser',
@@ -13,13 +13,14 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  dataEdit: User | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { loadingUsers } = storeToRefs(useUsersStore());
-const { createUserMember, updateUserMember } = useUsersStore();
+const { loadingUsersMembers } = storeToRefs(useUsersMembersStore());
+const { createUserMember, updateUserMember } = useUsersMembersStore();
 
 const dataUser = reactive<DataUserMember>({
   name: '',
@@ -68,20 +69,25 @@ const checkData = (): { status: boolean; message?: string } => {
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
-  if (dataUser.password.trim() === '') {
-    return { status: false, message: 'Deve ser informado a senha do usuário' };
-  }
-  if (dataUser.password.trim().length < 7) {
-    return {
-      status: false,
-      message: 'A senha deve conter mais de 7 caracteres',
-    };
-  }
-  if (
-    dataUser.password.trim() !==
-    (dataUser.confirmPassword && dataUser.confirmPassword.trim())
-  ) {
-    return { status: false, message: 'As senhas não coincidem' };
+  if (props.dataEdit === null) {
+    if (dataUser.password.trim() === '') {
+      return {
+        status: false,
+        message: 'Deve ser informado a senha do usuário',
+      };
+    }
+    if (dataUser.password.trim().length < 7) {
+      return {
+        status: false,
+        message: 'A senha deve conter mais de 7 caracteres',
+      };
+    }
+    if (
+      dataUser.password.trim() !==
+      (dataUser.confirmPassword && dataUser.confirmPassword.trim())
+    ) {
+      return { status: false, message: 'As senhas não coincidem' };
+    }
   }
   return { status: true };
 };
@@ -112,10 +118,44 @@ const save = async () => {
     });
   }
 };
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateUserMember(
+      props.dataEdit?.id ?? '',
+      dataUser.name,
+      dataUser.email,
+      null,
+      dataUser.position,
+      null
+    );
+    clear();
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+const checkDataEdit = () => {
+  if (props.dataEdit !== null) {
+    Object.assign(dataUser, {
+      name: props.dataEdit.name,
+      email: props.dataEdit.email,
+      position: props.dataEdit.position,
+    });
+    selectedUserPosition.value =
+      props.dataEdit !== null && props.dataEdit.position === 'admin'
+        ? { label: 'Administrador', value: 'admin' }
+        : { label: 'Usuário comum', value: 'common_user' };
+  }
+};
 
 watch(open, () => {
   if (open.value) {
     clear();
+    checkDataEdit();
   }
 });
 </script>
@@ -170,6 +210,7 @@ watch(open, () => {
             </template>
           </q-select>
           <q-input
+            v-show="props.dataEdit === null"
             v-model="dataUser.password"
             bg-color="white"
             label-color="black"
@@ -183,6 +224,7 @@ watch(open, () => {
             </template>
           </q-input>
           <q-input
+            v-show="props.dataEdit === null"
             v-model="dataUser.confirmPassword"
             bg-color="white"
             label-color="black"
@@ -210,11 +252,22 @@ watch(open, () => {
             no-caps
           />
           <q-btn
+            v-if="props.dataEdit === null"
             @click="save"
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
+            :loading="loadingUsersMembers"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            color="primary"
+            label="Atualizar"
+            size="md"
+            :loading="loadingUsersMembers"
             unelevated
             no-caps
           />

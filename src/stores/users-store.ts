@@ -10,20 +10,20 @@ import {
 } from 'src/services/users-service';
 import { User } from 'src/ts/interfaces/data/User';
 
-export const useUsersStore = defineStore('users', {
+export const useUsersMembersStore = defineStore('members', {
   state: () => ({
-    loadingUsers: false as boolean,
-    listUser: [] as User[],
+    loadingUsersMembers: false as boolean,
+    listUserMember: [] as User[],
   }),
   actions: {
     clearListUser() {
-      this.listUser.splice(0, this.listUser.length);
+      this.listUserMember.splice(0, this.listUserMember.length);
     },
     setLoading(loading: boolean) {
-      this.loadingUsers = loading;
+      this.loadingUsersMembers = loading;
     },
     setListUser(users: User[]) {
-      users.map((item) => this.listUser.push(item));
+      users.map((item) => this.listUserMember.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -43,7 +43,7 @@ export const useUsersStore = defineStore('users', {
         type: 'positive',
       });
     },
-    async getUsers() {
+    async getUsersMembers() {
       this.setLoading(true);
       try {
         const response = await getUsersMembersService();
@@ -116,7 +116,7 @@ export const useUsersStore = defineStore('users', {
       try {
         const response = await deleteUserMemberService(userMemberId);
         if (response.status === 200) {
-          this.listUser = this.listUser.filter(
+          this.listUserMember = this.listUserMember.filter(
             (item) => item.id !== userMemberId
           );
           this.createSuccess(response.data.message);

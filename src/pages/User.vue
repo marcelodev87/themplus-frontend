@@ -1,20 +1,26 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
-import { useUsersStore } from 'src/stores/users-store';
+import { useUsersMembersStore } from 'src/stores/users-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { User } from 'src/ts/interfaces/data/User';
 
 defineOptions({
   name: 'User',
 });
 
-const { getUsers, deleteUserMember } = useUsersStore();
-const { loadingUsers, listUser } = storeToRefs(useUsersStore());
+const { getUsersMembers, deleteUserMember } = useUsersMembersStore();
+const { loadingUsersMembers, listUserMember } = storeToRefs(
+  useUsersMembersStore()
+);
+const { user } = storeToRefs(useAuthStore());
 
 const showFormUser = ref<boolean>(false);
 const filterUser = ref<string>('');
+const selectedDataEdit = ref<User | null>(null);
 const columnsUser = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -46,7 +52,7 @@ const columnsUser = reactive<QuasarTable[]>([
   },
   {
     name: 'department',
-    label: 'Deaprtamento',
+    label: 'Departamento',
     field: 'departments.name',
     align: 'left',
     sortable: true,
@@ -65,6 +71,17 @@ const openFormUser = (): void => {
 const closeFormUser = (): void => {
   showFormUser.value = false;
 };
+const handleEdit = (user: User) => {
+  selectedDataEdit.value = user;
+  openFormUser();
+};
+const exclude = async (id: string): Promise<void> => {
+  await deleteUserMember(id);
+};
+
+onMounted(async () => {
+  await getUsersMembers();
+});
 </script>
 <template>
   <section>
@@ -85,11 +102,12 @@ const closeFormUser = (): void => {
       </div>
     </header>
     <main class="q-pa-sm">
+      user {{ user }}
       <q-table
-        :rows="loadingUsers ? [] : listUser"
+        :rows="loadingUsersMembers ? [] : listUserMember"
         :columns="columnsUser"
         :filter="filterUser"
-        :loading="loadingUsers"
+        :loading="loadingUsersMembers"
         style="max-height: 400px"
         flat
         bordered
@@ -107,37 +125,29 @@ const closeFormUser = (): void => {
           </q-input>
         </template>
         <template v-slot:body="props">
-          <q-tr
-            :props="props"
-            style="height: 28px"
-            :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
-          >
+          <q-tr :props="props" style="height: 28px">
             <q-td key="name" :props="props" class="text-left">
-              {{ props.row.account.name }}
+              {{ props.row.name }}
             </q-td>
-            <q-td key="account_number" :props="props" class="text-left">
-              {{ props.row.account.account_number }}
+            <q-td key="email" :props="props" class="text-left">
+              {{ props.row.email }}
             </q-td>
-            <q-td key="agency_number" :props="props" class="text-left">
-              {{ props.row.account.agency_number }}
+            <q-td key="phone" :props="props" class="text-left">
+              {{ props.row.phone ?? 'Não definido' }}
             </q-td>
-            <q-td key="category" :props="props" class="text-left">
-              {{ props.row.category.name }}
+            <q-td key="position" :props="props" class="text-left">
+              {{
+                props.row.position === 'admin'
+                  ? 'Administrador'
+                  : 'Usuário comum'
+              }}
             </q-td>
-            <q-td key="value" :props="props" class="text-left">
-              {{ `R$ ${props.row.value}` }}
-            </q-td>
-            <q-td key="date_movement" :props="props" class="text-left">
-              {{ formatDate(props.row.date_movement) }}
-            </q-td>
-            <q-td key="description" :props="props" class="text-left">
-              {{ props.row.description }}
-            </q-td>
-            <q-td key="receipt" :props="props" class="text-left">
-              {{ props.row.receipt }}
+            <q-td key="department" :props="props" class="text-left">
+              {{ `Não definido` }}
             </q-td>
             <q-td key="action" :props="props">
               <q-btn
+                v-show="user && user.id !== props.row.id"
                 @click="handleEdit(props.row)"
                 size="sm"
                 flat
@@ -147,6 +157,7 @@ const closeFormUser = (): void => {
                 :disabled="false"
               />
               <q-btn
+                v-show="user && user.id !== props.row.id"
                 @click="exclude(props.row.id)"
                 size="sm"
                 flat
@@ -158,7 +169,11 @@ const closeFormUser = (): void => {
           </q-tr>
         </template>
       </q-table>
-      <FormUser :open="showFormUser" @update:open="closeFormUser" />
+      <FormUser
+        :open="showFormUser"
+        :data-edit="selectedDataEdit"
+        @update:open="closeFormUser"
+      />
     </main>
   </section>
 </template>
