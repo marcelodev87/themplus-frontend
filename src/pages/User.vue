@@ -71,8 +71,8 @@ const openFormUser = (): void => {
 const closeFormUser = (): void => {
   showFormUser.value = false;
 };
-const handleEdit = (user: User) => {
-  selectedDataEdit.value = user;
+const handleEdit = (data: User) => {
+  selectedDataEdit.value = data;
   openFormUser();
 };
 const exclude = async (id: string): Promise<void> => {
@@ -102,7 +102,6 @@ onMounted(async () => {
       </div>
     </header>
     <main class="q-pa-sm">
-      user {{ user }}
       <q-table
         :rows="loadingUsersMembers ? [] : listUserMember"
         :columns="columnsUser"

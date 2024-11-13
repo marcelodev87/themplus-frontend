@@ -4,6 +4,7 @@ import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
 import FormCategory from 'src/components/forms/FormCategory.vue';
 import { ref } from 'vue';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 
 defineOptions({
   name: 'Scheduling',
@@ -12,6 +13,7 @@ defineOptions({
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
+const selectedDataEdit = ref<Movement | null>(null);
 
 const openFormEntry = (): void => {
   showFormEntry.value = true;
@@ -70,12 +72,14 @@ const closeFormCategory = (): void => {
     <main>
       <FormEntry
         :open="showFormEntry"
+        :data-edit="selectedDataEdit"
         title="Agende uma entrada"
         mode="schedule"
         @update:open="closeFormEntry"
       />
       <FormOut
         :open="showFormOut"
+        :data-edit="selectedDataEdit"
         title="Agende uma saída"
         mode="schedule"
         @update:open="closeFormOut"
