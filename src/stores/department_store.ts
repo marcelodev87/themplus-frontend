@@ -131,9 +131,8 @@ export const useDepartmentStore = defineStore('department', {
       try {
         const response = await deleteDepartmentService(departmentId);
         if (response.status === 200) {
-          this.listDepartment = this.listDepartment.filter(
-            (item) => item.id !== departmentId
-          );
+          this.clearListDepartment();
+          this.setListDepartment(response.data.departments);
           this.createSuccess(response.data.message);
         }
         return response;

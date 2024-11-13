@@ -45,5 +45,6 @@ export const deleteDepartmentService = (
   status: number;
   data: {
     message: string;
+    departments: Department[];
   };
 }> => api.delete(`${baseUrl}/${id}`);
