@@ -1,8 +1,13 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable no-restricted-syntax -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
-import { DataDepartment } from 'src/ts/interfaces/data/Department';
+import { DataDepartment, Department } from 'src/ts/interfaces/data/Department';
+import { useDepartmentStore } from 'src/stores/department_store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'FormDepartment',
@@ -10,15 +15,22 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  keyRoot: string | null;
+  departmentEdit: Department | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { createDepartment, updateDepartment } = useDepartmentStore();
+const { loadingDepartment, treeDepartment } = storeToRefs(useDepartmentStore());
+
 const selectedBank = ref<string | null>(null);
+const showDepartmentChoose = ref<boolean>(false);
 const dataDepartment = reactive<DataDepartment>({
   name: '',
-  parent: '',
+  parent: null,
+  parentName: null,
 });
 
 const open = computed({
@@ -27,7 +39,7 @@ const open = computed({
 });
 
 const checkData = (): { status: boolean; message?: string } => {
-  if (dataDepartment.name.trim() === '') {
+  if (dataDepartment.name.trim() === '' || dataDepartment.name === undefined) {
     return {
       status: false,
       message: 'Deve ser informado o nome do departamento',
@@ -35,10 +47,25 @@ const checkData = (): { status: boolean; message?: string } => {
   }
   return { status: true };
 };
-const save = () => {
+const clear = (): void => {
+  Object.assign(dataDepartment, {
+    name: '',
+    parent: null,
+    parentName: null,
+  });
+};
+const save = async () => {
   const check = checkData();
   if (check.status) {
-    emit('update:open');
+    const response = await createDepartment(
+      dataDepartment.name,
+      dataDepartment.parent ?? null
+    );
+
+    if (response?.status === 200) {
+      emit('update:open');
+      clear();
+    }
   } else {
     Notify.create({
       message: check.message,
@@ -46,18 +73,84 @@ const save = () => {
     });
   }
 };
-const clear = (): void => {
-  Object.assign(dataDepartment, {
-    name: '',
-    parent: '',
-  });
-};
+const update = async (): Promise<void> => {
+  const response = await updateDepartment(
+    props.departmentEdit?.id ?? '',
+    dataDepartment.name,
+    dataDepartment.parent ?? null
+  );
 
-watch(open, () => {
-  if (open.value) {
+  if (response?.status === 200) {
+    emit('update:open');
     clear();
   }
-});
+};
+const findItemById = (
+  array: any[],
+  id: string,
+  parent: any = null
+): { item: any | null; parent: any | null } => {
+  for (const item of array) {
+    if (item.id === id) {
+      return { item, parent };
+    }
+    if (item.children) {
+      const found = findItemById(item.children, id, item);
+      if (found.item) {
+        return found;
+      }
+    }
+  }
+  return { item: null, parent: null };
+};
+const checkEditDepartment = () => {
+  if (props.departmentEdit != null) {
+    const { item, parent } = findItemById(
+      treeDepartment.value,
+      props.departmentEdit.id ?? ''
+    );
+
+    Object.assign(dataDepartment, {
+      name: props.departmentEdit.label,
+      parent: parent ? parent.id : null,
+      parentName: parent ? parent.label : null,
+    });
+  }
+};
+const checkCreateWithDepartment = () => {
+  if (props.keyRoot != null) {
+    const item = findItemById(treeDepartment.value, props.keyRoot);
+    if (item && item.item) {
+      dataDepartment.parent = item.item.id;
+      dataDepartment.parentName = item.item.label;
+    }
+  }
+};
+const openDepartmentChoose = (): void => {
+  showDepartmentChoose.value = true;
+};
+const closeDepartmentChoose = (): void => {
+  showDepartmentChoose.value = false;
+};
+const handleChooseDepartment = (
+  tree: { id: string; label: string } | null
+): void => {
+  dataDepartment.parent = tree === null ? null : tree.id;
+  dataDepartment.parentName = tree === null ? null : tree.label;
+  closeDepartmentChoose();
+};
+
+watch(
+  open,
+  () => {
+    if (open.value) {
+      clear();
+      checkCreateWithDepartment();
+      checkEditDepartment();
+    }
+  },
+  { immediate: true, deep: true }
+);
 </script>
 <template>
   <q-dialog v-model="open" persistent>
@@ -81,6 +174,28 @@ watch(open, () => {
               <q-icon name="groups" color="black" size="20px" />
             </template>
           </q-input>
+          <q-input
+            filled
+            v-model="dataDepartment.parentName"
+            type="text"
+            label="Departamento"
+            readonly
+            disabled
+            clearable
+          >
+            <template v-slot:append>
+              <q-icon
+                name="search"
+                class="cursor-pointer"
+                @click="openDepartmentChoose"
+              />
+            </template>
+          </q-input>
+          <DepartmentChoose
+            :open="showDepartmentChoose"
+            @update:open="closeDepartmentChoose"
+            @update:choose-department="handleChooseDepartment"
+          />
         </q-form>
       </q-card-section>
       <q-card-actions align="right">
