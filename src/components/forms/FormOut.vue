@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import { DataOut } from 'src/ts/interfaces/data/Out';
 import { MovementOrSchedule } from 'src/ts/types/FormMode';
 import { useMovementStore } from 'src/stores/movement-store';
+import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 
@@ -24,11 +25,21 @@ const emit = defineEmits<{
 
 const { getMovementInformations, createMovement, updateMovement } =
   useMovementStore();
-const { loadingMovement, listAccount, listCategory } =
-  storeToRefs(useMovementStore());
+const {
+  loadingMovement,
+  listAccount: listAccountMovement,
+  listCategory: listCategoryMovement,
+} = storeToRefs(useMovementStore());
+const { getSchedulingsInformations, createScheduling, updateScheduling } =
+  useSchedulingStore();
+const {
+  loadingScheduling,
+  listAccount: listAccountScheduling,
+  listCategory: listCategoryScheduling,
+} = storeToRefs(useSchedulingStore());
 
 const dataOut = reactive<DataOut>({
-  type: 'saída',
+  type: 'saida',
   value: '',
   description: '',
   file: null,
@@ -78,15 +89,27 @@ const clear = (): void => {
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    await createMovement(
-      dataOut.type,
-      dataOut.value,
-      dataOut.date,
-      dataOut.description,
-      dataOut.file,
-      dataOut.category ? dataOut.category.value : '',
-      dataOut.account ? dataOut.account.value : ''
-    );
+    if (props.mode === 'schedule') {
+      await createScheduling(
+        dataOut.type,
+        dataOut.value,
+        dataOut.date,
+        dataOut.description,
+        dataOut.file,
+        dataOut.category ? dataOut.category.value : '',
+        dataOut.account ? dataOut.account.value : ''
+      );
+    } else {
+      await createMovement(
+        dataOut.type,
+        dataOut.value,
+        dataOut.date,
+        dataOut.description,
+        dataOut.file,
+        dataOut.category ? dataOut.category.value : '',
+        dataOut.account ? dataOut.account.value : ''
+      );
+    }
     clear();
     emit('update:open');
   } else {
@@ -99,16 +122,29 @@ const save = async () => {
 const update = async () => {
   const check = checkData();
   if (check.status) {
-    await updateMovement(
-      props.dataEdit?.id ?? '',
-      dataOut.type,
-      dataOut.value,
-      dataOut.date.replace(/\//g, '-'),
-      dataOut.description,
-      dataOut.file,
-      dataOut.category ? dataOut.category.value : '',
-      dataOut.account ? dataOut.account.value : ''
-    );
+    if (props.mode === 'schedule') {
+      await updateScheduling(
+        props.dataEdit?.id ?? '',
+        dataOut.type,
+        dataOut.value,
+        dataOut.date.replace(/\//g, '-'),
+        dataOut.description,
+        dataOut.file,
+        dataOut.category ? dataOut.category.value : '',
+        dataOut.account ? dataOut.account.value : ''
+      );
+    } else {
+      await updateMovement(
+        props.dataEdit?.id ?? '',
+        dataOut.type,
+        dataOut.value,
+        dataOut.date.replace(/\//g, '-'),
+        dataOut.description,
+        dataOut.file,
+        dataOut.category ? dataOut.category.value : '',
+        dataOut.account ? dataOut.account.value : ''
+      );
+    }
     clear();
     emit('update:open');
   } else {
@@ -119,18 +155,40 @@ const update = async () => {
   }
 };
 const mountEdit = (): void => {
-  Object.assign(dataOut, {
-    category: listCategory.value.find(
-      (item) => item.value === props.dataEdit?.category_id
-    ),
-    value: props.dataEdit?.value ?? '',
-    date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
-    account: listAccount.value.find(
-      (item) => item.value === props.dataEdit?.account_id
-    ),
-    description: props.dataEdit?.description ?? '',
-    file: props.dataEdit?.receipt ?? null,
-  });
+  if (props.mode === 'schedule') {
+    Object.assign(dataOut, {
+      category: listCategoryMovement.value.find(
+        (item) => item.value === props.dataEdit?.category_id
+      ),
+      value: props.dataEdit?.value ?? '',
+      date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
+      account: listAccountMovement.value.find(
+        (item) => item.value === props.dataEdit?.account_id
+      ),
+      description: props.dataEdit?.description ?? '',
+      file: props.dataEdit?.receipt ?? null,
+    });
+  } else {
+    Object.assign(dataOut, {
+      category: listCategoryScheduling.value.find(
+        (item) => item.value === props.dataEdit?.category_id
+      ),
+      value: props.dataEdit?.value ?? '',
+      date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
+      account: listAccountScheduling.value.find(
+        (item) => item.value === props.dataEdit?.account_id
+      ),
+      description: props.dataEdit?.description ?? '',
+      file: props.dataEdit?.receipt ?? null,
+    });
+  }
+};
+const fetchInformations = async () => {
+  if (props.mode === 'schedule') {
+    await getSchedulingsInformations(dataOut.type);
+  } else {
+    await getMovementInformations(dataOut.type);
+  }
 };
 
 watch(
@@ -149,7 +207,7 @@ watch(
 watch(open, async () => {
   if (open.value) {
     clear();
-    await getMovementInformations(dataOut.type);
+    fetchInformations();
     if (props.dataEdit !== null) {
       mountEdit();
     }
@@ -166,7 +224,11 @@ watch(open, async () => {
         <q-form class="q-gutter-y-sm">
           <q-select
             v-model="dataOut.category"
-            :options="listCategory"
+            :options="
+              props.mode === 'schedule'
+                ? listCategoryScheduling
+                : listCategoryMovement
+            "
             label="Categoria"
             filled
             clearable
@@ -196,7 +258,11 @@ watch(open, async () => {
           </q-input>
           <q-select
             v-model="dataOut.account"
-            :options="listAccount"
+            :options="
+              props.mode === 'schedule'
+                ? listAccountScheduling
+                : listAccountMovement
+            "
             label="Conta"
             filled
             clearable
@@ -293,7 +359,7 @@ watch(open, async () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
+            :loading="loadingMovement || loadingScheduling"
             unelevated
             no-caps
           />
@@ -303,14 +369,14 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingMovement"
+            :loading="loadingMovement || loadingScheduling"
             unelevated
             no-caps
           />
         </div>
       </q-card-actions>
       <q-inner-loading
-        :showing="loadingMovement"
+        :showing="loadingMovement || loadingScheduling"
         label="Carregando os dados..."
         label-class="black"
         label-style="font-size: 1.1em"
