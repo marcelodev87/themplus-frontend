@@ -8,6 +8,7 @@ import { useMovementStore } from 'src/stores/movement-store';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
+import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 
 defineOptions({
   name: 'FormOut',
@@ -17,7 +18,7 @@ const props = defineProps<{
   open: boolean;
   title: string;
   mode: MovementOrSchedule;
-  dataEdit: Movement | null;
+  dataEdit: Movement | Scheduling | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];

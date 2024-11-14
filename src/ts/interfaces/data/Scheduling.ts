@@ -1,3 +1,6 @@
+import { Account } from './Account';
+import { Category } from './Category';
+
 export interface Scheduling {
   id: string;
   date_movement: string;
@@ -9,4 +12,6 @@ export interface Scheduling {
   receipt: string | null;
   category_id: string;
   account_id: string;
+  category: Category | null;
+  account: Account | null;
 }
