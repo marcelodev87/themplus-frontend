@@ -6,7 +6,6 @@ export interface Scheduling {
   date_movement: string;
   enterprise_id: string;
   type: string;
-  status: number;
   value: string;
   description: string | null;
   receipt: string | null;

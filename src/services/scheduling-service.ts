@@ -76,6 +76,14 @@ export const updateSchedulingService = (
     account,
   });
 
+export const finalizeSchedulingService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/finalize/${id}`);
 export const deleteSchedulingService = (
   id: string
 ): Promise<{

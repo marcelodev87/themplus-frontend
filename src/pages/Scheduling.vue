@@ -14,7 +14,8 @@ defineOptions({
 });
 
 const { loadingScheduling, listScheduling } = storeToRefs(useSchedulingStore());
-const { getSchedulings, deleteScheduling } = useSchedulingStore();
+const { getSchedulings, deleteScheduling, finalizeScheduling } =
+  useSchedulingStore();
 
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
@@ -121,6 +122,9 @@ const formatDate = (dateString: string) => {
 
   return `${day}-${month}-${year}`;
 };
+const finalize = async (id: string): Promise<void> => {
+  await finalizeScheduling(id);
+};
 
 onMounted(async () => {
   await getSchedulings();
@@ -215,26 +219,27 @@ onMounted(async () => {
             </q-td>
             <q-td key="action" :props="props">
               <q-btn
-                v-show="props.row.status === 0"
                 @click="handleEdit(props.row)"
                 size="sm"
                 flat
                 round
                 color="black"
                 icon="edit"
-                :disabled="props.row.status === 1"
               />
               <q-btn
-                v-show="props.row.status === 0"
                 @click="exclude(props.row.id)"
                 size="sm"
                 flat
                 round
                 color="red"
                 icon="delete"
-                :disabled="props.row.status === 1"
               />
-              <q-icon name="task_alt" size="16px" class="cursor-pointer">
+              <q-icon
+                @click="finalize(props.row.id)"
+                name="task_alt"
+                size="16px"
+                class="cursor-pointer"
+              >
                 <q-tooltip> Finalizar </q-tooltip>
               </q-icon>
             </q-td>

@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import {
   createSchedulingService,
   deleteSchedulingService,
+  finalizeSchedulingService,
   getSchedulingInformationsService,
   getSchedulingsService,
   updateSchedulingService,
@@ -154,6 +155,22 @@ export const useSchedulingStore = defineStore('scheduling', {
         if (response.status === 200) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async finalizeScheduling(schedulingId: string) {
+      this.setLoading(true);
+      try {
+        const response = await finalizeSchedulingService(schedulingId);
+        if (response.status === 200) {
+          this.listScheduling = this.listScheduling.filter(
+            (item) => item.id !== schedulingId
+          );
           this.createSuccess(response.data.message);
         }
       } catch (error) {
