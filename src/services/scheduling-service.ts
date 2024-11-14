@@ -83,7 +83,7 @@ export const finalizeSchedulingService = (
   data: {
     message: string;
   };
-}> => api.delete(`${baseUrl}/finalize/${id}`);
+}> => api.put(`${baseUrl}/finalize/${id}`);
 export const deleteSchedulingService = (
   id: string
 ): Promise<{
