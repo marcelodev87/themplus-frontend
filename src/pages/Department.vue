@@ -104,7 +104,6 @@ onMounted(async () => {
             <template v-slot:default-header="prop">
               <div class="row full-width wrap justify-between content-start">
                 <div class="row items-center justify-center">
-                  <!-- Verifique se o ícone existe antes de renderizar -->
                   <q-icon
                     name="groups"
                     color="black"

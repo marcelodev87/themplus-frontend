@@ -17,7 +17,7 @@ defineOptions({
 const props = defineProps<{
   open: boolean;
   keyRoot: string | null;
-  departmentEdit: Department | null;
+  departmentEdit: Department | { id: string; label: string } | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -112,7 +112,7 @@ const checkEditDepartment = () => {
     );
 
     Object.assign(dataDepartment, {
-      name: props.departmentEdit.name,
+      name: item.label,
       parent: parent ? parent.id : null,
       parentName: parent ? parent.label : null,
     });
@@ -213,10 +213,21 @@ watch(
             no-caps
           />
           <q-btn
+            v-if="props.departmentEdit === null"
             @click="save"
             :loading="loadingDepartment"
             color="primary"
             label="Salvar"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            :loading="loadingDepartment"
+            color="primary"
+            label="Atualizar"
             size="md"
             unelevated
             no-caps

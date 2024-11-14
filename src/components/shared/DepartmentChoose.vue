@@ -76,10 +76,10 @@ watch(
           >
             <template v-slot:default-header="prop">
               <div class="fit">
-                <q-icon :name="prop.node.icon" color="primary" size="sm" />
+                <q-icon name="groups" color="black" size="22px" />
                 <q-btn
                   size="sm"
-                  color="primary"
+                  color="black"
                   flat
                   rounded
                   :disabled="loadingDepartment"
