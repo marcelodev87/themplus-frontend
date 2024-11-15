@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormCategory from 'src/components/forms/FormCategory.vue';
@@ -119,15 +120,40 @@ const handleEdit = (movement: Movement) => {
   }
 };
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
+  const [year, month, day] = dateString.split('-');
 
   return `${day}/${month}/${year}`;
 };
 const exclude = async (id: string) => {
   await deleteMovement(id);
+};
+const customFilterMovement = (
+  rows: readonly Movement[],
+  terms: string,
+  cols: readonly Movement[],
+  getCellValue: (row: Movement, col: QuasarTable) => unknown
+): readonly Movement[] => {
+  const searchTerm = terms.toLowerCase();
+
+  return rows.filter((item) => {
+    return (
+      (item.account?.name &&
+        item.account.name.toLowerCase().includes(searchTerm)) ||
+      (item.account?.agency_number &&
+        item.account.agency_number.toLowerCase().includes(searchTerm)) ||
+      (item.account?.account_number &&
+        item.account.account_number.toLowerCase().includes(searchTerm)) ||
+      (item.category?.name &&
+        item.category.name.toLowerCase().includes(searchTerm)) ||
+      (item.value &&
+        item.value.toString().toLowerCase().includes(searchTerm)) ||
+      (item.description &&
+        item.description.toLowerCase().includes(searchTerm)) ||
+      (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
+      (item.date_movement &&
+        item.date_movement.toLowerCase().includes(searchTerm))
+    );
+  });
 };
 
 watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
@@ -204,6 +230,7 @@ onMounted(async () => {
         :rows="loadingMovement ? [] : listMovement"
         :columns="columnsMovement"
         :filter="filterMovement"
+        :filter-method="customFilterMovement"
         :loading="loadingMovement"
         style="max-height: 400px"
         flat
