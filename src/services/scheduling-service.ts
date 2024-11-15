@@ -14,6 +14,18 @@ export const getSchedulingsService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
+export const getSchedulingsWithParamsService = (
+  expired: boolean,
+  entry: boolean,
+  out: boolean
+): Promise<{
+  status: number;
+  data: {
+    schedulings: Scheduling[];
+    message: string;
+  };
+}> => api.get(`${baseUrl}/filter?expired=${expired}&entry=${entry}&out=${out}`);
+
 export const getSchedulingInformationsService = (
   type: string
 ): Promise<{

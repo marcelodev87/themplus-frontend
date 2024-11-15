@@ -8,6 +8,7 @@ import {
   finalizeSchedulingService,
   getSchedulingInformationsService,
   getSchedulingsService,
+  getSchedulingsWithParamsService,
   updateSchedulingService,
 } from 'src/services/scheduling-service';
 
@@ -73,6 +74,28 @@ export const useSchedulingStore = defineStore('scheduling', {
       this.setLoading(true);
       try {
         const response = await getSchedulingsService();
+        if (response.status === 200) {
+          this.clearListScheduling();
+          this.setListScheduling(response.data.schedulings);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getSchedulingsWithParams(
+      expired: boolean,
+      entry: boolean,
+      out: boolean
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await getSchedulingsWithParamsService(
+          expired,
+          entry,
+          out
+        );
         if (response.status === 200) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);

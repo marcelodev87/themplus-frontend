@@ -3,7 +3,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
 import FormCategory from 'src/components/forms/FormCategory.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { storeToRefs } from 'pinia';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
@@ -14,9 +14,16 @@ defineOptions({
 });
 
 const { loadingScheduling, listScheduling } = storeToRefs(useSchedulingStore());
-const { getSchedulings, deleteScheduling, finalizeScheduling } =
-  useSchedulingStore();
+const {
+  getSchedulings,
+  getSchedulingsWithParams,
+  deleteScheduling,
+  finalizeScheduling,
+} = useSchedulingStore();
 
+const onlyExpired = ref<boolean>(false);
+const onlyEntry = ref<boolean>(false);
+const onlyOut = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
@@ -85,23 +92,32 @@ const columnsScheduling = reactive<QuasarTable[]>([
   },
 ]);
 
+const clear = (): void => {
+  onlyEntry.value = false;
+  onlyOut.value = false;
+  onlyExpired.value = false;
+  filterScheduling.value = '';
+};
 const openFormEntry = (): void => {
   showFormEntry.value = true;
 };
 const closeFormEntry = (): void => {
   showFormEntry.value = false;
+  clear();
 };
 const openFormOut = (): void => {
   showFormOut.value = true;
 };
 const closeFormOut = (): void => {
   showFormOut.value = false;
+  clear();
 };
 const openFormCategory = (): void => {
   showFormCategory.value = true;
 };
 const closeFormCategory = (): void => {
   showFormCategory.value = false;
+  clear();
 };
 const handleEdit = (scheduling: Scheduling): void => {
   selectedDataEdit.value = scheduling;
@@ -124,6 +140,62 @@ const formatDate = (dateString: string) => {
 };
 const finalize = async (id: string): Promise<void> => {
   await finalizeScheduling(id);
+};
+
+watch(
+  [onlyExpired, onlyEntry, onlyOut],
+  async ([newExpired, newEntry, newOut], [oldExpired, oldEntry, oldOut]) => {
+    let lastChanged = null;
+
+    if (newEntry !== oldEntry) {
+      lastChanged = 'onlyEntry';
+    } else if (newOut !== oldOut) {
+      lastChanged = 'onlyOut';
+    } else if (newExpired !== oldExpired) {
+      lastChanged = 'onlyExpired';
+    }
+
+    if (lastChanged === 'onlyEntry') {
+      if (newEntry) {
+        onlyOut.value = false;
+      }
+    } else if (lastChanged === 'onlyOut') {
+      if (newOut) {
+        onlyEntry.value = false;
+      }
+    }
+
+    const shouldCallWithParams = newEntry || newOut || newExpired;
+
+    if (shouldCallWithParams) {
+      await getSchedulingsWithParams(newExpired, newEntry, newOut);
+    } else {
+      await getSchedulings();
+    }
+  }
+);
+const customFilterScheduling = (rows: Scheduling[], terms: string) => {
+  const searchTerm = terms.toLowerCase();
+
+  return rows.filter((item) => {
+    return (
+      (item.account?.name &&
+        item.account.name.toLowerCase().includes(searchTerm)) ||
+      (item.account?.agency_number &&
+        item.account.agency_number.toLowerCase().includes(searchTerm)) ||
+      (item.account?.account_number &&
+        item.account.account_number.toLowerCase().includes(searchTerm)) ||
+      (item.category?.name &&
+        item.category.name.toLowerCase().includes(searchTerm)) ||
+      (item.value &&
+        item.value.toString().toLowerCase().includes(searchTerm)) ||
+      (item.description &&
+        item.description.toLowerCase().includes(searchTerm)) ||
+      (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
+      (item.date_movement &&
+        item.date_movement.toLowerCase().includes(searchTerm))
+    );
+  });
 };
 
 onMounted(async () => {
@@ -169,8 +241,9 @@ onMounted(async () => {
       <q-table
         :rows="loadingScheduling ? [] : listScheduling"
         :columns="columnsScheduling"
-        :filter="filterScheduling"
         :loading="loadingScheduling"
+        :filter="filterScheduling"
+        :filter-method="customFilterScheduling"
         style="max-height: 400px"
         flat
         bordered
@@ -181,6 +254,24 @@ onMounted(async () => {
         <template v-slot:top>
           <span class="text-subtitle2">Lista de agendamentos</span>
           <q-space />
+          <q-toggle
+            v-model="onlyExpired"
+            color="primary"
+            label="Expirados"
+            left-label
+          />
+          <q-toggle
+            v-model="onlyEntry"
+            color="primary"
+            label="Entradas"
+            left-label
+          />
+          <q-toggle
+            v-model="onlyOut"
+            color="primary"
+            label="Saídas"
+            left-label
+          />
           <q-input filled v-model="filterScheduling" dense label="Pesquisar">
             <template v-slot:prepend>
               <q-icon name="search" />
