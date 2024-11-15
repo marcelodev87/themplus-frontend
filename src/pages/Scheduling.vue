@@ -132,49 +132,13 @@ const exclude = async (id: string): Promise<void> => {
   await deleteScheduling(id);
 };
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
+  const [year, month, day] = dateString.split('-');
 
-  return `${day}-${month}-${year}`;
+  return `${day}/${month}/${year}`;
 };
 const finalize = async (id: string): Promise<void> => {
   await finalizeScheduling(id);
 };
-
-watch(
-  [onlyExpired, onlyEntry, onlyOut],
-  async ([newExpired, newEntry, newOut], [oldExpired, oldEntry, oldOut]) => {
-    let lastChanged = null;
-
-    if (newEntry !== oldEntry) {
-      lastChanged = 'onlyEntry';
-    } else if (newOut !== oldOut) {
-      lastChanged = 'onlyOut';
-    } else if (newExpired !== oldExpired) {
-      lastChanged = 'onlyExpired';
-    }
-
-    if (lastChanged === 'onlyEntry') {
-      if (newEntry) {
-        onlyOut.value = false;
-      }
-    } else if (lastChanged === 'onlyOut') {
-      if (newOut) {
-        onlyEntry.value = false;
-      }
-    }
-
-    const shouldCallWithParams = newEntry || newOut || newExpired;
-
-    if (shouldCallWithParams) {
-      await getSchedulingsWithParams(newExpired, newEntry, newOut);
-    } else {
-      await getSchedulings();
-    }
-  }
-);
 const customFilterScheduling = (
   rows: readonly Scheduling[],
   terms: string,
@@ -211,6 +175,39 @@ const isPastDate = (dateString: string) => {
 
   return date <= yesterday;
 };
+
+watch(
+  [onlyExpired, onlyEntry, onlyOut],
+  async ([newExpired, newEntry, newOut], [oldExpired, oldEntry, oldOut]) => {
+    let lastChanged = null;
+
+    if (newEntry !== oldEntry) {
+      lastChanged = 'onlyEntry';
+    } else if (newOut !== oldOut) {
+      lastChanged = 'onlyOut';
+    } else if (newExpired !== oldExpired) {
+      lastChanged = 'onlyExpired';
+    }
+
+    if (lastChanged === 'onlyEntry') {
+      if (newEntry) {
+        onlyOut.value = false;
+      }
+    } else if (lastChanged === 'onlyOut') {
+      if (newOut) {
+        onlyEntry.value = false;
+      }
+    }
+
+    const shouldCallWithParams = newEntry || newOut || newExpired;
+
+    if (shouldCallWithParams) {
+      await getSchedulingsWithParams(newExpired, newEntry, newOut);
+    } else {
+      await getSchedulings();
+    }
+  }
+);
 
 onMounted(async () => {
   await getSchedulings();

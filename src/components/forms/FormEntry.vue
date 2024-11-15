@@ -158,12 +158,12 @@ const update = async () => {
 const mountEdit = (): void => {
   if (props.mode === 'schedule') {
     Object.assign(dataEntry, {
-      category: listCategoryMovement.value.find(
+      category: listCategoryScheduling.value.find(
         (item) => item.value === props.dataEdit?.category_id
       ),
       value: props.dataEdit?.value ?? '',
       date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
-      account: listAccountMovement.value.find(
+      account: listAccountScheduling.value.find(
         (item) => item.value === props.dataEdit?.account_id
       ),
       description: props.dataEdit?.description ?? '',
@@ -171,12 +171,12 @@ const mountEdit = (): void => {
     });
   } else {
     Object.assign(dataEntry, {
-      category: listCategoryScheduling.value.find(
+      category: listCategoryMovement.value.find(
         (item) => item.value === props.dataEdit?.category_id
       ),
       value: props.dataEdit?.value ?? '',
       date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
-      account: listAccountScheduling.value.find(
+      account: listAccountMovement.value.find(
         (item) => item.value === props.dataEdit?.account_id
       ),
       description: props.dataEdit?.description ?? '',
@@ -207,7 +207,7 @@ watch(
 watch(open, async () => {
   if (open.value) {
     clear();
-    fetchInformations();
+    await fetchInformations();
     if (props.dataEdit !== null) {
       mountEdit();
     }

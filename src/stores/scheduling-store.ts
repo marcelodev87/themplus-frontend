@@ -71,8 +71,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       });
     },
     async getSchedulings() {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await getSchedulingsService();
         if (response.status === 200) {
           this.clearListScheduling();
@@ -89,8 +89,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       entry: boolean,
       out: boolean
     ) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await getSchedulingsWithParamsService(
           expired,
           entry,
@@ -107,8 +107,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       }
     },
     async getSchedulingsInformations(type: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         this.clearCategories();
         this.clearAccounts();
         const response = await getSchedulingInformationsService(type);
@@ -131,8 +131,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       category: string,
       account: string
     ) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await createSchedulingService(
           type,
           value,
@@ -163,8 +163,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       category: string,
       account: string
     ) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await updateSchedulingService(
           id,
           type,
@@ -187,8 +187,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       }
     },
     async finalizeScheduling(schedulingId: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await finalizeSchedulingService(schedulingId);
         if (response.status === 200) {
           this.listScheduling = this.listScheduling.filter(
@@ -203,8 +203,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       }
     },
     async deleteScheduling(schedulingId: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await deleteSchedulingService(schedulingId);
         if (response.status === 200) {
           this.listScheduling = this.listScheduling.filter(
