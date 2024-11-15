@@ -14,7 +14,7 @@ defineOptions({
   name: 'Movement',
 });
 
-const { getMovements, getMovementsWithParams, deleteMovement } =
+const { getMovements, getMovementsWithParams, exportMovement, deleteMovement } =
   useMovementStore();
 const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
 
@@ -155,6 +155,9 @@ const customFilterMovement = (
     );
   });
 };
+const exportData = async (): Promise<void> => {
+  await exportMovement(onlyEntry.value, onlyOut.value);
+};
 
 watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
   let lastChanged = null;
@@ -203,6 +206,15 @@ onMounted(async () => {
           color="black"
           icon-right="settings"
           label="Categorias"
+          unelevated
+          no-caps
+        />
+        <q-btn
+          @click="exportData"
+          flat
+          color="black"
+          icon-right="download"
+          label="Exportar"
           unelevated
           no-caps
         />

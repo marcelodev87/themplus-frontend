@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { api } from 'boot/axios';
+import { Notify } from 'quasar';
+import { AxiosError } from 'axios';
 import {
   AccountInformation,
   CategoryInformation,
@@ -6,6 +9,19 @@ import {
 import { Movement } from 'src/ts/interfaces/data/Movement';
 
 const baseUrl = 'movement';
+
+const createError = (error: any) => {
+  let message = 'Error';
+  if (error instanceof AxiosError) {
+    message = error.response?.data?.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  Notify.create({
+    message,
+    type: 'negative',
+  });
+};
 
 export const getMovementsService = (): Promise<{
   status: number;
@@ -60,6 +76,33 @@ export const createMovementService = (
     category,
     account,
   });
+
+export const exportMovementService = async (entry: boolean, out: boolean) => {
+  try {
+    const response = await api.post(
+      `${baseUrl}/export?entry=${entry}&out=${out}`,
+      null,
+      {
+        responseType: 'blob',
+      }
+    );
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `movements_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
 
 export const updateMovementService = (
   id: string,
