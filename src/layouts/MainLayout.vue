@@ -45,12 +45,12 @@ const menuList = computed(() => [
     separator: true,
     name: 'admin-account',
   },
-  {
-    icon: 'inventory',
-    label: 'Relatórios',
-    separator: true,
-    name: 'admin-reports',
-  },
+  // {
+  //   icon: 'inventory',
+  //   label: 'Relatórios',
+  //   separator: true,
+  //   name: 'admin-reports',
+  // },
   {
     icon: 'person',
     label: 'Usuários',
