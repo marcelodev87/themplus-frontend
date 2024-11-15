@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
@@ -174,7 +175,12 @@ watch(
     }
   }
 );
-const customFilterScheduling = (rows: Scheduling[], terms: string) => {
+const customFilterScheduling = (
+  rows: readonly Scheduling[],
+  terms: string,
+  cols: readonly Scheduling[],
+  getCellValue: (row: Scheduling, col: QuasarTable) => unknown
+): readonly Scheduling[] => {
   const searchTerm = terms.toLowerCase();
 
   return rows.filter((item) => {
