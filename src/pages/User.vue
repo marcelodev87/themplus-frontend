@@ -112,7 +112,7 @@ onMounted(async () => {
         bordered
         dense
         row-key="name"
-        no-data-label="Nenhuma conta para mostrar"
+        no-data-label="Nenhum usuário para mostrar"
       >
         <template v-slot:top>
           <span class="text-subtitle2">Lista de usuários</span>

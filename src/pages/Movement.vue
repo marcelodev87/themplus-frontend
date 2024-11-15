@@ -3,7 +3,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormCategory from 'src/components/forms/FormCategory.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useMovementStore } from 'src/stores/movement-store';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -13,9 +13,12 @@ defineOptions({
   name: 'Movement',
 });
 
-const { getMovements, deleteMovement } = useMovementStore();
+const { getMovements, getMovementsWithParams, deleteMovement } =
+  useMovementStore();
 const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
 
+const onlyEntry = ref<boolean>(false);
+const onlyOut = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
@@ -127,6 +130,36 @@ const exclude = async (id: string) => {
   await deleteMovement(id);
 };
 
+watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
+  let lastChanged = null;
+
+  if (newEntry !== oldEntry) {
+    lastChanged = 'onlyEntry';
+  }
+  if (newOut !== oldOut) {
+    lastChanged = 'onlyOut';
+  }
+
+  if (lastChanged === 'onlyEntry') {
+    if (newEntry) {
+      onlyOut.value = false;
+    }
+  }
+  if (lastChanged === 'onlyOut') {
+    if (newOut) {
+      onlyEntry.value = false;
+    }
+  }
+
+  const shouldCallWithParams = newEntry || newOut;
+
+  if (shouldCallWithParams) {
+    await getMovementsWithParams(newEntry, newOut);
+  } else {
+    await getMovements();
+  }
+});
+
 onMounted(async () => {
   await getMovements();
 });
@@ -177,11 +210,23 @@ onMounted(async () => {
         bordered
         dense
         row-key="name"
-        no-data-label="Nenhuma conta para mostrar"
+        no-data-label="Nenhuma movimentação para mostrar"
       >
         <template v-slot:top>
           <span class="text-subtitle2">Lista de categorias</span>
           <q-space />
+          <q-toggle
+            v-model="onlyEntry"
+            color="primary"
+            label="Entradas"
+            left-label
+          />
+          <q-toggle
+            v-model="onlyOut"
+            color="primary"
+            label="Saídas"
+            left-label
+          />
           <q-input filled v-model="filterMovement" dense label="Pesquisar">
             <template v-slot:prepend>
               <q-icon name="search" />

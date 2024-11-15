@@ -15,6 +15,17 @@ export const getMovementsService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
+export const getMovementsWithParamsService = (
+  entry: boolean,
+  out: boolean
+): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+    message: string;
+  };
+}> => api.get(`${baseUrl}/filter?entry=${entry}&out=${out}`);
+
 export const getMovementInformationsService = (
   type: string
 ): Promise<{

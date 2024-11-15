@@ -7,6 +7,7 @@ import {
   deleteMovementService,
   getMovementInformationsService,
   getMovementsService,
+  getMovementsWithParamsService,
   updateMovementService,
 } from 'src/services/movement-service';
 import {
@@ -71,6 +72,20 @@ export const useMovementStore = defineStore('movement', {
       this.setLoading(true);
       try {
         const response = await getMovementsService();
+        if (response.status === 200) {
+          this.clearListMovement();
+          this.setListMovement(response.data.movements);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getMovementsWithParams(entry: boolean, out: boolean) {
+      try {
+        this.setLoading(true);
+        const response = await getMovementsWithParamsService(entry, out);
         if (response.status === 200) {
           this.clearListMovement();
           this.setListMovement(response.data.movements);
