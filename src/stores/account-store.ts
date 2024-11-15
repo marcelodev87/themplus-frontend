@@ -7,6 +7,7 @@ import {
   getAccountsService,
   updateAccountService,
   deleteAccountService,
+  createTransferService,
 } from 'src/services/account-service';
 import { Account } from 'src/ts/interfaces/data/Account';
 
@@ -87,6 +88,31 @@ export const useAccountStore = defineStore('account', {
           accountNumber,
           agencyNumber,
           description
+        );
+        if (response.status === 201) {
+          this.clearListAccount();
+          this.setListAccount(response.data.accounts);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async createTransfer(
+      accountOut: string,
+      accountEntry: string,
+      value: number,
+      date: string
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await createTransferService(
+          accountOut,
+          accountEntry,
+          value,
+          date
         );
         if (response.status === 201) {
           this.clearListAccount();

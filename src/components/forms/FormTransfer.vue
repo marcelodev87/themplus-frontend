@@ -5,7 +5,6 @@ import { DataTransfer } from 'src/ts/interfaces/data/Transfer';
 import { Notify } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useAccountStore } from 'src/stores/account-store';
-import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 defineOptions({
   name: 'FormTransfer',
@@ -19,9 +18,8 @@ const emit = defineEmits<{
 }>();
 
 const { accountsSelect } = storeToRefs(useAccountStore());
+const { createTransfer } = useAccountStore();
 
-const filterAccountOut = reactive<QuasarSelect<string>[]>([]);
-const filterAccountEntry = reactive<QuasarSelect<string>[]>([]);
 const dataTransfer = reactive<DataTransfer>({
   value: null,
   date: null,
@@ -35,19 +33,25 @@ const open = computed({
 });
 
 const checkData = (): { status: boolean; message?: string } => {
-  if (dataTransfer.account_out == null) {
+  if (dataTransfer.account_out === null) {
     return {
       status: false,
       message: 'Deve ser selecionado de onde está saindo a transferência',
     };
   }
-  if (dataTransfer.account_enter == null) {
+  if (dataTransfer.account_enter === null) {
     return {
       status: false,
       message: 'Deve ser selecionado onde está entrando a transferência',
     };
   }
-  if (dataTransfer.value == null) {
+  if (dataTransfer.account_enter === dataTransfer.account_out) {
+    return {
+      status: false,
+      message: 'Deve ser selecionado contas distintas para transferência',
+    };
+  }
+  if (dataTransfer.value === null) {
     return {
       status: false,
       message: 'Deve ser informado o valor da transferência',
@@ -67,9 +71,15 @@ const checkData = (): { status: boolean; message?: string } => {
 
   return { status: true };
 };
-const save = () => {
+const save = async () => {
   const check = checkData();
   if (check.status) {
+    await createTransfer(
+      dataTransfer.account_out?.value ?? '',
+      dataTransfer.account_enter?.value ?? '',
+      dataTransfer.value ?? 0,
+      dataTransfer.date ?? ''
+    );
     emit('update:open');
   } else {
     Notify.create({
@@ -87,7 +97,7 @@ const clear = (): void => {
   });
 };
 
-watch(open, async () => {
+watch(open, () => {
   if (open.value) {
     clear();
   }
@@ -196,15 +206,6 @@ watch(open, async () => {
             flat
             @click="open = false"
             :disable="false"
-            unelevated
-            no-caps
-          />
-          <q-btn
-            @click="save"
-            color="primary"
-            label="Agendadas"
-            size="md"
-            :loading="false"
             unelevated
             no-caps
           />

@@ -30,6 +30,25 @@ export const createAccountService = (
     description,
   });
 
+export const createTransferService = (
+  accountOut: string,
+  accountEntry: string,
+  value: number,
+  date: string
+): Promise<{
+  status: number;
+  data: {
+    accounts: Account[];
+    message: string;
+  };
+}> =>
+  api.post(`${baseUrl}/transfer`, {
+    accountOut,
+    accountEntry,
+    value,
+    date,
+  });
+
 export const updateAccountService = (
   id: string,
   name: string,

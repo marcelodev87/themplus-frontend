@@ -40,7 +40,7 @@ const {
 } = storeToRefs(useSchedulingStore());
 
 const dataOut = reactive<DataOut>({
-  type: 'saida',
+  type: 'saída',
   value: '',
   description: '',
   file: null,
