@@ -8,6 +8,7 @@ import {
   updateAccountService,
   deleteAccountService,
   createTransferService,
+  exportAccountService,
 } from 'src/services/account-service';
 import { Account } from 'src/ts/interfaces/data/Account';
 
@@ -119,6 +120,16 @@ export const useAccountStore = defineStore('account', {
           this.setListAccount(response.data.accounts);
           this.createSuccess(response.data.message);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportAccount() {
+      try {
+        this.setLoading(true);
+        await exportAccountService();
       } catch (error) {
         this.createError(error);
       } finally {

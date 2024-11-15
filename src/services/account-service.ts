@@ -1,7 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { api } from 'boot/axios';
 import { Account } from 'src/ts/interfaces/data/Account';
+import { Notify } from 'quasar';
+import { AxiosError } from 'axios';
 
 const baseUrl = 'account';
+
+const createError = (error: any) => {
+  let message = 'Error';
+  if (error instanceof AxiosError) {
+    message = error.response?.data?.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  Notify.create({
+    message,
+    type: 'negative',
+  });
+};
 
 export const getAccountsService = (): Promise<{
   status: number;
@@ -48,6 +64,29 @@ export const createTransferService = (
     value,
     date,
   });
+
+export const exportAccountService = async () => {
+  try {
+    const response = await api.post(`${baseUrl}/export`, null, {
+      responseType: 'blob',
+    });
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `contas_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
 
 export const updateAccountService = (
   id: string,

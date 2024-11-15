@@ -12,10 +12,11 @@ defineOptions({
   name: 'Account',
 });
 
-const { getAccounts } = useAccountStore();
+const { getAccounts, exportAccount } = useAccountStore();
 const { loadingAccount, listAccount } = storeToRefs(useAccountStore());
 
 const showFormAccount = ref<boolean>(false);
+const loadingExport = ref<boolean>(false);
 const selectedDataEdit = ref<Account | null>(null);
 const filterAccount = ref<string>('');
 const showFormTransfer = ref<boolean>(false);
@@ -79,6 +80,11 @@ const handleEdit = (account: Account) => {
   selectedDataEdit.value = account;
   openFormAccount();
 };
+const exportData = async (): Promise<void> => {
+  loadingExport.value = true;
+  await exportAccount();
+  loadingExport.value = false;
+};
 
 onMounted(async () => {
   await getAccounts();
@@ -91,6 +97,16 @@ onMounted(async () => {
         <TitlePage title="Gerenciamento de contas" />
       </div>
       <div class="col-6 row items-center justify-end q-gutter-x-sm">
+        <q-btn
+          @click="exportData"
+          :loading="loadingExport"
+          flat
+          color="black"
+          icon-right="download"
+          label="Exportar"
+          unelevated
+          no-caps
+        />
         <q-btn
           @click="openFormTransfer"
           color="blue-8"
