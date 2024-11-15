@@ -203,6 +203,14 @@ const customFilterScheduling = (
     );
   });
 };
+const isPastDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  return date <= yesterday;
+};
 
 onMounted(async () => {
   await getSchedulings();
@@ -288,7 +296,7 @@ onMounted(async () => {
           <q-tr
             :props="props"
             style="height: 28px"
-            :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+            :class="[props.row.type === 'entrada' ? 'text-green' : 'text-red']"
           >
             <q-td key="name" :props="props" class="text-left">
               {{ props.row.account.name }}
@@ -305,8 +313,20 @@ onMounted(async () => {
             <q-td key="value" :props="props" class="text-left">
               {{ `R$ ${props.row.value}` }}
             </q-td>
-            <q-td key="date_movement" :props="props" class="text-left">
+            <q-td
+              key="date_movement"
+              :props="props"
+              class="text-left q-gutter-x-sm"
+            >
               {{ formatDate(props.row.date_movement) }}
+              <q-icon
+                v-show="isPastDate(props.row.date_movement)"
+                name="dangerous"
+                size="16px"
+                color="black"
+              >
+                <q-tooltip> Expirado </q-tooltip>
+              </q-icon>
             </q-td>
             <q-td key="description" :props="props" class="text-left">
               {{ props.row.description }}
