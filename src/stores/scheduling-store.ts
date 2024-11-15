@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import {
   createSchedulingService,
   deleteSchedulingService,
+  exportSchedulingService,
   finalizeSchedulingService,
   getSchedulingInformationsService,
   getSchedulingsService,
@@ -116,6 +117,16 @@ export const useSchedulingStore = defineStore('scheduling', {
           this.setListAccount(response.data.accounts);
           this.setListCategory(response.data.categories);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportScheduling(entry: boolean, out: boolean, expired: boolean) {
+      try {
+        this.setLoading(true);
+        await exportSchedulingService(entry, out, expired);
       } catch (error) {
         this.createError(error);
       } finally {

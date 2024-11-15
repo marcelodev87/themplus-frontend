@@ -95,7 +95,7 @@ export const exportMovementService = async (entry: boolean, out: boolean) => {
     const url2 = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url2;
-    link.setAttribute('download', `movements_${timestamp}.xlsx`);
+    link.setAttribute('download', `movimentacoes_${timestamp}.xlsx`);
     document.body.appendChild(link);
     link.click();
     link.remove();

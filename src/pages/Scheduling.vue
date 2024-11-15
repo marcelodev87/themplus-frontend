@@ -18,6 +18,7 @@ const { loadingScheduling, listScheduling } = storeToRefs(useSchedulingStore());
 const {
   getSchedulings,
   getSchedulingsWithParams,
+  exportScheduling,
   deleteScheduling,
   finalizeScheduling,
 } = useSchedulingStore();
@@ -25,6 +26,7 @@ const {
 const onlyExpired = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
+const loadingExport = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
@@ -175,6 +177,11 @@ const isPastDate = (dateString: string) => {
 
   return date <= yesterday;
 };
+const exportData = async (): Promise<void> => {
+  loadingExport.value = true;
+  await exportScheduling(onlyEntry.value, onlyOut.value, onlyExpired.value);
+  loadingExport.value = false;
+};
 
 watch(
   [onlyExpired, onlyEntry, onlyOut],
@@ -226,6 +233,16 @@ onMounted(async () => {
           color="black"
           icon-right="settings"
           label="Categorias"
+          unelevated
+          no-caps
+        />
+        <q-btn
+          @click="exportData"
+          :loading="loadingExport"
+          flat
+          color="black"
+          icon-right="download"
+          label="Exportar"
           unelevated
           no-caps
         />

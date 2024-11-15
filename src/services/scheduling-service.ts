@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
+import { Notify } from 'quasar';
 import {
   AccountInformation,
   CategoryInformation,
@@ -7,6 +10,18 @@ import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 
 const baseUrl = 'scheduling';
 
+const createError = (error: any) => {
+  let message = 'Error';
+  if (error instanceof AxiosError) {
+    message = error.response?.data?.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  Notify.create({
+    message,
+    type: 'negative',
+  });
+};
 export const getSchedulingsService = (): Promise<{
   status: number;
   data: {
@@ -35,6 +50,37 @@ export const getSchedulingInformationsService = (
     accounts: AccountInformation[];
   };
 }> => api.get(`${baseUrl}/informations/${type}`);
+
+export const exportSchedulingService = async (
+  entry: boolean,
+  out: boolean,
+  expired: boolean
+) => {
+  try {
+    const response = await api.post(
+      `${baseUrl}/export?entry=${entry}&out=${out}&expired=${expired}`,
+      null,
+      {
+        responseType: 'blob',
+      }
+    );
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `agendamentos_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
 
 export const createSchedulingService = (
   type: string,

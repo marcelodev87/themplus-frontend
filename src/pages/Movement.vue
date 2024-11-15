@@ -20,6 +20,7 @@ const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
 
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
+const loadingExport = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
@@ -156,7 +157,9 @@ const customFilterMovement = (
   });
 };
 const exportData = async (): Promise<void> => {
+  loadingExport.value = true;
   await exportMovement(onlyEntry.value, onlyOut.value);
+  loadingExport.value = false;
 };
 
 watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
@@ -211,6 +214,7 @@ onMounted(async () => {
         />
         <q-btn
           @click="exportData"
+          :loading="loadingExport"
           flat
           color="black"
           icon-right="download"
