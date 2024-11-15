@@ -15,6 +15,23 @@ export const useAccountStore = defineStore('account', {
     loadingAccount: false as boolean,
     listAccount: [] as Account[],
   }),
+  getters: {
+    accountsSelect: (state) => {
+      return state.listAccount.map((item) => {
+        const accountPart = item.account_number
+          ? `C:${item.account_number}`
+          : '';
+        const agencyPart = item.agency_number ? `A:${item.agency_number}` : '';
+
+        const label = `${item.name}${accountPart ? ` - ${accountPart}` : ''}${agencyPart ? ` - ${agencyPart}` : ''}`;
+
+        return {
+          label,
+          value: item.id,
+        };
+      });
+    },
+  },
   actions: {
     clearListAccount() {
       this.listAccount.splice(0, this.listAccount.length);

@@ -3,6 +3,9 @@ import { computed, reactive, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { DataTransfer } from 'src/ts/interfaces/data/Transfer';
 import { Notify } from 'quasar';
+import { storeToRefs } from 'pinia';
+import { useAccountStore } from 'src/stores/account-store';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 defineOptions({
   name: 'FormTransfer',
@@ -15,30 +18,16 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { accountsSelect } = storeToRefs(useAccountStore());
+
+const filterAccountOut = reactive<QuasarSelect<string>[]>([]);
+const filterAccountEntry = reactive<QuasarSelect<string>[]>([]);
 const dataTransfer = reactive<DataTransfer>({
   value: null,
   date: null,
   account_out: null,
   account_enter: null,
 });
-const optionsConta = reactive([
-  {
-    label: 'Caixa',
-    value: 'krhbfrhb',
-  },
-  {
-    label: 'Banco do Brasil',
-    value: 'vrbyvbryuv',
-  },
-  {
-    label: 'Bradesco',
-    value: 'rgurhguirgnb',
-  },
-  {
-    label: 'Santander',
-    value: 'f34f84jhfm',
-  },
-]);
 
 const open = computed({
   get: () => props.open,
@@ -98,7 +87,7 @@ const clear = (): void => {
   });
 };
 
-watch(open, () => {
+watch(open, async () => {
   if (open.value) {
     clear();
   }
@@ -114,7 +103,7 @@ watch(open, () => {
         <q-form class="q-gutter-y-sm column items-center">
           <q-select
             v-model="dataTransfer.account_out"
-            :options="optionsConta"
+            :options="accountsSelect"
             label="De onde está saindo?"
             filled
             clearable
@@ -131,7 +120,7 @@ watch(open, () => {
           </q-select>
           <q-select
             v-model="dataTransfer.account_enter"
-            :options="optionsConta"
+            :options="accountsSelect"
             label="Para onde está indo?"
             filled
             clearable
@@ -207,6 +196,15 @@ watch(open, () => {
             flat
             @click="open = false"
             :disable="false"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            @click="save"
+            color="primary"
+            label="Agendadas"
+            size="md"
+            :loading="false"
             unelevated
             no-caps
           />
