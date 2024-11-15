@@ -20,7 +20,6 @@ export const useDepartmentStore = defineStore('department', {
       function transformToTree(departments: Department[]): DepartmentNode[] {
         const map: { [key: string]: DepartmentNode } = {};
 
-        // Passo 1: Mapear cada departamento
         departments.forEach((department) => {
           map[department.id] = {
             id: department.id,
@@ -31,13 +30,10 @@ export const useDepartmentStore = defineStore('department', {
 
         const tree: DepartmentNode[] = [];
 
-        // Passo 2: Construir a árvore de departamentos
         departments.forEach((department) => {
           if (department.parent_id && map[department.parent_id]) {
-            // Adiciona como filho se tiver um parent_id válido
             map[department.parent_id].children.push(map[department.id]);
           } else {
-            // Adiciona como raiz se não tiver parent_id
             tree.push(map[department.id]);
           }
         });

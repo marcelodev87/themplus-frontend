@@ -1,6 +1,6 @@
 export interface DataUser {
   name: string;
-  position: 'admin' | 'common_user';
+  position: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -8,10 +8,23 @@ export interface DataUser {
 
 export interface DataUserMember {
   name: string;
-  position: 'admin' | 'common_user';
+  position: string;
   email: string;
   password: string;
   confirmPassword?: string;
+  department: string | null;
+  departmentName?: string | null;
+  phone: string;
+}
+export interface DataUserMember2 {
+  name: string;
+  position: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  department: string | null;
+  departmentName?: string | null;
+  phone: string | null;
 }
 
 export interface DataRegister {

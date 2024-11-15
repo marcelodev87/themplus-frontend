@@ -6,6 +6,8 @@ import { DataUserMember, User } from 'src/ts/interfaces/data/User';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { storeToRefs } from 'pinia';
 import { useUsersMembersStore } from 'src/stores/users-store';
+import { useDepartmentStore } from 'src/stores/department_store';
+import DepartmentChoose from '../shared/DepartmentChoose.vue';
 
 defineOptions({
   name: 'FormUser',
@@ -19,15 +21,21 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { listDepartment, loadingDepartment } = storeToRefs(useDepartmentStore());
+const { getDepartments } = useDepartmentStore();
 const { loadingUsersMembers } = storeToRefs(useUsersMembersStore());
 const { createUserMember, updateUserMember } = useUsersMembersStore();
 
+const showDepartmentChoose = ref<boolean>(false);
 const dataUser = reactive<DataUserMember>({
   name: '',
   position: 'common_user',
+  phone: '',
   email: '',
   password: '',
   confirmPassword: '',
+  department: null,
+  departmentName: null,
 });
 const optionsUserPositions = reactive([
   {
@@ -69,6 +77,11 @@ const checkData = (): { status: boolean; message?: string } => {
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
+  if (dataUser.phone.trim() !== '') {
+    if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone.trim())) {
+      return { status: false, message: 'Digite um telefone válido' };
+    }
+  }
   if (props.dataEdit === null) {
     if (dataUser.password.trim() === '') {
       return {
@@ -98,6 +111,9 @@ const clear = (): void => {
     email: '',
     password: '',
     confirmPassword: '',
+    department: null,
+    departmentName: null,
+    phone: '',
   });
 };
 const save = async () => {
@@ -105,9 +121,11 @@ const save = async () => {
   if (check.status) {
     await createUserMember(
       dataUser.name,
-      dataUser.position,
+      selectedUserPosition.value.value,
       dataUser.email,
-      dataUser.password
+      dataUser.password,
+      dataUser.department ?? null,
+      dataUser.phone?.trim() !== '' ? dataUser.phone : null
     );
     clear();
     emit('update:open');
@@ -125,9 +143,9 @@ const update = async () => {
       props.dataEdit?.id ?? '',
       dataUser.name,
       dataUser.email,
-      null,
-      dataUser.position,
-      null
+      dataUser.phone?.trim() !== '' ? dataUser.phone : null,
+      selectedUserPosition.value.value,
+      dataUser.department ?? null
     );
     clear();
     emit('update:open');
@@ -144,6 +162,13 @@ const checkDataEdit = () => {
       name: props.dataEdit.name,
       email: props.dataEdit.email,
       position: props.dataEdit.position,
+      phone: props.dataEdit.phone === null ? '' : props.dataEdit.phone,
+      department: props.dataEdit.department_id ?? null,
+      departmentName: props.dataEdit.department_id
+        ? listDepartment.value.find(
+            (item) => item.id === props.dataEdit?.department_id
+          )?.name
+        : null,
     });
     selectedUserPosition.value =
       props.dataEdit !== null && props.dataEdit.position === 'admin'
@@ -151,10 +176,27 @@ const checkDataEdit = () => {
         : { label: 'Usuário comum', value: 'common_user' };
   }
 };
+const openDepartmentChoose = (): void => {
+  showDepartmentChoose.value = true;
+};
+const closeDepartmentChoose = (): void => {
+  showDepartmentChoose.value = false;
+};
+const handleChooseDepartment = (
+  tree: { id: string; label: string } | null
+): void => {
+  dataUser.department = tree === null ? null : tree.id;
+  dataUser.departmentName = tree === null ? null : tree.label;
+  closeDepartmentChoose();
+};
+const fetchDepartments = async () => {
+  await getDepartments();
+};
 
-watch(open, () => {
+watch(open, async () => {
   if (open.value) {
     clear();
+    await fetchDepartments();
     checkDataEdit();
   }
 });
@@ -163,7 +205,13 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastre um usuário" />
+        <TitlePage
+          :title="
+            props.dataEdit === null
+              ? 'Cadastre um usuário'
+              : 'Atualize um usuário'
+          "
+        />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
@@ -193,6 +241,20 @@ watch(open, () => {
               <q-icon name="mail" color="black" size="20px" />
             </template>
           </q-input>
+          <q-input
+            v-model="dataUser.phone"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite o telefone do usuário"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="call" color="black" size="20px" />
+            </template>
+          </q-input>
+          selectedUserPosition {{ selectedUserPosition }}
           <q-select
             filled
             v-model="selectedUserPosition"
@@ -209,6 +271,34 @@ watch(open, () => {
               <q-icon name="supervisor_account" color="black" size="20px" />
             </template>
           </q-select>
+          <q-input
+            v-model="dataUser.departmentName"
+            bg-color="white"
+            label-color="black"
+            filled
+            type="text"
+            label="Escolher hierarquia"
+            readonly
+            disabled
+            clearable
+            dense
+          >
+            <template v-slot:prepend>
+              <q-icon name="groups" color="black" size="20px" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                name="search"
+                class="cursor-pointer"
+                @click="openDepartmentChoose"
+              />
+            </template>
+          </q-input>
+          <DepartmentChoose
+            :open="showDepartmentChoose"
+            @update:open="closeDepartmentChoose"
+            @update:choose-department="handleChooseDepartment"
+          />
           <q-input
             v-show="props.dataEdit === null"
             v-model="dataUser.password"
@@ -273,6 +363,14 @@ watch(open, () => {
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingDepartment"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
   </q-dialog>
 </template>

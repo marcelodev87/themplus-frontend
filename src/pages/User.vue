@@ -65,11 +65,16 @@ const columnsUser = reactive<QuasarTable[]>([
   },
 ]);
 
+const clear = (): void => {
+  selectedDataEdit.value = null;
+  filterUser.value = '';
+};
 const openFormUser = (): void => {
   showFormUser.value = true;
 };
 const closeFormUser = (): void => {
   showFormUser.value = false;
+  clear();
 };
 const handleEdit = (data: User) => {
   selectedDataEdit.value = data;
@@ -142,7 +147,11 @@ onMounted(async () => {
               }}
             </q-td>
             <q-td key="department" :props="props" class="text-left">
-              {{ `Não definido` }}
+              {{
+                props.row.department_id
+                  ? props.row.department.name
+                  : `Não definido`
+              }}
             </q-td>
             <q-td key="action" :props="props">
               <q-btn

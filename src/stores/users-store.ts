@@ -59,9 +59,11 @@ export const useUsersMembersStore = defineStore('members', {
     },
     async createUserMember(
       name: string,
-      position: 'admin' | 'common_user',
+      position: string,
       email: string,
-      password: string
+      password: string,
+      department: string | null,
+      phone: string | null
     ) {
       this.setLoading(true);
       try {
@@ -70,6 +72,8 @@ export const useUsersMembersStore = defineStore('members', {
           position,
           email,
           password,
+          department,
+          phone,
         });
         if (response.status === 201) {
           this.clearListUser();
@@ -90,8 +94,8 @@ export const useUsersMembersStore = defineStore('members', {
       position: string,
       departmentId: string | null
     ) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await updateUserMemberService(
           id,
           name,

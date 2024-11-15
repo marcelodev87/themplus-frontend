@@ -1,5 +1,5 @@
 import { api } from 'boot/axios';
-import { DataUserMember, User } from 'src/ts/interfaces/data/User';
+import { DataUserMember2, User } from 'src/ts/interfaces/data/User';
 
 const baseUrl = 'member';
 
@@ -11,7 +11,7 @@ export const getUsersMembersService = (): Promise<{
 }> => api.get(`${baseUrl}`);
 
 export const createUserMemberService = (
-  payload: DataUserMember
+  payload: DataUserMember2
 ): Promise<{
   status: number;
   data: {
@@ -26,7 +26,7 @@ export const updateUserMemberService = (
   email: string,
   phone: string | null,
   position: string,
-  departmentId: string | null
+  department: string | null
 ): Promise<{
   status: number;
   data: {
@@ -40,7 +40,7 @@ export const updateUserMemberService = (
     email,
     phone,
     position,
-    departmentId,
+    department,
   });
 
 export const deleteUserMemberService = (
