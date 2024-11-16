@@ -1,20 +1,63 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormAlert from 'src/components/forms/FormAlert.vue';
-import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAlertStore } from 'src/stores/alert-store';
+import { onMounted, reactive, ref } from 'vue';
+import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { Alert } from 'src/ts/interfaces/data/Alert';
 
 defineOptions({
   name: 'Alert',
 });
 
-const showFormAlert = ref<boolean>(false);
+const { listAlert, loadingAlert } = storeToRefs(useAlertStore());
+const { getAlerts, deleteAlert } = useAlertStore();
 
+const showFormAlert = ref<boolean>(false);
+const filterAlert = ref<string>('');
+const selectedDataEdit = ref<Alert | null>(null);
+const columnsAlert = reactive<QuasarTable[]>([
+  {
+    name: 'description',
+    label: 'Descrição',
+    field: 'description',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'action',
+    label: 'Ação',
+    field: 'action',
+    align: 'right',
+  },
+]);
+
+const clear = (): void => {
+  selectedDataEdit.value = null;
+  filterAlert.value = '';
+};
 const openFormAlert = (): void => {
   showFormAlert.value = true;
 };
 const closeFormAlert = (): void => {
   showFormAlert.value = false;
+  clear();
 };
+const handleEdit = (alert: Alert) => {
+  selectedDataEdit.value = alert;
+  openFormAlert();
+};
+const exclude = async (id: string) => {
+  await deleteAlert(id);
+};
+const fetchAlerts = async () => {
+  await getAlerts();
+};
+
+onMounted(async () => {
+  await fetchAlerts();
+});
 </script>
 <template>
   <section>
@@ -34,8 +77,60 @@ const closeFormAlert = (): void => {
         />
       </div>
     </header>
-    <main>
-      <FormAlert :open="showFormAlert" @update:open="closeFormAlert" />
+    <main class="q-pa-sm">
+      <q-table
+        :rows="loadingAlert ? [] : listAlert"
+        :columns="columnsAlert"
+        :filter="filterAlert"
+        :loading="loadingAlert"
+        style="max-height: 400px"
+        flat
+        bordered
+        dense
+        row-key="name"
+        no-data-label="Nenhuma alerta para mostrar"
+      >
+        <template v-slot:top>
+          <span class="text-subtitle2">Lista de alertas</span>
+          <q-space />
+          <q-input filled v-model="filterAlert" dense label="Pesquisar">
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props" style="height: 28px">
+            <q-td key="description" :props="props" class="text-left">
+              {{ props.row.description }}
+            </q-td>
+            <q-td key="action" :props="props">
+              <q-btn
+                @click="handleEdit(props.row)"
+                size="sm"
+                flat
+                round
+                color="black"
+                icon="edit"
+                :disabled="false"
+              />
+              <q-btn
+                @click="exclude(props.row.id)"
+                size="sm"
+                flat
+                round
+                color="red"
+                icon="delete"
+              />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+      <FormAlert
+        :open="showFormAlert"
+        :data-edit="selectedDataEdit"
+        @update:open="closeFormAlert"
+      />
     </main>
   </section>
 </template>

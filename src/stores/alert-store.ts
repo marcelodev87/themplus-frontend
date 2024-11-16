@@ -14,14 +14,13 @@ export const useAlertStore = defineStore('alert', {
   state: () => ({
     loadingAlert: false as boolean,
     listAlert: [] as Alert[],
-    loading: false as boolean,
   }),
   actions: {
     clearListAlert() {
       this.listAlert.splice(0, this.listAlert.length);
     },
     setLoading(loading: boolean) {
-      this.loading = loading;
+      this.loadingAlert = loading;
     },
     setListAlert(alerts: Alert[]) {
       alerts.map((item) => this.listAlert.push(item));
@@ -73,7 +72,7 @@ export const useAlertStore = defineStore('alert', {
         this.setLoading(false);
       }
     },
-    async updateCategory(id: string, description: string | null) {
+    async updateAlert(id: string, description: string | null) {
       this.setLoading(true);
       try {
         const response = await updateAlertService(id, description ?? null);

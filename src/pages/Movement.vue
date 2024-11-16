@@ -332,14 +332,22 @@ onMounted(async () => {
       <FormEntry
         :open="showFormEntry"
         :data-edit="selectedDataEdit"
-        title="Registre uma entrada"
+        :title="
+          selectedDataEdit === null
+            ? 'Registre uma entrada'
+            : 'Atualize uma entrada'
+        "
         mode="movement"
         @update:open="closeFormEntry"
       />
       <FormOut
         :open="showFormOut"
         :data-edit="selectedDataEdit"
-        title="Registre uma saída"
+        :title="
+          selectedDataEdit === null
+            ? 'Registre uma saída'
+            : 'Atualize uma saída'
+        "
         mode="movement"
         @update:open="closeFormOut"
       />

@@ -2,13 +2,20 @@
 import { computed, reactive, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
+import { storeToRefs } from 'pinia';
+import { useAlertStore } from 'src/stores/alert-store';
+import { Alert } from 'src/ts/interfaces/data/Alert';
 
 defineOptions({
   name: 'FormAlert',
 });
 
+const { loadingAlert } = storeToRefs(useAlertStore());
+const { createAlert, updateAlert } = useAlertStore();
+
 const props = defineProps<{
   open: boolean;
+  dataEdit: Alert | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -32,9 +39,14 @@ const checkData = (): { status: boolean; message?: string } => {
   }
   return { status: true };
 };
-const save = () => {
+const clear = (): void => {
+  dataAlert.description = '';
+};
+const save = async () => {
   const check = checkData();
   if (check.status) {
+    await createAlert(dataAlert.description);
+    clear();
     emit('update:open');
   } else {
     Notify.create({
@@ -43,13 +55,31 @@ const save = () => {
     });
   }
 };
-const clear = (): void => {
-  dataAlert.description = '';
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateAlert(props.dataEdit?.id ?? '', dataAlert.description);
+    clear();
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+const checkDataEdit = () => {
+  if (props.dataEdit !== null) {
+    Object.assign(dataAlert, {
+      description: props.dataEdit.description,
+    });
+  }
 };
 
 watch(open, () => {
   if (open.value) {
     clear();
+    checkDataEdit();
   }
 });
 </script>
@@ -57,7 +87,13 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastro de categorias de movimentações" />
+        <TitlePage
+          :title="
+            props.dataEdit === null
+              ? 'Registre uma alerta'
+              : 'Atualize uma alerta'
+          "
+        />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form>
@@ -82,21 +118,31 @@ watch(open, () => {
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
+            @click="open = false"
             color="red"
             label="Fechar"
             size="md"
             flat
-            @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
           <q-btn
+            v-if="props.dataEdit === null"
             @click="save"
+            :loading="loadingAlert"
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            :loading="loadingAlert"
+            color="primary"
+            label="Atualizar"
+            size="md"
             unelevated
             no-caps
           />

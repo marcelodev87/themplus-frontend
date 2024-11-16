@@ -107,7 +107,7 @@ watch(open, () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Faça uma transferência" />
+        <TitlePage title="Registre uma transferência" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm column items-center">

@@ -148,7 +148,7 @@ watch(open, async () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastro de categorias de movimentações" />
+        <TitlePage title="Cadastre categorias de movimentações" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form class="q-gutter-y-sm">

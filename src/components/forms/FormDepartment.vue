@@ -157,7 +157,13 @@ watch(
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastre um departamento" />
+        <TitlePage
+          :title="
+            props.departmentEdit === null
+              ? 'Cadastre um departamento'
+              : 'Atualize um departamento'
+          "
+        />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
