@@ -40,17 +40,17 @@ const menuList = computed(() => [
     name: 'admin-scheduling',
   },
   {
+    icon: 'category',
+    label: 'Categorias',
+    separator: true,
+    name: 'admin-category',
+  },
+  {
     icon: 'account_balance',
     label: 'Contas',
     separator: true,
     name: 'admin-account',
   },
-  // {
-  //   icon: 'inventory',
-  //   label: 'Relatórios',
-  //   separator: true,
-  //   name: 'admin-reports',
-  // },
   {
     icon: 'person',
     label: 'Usuários',

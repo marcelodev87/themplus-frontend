@@ -13,19 +13,21 @@ export const getCategoriesService = (): Promise<{
 
 export const createCategoryService = (
   name: string,
-  type: string
+  type: string,
+  alert: string | null
 ): Promise<{
   status: number;
   data: {
     categories: Category[];
     message: string;
   };
-}> => api.post(`${baseUrl}/`, { name, type });
+}> => api.post(`${baseUrl}/`, { name, type, alert });
 
 export const updateCategoryService = (
   id: string,
   name: string,
-  type: string
+  type: string,
+  alert: string | null
 ): Promise<{
   status: number;
   data: {
@@ -37,6 +39,7 @@ export const updateCategoryService = (
     id,
     name,
     type,
+    alert,
   });
 
 export const deleteCategoryService = (

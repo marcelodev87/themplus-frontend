@@ -3,7 +3,6 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
-import FormCategory from 'src/components/forms/FormCategory.vue';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { storeToRefs } from 'pinia';
@@ -113,13 +112,6 @@ const openFormOut = (): void => {
 };
 const closeFormOut = (): void => {
   showFormOut.value = false;
-  clear();
-};
-const openFormCategory = (): void => {
-  showFormCategory.value = true;
-};
-const closeFormCategory = (): void => {
-  showFormCategory.value = false;
   clear();
 };
 const handleEdit = (scheduling: Scheduling): void => {
@@ -234,15 +226,6 @@ onMounted(async () => {
           color="black"
           icon-right="download"
           label="Exportar"
-          unelevated
-          no-caps
-        />
-        <q-btn
-          @click="openFormCategory"
-          flat
-          color="black"
-          icon-right="settings"
-          label="Categorias"
           unelevated
           no-caps
         />
@@ -391,7 +374,6 @@ onMounted(async () => {
         mode="schedule"
         @update:open="closeFormOut"
       />
-      <FormCategory :open="showFormCategory" @update:open="closeFormCategory" />
     </main>
   </section>
 </template>

@@ -3,8 +3,9 @@ import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Category, DataCategory } from 'src/ts/interfaces/data/Category';
 import { Notify } from 'quasar';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useCategoryStore } from 'src/stores/category-store';
+import { useAlertStore } from 'src/stores/alert-store';
 import { storeToRefs } from 'pinia';
 
 defineOptions({
@@ -13,56 +14,33 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  dataEdit: Category | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { createCategory, getCategories, deleteCategory, updateCategory } =
-  useCategoryStore();
-const { loadingCategory, listCategory } = storeToRefs(useCategoryStore());
+const { createCategory, updateCategory } = useCategoryStore();
+const { loadingCategory } = storeToRefs(useCategoryStore());
+const { loadingAlert, listAlert } = storeToRefs(useAlertStore());
+const { getAlerts } = useAlertStore();
 
+const selectedAlert = ref<QuasarSelect<string> | null>(null);
 const filterCategory = ref<string>('');
 const dataCategory = reactive<DataCategory>({
   name: '',
   type: 'Entrada',
 });
-const columnsCategory = reactive<QuasarTable[]>([
-  {
-    name: 'name',
-    label: 'Categoria',
-    field: 'name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'default',
-    label: 'Padrão',
-    field: 'default',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'type',
-    label: 'Tipo',
-    field: 'type',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'action',
-    label: 'Ação',
-    field: 'action',
-    align: 'right',
-  },
-]);
 const optionsTypeCategory = reactive<string[]>(['Entrada', 'Saída']);
-const categoryEdit = ref<Category | null>(null);
-const showModeEdit = ref<boolean>(false);
 
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
+});
+const optionsAlerts = computed(() => {
+  return listAlert.value.map((item) => {
+    return { label: item.description, value: item.id };
+  });
 });
 
 const checkData = (): { status: boolean; message?: string } => {
@@ -84,33 +62,19 @@ const clear = (): void => {
   dataCategory.name = '';
   dataCategory.type = 'Entrada';
   filterCategory.value = '';
+  selectedAlert.value = null;
 };
-const exclude = async (id: string) => {
-  clear();
-  await deleteCategory(id);
-};
-const openModeEdit = (): void => {
-  showModeEdit.value = true;
-};
-const closeModeEdit = (): void => {
-  showModeEdit.value = false;
-  categoryEdit.value = null;
-  clear();
-};
-const handleEdit = (category: Category) => {
-  clear();
-  categoryEdit.value = category;
-  Object.assign(dataCategory, {
-    name: category.name,
-    type: category.type === 'entrada' ? 'Entrada' : 'Saída',
-  });
-  openModeEdit();
-};
+
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    await createCategory(dataCategory.name, dataCategory.type);
+    await createCategory(
+      dataCategory.name,
+      dataCategory.type,
+      selectedAlert.value?.value ?? null
+    );
     clear();
+    emit('update:open');
   } else {
     Notify.create({
       message: check.message,
@@ -122,12 +86,13 @@ const update = async () => {
   const check = checkData();
   if (check.status) {
     await updateCategory(
-      categoryEdit.value?.id ?? '',
+      props.dataEdit?.id ?? '',
       dataCategory.name,
-      dataCategory.type
+      dataCategory.type,
+      selectedAlert.value?.value ?? null
     );
     clear();
-    closeModeEdit();
+    emit('update:open');
   } else {
     Notify.create({
       message: check.message,
@@ -135,12 +100,31 @@ const update = async () => {
     });
   }
 };
+const fetchInformations = async () => {
+  await getAlerts();
+};
+const checkEdit = () => {
+  if (props.dataEdit !== null) {
+    Object.assign(dataCategory, {
+      name: props.dataEdit.name,
+      type: props.dataEdit.type === 'entrada' ? 'Entrada' : 'Saída',
+    });
+
+    const foundItem = props.dataEdit.alert_id
+      ? listAlert.value.find((item) => item.id === props.dataEdit?.alert_id)
+      : null;
+
+    selectedAlert.value = foundItem
+      ? { label: foundItem.description, value: foundItem.id }
+      : null;
+  }
+};
 
 watch(open, async () => {
   if (open.value) {
-    closeModeEdit();
     clear();
-    await getCategories();
+    await fetchInformations();
+    checkEdit();
   }
 });
 </script>
@@ -148,7 +132,13 @@ watch(open, async () => {
   <q-dialog v-model="open" persistent>
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Cadastre categorias de movimentações" />
+        <TitlePage
+          :title="
+            props.dataEdit === null
+              ? 'Registre uma categoria'
+              : 'Atualize uma categoria'
+          "
+        />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form class="q-gutter-y-sm">
@@ -180,65 +170,23 @@ watch(open, async () => {
               <q-icon name="sync_alt" color="black" size="20px" />
             </template>
           </q-select>
+          <q-select
+            v-model="selectedAlert"
+            :options="optionsAlerts"
+            clearable
+            label="Selecione uma alerta"
+            filled
+            dense
+            options-dense
+            bg-color="white"
+            label-color="black"
+            class="full-width"
+          >
+            <template v-slot:prepend>
+              <q-icon name="warning" color="black" size="20px" />
+            </template>
+          </q-select>
         </q-form>
-        <q-table
-          v-show="!showModeEdit"
-          :rows="loadingCategory ? [] : listCategory"
-          :columns="columnsCategory"
-          :filter="filterCategory"
-          :loading="loadingCategory"
-          style="max-height: 400px"
-          flat
-          bordered
-          dense
-          row-key="name"
-          no-data-label="Nenhuma categoria para mostrar"
-        >
-          <template v-slot:top>
-            <span class="text-subtitle2">Lista de categorias</span>
-            <q-space />
-            <q-input filled v-model="filterCategory" dense label="Pesquisar">
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="name" :props="props" class="text-left">
-                {{ props.row.name }}
-              </q-td>
-              <q-td key="default" :props="props" class="text-left">
-                {{ props.row.enterprise_id === null ? 'Sim' : 'Não' }}
-              </q-td>
-              <q-td key="type" :props="props" class="text-left capitalize">
-                {{ props.row.type }}
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  @click="handleEdit(props.row)"
-                  v-show="props.row.enterprise_id !== null"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                  :disabled="false"
-                />
-                <q-btn
-                  @click="exclude(props.row.id)"
-                  v-show="props.row.enterprise_id !== null"
-                  size="sm"
-                  flat
-                  round
-                  color="negative"
-                  icon="delete"
-                  :disabled="false"
-                />
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
       </q-card-section>
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
@@ -252,16 +200,7 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
-            @click="closeModeEdit"
-            v-show="showModeEdit"
-            color="grey-8"
-            label="Voltar"
-            size="md"
-            unelevated
-            no-caps
-          />
-          <q-btn
-            v-if="categoryEdit"
+            v-if="props.dataEdit !== null"
             @click="update"
             :loading="loadingCategory"
             color="primary"
@@ -282,6 +221,14 @@ watch(open, async () => {
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingAlert || loadingCategory"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
   </q-dialog>
 </template>

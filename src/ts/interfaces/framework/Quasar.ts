@@ -8,6 +8,8 @@ export interface QuasarTable {
   sortable?: boolean;
   sort?: (a: any, b: any, rowA: any, rowB: any) => number;
   headerClasses?: string;
+  style?: string;
+  classes?: string;
 }
 
 export interface QuasarSelect<T> {

@@ -57,12 +57,17 @@ export const useCategoryStore = defineStore('category', {
         this.setLoading(false);
       }
     },
-    async createCategory(category: string, type: 'Entrada' | 'Saída') {
+    async createCategory(
+      category: string,
+      type: 'Entrada' | 'Saída',
+      alert: string | null
+    ) {
       this.setLoading(true);
       try {
         const response = await createCategoryService(
           category,
-          type.toLowerCase()
+          type.toLowerCase(),
+          alert
         );
         if (response.status === 201) {
           this.clearListCategory();
@@ -78,14 +83,16 @@ export const useCategoryStore = defineStore('category', {
     async updateCategory(
       id: string,
       category: string,
-      type: 'Entrada' | 'Saída'
+      type: 'Entrada' | 'Saída',
+      alert: string | null
     ) {
       this.setLoading(true);
       try {
         const response = await updateCategoryService(
           id,
           category,
-          type.toLowerCase()
+          type.toLowerCase(),
+          alert
         );
         if (response.status === 200) {
           this.clearListCategory();

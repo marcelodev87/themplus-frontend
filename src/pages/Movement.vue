@@ -1,7 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormCategory from 'src/components/forms/FormCategory.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
 import { onMounted, reactive, ref, watch } from 'vue';
@@ -21,7 +20,6 @@ const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
-const showFormCategory = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const filterMovement = ref<string>('');
@@ -91,12 +89,6 @@ const columnsMovement = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   selectedDataEdit.value = null;
-};
-const openFormCategory = (): void => {
-  showFormCategory.value = true;
-};
-const closeFormCategory = (): void => {
-  showFormCategory.value = false;
 };
 const openFormEntry = (): void => {
   showFormEntry.value = true;
@@ -214,15 +206,6 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
-          @click="openFormCategory"
-          flat
-          color="black"
-          icon-right="settings"
-          label="Categorias"
-          unelevated
-          no-caps
-        />
-        <q-btn
           @click="openFormOut"
           color="negative"
           icon-right="remove"
@@ -328,7 +311,6 @@ onMounted(async () => {
           </q-tr>
         </template>
       </q-table>
-      <FormCategory :open="showFormCategory" @update:open="closeFormCategory" />
       <FormEntry
         :open="showFormEntry"
         :data-edit="selectedDataEdit"
