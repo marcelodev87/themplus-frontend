@@ -41,6 +41,9 @@ export interface DataPerfil {
   passwordActual: string;
   passwordNew: string;
   passwordNewConfirm: string;
+  phone: string;
+  department: string | null;
+  departmentName: string | null;
 }
 
 export interface DataLogin {

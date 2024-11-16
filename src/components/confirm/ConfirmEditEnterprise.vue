@@ -80,6 +80,7 @@ onMounted(() => {
           label="Digite sua senha"
           dense
           input-class="text-black"
+          type="password"
         >
           <template v-slot:prepend>
             <q-icon name="lock" color="black" size="20px" />
@@ -93,6 +94,7 @@ onMounted(() => {
           label="Confirme sua senha"
           dense
           input-class="text-black"
+          type="password"
         >
           <template v-slot:prepend>
             <q-icon name="lock" color="black" size="20px" />

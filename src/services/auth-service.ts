@@ -36,14 +36,16 @@ export const doRegisterService = (
 
 export const updateUserDataService = (
   name: string,
-  email: string
+  email: string,
+  phone: string | null,
+  department: string | null
 ): Promise<{
   status: number;
   data: {
     user: User;
     message: string;
   };
-}> => api.put(`${baseUrl}/data`, { name, email });
+}> => api.put(`${baseUrl}/data`, { name, email, phone, department });
 
 export const updateUserPasswordService = (
   passwordActual: string,

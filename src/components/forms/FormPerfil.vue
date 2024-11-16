@@ -5,6 +5,8 @@ import { Notify } from 'quasar';
 import { DataPerfil } from 'src/ts/interfaces/data/User';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
+import { useDepartmentStore } from 'src/stores/department_store';
+import DepartmentChoose from '../shared/DepartmentChoose.vue';
 
 defineOptions({
   name: 'FormPerfil',
@@ -19,14 +21,20 @@ const emit = defineEmits<{
 
 const { loadingAuth, user } = storeToRefs(useAuthStore());
 const { updateUserData, updateUserPassword } = useAuthStore();
+const { listDepartment, loadingDepartment } = storeToRefs(useDepartmentStore());
+const { getDepartments } = useDepartmentStore();
 
 const mode = ref<'data' | 'password'>('data');
+const showDepartmentChoose = ref<boolean>(false);
 const dataPerfil = reactive<DataPerfil>({
   name: '',
   email: '',
   passwordActual: '',
   passwordNew: '',
   passwordNewConfirm: '',
+  phone: '',
+  department: null,
+  departmentName: null,
 });
 
 const open = computed({
@@ -57,6 +65,11 @@ const checkData = (): { status: boolean; message?: string } => {
       )
     ) {
       return { status: false, message: 'Informe um e-mail válido' };
+    }
+    if (dataPerfil.phone.trim() !== '') {
+      if (!/^\+?[1-9]\d{1,14}$/.test(dataPerfil.phone.trim())) {
+        return { status: false, message: 'Digite um telefone válido' };
+      }
     }
   } else if (dataPerfil.passwordActual.trim().length > 0) {
     if (dataPerfil.passwordActual.trim() === '') {
@@ -95,7 +108,12 @@ const update = async () => {
   const check = checkData();
   if (check.status) {
     if (mode.value === 'data') {
-      await updateUserData(dataPerfil.name, dataPerfil.email);
+      await updateUserData(
+        dataPerfil.name,
+        dataPerfil.email,
+        dataPerfil.phone?.trim() !== '' ? dataPerfil.phone : null,
+        dataPerfil.department ?? null
+      );
     } else {
       await updateUserPassword(
         dataPerfil.passwordActual,
@@ -117,6 +135,9 @@ const clear = (): void => {
     passwordActual: '',
     passwordNew: '',
     passwordNewConfirm: '',
+    phone: '',
+    department: null,
+    departmentName: null,
   });
   mode.value = 'data';
 };
@@ -126,7 +147,30 @@ const mountUserEdit = () => {
     email: user.value?.email,
     password: '',
     confirmPassword: '',
+    phone: user.value?.phone === null ? '' : user.value?.phone,
+    department: user.value?.department_id ?? null,
+    departmentName: user.value?.department_id
+      ? listDepartment.value.find(
+          (item) => item.id === user.value?.department_id
+        )?.name
+      : null,
   });
+};
+const openDepartmentChoose = (): void => {
+  showDepartmentChoose.value = true;
+};
+const closeDepartmentChoose = (): void => {
+  showDepartmentChoose.value = false;
+};
+const handleChooseDepartment = (
+  tree: { id: string; label: string } | null
+): void => {
+  dataPerfil.department = tree === null ? null : tree.id;
+  dataPerfil.departmentName = tree === null ? null : tree.label;
+  closeDepartmentChoose();
+};
+const fetchDepartments = async () => {
+  await getDepartments();
 };
 
 watch(
@@ -138,9 +182,10 @@ watch(
     }
   }
 );
-watch(open, () => {
+watch(open, async () => {
   if (open.value) {
     clear();
+    await fetchDepartments();
     mountUserEdit();
   }
 });
@@ -180,6 +225,47 @@ watch(open, () => {
                 <q-icon name="mail" color="black" size="20px" />
               </template>
             </q-input>
+            <q-input
+              v-model="dataPerfil.phone"
+              bg-color="white"
+              label-color="black"
+              filled
+              label="Telefone do usuário"
+              dense
+              input-class="text-black"
+            >
+              <template v-slot:prepend>
+                <q-icon name="call" color="black" size="20px" />
+              </template>
+            </q-input>
+            <q-input
+              v-model="dataPerfil.departmentName"
+              bg-color="white"
+              label-color="black"
+              filled
+              type="text"
+              label="Escolher hierarquia"
+              readonly
+              disabled
+              clearable
+              dense
+            >
+              <template v-slot:prepend>
+                <q-icon name="groups" color="black" size="20px" />
+              </template>
+              <template v-slot:append>
+                <q-icon
+                  name="search"
+                  class="cursor-pointer"
+                  @click="openDepartmentChoose"
+                />
+              </template>
+            </q-input>
+            <DepartmentChoose
+              :open="showDepartmentChoose"
+              @update:open="closeDepartmentChoose"
+              @update:choose-department="handleChooseDepartment"
+            />
           </div>
           <div v-else class="q-gutter-y-sm">
             <q-input
@@ -269,6 +355,14 @@ watch(open, () => {
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingDepartment"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
   </q-dialog>
 </template>
