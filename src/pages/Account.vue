@@ -140,7 +140,7 @@ onMounted(async () => {
         no-data-label="Nenhuma conta para mostrar"
       >
         <template v-slot:top>
-          <span class="text-subtitle2">Lista de categorias</span>
+          <span class="text-subtitle2">Lista de contas</span>
           <q-space />
           <q-input filled v-model="filterAccount" dense label="Pesquisar">
             <template v-slot:prepend>
