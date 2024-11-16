@@ -49,6 +49,28 @@ const finalize = async (monthYear: string): Promise<void> => {
 const fetchDelivery = async () => {
   await getDelivery();
 };
+const convertMonthYear = (monthYear: string): string => {
+  const months: { [key: string]: string } = {
+    '01': 'Janeiro',
+    '02': 'Fevereiro',
+    '03': 'Março',
+    '04': 'Abril',
+    '05': 'Maio',
+    '06': 'Junho',
+    '07': 'Julho',
+    '08': 'Agosto',
+    '09': 'Setembro',
+    '10': 'Outubro',
+    '11': 'Novembro',
+    '12': 'Dezembro',
+  };
+
+  const [month, year] = monthYear.split('/');
+
+  const monthName = months[month as keyof typeof months] || 'Mês Inválido';
+
+  return `${monthName} ${year}`;
+};
 
 onMounted(async () => {
   fetchDelivery();
@@ -77,26 +99,21 @@ onMounted(async () => {
         <template v-slot:top>
           <span class="text-subtitle2">Lista de entregas</span>
           <q-space />
-          <q-input filled v-model="filterDelivery" dense label="Pesquisar">
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-          </q-input>
         </template>
         <template v-slot:body="props">
-          <q-tr
-            :props="props"
-            style="height: 28px"
-            :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
-          >
+          <q-tr :props="props" style="height: 28px">
             <q-td key="month_year" :props="props" class="text-left">
-              {{ props.row.account.month_year }}
+              {{ convertMonthYear(props.row.month_year) }}
             </q-td>
             <q-td key="status" :props="props" class="text-left">
-              {{ props.row.account.status }}
+              <q-badge
+                rounded
+                :color="props.row.status ? 'green' : 'red'"
+                :label="props.row.status ? 'Entregue' : 'Não entregue'"
+              />
             </q-td>
             <q-td key="date_delivery" :props="props" class="text-left">
-              {{ props.row.account.date_delivery }}
+              {{ props.row.date_delivery }}
             </q-td>
             <q-td key="action" :props="props">
               <q-btn
@@ -104,9 +121,11 @@ onMounted(async () => {
                 size="sm"
                 flat
                 round
-                color="red"
-                icon="delete"
-              />
+                color="black"
+                icon="check_circle"
+              >
+                <q-tooltip> Entregar </q-tooltip>
+              </q-btn>
             </q-td>
           </q-tr>
         </template>
