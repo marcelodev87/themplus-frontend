@@ -204,21 +204,21 @@ onMounted(async () => {
       </div>
       <div class="col-7 row items-center justify-end q-gutter-x-sm">
         <q-btn
-          @click="openFormCategory"
-          flat
-          color="black"
-          icon-right="settings"
-          label="Categorias"
-          unelevated
-          no-caps
-        />
-        <q-btn
           @click="exportData"
           :loading="loadingExport"
           flat
           color="black"
           icon-right="download"
           label="Exportar"
+          unelevated
+          no-caps
+        />
+        <q-btn
+          @click="openFormCategory"
+          flat
+          color="black"
+          icon-right="settings"
+          label="Categorias"
           unelevated
           no-caps
         />

@@ -254,7 +254,6 @@ watch(open, async () => {
               <q-icon name="call" color="black" size="20px" />
             </template>
           </q-input>
-          selectedUserPosition {{ selectedUserPosition }}
           <q-select
             filled
             v-model="selectedUserPosition"

@@ -12,13 +12,15 @@ defineOptions({
   name: 'User',
 });
 
-const { getUsersMembers, deleteUserMember } = useUsersMembersStore();
+const { getUsersMembers, deleteUserMember, exportUser } =
+  useUsersMembersStore();
 const { loadingUsersMembers, listUserMember } = storeToRefs(
   useUsersMembersStore()
 );
 const { user } = storeToRefs(useAuthStore());
 
 const showFormUser = ref<boolean>(false);
+const loadingExport = ref<boolean>(false);
 const filterUser = ref<string>('');
 const selectedDataEdit = ref<User | null>(null);
 const columnsUser = reactive<QuasarTable[]>([
@@ -83,6 +85,11 @@ const handleEdit = (data: User) => {
 const exclude = async (id: string): Promise<void> => {
   await deleteUserMember(id);
 };
+const exportData = async (): Promise<void> => {
+  loadingExport.value = true;
+  await exportUser();
+  loadingExport.value = false;
+};
 
 onMounted(async () => {
   await getUsersMembers();
@@ -95,6 +102,16 @@ onMounted(async () => {
         <TitlePage title="Gerenciamento de usuários" />
       </div>
       <div class="col-6 row items-center justify-end q-gutter-x-sm">
+        <q-btn
+          @click="exportData"
+          :loading="loadingExport"
+          flat
+          color="black"
+          icon-right="download"
+          label="Exportar"
+          unelevated
+          no-caps
+        />
         <q-btn
           @click="openFormUser"
           color="blue-8"

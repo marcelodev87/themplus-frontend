@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import {
   createUserMemberService,
   deleteUserMemberService,
+  exportUserService,
   getUsersMembersService,
   updateUserMemberService,
 } from 'src/services/users-service';
@@ -80,6 +81,16 @@ export const useUsersMembersStore = defineStore('members', {
           this.setListUser(response.data.users);
           this.createSuccess(response.data.message);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportUser() {
+      try {
+        this.setLoading(true);
+        await exportUserService();
       } catch (error) {
         this.createError(error);
       } finally {
