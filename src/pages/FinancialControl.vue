@@ -71,6 +71,16 @@ const convertMonthYear = (monthYear: string): string => {
 
   return `${monthName} ${year}`;
 };
+const formatDateToBrazilian = (dateTime: string | null | undefined) => {
+  if (!dateTime) {
+    return '';
+  }
+
+  const [datePart] = dateTime.split(' ');
+  const [year, month, day] = datePart.split('-');
+
+  return `${day}/${month}/${year}`;
+};
 
 onMounted(async () => {
   fetchDelivery();
@@ -113,10 +123,11 @@ onMounted(async () => {
               />
             </q-td>
             <q-td key="date_delivery" :props="props" class="text-left">
-              {{ props.row.date_delivery }}
+              {{ formatDateToBrazilian(props.row.date_delivery) }}
             </q-td>
             <q-td key="action" :props="props">
               <q-btn
+                v-if="props.row.status === false"
                 @click="finalize(props.row.month_year)"
                 size="sm"
                 flat
@@ -125,6 +136,9 @@ onMounted(async () => {
                 icon="check_circle"
               >
                 <q-tooltip> Entregar </q-tooltip>
+              </q-btn>
+              <q-btn v-else size="sm" flat round color="black" icon="replay">
+                <q-tooltip> Reabrir </q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
