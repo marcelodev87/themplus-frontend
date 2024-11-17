@@ -37,8 +37,8 @@ const cardsDashboard = computed<Array<ICardDashboard>>(() => [
     <header class="row justify-between no-wrap bg-grey-1">
       <DashboardFilter />
     </header>
-    <main>
-      <div class="row justify-between q-gutter-sm q-pa-md">
+    <main class="q-pa-sm">
+      <div class="row justify-between">
         <CardDashboard
           v-for="(item, index) in cardsDashboard"
           :key="index"
@@ -49,7 +49,7 @@ const cardsDashboard = computed<Array<ICardDashboard>>(() => [
           :color="item.color"
         />
       </div>
-      <div class="row justify-between q-gutter-sm q-pa-md">
+      <div class="row justify-between q-mt-sm">
         <CardDashboard
           v-for="(item, index) in cardsDashboard"
           :key="index"
