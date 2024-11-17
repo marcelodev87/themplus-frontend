@@ -8,6 +8,7 @@ import {
   getCategoriesService,
   deleteCategoryService,
   updateCategoryService,
+  getCategoriesWithParamsService,
 } from 'src/services/category-service';
 
 export const useCategoryStore = defineStore('category', {
@@ -73,6 +74,26 @@ export const useCategoryStore = defineStore('category', {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
           this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getCategoriesWithParams(
+      createdByMe: boolean,
+      defaultSystem: boolean
+    ) {
+      try {
+        this.setLoading(true);
+        const response = await getCategoriesWithParamsService(
+          createdByMe,
+          defaultSystem
+        );
+        if (response.status === 200) {
+          this.clearListCategory();
+          this.setListCategory(response.data.categories);
         }
       } catch (error) {
         this.createError(error);

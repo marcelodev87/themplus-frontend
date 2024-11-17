@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Category } from 'src/ts/interfaces/data/Category';
 import FormCategory from 'src/components/forms/FormCategory.vue';
@@ -12,8 +12,11 @@ defineOptions({
 });
 
 const { listCategory, loadingCategory } = storeToRefs(useCategoryStore());
-const { getCategories, deleteCategory } = useCategoryStore();
+const { getCategories, deleteCategory, getCategoriesWithParams } =
+  useCategoryStore();
 
+const onlyCreatedByMe = ref<boolean>(false);
+const onlyDefault = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const filterCategory = ref<string>('');
 const selectedDataEdit = ref<Category | null>(null);
@@ -76,6 +79,43 @@ const fetchAlerts = async () => {
   await getCategories();
 };
 
+watch(
+  [onlyCreatedByMe, onlyDefault],
+  async ([newCreatedByMe, newDefault], [oldCreatedByMe, oldDefault]) => {
+    let lastChanged = null;
+
+    if (newCreatedByMe !== oldCreatedByMe) {
+      lastChanged = 'onlyCreatedByMe';
+    }
+    if (newDefault !== oldDefault) {
+      lastChanged = 'onlyDefault';
+    }
+
+    if (lastChanged === 'onlyCreatedByMe') {
+      if (newCreatedByMe) {
+        onlyDefault.value = false;
+      }
+    }
+    if (lastChanged === 'onlyDefault') {
+      if (newDefault) {
+        onlyCreatedByMe.value = false;
+      }
+    }
+
+    const shouldCallWithParams = newCreatedByMe || newDefault;
+
+    if (newCreatedByMe && newDefault) {
+      return;
+    }
+
+    if (shouldCallWithParams) {
+      await getCategoriesWithParams(newCreatedByMe, newDefault);
+    } else {
+      await fetchAlerts();
+    }
+  }
+);
+
 onMounted(async () => {
   await fetchAlerts();
 });
@@ -114,6 +154,18 @@ onMounted(async () => {
         <template v-slot:top>
           <span class="text-subtitle2">Lista de categorias</span>
           <q-space />
+          <q-toggle
+            v-model="onlyDefault"
+            color="primary"
+            label="Padrão"
+            left-label
+          />
+          <q-toggle
+            v-model="onlyCreatedByMe"
+            color="primary"
+            label="Criados"
+            left-label
+          />
           <q-input filled v-model="filterCategory" dense label="Pesquisar">
             <template v-slot:prepend>
               <q-icon name="search" />

@@ -11,6 +11,20 @@ export const getCategoriesService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
+export const getCategoriesWithParamsService = (
+  createdByMe: boolean,
+  defaultSystem: boolean
+): Promise<{
+  status: number;
+  data: {
+    categories: Category[];
+    message: string;
+  };
+}> =>
+  api.get(
+    `${baseUrl}/filter?createdByMe=${createdByMe}&defaultSystem=${defaultSystem}`
+  );
+
 export const createCategoryService = (
   name: string,
   type: string,

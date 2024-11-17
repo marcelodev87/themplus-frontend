@@ -192,13 +192,18 @@ watch(
       if (newEntry) {
         onlyOut.value = false;
       }
-    } else if (lastChanged === 'onlyOut') {
+    }
+    if (lastChanged === 'onlyOut') {
       if (newOut) {
         onlyEntry.value = false;
       }
     }
 
     const shouldCallWithParams = newEntry || newOut || newExpired;
+
+    if (newEntry && newOut) {
+      return;
+    }
 
     if (shouldCallWithParams) {
       await getSchedulingsWithParams(newExpired, newEntry, newOut);

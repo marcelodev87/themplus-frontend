@@ -177,6 +177,10 @@ watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
 
   const shouldCallWithParams = newEntry || newOut;
 
+  if (newEntry && newOut) {
+    return;
+  }
+
   if (shouldCallWithParams) {
     await getMovementsWithParams(newEntry, newOut);
   } else {
