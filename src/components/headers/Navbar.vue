@@ -13,11 +13,26 @@ const emit = defineEmits<{
 <template>
   <nav>
     <q-toolbar class="row items-center justify-between">
-      <img src="/images/logo.png" width="120px" />
-      <UserOptions
-        @update:open-form-perfil="emit('update:openFormPerfil')"
-        @update:open-form-enterprise="emit('update:openFormEnterprise')"
-      />
+      <div>
+        <img src="/images/logo.png" width="120px" />
+      </div>
+      <div>
+        <q-btn
+          :loading="false"
+          flat
+          color="black"
+          icon-right="fa-regular fa-comment-dots"
+          unelevated
+          no-caps
+          rounded
+        >
+          <q-tooltip> Enviar sugestão ou feedback </q-tooltip>
+        </q-btn>
+        <UserOptions
+          @update:open-form-perfil="emit('update:openFormPerfil')"
+          @update:open-form-enterprise="emit('update:openFormEnterprise')"
+        />
+      </div>
     </q-toolbar>
   </nav>
 </template>
