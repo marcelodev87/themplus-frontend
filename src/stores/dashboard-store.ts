@@ -15,7 +15,7 @@ export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
     loadingDashboard: false as boolean,
     listMonthYear: [] as string[],
-    listCategoryDashboard: null as CategoryDashboard[] | null,
+    listCategoryDashboard: null as CategoryDashboard | null,
     movementsDashboard: null as MovementDashboard | null,
     usersDashboard: null as UsersDashboard | null,
     schedulingsDashboard: null as SchedulingDashboard | null,
@@ -28,7 +28,7 @@ export const useDashboardStore = defineStore('dashboard', {
     setListMonthYear(data: string[]) {
       this.listMonthYear = data;
     },
-    setListCategoryDashboard(data: CategoryDashboard[] | null) {
+    setListCategoryDashboard(data: CategoryDashboard | null) {
       this.listCategoryDashboard = data;
     },
     setMovementsDashboard(data: MovementDashboard | null) {

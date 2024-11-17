@@ -2,11 +2,14 @@
 import { type ICardDashboard } from 'src/ts/interfaces/data/Dashboard';
 import CardDashboard from 'src/components/shared/CardDashboard.vue';
 import DashboardFilter from 'src/components/headers/DashboardFilter.vue';
-import { computed } from 'vue';
+import { useDashboardStore } from 'src/stores/dashboard-store';
+import { computed, onMounted } from 'vue';
 
 defineOptions({
   name: 'Dashboard',
 });
+
+const { getDashboard } = useDashboardStore();
 
 const cardsDashboard = computed<Array<ICardDashboard>>(() => [
   {
@@ -31,6 +34,14 @@ const cardsDashboard = computed<Array<ICardDashboard>>(() => [
     color: 'bg-blue-2',
   },
 ]);
+
+const fetchInformationsDashboard = async () => {
+  await getDashboard();
+};
+
+onMounted(async () => {
+  await fetchInformationsDashboard();
+});
 </script>
 <template>
   <section>

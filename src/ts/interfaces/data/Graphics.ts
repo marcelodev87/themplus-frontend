@@ -1,8 +1,10 @@
 export interface CategoryDashboard {
   month_year: string;
-  category_name: string;
-  entry_value: number;
-  out_value: number;
+  categories: Array<{
+    category_name: string;
+    entry_value: number;
+    out_value: number;
+  }>;
 }
 
 export interface MovementDashboard {

@@ -13,7 +13,7 @@ export const getDashboardService = (): Promise<{
   status: number;
   data: {
     months_years: string[];
-    categories_dashboard: CategoryDashboard[] | null;
+    categories_dashboard: CategoryDashboard | null;
     movements_dashboard: MovementDashboard | null;
     users_dashboard: UsersDashboard | null;
     schedulings_dashboard: SchedulingDashboard | null;
