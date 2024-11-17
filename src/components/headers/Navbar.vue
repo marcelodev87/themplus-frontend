@@ -21,7 +21,29 @@ const emit = defineEmits<{
           :loading="false"
           flat
           color="black"
-          icon-right="fa-regular fa-comment-dots"
+          icon-right="fa-regular fa-envelope"
+          unelevated
+          no-caps
+          rounded
+        >
+          <q-tooltip> Entrar em contato pelo e-mail </q-tooltip>
+        </q-btn>
+        <q-btn
+          :loading="false"
+          flat
+          color="black"
+          icon-right="fa-brands fa-whatsapp"
+          unelevated
+          no-caps
+          rounded
+        >
+          <q-tooltip> Entrar em contato pelo whatsapp </q-tooltip>
+        </q-btn>
+        <q-btn
+          :loading="false"
+          flat
+          color="black"
+          icon-right="fa-solid fa-headset"
           unelevated
           no-caps
           rounded
