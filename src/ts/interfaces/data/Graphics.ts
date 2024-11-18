@@ -1,10 +1,8 @@
 export interface CategoryDashboard {
-  month_year: string;
-  categories: Array<{
-    category_name: string;
-    entry_value: number;
-    out_value: number;
-  }>;
+  category_id: string;
+  name: string;
+  type: string;
+  value: string;
 }
 
 export interface MovementDashboard {

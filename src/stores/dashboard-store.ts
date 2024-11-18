@@ -15,7 +15,7 @@ export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
     loadingDashboard: false as boolean,
     listMonthYear: [] as string[],
-    listCategoryDashboard: null as CategoryDashboard | null,
+    listCategoryDashboard: null as CategoryDashboard[] | null,
     movementsDashboard: null as MovementDashboard | null,
     usersDashboard: null as UsersDashboard | null,
     schedulingsDashboard: null as SchedulingDashboard | null,
@@ -28,7 +28,7 @@ export const useDashboardStore = defineStore('dashboard', {
     setListMonthYear(data: string[]) {
       this.listMonthYear = data;
     },
-    setListCategoryDashboard(data: CategoryDashboard | null) {
+    setListCategoryDashboard(data: CategoryDashboard[] | null) {
       this.listCategoryDashboard = data;
     },
     setMovementsDashboard(data: MovementDashboard | null) {
@@ -68,8 +68,12 @@ export const useDashboardStore = defineStore('dashboard', {
       this.setLoading(true);
       try {
         const response = await getDashboardService();
+        this.setListCategoryDashboard(null);
+        this.setListMonthYear([]);
         if (response.status === 200) {
           console.log('status', response);
+          this.setListCategoryDashboard(response.data.categories_dashboard);
+          this.setListMonthYear(response.data.months_years);
         }
       } catch (error) {
         this.createError(error);
