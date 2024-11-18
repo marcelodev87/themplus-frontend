@@ -174,16 +174,16 @@ onMounted(async () => {
           <q-card-section class="q-pt-none row justify-between">
             <span>Valor de entrada:</span>
             <span>{{
-              movementsDashboard?.entry_value
-                ? `R$ ${Number(movementsDashboard.entry_value)}`
+              schedulingsDashboard?.entry_value
+                ? `R$ ${Number(schedulingsDashboard.entry_value)}`
                 : ''
             }}</span>
           </q-card-section>
           <q-card-section class="q-pt-none row justify-between">
             <span>Valor de saída:</span>
             <span>{{
-              movementsDashboard?.out_value
-                ? `R$ ${Number(movementsDashboard.out_value)}`
+              schedulingsDashboard?.out_value
+                ? `R$ ${Number(schedulingsDashboard.out_value)}`
                 : ''
             }}</span>
           </q-card-section>
@@ -193,10 +193,11 @@ onMounted(async () => {
           <q-card-section class="row justify-between">
             <span>Saldo:</span>
             <span>{{
-              movementsDashboard?.out_value && movementsDashboard?.entry_value
+              schedulingsDashboard?.out_value &&
+              schedulingsDashboard?.entry_value
                 ? `R$ ${
-                    Number(movementsDashboard.entry_value) -
-                    Number(movementsDashboard.out_value)
+                    Number(schedulingsDashboard.entry_value) -
+                    Number(schedulingsDashboard.out_value)
                   }`
                 : ''
             }}</span>
