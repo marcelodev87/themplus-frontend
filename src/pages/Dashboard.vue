@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { type ICardDashboard } from 'src/ts/interfaces/data/Dashboard';
-import CardDashboard from 'src/components/shared/CardDashboard.vue';
 import { useDashboardStore } from 'src/stores/dashboard-store';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -11,8 +9,14 @@ defineOptions({
 });
 
 const { getDashboard } = useDashboardStore();
-const { loadingDashboard, listCategoryDashboard, listMonthYear } =
-  storeToRefs(useDashboardStore());
+const {
+  loadingDashboard,
+  listCategoryDashboard,
+  listMonthYear,
+  movementsDashboard,
+  schedulingsDashboard,
+  usersDashboard,
+} = storeToRefs(useDashboardStore());
 
 const filterMonthYear = ref('');
 const columnsCategoriesDashboard = reactive<QuasarTable[]>([
@@ -32,29 +36,6 @@ const columnsCategoriesDashboard = reactive<QuasarTable[]>([
   },
 ]);
 
-const cardsDashboard = computed<Array<ICardDashboard>>(() => [
-  {
-    src: '/images/dinheiro.png',
-    title: 'Entradas de Outubro',
-    valueTitle: 'R$ 1820,00',
-    width: '30%',
-    color: 'bg-green-2',
-  },
-  {
-    src: '/images/dinheiro.png',
-    title: 'Saídas de Outubro',
-    valueTitle: 'R$ 120,00',
-    width: '30%',
-    color: 'bg-red-2',
-  },
-  {
-    src: '/images/dinheiro.png',
-    title: 'Saldo de Outubro',
-    valueTitle: 'R$ 1700,00',
-    width: '30%',
-    color: 'bg-blue-2',
-  },
-]);
 const categoriesEntry = computed(() => {
   return listCategoryDashboard.value
     ?.filter((item) => item.type === 'entrada')
@@ -146,27 +127,102 @@ onMounted(async () => {
       </q-select>
     </header>
     <main class="q-pa-sm q-gutter-y-md">
-      <div class="row justify-between">
-        <CardDashboard
-          v-for="(item, index) in cardsDashboard"
-          :key="index"
-          :src="item.src"
-          :title="item.title"
-          :value-title="item.valueTitle"
-          :width="item.width"
-          :color="item.color"
-        />
-      </div>
       <div class="row justify-between q-mt-sm">
-        <CardDashboard
-          v-for="(item, index) in cardsDashboard"
-          :key="index"
-          :src="item.src"
-          :title="item.title"
-          :value-title="item.valueTitle"
-          :width="item.width"
-          :color="item.color"
-        />
+        <q-card flat bordered class="q-mt-sm" style="width: 32%">
+          <q-card-section>
+            <div class="text-h6">Movimentações</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none row justify-between">
+            <span>Valor de entrada:</span>
+            <span>{{
+              movementsDashboard?.entry_value
+                ? `R$ ${Number(movementsDashboard.entry_value)}`
+                : ''
+            }}</span>
+          </q-card-section>
+          <q-card-section class="q-pt-none row justify-between">
+            <span> Valor de saída:</span>
+            <span
+              >{{
+                movementsDashboard?.out_value
+                  ? `R$ ${Number(movementsDashboard.out_value)}`
+                  : ''
+              }}
+            </span>
+          </q-card-section>
+
+          <q-separator inset />
+
+          <q-card-section class="row justify-between">
+            <span>Saldo:</span>
+            <span>{{
+              movementsDashboard?.out_value && movementsDashboard?.entry_value
+                ? `R$ ${
+                    Number(movementsDashboard.entry_value) -
+                    Number(movementsDashboard.out_value)
+                  }`
+                : ''
+            }}</span>
+          </q-card-section>
+        </q-card>
+        <q-card flat bordered class="q-mt-sm" style="width: 32%">
+          <q-card-section>
+            <div class="text-h6">Agendamentos</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none row justify-between">
+            <span>Valor de entrada:</span>
+            <span>{{
+              movementsDashboard?.entry_value
+                ? `R$ ${Number(movementsDashboard.entry_value)}`
+                : ''
+            }}</span>
+          </q-card-section>
+          <q-card-section class="q-pt-none row justify-between">
+            <span>Valor de saída:</span>
+            <span>{{
+              movementsDashboard?.out_value
+                ? `R$ ${Number(movementsDashboard.out_value)}`
+                : ''
+            }}</span>
+          </q-card-section>
+
+          <q-separator inset />
+
+          <q-card-section class="row justify-between">
+            <span>Saldo:</span>
+            <span>{{
+              movementsDashboard?.out_value && movementsDashboard?.entry_value
+                ? `R$ ${
+                    Number(movementsDashboard.entry_value) -
+                    Number(movementsDashboard.out_value)
+                  }`
+                : ''
+            }}</span>
+          </q-card-section>
+        </q-card>
+        <q-card flat bordered class="q-mt-sm" style="width: 32%">
+          <q-card-section>
+            <div class="text-h6">Usuários</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none row justify-between">
+            <span>Administradores:</span>
+            <span>{{ usersDashboard?.amount_admins ?? '' }}</span>
+          </q-card-section>
+          <q-card-section class="q-pt-none row justify-between">
+            <span>Usuários comuns:</span>
+            <span>{{ usersDashboard?.amount_common_users ?? '' }}</span>
+          </q-card-section>
+
+          <q-separator inset />
+
+          <q-card-section class="row justify-between">
+            <span>Total de usuários:</span>
+            <span>{{ usersDashboard?.amount_users ?? '' }}</span>
+          </q-card-section>
+        </q-card>
       </div>
       <div class="q-gutter-y-sm q-mt">
         <q-table

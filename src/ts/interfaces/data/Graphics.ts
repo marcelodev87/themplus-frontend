@@ -14,8 +14,8 @@ export interface MovementDashboard {
 
 export interface UsersDashboard {
   amount_users: number;
-  amount_admin: number;
-  amount_user_common: number;
+  amount_admins: number;
+  amount_common_users: number;
 }
 
 export interface SchedulingDashboard {

@@ -70,10 +70,15 @@ export const useDashboardStore = defineStore('dashboard', {
         const response = await getDashboardService();
         this.setListCategoryDashboard(null);
         this.setListMonthYear([]);
+        this.setMovementsDashboard(null);
+        this.setSchedulingsDashboard(null);
+        this.setUsersDashboard(null);
         if (response.status === 200) {
-          console.log('status', response);
           this.setListCategoryDashboard(response.data.categories_dashboard);
           this.setListMonthYear(response.data.months_years);
+          this.setMovementsDashboard(response.data.movements_dashboard);
+          this.setSchedulingsDashboard(response.data.schedulings_dashboard);
+          this.setUsersDashboard(response.data.users_dashboard);
         }
       } catch (error) {
         this.createError(error);
