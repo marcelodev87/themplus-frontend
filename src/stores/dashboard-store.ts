@@ -73,12 +73,14 @@ export const useDashboardStore = defineStore('dashboard', {
         this.setMovementsDashboard(null);
         this.setSchedulingsDashboard(null);
         this.setUsersDashboard(null);
+        this.setAccountsDashboard(null);
         if (response.status === 200) {
           this.setListCategoryDashboard(response.data.categories_dashboard);
           this.setListMonthYear(response.data.months_years);
           this.setMovementsDashboard(response.data.movements_dashboard);
           this.setSchedulingsDashboard(response.data.schedulings_dashboard);
           this.setUsersDashboard(response.data.users_dashboard);
+          this.setAccountsDashboard(response.data.accounts_dashboard);
         }
       } catch (error) {
         this.createError(error);

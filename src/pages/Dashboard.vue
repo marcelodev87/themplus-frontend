@@ -16,6 +16,7 @@ const {
   movementsDashboard,
   schedulingsDashboard,
   usersDashboard,
+  accountsDashboard,
 } = storeToRefs(useDashboardStore());
 
 const filterMonthYear = ref('');
@@ -71,6 +72,7 @@ const totalValueOutCategory = computed(() => {
 const fetchInformationsDashboard = async () => {
   await getDashboard();
 };
+
 const checkCurrentMonthYear = () => {
   const currentDate = new Date();
   const currentMonthYear = `${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
@@ -128,7 +130,7 @@ onMounted(async () => {
     </header>
     <main class="q-pa-sm q-gutter-y-md">
       <div class="row justify-between q-mt-sm">
-        <q-card flat bordered class="q-mt-sm" style="width: 32%">
+        <q-card flat bordered class="q-mt-sm" style="width: 24%">
           <q-card-section>
             <div class="text-h6">Movimentações</div>
           </q-card-section>
@@ -166,7 +168,7 @@ onMounted(async () => {
             }}</span>
           </q-card-section>
         </q-card>
-        <q-card flat bordered class="q-mt-sm" style="width: 32%">
+        <q-card flat bordered class="q-mt-sm" style="width: 24%">
           <q-card-section>
             <div class="text-h6">Agendamentos</div>
           </q-card-section>
@@ -203,7 +205,7 @@ onMounted(async () => {
             }}</span>
           </q-card-section>
         </q-card>
-        <q-card flat bordered class="q-mt-sm" style="width: 32%">
+        <q-card flat bordered class="q-mt-sm" style="width: 24%">
           <q-card-section>
             <div class="text-h6">Usuários</div>
           </q-card-section>
@@ -222,6 +224,21 @@ onMounted(async () => {
           <q-card-section class="row justify-between">
             <span>Total de usuários:</span>
             <span>{{ usersDashboard?.amount_users ?? '' }}</span>
+          </q-card-section>
+        </q-card>
+        <q-card flat bordered class="q-mt-sm" style="width: 24%">
+          <q-card-section class="row justify-between items-center">
+            <span class="text-h6">Contas </span>
+            <span class="text-body2 text-bold">TOP 3</span>
+          </q-card-section>
+
+          <q-card-section
+            v-for="(item, index) in accountsDashboard?.accounts"
+            class="q-pt-none row justify-between"
+            :key="index"
+          >
+            <span>{{ item.name }}:</span>
+            <span>{{ `R$ ${item.balance}` }}</span>
           </q-card-section>
         </q-card>
       </div>
