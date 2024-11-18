@@ -1,3 +1,4 @@
+<!-- eslint-disable no-restricted-globals -->
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
@@ -55,8 +56,22 @@ const open = computed({
 });
 
 const checkData = (): { status: boolean; message?: string } => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [day, month, year] = dataEntry.date.split('/').map(Number);
+  const inputDate = new Date(year, month - 1, day);
+  inputDate.setHours(0, 0, 0, 0);
+
+  if (isNaN(inputDate.getTime())) {
+    return {
+      status: false,
+      message: 'A data fornecida é inválida',
+    };
+  }
+
   if (dataEntry.category == null) {
-    return { status: false, message: 'O categoria deve ser selecionada' };
+    return { status: false, message: 'A categoria deve ser selecionada' };
   }
   if (dataEntry.value == null) {
     return { status: false, message: 'O valor deve ser inserido' };
@@ -75,6 +90,14 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'A data deve ser informada no formato dd/mm/yyyy',
     };
   }
+
+  if (inputDate.getTime() < today.getTime()) {
+    return {
+      status: false,
+      message: 'Não pode agendar uma data que já passou',
+    };
+  }
+
   return { status: true };
 };
 const clear = (): void => {
