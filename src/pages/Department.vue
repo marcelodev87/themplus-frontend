@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormDepartment from 'src/components/forms/FormDepartment.vue';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDepartmentStore } from 'src/stores/department_store';
 import { Department } from 'src/ts/interfaces/data/Department';
@@ -20,10 +20,6 @@ const selectedObject = ref<string>('');
 const searchDepartment = ref<string>('');
 const clickRootCreate = ref<string | null>(null);
 const departmentEdit = ref<Department | null>(null);
-
-const scrollHeight = computed(() => {
-  return 'height: calc(100vh - 150px )';
-});
 
 const clear = () => {
   clickRootCreate.value = '';
@@ -86,13 +82,9 @@ onMounted(async () => {
         />
       </div>
     </header>
-    <main class="q-pa-sm">
-      <div class="row q-col-gutter-sm">
-        <q-scroll-area
-          ref="scrollAreaRef"
-          class="full-width"
-          :style="scrollHeight"
-        >
+    <q-scroll-area class="main-scroll">
+      <main class="q-pa-sm q-mb-md">
+        <div class="row q-col-gutter-sm">
           <q-tree
             v-show="treeDepartment.length > 0"
             v-model:selected="selectedObject"
@@ -164,15 +156,15 @@ onMounted(async () => {
             color="primary"
             size="50px"
           />
-        </q-scroll-area>
-      </div>
-      <FormDepartment
-        :open="showFormDepartment"
-        :key-root="clickRootCreate"
-        :department-edit="departmentEdit"
-        @update:open="closeFormDepartment"
-      />
-    </main>
+        </div>
+        <FormDepartment
+          :open="showFormDepartment"
+          :key-root="clickRootCreate"
+          :department-edit="departmentEdit"
+          @update:open="closeFormDepartment"
+        />
+      </main>
+    </q-scroll-area>
   </section>
 </template>
 

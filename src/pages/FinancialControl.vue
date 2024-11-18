@@ -93,57 +93,60 @@ onMounted(async () => {
         <TitlePage title="Controle contábil" />
       </div>
     </header>
-    <main class="q-pa-sm">
-      <q-table
-        :rows="loadingDelivery ? [] : listDelivery"
-        :columns="columnsDelivery"
-        :filter="filterDelivery"
-        :loading="loadingDelivery"
-        style="max-height: 400px"
-        flat
-        bordered
-        dense
-        row-key="name"
-        no-data-label="Nenhuma movimentação para mostrar"
-      >
-        <template v-slot:top>
-          <span class="text-subtitle2">Lista de entregas</span>
-          <q-space />
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props" style="height: 28px">
-            <q-td key="month_year" :props="props" class="text-left">
-              {{ convertMonthYear(props.row.month_year) }}
-            </q-td>
-            <q-td key="status" :props="props" class="text-left">
-              <q-badge
-                rounded
-                :color="props.row.status ? 'green' : 'red'"
-                :label="props.row.status ? 'Entregue' : 'Não entregue'"
-              />
-            </q-td>
-            <q-td key="date_delivery" :props="props" class="text-left">
-              {{ formatDateToBrazilian(props.row.date_delivery) }}
-            </q-td>
-            <q-td key="action" :props="props">
-              <q-btn
-                v-if="props.row.status === false"
-                @click="finalize(props.row.month_year)"
-                size="sm"
-                flat
-                round
-                color="black"
-                icon="check_circle"
-              >
-                <q-tooltip> Entregar </q-tooltip>
-              </q-btn>
-              <q-btn v-else size="sm" flat round color="black" icon="replay">
-                <q-tooltip> Reabrir </q-tooltip>
-              </q-btn>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-    </main>
+    <q-scroll-area class="main-scroll">
+      <main class="q-pa-sm q-mb-md">
+        <q-table
+          :rows="loadingDelivery ? [] : listDelivery"
+          :columns="columnsDelivery"
+          :filter="filterDelivery"
+          :loading="loadingDelivery"
+          flat
+          bordered
+          dense
+          row-key="name"
+          no-data-label="Nenhuma movimentação para mostrar"
+          virtual-scroll
+          :rows-per-page-options="[20]"
+        >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de entregas</span>
+            <q-space />
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" style="height: 28px">
+              <q-td key="month_year" :props="props" class="text-left">
+                {{ convertMonthYear(props.row.month_year) }}
+              </q-td>
+              <q-td key="status" :props="props" class="text-left">
+                <q-badge
+                  rounded
+                  :color="props.row.status ? 'green' : 'red'"
+                  :label="props.row.status ? 'Entregue' : 'Não entregue'"
+                />
+              </q-td>
+              <q-td key="date_delivery" :props="props" class="text-left">
+                {{ formatDateToBrazilian(props.row.date_delivery) }}
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn
+                  v-if="props.row.status === false"
+                  @click="finalize(props.row.month_year)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="check_circle"
+                >
+                  <q-tooltip> Entregar </q-tooltip>
+                </q-btn>
+                <q-btn v-else size="sm" flat round color="black" icon="replay">
+                  <q-tooltip> Reabrir </q-tooltip>
+                </q-btn>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </main>
+    </q-scroll-area>
   </section>
 </template>

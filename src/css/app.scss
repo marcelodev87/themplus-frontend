@@ -60,3 +60,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.main-scroll {
+  height: calc(100vh - 106px);
+}

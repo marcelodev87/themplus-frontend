@@ -126,65 +126,71 @@ onMounted(async () => {
         />
       </div>
     </header>
-    <main class="q-pa-sm">
-      <q-table
-        :rows="loadingAccount ? [] : listAccount"
-        :columns="columnsAccount"
-        :filter="filterAccount"
-        :loading="loadingAccount"
-        style="max-height: 400px"
-        flat
-        bordered
-        dense
-        row-key="name"
-        no-data-label="Nenhuma conta para mostrar"
-      >
-        <template v-slot:top>
-          <span class="text-subtitle2">Lista de contas</span>
-          <q-space />
-          <q-input filled v-model="filterAccount" dense label="Pesquisar">
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props" style="height: 28px">
-            <q-td key="name" :props="props" class="text-left">
-              {{ props.row.name }}
-            </q-td>
-            <q-td key="account_number" :props="props" class="text-left">
-              {{ props.row.account_number }}
-            </q-td>
-            <q-td key="agency_number" :props="props" class="text-left">
-              {{ props.row.agency_number }}
-            </q-td>
-            <q-td key="balance" :props="props" class="text-left">
-              {{ `R$ ${props.row.balance}` }}
-            </q-td>
-            <q-td key="description" :props="props" class="text-left">
-              {{ props.row.description }}
-            </q-td>
-            <q-td key="action" :props="props">
-              <q-btn
-                @click="handleEdit(props.row)"
-                size="sm"
-                flat
-                round
-                color="black"
-                icon="edit"
-                :disabled="false"
-              />
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-      <FormAccount
-        :open="showFormAccount"
-        :data-edit="selectedDataEdit"
-        @update:open="closeFormAccount"
-      />
-      <FormTransfer :open="showFormTransfer" @update:open="closeFormTransfer" />
-    </main>
+    <q-scroll-area class="main-scroll">
+      <main class="q-pa-sm">
+        <q-table
+          :rows="loadingAccount ? [] : listAccount"
+          :columns="columnsAccount"
+          :filter="filterAccount"
+          :loading="loadingAccount"
+          flat
+          bordered
+          dense
+          row-key="name"
+          no-data-label="Nenhuma conta para mostrar"
+          virtual-scroll
+          :rows-per-page-options="[20]"
+        >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de contas</span>
+            <q-space />
+            <q-input filled v-model="filterAccount" dense label="Pesquisar">
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" style="height: 28px">
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="account_number" :props="props" class="text-left">
+                {{ props.row.account_number }}
+              </q-td>
+              <q-td key="agency_number" :props="props" class="text-left">
+                {{ props.row.agency_number }}
+              </q-td>
+              <q-td key="balance" :props="props" class="text-left">
+                {{ `R$ ${props.row.balance}` }}
+              </q-td>
+              <q-td key="description" :props="props" class="text-left">
+                {{ props.row.description }}
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn
+                  @click="handleEdit(props.row)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                  :disabled="false"
+                />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <FormAccount
+          :open="showFormAccount"
+          :data-edit="selectedDataEdit"
+          @update:open="closeFormAccount"
+        />
+        <FormTransfer
+          :open="showFormTransfer"
+          @update:open="closeFormTransfer"
+        />
+      </main>
+    </q-scroll-area>
   </section>
 </template>

@@ -123,82 +123,85 @@ onMounted(async () => {
         />
       </div>
     </header>
-    <main class="q-pa-sm">
-      <q-table
-        :rows="loadingUsersMembers ? [] : listUserMember"
-        :columns="columnsUser"
-        :filter="filterUser"
-        :loading="loadingUsersMembers"
-        style="max-height: 400px"
-        flat
-        bordered
-        dense
-        row-key="name"
-        no-data-label="Nenhum usuário para mostrar"
-      >
-        <template v-slot:top>
-          <span class="text-subtitle2">Lista de usuários</span>
-          <q-space />
-          <q-input filled v-model="filterUser" dense label="Pesquisar">
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props" style="height: 28px">
-            <q-td key="name" :props="props" class="text-left">
-              {{ props.row.name }}
-            </q-td>
-            <q-td key="email" :props="props" class="text-left">
-              {{ props.row.email }}
-            </q-td>
-            <q-td key="phone" :props="props" class="text-left">
-              {{ props.row.phone ?? 'Não definido' }}
-            </q-td>
-            <q-td key="position" :props="props" class="text-left">
-              {{
-                props.row.position === 'admin'
-                  ? 'Administrador'
-                  : 'Usuário comum'
-              }}
-            </q-td>
-            <q-td key="department" :props="props" class="text-left">
-              {{
-                props.row.department_id
-                  ? props.row.department.name
-                  : `Não definido`
-              }}
-            </q-td>
-            <q-td key="action" :props="props">
-              <q-btn
-                v-show="user && user.id !== props.row.id"
-                @click="handleEdit(props.row)"
-                size="sm"
-                flat
-                round
-                color="black"
-                icon="edit"
-                :disabled="false"
-              />
-              <q-btn
-                v-show="user && user.id !== props.row.id"
-                @click="exclude(props.row.id)"
-                size="sm"
-                flat
-                round
-                color="red"
-                icon="delete"
-              />
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-      <FormUser
-        :open="showFormUser"
-        :data-edit="selectedDataEdit"
-        @update:open="closeFormUser"
-      />
-    </main>
+    <q-scroll-area class="main-scroll">
+      <main class="q-pa-sm q-mb-md">
+        <q-table
+          :rows="loadingUsersMembers ? [] : listUserMember"
+          :columns="columnsUser"
+          :filter="filterUser"
+          :loading="loadingUsersMembers"
+          flat
+          bordered
+          dense
+          row-key="name"
+          no-data-label="Nenhum usuário para mostrar"
+          virtual-scroll
+          :rows-per-page-options="[20]"
+        >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de usuários</span>
+            <q-space />
+            <q-input filled v-model="filterUser" dense label="Pesquisar">
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" style="height: 28px">
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="email" :props="props" class="text-left">
+                {{ props.row.email }}
+              </q-td>
+              <q-td key="phone" :props="props" class="text-left">
+                {{ props.row.phone ?? 'Não definido' }}
+              </q-td>
+              <q-td key="position" :props="props" class="text-left">
+                {{
+                  props.row.position === 'admin'
+                    ? 'Administrador'
+                    : 'Usuário comum'
+                }}
+              </q-td>
+              <q-td key="department" :props="props" class="text-left">
+                {{
+                  props.row.department_id
+                    ? props.row.department.name
+                    : `Não definido`
+                }}
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn
+                  v-show="user && user.id !== props.row.id"
+                  @click="handleEdit(props.row)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                  :disabled="false"
+                />
+                <q-btn
+                  v-show="user && user.id !== props.row.id"
+                  @click="exclude(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="delete"
+                />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <FormUser
+          :open="showFormUser"
+          :data-edit="selectedDataEdit"
+          @update:open="closeFormUser"
+        />
+      </main>
+    </q-scroll-area>
   </section>
 </template>
