@@ -2,6 +2,7 @@
 import FormPerfil from 'src/components/forms/FormPerfil.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
+import EmailInfo from 'src/components/info/EmailInfo.vue';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -13,6 +14,7 @@ const route = useRoute();
 const leftDrawerOpen = ref<boolean>(false);
 const showFormPerfil = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
+const showEmailInfo = ref<boolean>(false);
 
 const menuList = computed(() => [
   {
@@ -87,6 +89,12 @@ const isActive = (routeName: string) => route.name === routeName;
 const openFormPerfil = (): void => {
   showFormPerfil.value = true;
 };
+const openEmailInfo = (): void => {
+  showEmailInfo.value = true;
+};
+const closeEmailInfo = (): void => {
+  showEmailInfo.value = false;
+};
 const closeFormPerfil = (): void => {
   showFormPerfil.value = false;
 };
@@ -103,6 +111,7 @@ const closeFormEnterprise = (): void => {
       <Navbar
         @update:open-form-perfil="openFormPerfil"
         @update:open-form-enterprise="openFormEnterprise"
+        @update:open-email-info="openEmailInfo"
       />
     </q-header>
 
@@ -137,6 +146,7 @@ const closeFormEnterprise = (): void => {
     <q-page-container>
       <router-view />
       <FormPerfil :open="showFormPerfil" @update:open="closeFormPerfil" />
+      <EmailInfo :open="showEmailInfo" @update:open="closeEmailInfo" />
       <FormEnterprise
         :open="showFormEnterprise"
         @update:open="closeFormEnterprise"

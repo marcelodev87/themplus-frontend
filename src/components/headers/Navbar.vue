@@ -8,6 +8,7 @@ defineOptions({
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
   'update:openFormEnterprise': [void];
+  'update:openEmailInfo': [void];
 }>();
 </script>
 <template>
@@ -18,30 +19,15 @@ const emit = defineEmits<{
       </div>
       <div>
         <q-btn
-          :loading="false"
+          @click="emit('update:openEmailInfo')"
           flat
           color="black"
-          icon-right="fa-regular fa-envelope"
+          icon-right="chat"
           rounded
         >
-          <q-tooltip> Entrar em contato pelo e-mail </q-tooltip>
+          <q-tooltip> Entrar em contato </q-tooltip>
         </q-btn>
-        <q-btn
-          :loading="false"
-          flat
-          color="black"
-          icon-right="fa-brands fa-whatsapp"
-          rounded
-        >
-          <q-tooltip> Entrar em contato pelo whatsapp </q-tooltip>
-        </q-btn>
-        <q-btn
-          :loading="false"
-          flat
-          color="black"
-          icon-right="fa-solid fa-headset"
-          rounded
-        >
+        <q-btn flat color="black" icon-right="fa-solid fa-headset" rounded>
           <q-tooltip> Enviar sugestão ou feedback </q-tooltip>
         </q-btn>
         <UserOptions
