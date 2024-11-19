@@ -3,12 +3,16 @@ import FormPerfil from 'src/components/forms/FormPerfil.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import EmailInfo from 'src/components/info/EmailInfo.vue';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from 'src/stores/auth-store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'MainLayout',
 });
+
+const { user } = storeToRefs(useAuthStore());
 
 const route = useRoute();
 const leftDrawerOpen = ref<boolean>(false);
@@ -52,12 +56,6 @@ const menuList = computed(() => [
     label: 'Contas',
     separator: true,
     name: 'admin-account',
-  },
-  {
-    icon: 'person',
-    label: 'Usuários',
-    separator: true,
-    name: 'admin-users',
   },
   {
     icon: 'group_work',
@@ -104,6 +102,20 @@ const openFormEnterprise = (): void => {
 const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
 };
+const mountRoute = () => {
+  if (user.value?.position === 'admin') {
+    menuList.value.splice(6, 0, {
+      icon: 'person',
+      label: 'Usuários',
+      separator: true,
+      name: 'admin-users',
+    });
+  }
+};
+
+onMounted(() => {
+  mountRoute();
+});
 </script>
 <template>
   <q-layout view="hHh lpR fFf">

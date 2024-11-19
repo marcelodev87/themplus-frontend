@@ -1,7 +1,7 @@
 const { configure } = require('quasar/wrappers');
 
 module.exports = configure((/* ctx */) => ({
-  boot: ['axios'],
+  boot: ['axios', 'pinia'],
   css: ['app.scss'],
   extras: [
     // 'ionicons-v4',
