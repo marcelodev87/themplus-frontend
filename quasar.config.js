@@ -1,4 +1,7 @@
 const { configure } = require('quasar/wrappers');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 module.exports = configure((/* ctx */) => ({
   boot: ['axios', 'pinia'],
@@ -15,6 +18,7 @@ module.exports = configure((/* ctx */) => ({
     'material-icons', // optional, you are not bound to it
   ],
   build: {
+    env: process.env,
     target: {
       browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
       node: 'node20',
