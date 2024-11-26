@@ -115,7 +115,8 @@ onMounted(async () => {
       <q-select
         v-model="filterMonthYear"
         :options="listMonthYear"
-        label="Filtrar momento"
+        :readonly="listMonthYear.length === 0"
+        :label="listMonthYear.length === 0 ? 'Sem dados' : 'Filtrar momento'"
         filled
         dense
         options-dense
@@ -137,22 +138,12 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Valor de entrada:</span>
-              <span>{{
-                movementsDashboard?.entry_value
-                  ? `R$ ${Number(movementsDashboard.entry_value)}`
-                  : ''
-              }}</span>
+              <span>Valor de entrada: </span>
+              <span>{{ `R$ ${movementsDashboard?.entry_value}` }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
               <span> Valor de saída:</span>
-              <span
-                >{{
-                  movementsDashboard?.out_value
-                    ? `R$ ${Number(movementsDashboard.out_value)}`
-                    : ''
-                }}
-              </span>
+              <span>{{ `R$ ${Number(movementsDashboard?.out_value)}` }} </span>
             </q-card-section>
 
             <q-separator inset />
@@ -160,12 +151,10 @@ onMounted(async () => {
             <q-card-section class="row justify-between">
               <span>Saldo:</span>
               <span>{{
-                movementsDashboard?.out_value && movementsDashboard?.entry_value
-                  ? `R$ ${
-                      Number(movementsDashboard.entry_value) -
-                      Number(movementsDashboard.out_value)
-                    }`
-                  : ''
+                `R$ ${
+                  Number(movementsDashboard?.entry_value) -
+                  Number(movementsDashboard?.out_value)
+                }`
               }}</span>
             </q-card-section>
           </q-card>
@@ -229,10 +218,20 @@ onMounted(async () => {
           </q-card>
           <q-card flat bordered class="q-mt-sm" style="width: 24%">
             <q-card-section class="row justify-between items-center">
-              <span class="text-h6">Contas </span>
-              <span class="text-body2 text-bold">TOP 3</span>
+              <div>
+                <span class="text-h6">Contas </span>
+                <span class="text-body2 text-bold">TOP 3</span>
+              </div>
+              <q-banner
+                v-show="accountsDashboard?.accounts.length === 0"
+                dense
+                inline-actions
+                class="text-white bg-red"
+                rounded
+              >
+                Não há contas registradas. Por favor, registre uma conta.
+              </q-banner>
             </q-card-section>
-
             <q-card-section
               v-for="(item, index) in accountsDashboard?.accounts"
               class="q-pt-none row justify-between"
