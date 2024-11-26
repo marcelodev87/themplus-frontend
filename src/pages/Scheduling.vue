@@ -28,7 +28,6 @@ const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
-const showFormCategory = ref<boolean>(false);
 const selectedDataEdit = ref<Scheduling | null>(null);
 const filterScheduling = ref<string>('');
 const columnsScheduling = reactive<QuasarTable[]>([
@@ -99,6 +98,7 @@ const clear = (): void => {
   onlyOut.value = false;
   onlyExpired.value = false;
   filterScheduling.value = '';
+  selectedDataEdit.value = null;
 };
 const openFormEntry = (): void => {
   showFormEntry.value = true;
