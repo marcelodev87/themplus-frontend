@@ -91,7 +91,7 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
 
-  if (inputDate.getTime() < today.getTime()) {
+  if (inputDate.getTime() < today.getTime() && props.mode === 'schedule') {
     return {
       status: false,
       message: 'Não pode agendar uma data que já passou',

@@ -104,7 +104,7 @@ onMounted(async () => {
           bordered
           dense
           row-key="name"
-          no-data-label="Nenhuma movimentação para mostrar"
+          no-data-label="Nenhuma entrega para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
         >
