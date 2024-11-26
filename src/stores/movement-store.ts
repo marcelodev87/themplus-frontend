@@ -42,9 +42,11 @@ export const useMovementStore = defineStore('movement', {
       movements.map((item) => this.listMovement.push(item));
     },
     setListCategory(categories: CategoryInformation[]) {
-      categories.map((item) =>
-        this.listCategory.push({ label: item.name, value: item.id })
-      );
+      this.listCategory = categories
+        .filter((item) => {
+          return item.active === 1;
+        })
+        .map((item) => ({ label: item.name, value: item.id }));
     },
     setListAccount(accounts: AccountInformation[]) {
       accounts.map((item) =>

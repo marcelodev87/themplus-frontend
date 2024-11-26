@@ -9,6 +9,7 @@ import {
   deleteCategoryService,
   updateCategoryService,
   getCategoriesWithParamsService,
+  updateActiveService,
 } from 'src/services/category-service';
 
 export const useCategoryStore = defineStore('category', {
@@ -115,6 +116,21 @@ export const useCategoryStore = defineStore('category', {
           type.toLowerCase(),
           alert
         );
+        if (response.status === 200) {
+          this.clearListCategory();
+          this.setListCategory(response.data.categories);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateActive(id: string) {
+      this.setLoading(true);
+      try {
+        const response = await updateActiveService(id);
         if (response.status === 200) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);

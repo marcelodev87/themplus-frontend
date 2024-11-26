@@ -44,9 +44,9 @@ export const useSchedulingStore = defineStore('scheduling', {
       schedulings.map((item) => this.listScheduling.push(item));
     },
     setListCategory(categories: CategoryInformation[]) {
-      categories.map((item) =>
-        this.listCategory.push({ label: item.name, value: item.id })
-      );
+      this.listCategory = categories
+        .filter((item) => item.active === 1)
+        .map((item) => ({ label: item.name, value: item.id }));
     },
     setListAccount(accounts: AccountInformation[]) {
       accounts.map((item) =>

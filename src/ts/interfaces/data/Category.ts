@@ -12,4 +12,5 @@ export interface Category {
   enterprise_id: string;
   alert_id: string;
   alert: Alert;
+  active: 1 | 0;
 }

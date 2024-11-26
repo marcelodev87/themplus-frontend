@@ -173,8 +173,13 @@ watch(open, async () => {
           <q-select
             v-model="selectedAlert"
             :options="optionsAlerts"
+            :readonly="optionsAlerts.length === 0"
             clearable
-            label="Selecione uma alerta"
+            :label="
+              optionsAlerts.length === 0
+                ? 'Não existe nenhuma alerta registrada'
+                : 'Selecione uma alerta'
+            "
             filled
             dense
             options-dense

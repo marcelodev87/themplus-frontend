@@ -12,7 +12,7 @@ defineOptions({
 });
 
 const { listCategory, loadingCategory } = storeToRefs(useCategoryStore());
-const { getCategories, deleteCategory, getCategoriesWithParams } =
+const { getCategories, deleteCategory, getCategoriesWithParams, updateActive } =
   useCategoryStore();
 
 const onlyCreatedByMe = ref<boolean>(false);
@@ -77,6 +77,9 @@ const exclude = async (id: string) => {
 };
 const fetchAlerts = async () => {
   await getCategories();
+};
+const reactivate = async (id: string) => {
+  await updateActive(id);
 };
 
 watch(
@@ -176,22 +179,44 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="name" :props="props" class="text-left">
+              <q-td
+                key="name"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.name }}
               </q-td>
-              <q-td key="default" :props="props" class="text-left">
+              <q-td
+                key="default"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.enterprise_id === null ? 'Sim' : 'Não' }}
               </q-td>
-              <q-td key="type" :props="props" class="text-left capitalize">
+              <q-td
+                key="type"
+                :props="props"
+                class="text-left capitalize"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.type }}
               </q-td>
-              <q-td key="alert" :props="props" class="text-left text-column">
+              <q-td
+                key="alert"
+                :props="props"
+                class="text-left text-column"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.alert_id ? props.row.alert.description : '' }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="props.row.enterprise_id !== null"
+                  v-show="
+                    props.row.enterprise_id !== null && props.row.active === 1
+                  "
                   size="sm"
                   flat
                   round
@@ -201,7 +226,9 @@ onMounted(async () => {
                 />
                 <q-btn
                   @click="exclude(props.row.id)"
-                  v-show="props.row.enterprise_id !== null"
+                  v-show="
+                    props.row.enterprise_id !== null && props.row.active === 1
+                  "
                   size="sm"
                   flat
                   round
@@ -209,6 +236,18 @@ onMounted(async () => {
                   icon="delete"
                   :disabled="false"
                 />
+                <q-btn
+                  @click="reactivate(props.row.id)"
+                  v-show="props.row.active === 0"
+                  size="sm"
+                  flat
+                  round
+                  color="replay"
+                  icon="replay"
+                  :disabled="false"
+                >
+                  <q-tooltip> Reativar </q-tooltip>
+                </q-btn>
               </q-td>
             </q-tr>
           </template>
