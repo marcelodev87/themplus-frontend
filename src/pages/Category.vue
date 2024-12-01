@@ -71,6 +71,8 @@ const clear = (): void => {
   filterCategory.value = '';
   filterAllCategories.value = 'Todos';
   filteredCategories.splice(0, filteredCategories.length);
+  onlyCreatedByMe.value = false;
+  onlyDefault.value = false;
 };
 const openFormCategory = (): void => {
   showFormCategory.value = true;
