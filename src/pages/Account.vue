@@ -7,6 +7,7 @@ import { onMounted, reactive, ref } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Account } from 'src/ts/interfaces/data/Account';
 import FormTransfer from 'src/components/forms/FormTransfer.vue';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
 defineOptions({
   name: 'Account',
@@ -16,6 +17,7 @@ const { getAccounts, exportAccount, updateActiveAccount } = useAccountStore();
 const { loadingAccount, listAccount } = storeToRefs(useAccountStore());
 
 const showFormAccount = ref<boolean>(false);
+const showAlertDataEnterprise = ref<boolean>(true);
 const loadingExport = ref<boolean>(false);
 const selectedDataEdit = ref<Account | null>(null);
 const filterAccount = ref<string>('');
@@ -87,6 +89,9 @@ const exportData = async (): Promise<void> => {
 };
 const reactivate = async (id: string) => {
   await updateActiveAccount(id);
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 
 onMounted(async () => {
@@ -230,6 +235,10 @@ onMounted(async () => {
         <FormTransfer
           :open="showFormTransfer"
           @update:open="closeFormTransfer"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>

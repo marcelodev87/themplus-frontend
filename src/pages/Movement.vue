@@ -8,6 +8,7 @@ import { useMovementStore } from 'src/stores/movement-store';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Movement } from 'src/ts/interfaces/data/Movement';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
 defineOptions({
   name: 'Movement',
@@ -17,6 +18,7 @@ const { getMovements, getMovementsWithParams, exportMovement, deleteMovement } =
   useMovementStore();
 const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
 
+const showAlertDataEnterprise = ref<boolean>(true);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
@@ -187,6 +189,9 @@ watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
     await getMovements();
   }
 });
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
+};
 
 onMounted(async () => {
   await getMovements();
@@ -338,6 +343,10 @@ onMounted(async () => {
           "
           mode="movement"
           @update:open="closeFormOut"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>

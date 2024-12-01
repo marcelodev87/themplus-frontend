@@ -5,6 +5,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Category } from 'src/ts/interfaces/data/Category';
 import FormCategory from 'src/components/forms/FormCategory.vue';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useCategoryStore } from 'src/stores/category-store';
 
 defineOptions({
@@ -20,6 +21,7 @@ const {
 } = useCategoryStore();
 
 const onlyCreatedByMe = ref<boolean>(false);
+const showAlertDataEnterprise = ref<boolean>(true);
 const onlyDefault = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const filterCategory = ref<string>('');
@@ -88,6 +90,9 @@ const fetchAlerts = async () => {
 };
 const reactivate = async (id: string) => {
   await updateActiveCategory(id);
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 
 watch(
@@ -303,6 +308,10 @@ onMounted(async () => {
           :open="showFormCategory"
           :data-edit="selectedDataEdit"
           @update:open="closeFormCategory"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>

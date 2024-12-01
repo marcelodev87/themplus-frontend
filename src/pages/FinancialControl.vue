@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useFinancialStore } from 'src/stores/financial-store';
 import { onMounted, reactive, ref } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
 defineOptions({
   name: 'FinancialControl',
@@ -13,6 +14,7 @@ const { listDelivery, loadingDelivery } = storeToRefs(useFinancialStore());
 const { getDelivery, updateDelivery } = useFinancialStore();
 
 const filterDelivery = ref<string>('');
+const showAlertDataEnterprise = ref<boolean>(true);
 const columnsDelivery = reactive<QuasarTable[]>([
   {
     name: 'month_year',
@@ -48,6 +50,9 @@ const finalize = async (monthYear: string): Promise<void> => {
 };
 const fetchDelivery = async () => {
   await getDelivery();
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 const convertMonthYear = (monthYear: string): string => {
   const months: { [key: string]: string } = {
@@ -146,6 +151,10 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
+        />
       </main>
     </q-scroll-area>
   </section>

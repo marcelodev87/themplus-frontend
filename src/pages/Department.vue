@@ -5,6 +5,7 @@ import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDepartmentStore } from 'src/stores/department_store';
 import { Department } from 'src/ts/interfaces/data/Department';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useQuasar } from 'quasar';
 
 defineOptions({
@@ -20,6 +21,7 @@ const selectedObject = ref<string>('');
 const searchDepartment = ref<string>('');
 const clickRootCreate = ref<string | null>(null);
 const departmentEdit = ref<Department | null>(null);
+const showAlertDataEnterprise = ref<boolean>(true);
 
 const clear = () => {
   clickRootCreate.value = '';
@@ -57,6 +59,9 @@ const exclude = (id: string) => {
   }).onOk(async () => {
     await deleteDepartment(id);
   });
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 
 onMounted(async () => {
@@ -162,6 +167,10 @@ onMounted(async () => {
           :key-root="clickRootCreate"
           :department-edit="departmentEdit"
           @update:open="closeFormDepartment"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>

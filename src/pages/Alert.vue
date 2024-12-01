@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { useAlertStore } from 'src/stores/alert-store';
 import { onMounted, reactive, ref } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
 
 defineOptions({
@@ -15,6 +16,7 @@ const { listAlert, loadingAlert } = storeToRefs(useAlertStore());
 const { getAlerts, deleteAlert } = useAlertStore();
 
 const showFormAlert = ref<boolean>(false);
+const showAlertDataEnterprise = ref<boolean>(true);
 const filterAlert = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
 const columnsAlert = reactive<QuasarTable[]>([
@@ -53,6 +55,9 @@ const exclude = async (id: string) => {
 };
 const fetchAlerts = async () => {
   await getAlerts();
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 
 onMounted(async () => {
@@ -132,6 +137,10 @@ onMounted(async () => {
           :open="showFormAlert"
           :data-edit="selectedDataEdit"
           @update:open="closeFormAlert"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>

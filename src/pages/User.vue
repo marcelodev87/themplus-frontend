@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import { reactive, ref, onMounted } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { User } from 'src/ts/interfaces/data/User';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
 defineOptions({
   name: 'User',
@@ -21,6 +22,7 @@ const { user } = storeToRefs(useAuthStore());
 
 const showFormUser = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
+const showAlertDataEnterprise = ref<boolean>(true);
 const filterUser = ref<string>('');
 const selectedDataEdit = ref<User | null>(null);
 const columnsUser = reactive<QuasarTable[]>([
@@ -89,6 +91,9 @@ const exportData = async (): Promise<void> => {
   loadingExport.value = true;
   await exportUser();
   loadingExport.value = false;
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 
 onMounted(async () => {
@@ -200,6 +205,10 @@ onMounted(async () => {
           :open="showFormUser"
           :data-edit="selectedDataEdit"
           @update:open="closeFormUser"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>

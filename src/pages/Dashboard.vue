@@ -3,6 +3,7 @@ import { useDashboardStore } from 'src/stores/dashboard-store';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
 defineOptions({
   name: 'Dashboard',
@@ -20,6 +21,7 @@ const {
 } = storeToRefs(useDashboardStore());
 
 const filterMonthYear = ref('');
+const showAlertDataEnterprise = ref<boolean>(true);
 const columnsCategoriesDashboard = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -72,7 +74,6 @@ const totalValueOutCategory = computed(() => {
 const fetchInformationsDashboard = async () => {
   await getDashboard();
 };
-
 const checkCurrentMonthYear = () => {
   const currentDate = new Date();
   const currentMonthYear = `${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
@@ -100,6 +101,9 @@ const getCurrentMonthYear = () => {
     'Dezembro',
   ];
   return `${monthNames[currentDate.getMonth()]} de ${currentDate.getFullYear()}`;
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 
 onMounted(async () => {
@@ -334,6 +338,10 @@ onMounted(async () => {
             </template>
           </q-table>
         </div>
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
+        />
       </main>
     </q-scroll-area>
   </section>

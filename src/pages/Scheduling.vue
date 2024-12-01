@@ -8,6 +8,7 @@ import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { storeToRefs } from 'pinia';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
 defineOptions({
   name: 'Scheduling',
@@ -29,6 +30,7 @@ const loadingExport = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const selectedDataEdit = ref<Scheduling | null>(null);
+const showAlertDataEnterprise = ref<boolean>(true);
 const filterScheduling = ref<string>('');
 const columnsScheduling = reactive<QuasarTable[]>([
   {
@@ -113,6 +115,9 @@ const openFormOut = (): void => {
 const closeFormOut = (): void => {
   showFormOut.value = false;
   clear();
+};
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
 };
 const handleEdit = (scheduling: Scheduling): void => {
   selectedDataEdit.value = scheduling;
@@ -382,6 +387,10 @@ onMounted(async () => {
           title="Agende uma saída"
           mode="schedule"
           @update:open="closeFormOut"
+        />
+        <AlertDataEnterprise
+          :open="showAlertDataEnterprise"
+          @update:open="closeAlertDataEnterprise"
         />
       </main>
     </q-scroll-area>
