@@ -11,32 +11,26 @@ defineOptions({
 
 const emit = defineEmits<{
   'update:open': [void];
-  'update:ok': [password: string];
+  'update:ok': [void];
 }>();
 
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
-const dataPassword = reactive({
-  passwordActual: '' as string,
-  passwordConfirm: '' as string,
+const dataConfirm = reactive({
+  text: '' as string,
 });
 
 const checkData = (): { status: boolean; message?: string } => {
-  if (dataPassword.passwordActual.trim() === '') {
-    return { status: false, message: 'Informe sua senha' };
+  if (dataConfirm.text.trim().toLowerCase() !== 'confirmar') {
+    return { status: false, message: 'Digite CONFIRMAR para prosseguir' };
   }
 
-  if (
-    dataPassword.passwordActual.trim() !== dataPassword.passwordConfirm.trim()
-  ) {
-    return { status: false, message: 'As senhas devem ser iguais' };
-  }
   return { status: true };
 };
 const save = () => {
   const check = checkData();
   if (check.status) {
-    emit('update:ok', dataPassword.passwordActual);
+    emit('update:ok');
   } else {
     Notify.create({
       message: check.message,
@@ -45,9 +39,8 @@ const save = () => {
   }
 };
 const clear = (): void => {
-  Object.assign(dataPassword, {
-    passwordActual: '',
-    passwordConfirm: '',
+  Object.assign(dataConfirm, {
+    text: '',
   });
 };
 const close = () => {
@@ -64,40 +57,26 @@ onMounted(() => {
       <TitlePage title="Confirmação de alteração de dados da organização" />
     </q-card-section>
     <q-card-section>
-      <div class="text-subtitle2 text-red">
+      <div class="text-subtitle2">
         Para confirmar as alterações nos dados da organização, por favor, digite
-        sua senha e confirme-a logo em seguida. É importante destacar que, uma
-        vez alterados, os dados não poderão ser recuperados.
+        <span class="text-subtitle2 text-red">CONFIRMAR</span> no campo de
+        texto. É importante destacar que, uma vez alterados, os dados não
+        poderão ser recuperados.
       </div>
     </q-card-section>
     <q-card-section class="q-pa-sm">
       <q-form class="q-gutter-y-sm">
         <q-input
-          v-model="dataPassword.passwordActual"
+          v-model="dataConfirm.text"
           bg-color="white"
           label-color="black"
           filled
-          label="Digite sua senha"
+          label="Digite 'CONFIMAR'"
           dense
           input-class="text-black"
-          type="password"
         >
           <template v-slot:prepend>
-            <q-icon name="lock" color="black" size="20px" />
-          </template>
-        </q-input>
-        <q-input
-          v-model="dataPassword.passwordConfirm"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Confirme sua senha"
-          dense
-          input-class="text-black"
-          type="password"
-        >
-          <template v-slot:prepend>
-            <q-icon name="lock" color="black" size="20px" />
+            <q-icon name="check_circle" color="black" size="20px" />
           </template>
         </q-input>
       </q-form>

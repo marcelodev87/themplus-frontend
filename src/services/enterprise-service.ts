@@ -36,7 +36,6 @@ export const updateEnterpriseService = (payload: {
   number_address: string | null;
   email: string | null;
   phone: string | null;
-  password: string;
 }): Promise<{
   status: number;
   data: {

@@ -130,7 +130,7 @@ const openConfirmEditEnterprise = (): void => {
 const closeConfirmEditEnterprise = (): void => {
   showConfirmEditEnterprise.value = false;
 };
-const update = async (password: string) => {
+const update = async () => {
   const check = checkData();
   if (check.status) {
     await updateEnterprise({
@@ -167,7 +167,6 @@ const update = async (password: string) => {
           : dataEnterprise.numberAddress,
       email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
-      password,
     });
     emit('update:open');
   } else {
