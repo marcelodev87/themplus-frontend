@@ -5,6 +5,8 @@ import { Notify } from 'quasar';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import { searchCep } from 'src/services/cep-service';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'AlertDataEnterprise',
@@ -17,9 +19,11 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { setToken, setUser } = useAuthStore();
 const { updateEnterprise, getEnterprise } = useEnterpriseStore();
 const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
+const router = useRouter();
 const step = ref<number>(1);
 const selectedIdentifier = ref<string>('CNPJ');
 const loading = ref<boolean>(false);
@@ -184,6 +188,11 @@ const fetchEnterprise = async () => {
       cep: enterprise.value?.cep ?? '',
     });
   }
+};
+const logout = (): void => {
+  setToken(null);
+  setUser(null);
+  router.push({ name: 'auth' });
 };
 
 watch(
@@ -466,7 +475,7 @@ watch(step, () => {
       </q-step>
 
       <template v-slot:navigation>
-        <q-stepper-navigation class="row justify-end">
+        <q-stepper-navigation class="row justify-end q-gutter-x-sm">
           <q-btn
             v-show="step === 2"
             flat
@@ -474,6 +483,15 @@ watch(step, () => {
             @click="step = 1"
             label="Voltar"
             class="q-ml-sm"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-show="step === 1"
+            @click="logout"
+            color="primary"
+            label="Entrar com outra conta"
+            flat
             unelevated
             no-caps
           />
