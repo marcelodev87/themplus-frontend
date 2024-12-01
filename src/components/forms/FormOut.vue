@@ -308,6 +308,7 @@ watch(open, async () => {
             label="Selecione uma data"
             filled
             dense
+            mask="##/##/####"
           >
             <template v-slot:prepend>
               <q-icon
