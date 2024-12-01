@@ -214,7 +214,9 @@ onMounted(async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="props.row.active === 1"
+                  v-show="
+                    props.row.active === 1 && props.row.name !== 'Caixinha'
+                  "
                   size="sm"
                   flat
                   round
@@ -224,7 +226,9 @@ onMounted(async () => {
                 />
                 <q-btn
                   @click="reactivate(props.row.id)"
-                  v-show="props.row.active === 0"
+                  v-show="
+                    props.row.active === 0 && props.row.name !== 'Caixinha'
+                  "
                   size="sm"
                   flat
                   round
