@@ -23,7 +23,9 @@ const onlyCreatedByMe = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const filterCategory = ref<string>('');
+const filterAllCategories = ref<string>('Todos');
 const selectedDataEdit = ref<Category | null>(null);
+const filteredCategories = reactive<Category[]>([]);
 const columnsCategory = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -64,6 +66,8 @@ const columnsCategory = reactive<QuasarTable[]>([
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterCategory.value = '';
+  filterAllCategories.value = 'Todos';
+  filteredCategories.splice(0, filteredCategories.length);
 };
 const openFormCategory = (): void => {
   showFormCategory.value = true;
@@ -122,6 +126,29 @@ watch(
     }
   }
 );
+watch(
+  filterAllCategories,
+  (type) => {
+    if (type === 'Entradas') {
+      filteredCategories.splice(0, filteredCategories.length);
+      listCategory.value.forEach((item) => {
+        if (item.type === 'entrada') {
+          filteredCategories.push(item);
+        }
+      });
+    } else if (type === 'Saídas') {
+      filteredCategories.splice(0, filteredCategories.length);
+      listCategory.value.forEach((item) => {
+        if (item.type === 'saída') {
+          filteredCategories.push(item);
+        }
+      });
+    } else {
+      filteredCategories.splice(0, filteredCategories.length);
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await fetchAlerts();
@@ -148,7 +175,13 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          :rows="loadingCategory ? [] : listCategory"
+          :rows="
+            loadingCategory
+              ? []
+              : filteredCategories.length > 0
+                ? filteredCategories
+                : listCategory
+          "
           :columns="columnsCategory"
           :filter="filterCategory"
           :loading="loadingCategory"
@@ -174,6 +207,16 @@ onMounted(async () => {
               color="primary"
               label="Criados"
               left-label
+            />
+            <q-select
+              v-model="filterAllCategories"
+              :options="['Todos', 'Entradas', 'Saídas']"
+              dense
+              options-dense
+              filled
+              label="Filtrar categorias"
+              style="width: 200px"
+              class="q-mr-sm"
             />
             <q-input filled v-model="filterCategory" dense label="Pesquisar">
               <template v-slot:prepend>
