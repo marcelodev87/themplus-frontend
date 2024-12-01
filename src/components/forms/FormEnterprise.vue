@@ -198,6 +198,12 @@ const fetchEnterprise = async () => {
       neighborhood: enterprise.value?.neighborhood ?? '',
       cep: enterprise.value?.cep ?? '',
     });
+
+    if (enterprise.value?.cpf === null) {
+      selectedIdentifier.value = 'CNPJ';
+    } else {
+      selectedIdentifier.value = 'CPF';
+    }
   }
 };
 
