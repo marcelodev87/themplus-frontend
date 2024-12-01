@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { Notify } from 'quasar';
 import { DataRegister } from 'src/ts/interfaces/data/User';
 import { RenderAuth } from 'src/ts/types/FormMode';
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 const { loadingAuth } = storeToRefs(useAuthStore());
 const { doRegister } = useAuthStore();
 
+const isPwd = ref<boolean>(true);
 const dataRegister = reactive<DataRegister>({
   name: '',
   email: '',
@@ -164,8 +165,16 @@ onMounted(() => {
         autocomplete="new-password"
         dense
         input-class="text-black"
-        type="password"
+        :type="isPwd ? 'password' : 'text'"
       >
+        <template v-slot:append>
+          <q-icon
+            @click="isPwd = !isPwd"
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            size="20px"
+          />
+        </template>
         <template v-slot:prepend>
           <q-icon name="key" color="black" size="20px" />
         </template>
@@ -179,8 +188,16 @@ onMounted(() => {
         autocomplete="new-password"
         dense
         input-class="text-black"
-        type="password"
+        :type="isPwd ? 'password' : 'text'"
       >
+        <template v-slot:append>
+          <q-icon
+            @click="isPwd = !isPwd"
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            size="20px"
+          />
+        </template>
         <template v-slot:prepend>
           <q-icon name="key" color="black" size="20px" />
         </template>
