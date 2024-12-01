@@ -10,7 +10,7 @@ import { Delivery } from 'src/ts/interfaces/data/Delivery';
 
 export const useFinancialStore = defineStore('financial', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingDelivery: false as boolean,
     listDelivery: [] as Delivery[],
   }),

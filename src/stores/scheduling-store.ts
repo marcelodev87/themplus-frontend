@@ -22,7 +22,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useSchedulingStore = defineStore('scheduling', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingScheduling: false as boolean,
     listScheduling: [] as Scheduling[],
     listCategory: [] as QuasarSelect<string>[],

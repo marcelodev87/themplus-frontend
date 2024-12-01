@@ -14,7 +14,7 @@ import {
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingCategory: false as boolean,
     listCategory: [] as Category[],
   }),

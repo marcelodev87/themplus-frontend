@@ -12,7 +12,7 @@ import { Alert } from 'src/ts/interfaces/data/Alert';
 
 export const useAlertStore = defineStore('alert', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingAlert: false as boolean,
     listAlert: [] as Alert[],
   }),

@@ -15,7 +15,7 @@ import { Account } from 'src/ts/interfaces/data/Account';
 
 export const useAccountStore = defineStore('account', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingAccount: false as boolean,
     listAccount: [] as Account[],
   }),

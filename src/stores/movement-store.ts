@@ -20,7 +20,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useMovementStore = defineStore('movement', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingMovement: false as boolean,
     listMovement: [] as Movement[],
     listCategory: [] as QuasarSelect<string>[],

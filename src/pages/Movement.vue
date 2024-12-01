@@ -193,13 +193,15 @@ watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
     await getMovements();
   }
 });
-watch(filledData, () => {
-  if (filledData.value) {
-    showAlertDataEnterprise.value = false;
-  } else {
-    showAlertDataEnterprise.value = true;
-  }
-});
+watch(
+  filledData,
+  () => {
+    if (!filledData.value) {
+      showAlertDataEnterprise.value = true;
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await getMovements();

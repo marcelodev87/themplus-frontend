@@ -65,13 +65,15 @@ const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
 
-watch(filledData, () => {
-  if (filledData.value) {
-    showAlertDataEnterprise.value = false;
-  } else {
-    showAlertDataEnterprise.value = true;
-  }
-});
+watch(
+  filledData,
+  () => {
+    if (!filledData.value) {
+      showAlertDataEnterprise.value = true;
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   clear();

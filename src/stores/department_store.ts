@@ -12,7 +12,7 @@ import { Department, DepartmentNode } from 'src/ts/interfaces/data/Department';
 
 export const useDepartmentStore = defineStore('department', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingDepartment: false as boolean,
     listDepartment: [] as Department[],
   }),

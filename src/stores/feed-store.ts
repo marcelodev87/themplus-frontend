@@ -6,7 +6,7 @@ import { getFeedService } from 'src/services/feed-service';
 
 export const useFeedStore = defineStore('feed', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingFeed: false as boolean,
   }),
   actions: {

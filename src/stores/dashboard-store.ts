@@ -13,7 +13,7 @@ import {
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingDashboard: false as boolean,
     listMonthYear: [] as string[],
     listCategoryDashboard: null as CategoryDashboard[] | null,

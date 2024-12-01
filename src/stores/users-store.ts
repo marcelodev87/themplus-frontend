@@ -13,7 +13,7 @@ import { User } from 'src/ts/interfaces/data/User';
 
 export const useUsersMembersStore = defineStore('members', {
   state: () => ({
-    filledData: false as boolean,
+    filledData: true as boolean,
     loadingUsersMembers: false as boolean,
     listUserMember: [] as User[],
   }),
