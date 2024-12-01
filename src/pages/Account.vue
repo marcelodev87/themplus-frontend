@@ -12,7 +12,7 @@ defineOptions({
   name: 'Account',
 });
 
-const { getAccounts, exportAccount } = useAccountStore();
+const { getAccounts, exportAccount, updateActiveAccount } = useAccountStore();
 const { loadingAccount, listAccount } = storeToRefs(useAccountStore());
 
 const showFormAccount = ref<boolean>(false);
@@ -85,6 +85,9 @@ const exportData = async (): Promise<void> => {
   await exportAccount();
   loadingExport.value = false;
 };
+const reactivate = async (id: string) => {
+  await updateActiveAccount(id);
+};
 
 onMounted(async () => {
   await getAccounts();
@@ -152,24 +155,50 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="name" :props="props" class="text-left">
+              <q-td
+                key="name"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.name }}
               </q-td>
-              <q-td key="account_number" :props="props" class="text-left">
+              <q-td
+                key="account_number"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.account_number }}
               </q-td>
-              <q-td key="agency_number" :props="props" class="text-left">
+              <q-td
+                key="agency_number"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.agency_number }}
               </q-td>
-              <q-td key="balance" :props="props" class="text-left">
+              <q-td
+                key="balance"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ `R$ ${props.row.balance}` }}
               </q-td>
-              <q-td key="description" :props="props" class="text-left">
+              <q-td
+                key="description"
+                :props="props"
+                class="text-left"
+                :class="props.row.active === 0 ? 'opacity-30' : ''"
+              >
                 {{ props.row.description }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
+                  v-show="props.row.active === 1"
                   size="sm"
                   flat
                   round
@@ -177,6 +206,18 @@ onMounted(async () => {
                   icon="edit"
                   :disabled="false"
                 />
+                <q-btn
+                  @click="reactivate(props.row.id)"
+                  v-show="props.row.active === 0"
+                  size="sm"
+                  flat
+                  round
+                  color="replay"
+                  icon="replay"
+                  :disabled="false"
+                >
+                  <q-tooltip> Reativar </q-tooltip>
+                </q-btn>
               </q-td>
             </q-tr>
           </template>

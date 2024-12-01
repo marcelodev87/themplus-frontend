@@ -9,7 +9,7 @@ import {
   deleteCategoryService,
   updateCategoryService,
   getCategoriesWithParamsService,
-  updateActiveService,
+  updateActiveCategoryService,
 } from 'src/services/category-service';
 
 export const useCategoryStore = defineStore('category', {
@@ -127,10 +127,10 @@ export const useCategoryStore = defineStore('category', {
         this.setLoading(false);
       }
     },
-    async updateActive(id: string) {
+    async updateActiveCategory(id: string) {
       this.setLoading(true);
       try {
-        const response = await updateActiveService(id);
+        const response = await updateActiveCategoryService(id);
         if (response.status === 200) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
@@ -147,9 +147,8 @@ export const useCategoryStore = defineStore('category', {
       try {
         const response = await deleteCategoryService(categoryId);
         if (response.status === 200) {
-          this.listCategory = this.listCategory.filter(
-            (item) => item.id !== categoryId
-          );
+          this.clearListCategory();
+          this.setListCategory(response.data.categories);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -12,8 +12,12 @@ defineOptions({
 });
 
 const { listCategory, loadingCategory } = storeToRefs(useCategoryStore());
-const { getCategories, deleteCategory, getCategoriesWithParams, updateActive } =
-  useCategoryStore();
+const {
+  getCategories,
+  deleteCategory,
+  getCategoriesWithParams,
+  updateActiveCategory,
+} = useCategoryStore();
 
 const onlyCreatedByMe = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
@@ -79,7 +83,7 @@ const fetchAlerts = async () => {
   await getCategories();
 };
 const reactivate = async (id: string) => {
-  await updateActive(id);
+  await updateActiveCategory(id);
 };
 
 watch(

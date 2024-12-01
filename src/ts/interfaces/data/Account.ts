@@ -14,4 +14,5 @@ export interface Account {
   agency_number: string;
   description: string;
   created_at: string;
+  active: string;
 }

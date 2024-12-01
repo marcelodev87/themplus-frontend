@@ -109,11 +109,22 @@ export const updateAccountService = (
     description,
   });
 
+export const updateActiveAccountService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    accounts: Account[];
+    message: string;
+  };
+}> => api.put(`${baseUrl}/active/${id}`);
+
 export const deleteAccountService = (
   id: string
 ): Promise<{
   status: number;
   data: {
+    accounts: Account[];
     message: string;
   };
 }> => api.delete(`${baseUrl}/${id}`);

@@ -9,6 +9,7 @@ import {
   deleteAccountService,
   createTransferService,
   exportAccountService,
+  updateActiveAccountService,
 } from 'src/services/account-service';
 import { Account } from 'src/ts/interfaces/data/Account';
 
@@ -163,14 +164,28 @@ export const useAccountStore = defineStore('account', {
         this.setLoading(false);
       }
     },
+    async updateActiveAccount(id: string) {
+      this.setLoading(true);
+      try {
+        const response = await updateActiveAccountService(id);
+        if (response.status === 200) {
+          this.clearListAccount();
+          this.setListAccount(response.data.accounts);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async deleteAccount(accountId: string) {
       this.setLoading(true);
       try {
         const response = await deleteAccountService(accountId);
         if (response.status === 200) {
-          this.listAccount = this.listAccount.filter(
-            (item) => item.id !== accountId
-          );
+          this.clearListAccount();
+          this.setListAccount(response.data.accounts);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

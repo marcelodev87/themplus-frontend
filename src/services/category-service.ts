@@ -55,7 +55,7 @@ export const updateCategoryService = (
     type,
     alert,
   });
-export const updateActiveService = (
+export const updateActiveCategoryService = (
   id: string
 ): Promise<{
   status: number;
@@ -70,6 +70,7 @@ export const deleteCategoryService = (
 ): Promise<{
   status: number;
   data: {
+    categories: Category[];
     message: string;
   };
 }> => api.delete(`${baseUrl}/${id}`);
