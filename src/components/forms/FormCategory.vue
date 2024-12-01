@@ -68,13 +68,15 @@ const clear = (): void => {
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    await createCategory(
+    const response = await createCategory(
       dataCategory.name,
       dataCategory.type,
       selectedAlert.value?.value ?? null
     );
-    clear();
-    emit('update:open');
+    if (response?.status === 200) {
+      clear();
+      emit('update:open');
+    }
   } else {
     Notify.create({
       message: check.message,
@@ -85,14 +87,16 @@ const save = async () => {
 const update = async () => {
   const check = checkData();
   if (check.status) {
-    await updateCategory(
+    const response = await updateCategory(
       props.dataEdit?.id ?? '',
       dataCategory.name,
       dataCategory.type,
       selectedAlert.value?.value ?? null
     );
-    clear();
-    emit('update:open');
+    if (response?.status === 200) {
+      clear();
+      emit('update:open');
+    }
   } else {
     Notify.create({
       message: check.message,
