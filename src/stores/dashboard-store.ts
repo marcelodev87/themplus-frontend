@@ -13,6 +13,7 @@ import {
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
+    filledData: false as boolean,
     loadingDashboard: false as boolean,
     listMonthYear: [] as string[],
     listCategoryDashboard: null as CategoryDashboard[] | null,
@@ -45,6 +46,9 @@ export const useDashboardStore = defineStore('dashboard', {
     },
     setLoading(loading: boolean) {
       this.loadingDashboard = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     createError(error: any) {
       let message = 'Error';
@@ -81,6 +85,7 @@ export const useDashboardStore = defineStore('dashboard', {
           this.setSchedulingsDashboard(response.data.schedulings_dashboard);
           this.setUsersDashboard(response.data.users_dashboard);
           this.setAccountsDashboard(response.data.accounts_dashboard);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

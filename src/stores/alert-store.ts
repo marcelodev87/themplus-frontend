@@ -12,6 +12,7 @@ import { Alert } from 'src/ts/interfaces/data/Alert';
 
 export const useAlertStore = defineStore('alert', {
   state: () => ({
+    filledData: false as boolean,
     loadingAlert: false as boolean,
     listAlert: [] as Alert[],
   }),
@@ -21,6 +22,9 @@ export const useAlertStore = defineStore('alert', {
     },
     setLoading(loading: boolean) {
       this.loadingAlert = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListAlert(alerts: Alert[]) {
       alerts.map((item) => this.listAlert.push(item));
@@ -50,6 +54,7 @@ export const useAlertStore = defineStore('alert', {
         if (response.status === 200) {
           this.clearListAlert();
           this.setListAlert(response.data.alerts);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

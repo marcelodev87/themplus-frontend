@@ -3,7 +3,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormAccount from 'src/components/forms/FormAccount.vue';
 import { useAccountStore } from 'src/stores/account-store';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Account } from 'src/ts/interfaces/data/Account';
 import FormTransfer from 'src/components/forms/FormTransfer.vue';
@@ -14,7 +14,8 @@ defineOptions({
 });
 
 const { getAccounts, exportAccount, updateActiveAccount } = useAccountStore();
-const { loadingAccount, listAccount } = storeToRefs(useAccountStore());
+const { loadingAccount, listAccount, filledData } =
+  storeToRefs(useAccountStore());
 
 const showFormAccount = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(true);
@@ -93,6 +94,14 @@ const reactivate = async (id: string) => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await getAccounts();

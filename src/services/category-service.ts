@@ -7,6 +7,7 @@ export const getCategoriesService = (): Promise<{
   status: number;
   data: {
     categories: Category[];
+    filled_data: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

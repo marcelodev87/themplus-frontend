@@ -7,6 +7,7 @@ export const getAlertsService = (): Promise<{
   status: number;
   data: {
     alerts: Alert[];
+    filled_data: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

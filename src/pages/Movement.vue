@@ -16,9 +16,10 @@ defineOptions({
 
 const { getMovements, getMovementsWithParams, exportMovement, deleteMovement } =
   useMovementStore();
-const { loadingMovement, listMovement } = storeToRefs(useMovementStore());
+const { loadingMovement, listMovement, filledData } =
+  storeToRefs(useMovementStore());
 
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
@@ -155,6 +156,9 @@ const exportData = async (): Promise<void> => {
   await exportMovement(onlyEntry.value, onlyOut.value);
   loadingExport.value = false;
 };
+const closeAlertDataEnterprise = (): void => {
+  showAlertDataEnterprise.value = false;
+};
 
 watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
   let lastChanged = null;
@@ -189,9 +193,13 @@ watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
     await getMovements();
   }
 });
-const closeAlertDataEnterprise = (): void => {
-  showAlertDataEnterprise.value = false;
-};
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await getMovements();

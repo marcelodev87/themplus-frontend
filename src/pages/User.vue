@@ -4,7 +4,7 @@ import FormUser from 'src/components/forms/FormUser.vue';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { User } from 'src/ts/interfaces/data/User';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
@@ -15,14 +15,14 @@ defineOptions({
 
 const { getUsersMembers, deleteUserMember, exportUser } =
   useUsersMembersStore();
-const { loadingUsersMembers, listUserMember } = storeToRefs(
+const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(
   useUsersMembersStore()
 );
 const { user } = storeToRefs(useAuthStore());
 
 const showFormUser = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const filterUser = ref<string>('');
 const selectedDataEdit = ref<User | null>(null);
 const columnsUser = reactive<QuasarTable[]>([
@@ -95,6 +95,14 @@ const exportData = async (): Promise<void> => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await getUsersMembers();

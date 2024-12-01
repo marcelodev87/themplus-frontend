@@ -2,7 +2,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useFinancialStore } from 'src/stores/financial-store';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
@@ -10,11 +10,12 @@ defineOptions({
   name: 'FinancialControl',
 });
 
-const { listDelivery, loadingDelivery } = storeToRefs(useFinancialStore());
+const { listDelivery, loadingDelivery, filledData } =
+  storeToRefs(useFinancialStore());
 const { getDelivery, updateDelivery } = useFinancialStore();
 
 const filterDelivery = ref<string>('');
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const columnsDelivery = reactive<QuasarTable[]>([
   {
     name: 'month_year',
@@ -86,6 +87,14 @@ const formatDateToBrazilian = (dateTime: string | null | undefined) => {
 
   return `${day}/${month}/${year}`;
 };
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   fetchDelivery();

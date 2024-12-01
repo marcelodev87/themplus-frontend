@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDashboardStore } from 'src/stores/dashboard-store';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
@@ -18,10 +18,11 @@ const {
   schedulingsDashboard,
   usersDashboard,
   accountsDashboard,
+  filledData,
 } = storeToRefs(useDashboardStore());
 
 const filterMonthYear = ref('');
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const columnsCategoriesDashboard = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -105,6 +106,14 @@ const getCurrentMonthYear = () => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await fetchInformationsDashboard();

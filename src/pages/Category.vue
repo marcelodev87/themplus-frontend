@@ -12,7 +12,8 @@ defineOptions({
   name: 'Category',
 });
 
-const { listCategory, loadingCategory } = storeToRefs(useCategoryStore());
+const { listCategory, loadingCategory, filledData } =
+  storeToRefs(useCategoryStore());
 const {
   getCategories,
   deleteCategory,
@@ -21,7 +22,7 @@ const {
 } = useCategoryStore();
 
 const onlyCreatedByMe = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const filterCategory = ref<string>('');
@@ -151,6 +152,13 @@ watch(
     } else {
       filteredCategories.splice(0, filteredCategories.length);
     }
+  },
+  { immediate: true }
+);
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
   },
   { immediate: true }
 );

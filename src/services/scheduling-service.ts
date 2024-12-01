@@ -26,6 +26,7 @@ export const getSchedulingsService = (): Promise<{
   status: number;
   data: {
     schedulings: Scheduling[];
+    filled_data: boolean;
   };
 }> => api.get(`${baseUrl}`);
 

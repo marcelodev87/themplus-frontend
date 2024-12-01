@@ -236,7 +236,7 @@ watch(step, () => {
 </script>
 
 <template>
-  <q-dialog v-model="open">
+  <q-dialog v-model="open" persistent>
     <q-stepper v-model="step" ref="stepper" color="primary" animated>
       <q-step
         :name="1"

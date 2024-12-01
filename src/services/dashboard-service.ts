@@ -18,5 +18,6 @@ export const getDashboardService = (): Promise<{
     users_dashboard: UsersDashboard | null;
     schedulings_dashboard: SchedulingDashboard | null;
     accounts_dashboard: AccountDashboard | null;
+    filled_data: boolean;
   };
 }> => api.get(`${baseUrl}`);

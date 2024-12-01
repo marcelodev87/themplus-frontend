@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormDepartment from 'src/components/forms/FormDepartment.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDepartmentStore } from 'src/stores/department_store';
 import { Department } from 'src/ts/interfaces/data/Department';
@@ -12,7 +12,8 @@ defineOptions({
   name: 'Department',
 });
 
-const { loadingDepartment, treeDepartment } = storeToRefs(useDepartmentStore());
+const { loadingDepartment, treeDepartment, filledData } =
+  storeToRefs(useDepartmentStore());
 const { getDepartments, deleteDepartment } = useDepartmentStore();
 
 const $q = useQuasar();
@@ -21,7 +22,7 @@ const selectedObject = ref<string>('');
 const searchDepartment = ref<string>('');
 const clickRootCreate = ref<string | null>(null);
 const departmentEdit = ref<Department | null>(null);
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 
 const clear = () => {
   clickRootCreate.value = '';
@@ -63,6 +64,14 @@ const exclude = (id: string) => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   clear();

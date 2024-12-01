@@ -14,7 +14,8 @@ defineOptions({
   name: 'Scheduling',
 });
 
-const { loadingScheduling, listScheduling } = storeToRefs(useSchedulingStore());
+const { loadingScheduling, listScheduling, filledData } =
+  storeToRefs(useSchedulingStore());
 const {
   getSchedulings,
   getSchedulingsWithParams,
@@ -30,7 +31,7 @@ const loadingExport = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const selectedDataEdit = ref<Scheduling | null>(null);
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const filterScheduling = ref<string>('');
 const columnsScheduling = reactive<QuasarTable[]>([
   {
@@ -216,6 +217,13 @@ watch(
       await getSchedulings();
     }
   }
+);
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
 );
 
 onMounted(async () => {

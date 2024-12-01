@@ -20,6 +20,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useMovementStore = defineStore('movement', {
   state: () => ({
+    filledData: false as boolean,
     loadingMovement: false as boolean,
     listMovement: [] as Movement[],
     listCategory: [] as QuasarSelect<string>[],
@@ -37,6 +38,9 @@ export const useMovementStore = defineStore('movement', {
     },
     setLoading(loading: boolean) {
       this.loadingMovement = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListMovement(movements: Movement[]) {
       movements.map((item) => this.listMovement.push(item));
@@ -78,6 +82,7 @@ export const useMovementStore = defineStore('movement', {
         if (response.status === 200) {
           this.clearListMovement();
           this.setListMovement(response.data.movements);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

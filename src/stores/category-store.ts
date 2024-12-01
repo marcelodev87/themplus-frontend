@@ -14,6 +14,7 @@ import {
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
+    filledData: false as boolean,
     loadingCategory: false as boolean,
     listCategory: [] as Category[],
   }),
@@ -23,6 +24,9 @@ export const useCategoryStore = defineStore('category', {
     },
     setLoading(loading: boolean) {
       this.loadingCategory = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListCategory(categories: Category[]) {
       categories.map((item) => this.listCategory.push(item));
@@ -52,6 +56,7 @@ export const useCategoryStore = defineStore('category', {
         if (response.status === 200) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

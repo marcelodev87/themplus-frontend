@@ -15,6 +15,7 @@ import { Account } from 'src/ts/interfaces/data/Account';
 
 export const useAccountStore = defineStore('account', {
   state: () => ({
+    filledData: false as boolean,
     loadingAccount: false as boolean,
     listAccount: [] as Account[],
   }),
@@ -41,6 +42,9 @@ export const useAccountStore = defineStore('account', {
     },
     setLoading(loading: boolean) {
       this.loadingAccount = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListAccount(accounts: Account[]) {
       accounts.map((item) => this.listAccount.push(item));
@@ -70,6 +74,7 @@ export const useAccountStore = defineStore('account', {
         if (response.status === 200) {
           this.clearListAccount();
           this.setListAccount(response.data.accounts);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

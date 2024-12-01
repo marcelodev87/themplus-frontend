@@ -7,6 +7,7 @@ export const getDeliveriesService = (): Promise<{
   status: number;
   data: {
     deliveries: Delivery[];
+    filled_data: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

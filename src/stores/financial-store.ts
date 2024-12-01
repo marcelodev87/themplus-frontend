@@ -10,6 +10,7 @@ import { Delivery } from 'src/ts/interfaces/data/Delivery';
 
 export const useFinancialStore = defineStore('financial', {
   state: () => ({
+    filledData: false as boolean,
     loadingDelivery: false as boolean,
     listDelivery: [] as Delivery[],
   }),
@@ -19,6 +20,9 @@ export const useFinancialStore = defineStore('financial', {
     },
     setLoading(loading: boolean) {
       this.loadingDelivery = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListDelivery(deliveries: Delivery[]) {
       deliveries.map((item) => this.listDelivery.push(item));

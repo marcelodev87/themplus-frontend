@@ -27,6 +27,7 @@ export const getMovementsService = (): Promise<{
   status: number;
   data: {
     movements: Movement[];
+    filled_data: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

@@ -12,6 +12,7 @@ import { Department, DepartmentNode } from 'src/ts/interfaces/data/Department';
 
 export const useDepartmentStore = defineStore('department', {
   state: () => ({
+    filledData: false as boolean,
     loadingDepartment: false as boolean,
     listDepartment: [] as Department[],
   }),
@@ -51,6 +52,9 @@ export const useDepartmentStore = defineStore('department', {
     setLoading(loading: boolean) {
       this.loadingDepartment = loading;
     },
+    setFilledData(data: boolean) {
+      this.filledData = data;
+    },
     setListDepartment(departments: Department[]) {
       departments.map((item) => this.listDepartment.push(item));
     },
@@ -79,6 +83,7 @@ export const useDepartmentStore = defineStore('department', {
         if (response.status === 200) {
           this.clearListDepartment();
           this.setListDepartment(response.data.departments);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

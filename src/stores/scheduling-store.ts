@@ -22,6 +22,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useSchedulingStore = defineStore('scheduling', {
   state: () => ({
+    filledData: false as boolean,
     loadingScheduling: false as boolean,
     listScheduling: [] as Scheduling[],
     listCategory: [] as QuasarSelect<string>[],
@@ -39,6 +40,9 @@ export const useSchedulingStore = defineStore('scheduling', {
     },
     setLoading(loading: boolean) {
       this.loadingScheduling = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListScheduling(schedulings: Scheduling[]) {
       schedulings.map((item) => this.listScheduling.push(item));
@@ -78,6 +82,7 @@ export const useSchedulingStore = defineStore('scheduling', {
         if (response.status === 200) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

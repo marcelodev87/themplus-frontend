@@ -3,7 +3,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormAlert from 'src/components/forms/FormAlert.vue';
 import { storeToRefs } from 'pinia';
 import { useAlertStore } from 'src/stores/alert-store';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
@@ -12,11 +12,11 @@ defineOptions({
   name: 'Alert',
 });
 
-const { listAlert, loadingAlert } = storeToRefs(useAlertStore());
+const { listAlert, loadingAlert, filledData } = storeToRefs(useAlertStore());
 const { getAlerts, deleteAlert } = useAlertStore();
 
 const showFormAlert = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const filterAlert = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
 const columnsAlert = reactive<QuasarTable[]>([
@@ -59,6 +59,14 @@ const fetchAlerts = async () => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await fetchAlerts();

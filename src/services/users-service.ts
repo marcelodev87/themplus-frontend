@@ -23,6 +23,7 @@ export const getUsersMembersService = (): Promise<{
   status: number;
   data: {
     users: User[];
+    filled_data: boolean;
   };
 }> => api.get(`${baseUrl}`);
 

@@ -13,6 +13,7 @@ import { User } from 'src/ts/interfaces/data/User';
 
 export const useUsersMembersStore = defineStore('members', {
   state: () => ({
+    filledData: false as boolean,
     loadingUsersMembers: false as boolean,
     listUserMember: [] as User[],
   }),
@@ -22,6 +23,9 @@ export const useUsersMembersStore = defineStore('members', {
     },
     setLoading(loading: boolean) {
       this.loadingUsersMembers = loading;
+    },
+    setFilledData(data: boolean) {
+      this.filledData = data;
     },
     setListUser(users: User[]) {
       users.map((item) => this.listUserMember.push(item));
@@ -51,6 +55,7 @@ export const useUsersMembersStore = defineStore('members', {
         if (response.status === 200) {
           this.clearListUser();
           this.setListUser(response.data.users);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

@@ -8,7 +8,7 @@ defineOptions({
   name: 'Feed',
 });
 
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
