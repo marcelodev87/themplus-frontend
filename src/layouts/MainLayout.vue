@@ -58,12 +58,6 @@ const menuList = computed(() => [
     name: 'admin-account',
   },
   {
-    icon: 'group_work',
-    label: 'Departamentos',
-    separator: true,
-    name: 'admin-departments',
-  },
-  {
     icon: 'warning',
     label: 'Alertas',
     separator: true,
@@ -109,6 +103,12 @@ const mountRoute = () => {
       label: 'Usuários',
       separator: true,
       name: 'admin-users',
+    });
+    menuList.value.splice(6, 0, {
+      icon: 'group_work',
+      label: 'Departamentos',
+      separator: true,
+      name: 'admin-departments',
     });
   }
 };

@@ -56,6 +56,7 @@ const routes: RouteRecordRaw[] = [
         path: 'departamentos',
         name: 'admin-departments',
         component: () => import('src/pages/Department.vue'),
+        beforeEnter: isAdminGuard,
       },
       {
         path: 'alertas',
