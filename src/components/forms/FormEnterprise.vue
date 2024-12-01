@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const { updateEnterprise, getEnterprise } = useEnterpriseStore();
 const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
-const selectedIdentifier = ref<string>('CPF');
+const selectedIdentifier = ref<string>('CNPJ');
 const showConfirmEditEnterprise = ref<boolean>(false);
 const loading = ref<boolean>(false);
 const dataEnterprise = reactive<DataEnterprise>({
