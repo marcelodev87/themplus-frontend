@@ -250,14 +250,14 @@ watch(step, () => {
         icon="favorite"
         :done="step > 1"
       >
-        Bem-vindo ao ThemPlus! Aqui, você poderá organizar melhor a gestão da
-        sua igreja, tornando tudo mais fácil e permitindo que você se concentre
-        no que realmente importa. Com nosso sistema, você poderá registrar
-        movimentações, agendamentos, criar contas, convidar usuários para sua
-        organização, categorizar usuários por departamentos, conceder
-        permissões, entre outras funcionalidades. Antes de começar a utilizar
-        nosso sistema, pedimos que você preencha alguns dados. É rapidinho!
-        Vamos lá?
+        <span class="text-bold">Bem-vindo ao ThemPlus!</span> Aqui, você poderá
+        organizar melhor a gestão da sua igreja, tornando tudo mais fácil e
+        permitindo que você se concentre no que realmente importa. Com nosso
+        sistema, você poderá registrar movimentações, agendamentos, criar
+        contas, convidar usuários para sua organização, categorizar usuários por
+        departamentos, conceder permissões, entre outras funcionalidades. Antes
+        de começar a utilizar nosso sistema, pedimos que você preencha alguns
+        dados. <span class="text-bold">É rapidinho! Vamos lá?</span>
       </q-step>
 
       <q-step
