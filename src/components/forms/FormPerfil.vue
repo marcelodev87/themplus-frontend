@@ -244,7 +244,7 @@ watch(open, async () => {
               label-color="black"
               filled
               type="text"
-              label="Escolher hierarquia"
+              label="Escolher departamento"
               readonly
               disabled
               clearable
