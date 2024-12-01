@@ -52,6 +52,7 @@ export const useFinancialStore = defineStore('financial', {
         if (response.status === 200) {
           this.clearListFinancial();
           this.setListDelivery(response.data.deliveries);
+          this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
         this.createError(error);

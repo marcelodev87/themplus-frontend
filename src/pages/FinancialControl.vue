@@ -88,13 +88,13 @@ const formatDateToBrazilian = (dateTime: string | null | undefined) => {
   return `${day}/${month}/${year}`;
 };
 
-watch(
-  filledData,
-  () => {
-    showAlertDataEnterprise.value = !filledData.value;
-  },
-  { immediate: true }
-);
+watch(filledData, () => {
+  if (filledData.value) {
+    showAlertDataEnterprise.value = false;
+  } else {
+    showAlertDataEnterprise.value = true;
+  }
+});
 
 onMounted(async () => {
   fetchDelivery();

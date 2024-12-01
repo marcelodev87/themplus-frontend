@@ -60,13 +60,13 @@ const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
 
-watch(
-  filledData,
-  () => {
-    showAlertDataEnterprise.value = !filledData.value;
-  },
-  { immediate: true }
-);
+watch(filledData, () => {
+  if (filledData.value) {
+    showAlertDataEnterprise.value = false;
+  } else {
+    showAlertDataEnterprise.value = true;
+  }
+});
 
 onMounted(async () => {
   await fetchAlerts();

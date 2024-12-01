@@ -22,13 +22,13 @@ const fetchFeed = async () => {
   await getFeed();
 };
 
-watch(
-  filledData,
-  () => {
-    showAlertDataEnterprise.value = !filledData.value;
-  },
-  { immediate: true }
-);
+watch(filledData, () => {
+  if (filledData.value) {
+    showAlertDataEnterprise.value = false;
+  } else {
+    showAlertDataEnterprise.value = true;
+  }
+});
 
 onMounted(async () => {
   await fetchFeed();

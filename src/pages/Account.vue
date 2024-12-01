@@ -18,7 +18,7 @@ const { loadingAccount, listAccount, filledData } =
   storeToRefs(useAccountStore());
 
 const showFormAccount = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(true);
+const showAlertDataEnterprise = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
 const selectedDataEdit = ref<Account | null>(null);
 const filterAccount = ref<string>('');
@@ -95,13 +95,13 @@ const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
 
-watch(
-  filledData,
-  () => {
-    showAlertDataEnterprise.value = !filledData.value;
-  },
-  { immediate: true }
-);
+watch(filledData, () => {
+  if (filledData.value) {
+    showAlertDataEnterprise.value = false;
+  } else {
+    showAlertDataEnterprise.value = true;
+  }
+});
 
 onMounted(async () => {
   await getAccounts();

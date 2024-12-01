@@ -126,7 +126,7 @@ const clear = (): void => {
 const update = async () => {
   const check = checkData();
   if (check.status) {
-    await updateEnterprise({
+    const response = await updateEnterprise({
       id: dataEnterprise.id,
       name: dataEnterprise.name,
       cnpj:
@@ -161,7 +161,9 @@ const update = async () => {
       email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
     });
-    emit('update:open');
+    if (response?.status === 200) {
+      step.value = 3;
+    }
   } else {
     Notify.create({
       message: check.message,
@@ -252,7 +254,13 @@ watch(step, () => {
 
 <template>
   <q-dialog v-model="open" persistent>
-    <q-stepper v-model="step" ref="stepper" color="primary" animated>
+    <q-stepper
+      v-model="step"
+      ref="stepper"
+      color="primary"
+      animated
+      style="width: 900px; max-width: 98%"
+    >
       <q-step
         :name="1"
         title="Seja muito bem-vindo!"
@@ -473,6 +481,21 @@ watch(step, () => {
           </div>
         </q-form>
       </q-step>
+      <q-step :name="3" title="Parabéns!" icon="celebration" :done="step > 3">
+        <span class="text-bold">Parabéns!</span> Seus dados foram salvos com
+        sucesso. Agora você pode começar a usar o ThemPlus para organizar e
+        gerenciar sua igreja de forma ainda mais eficiente. <br /><br />
+        Para aproveitar ao máximo todas as funcionalidades do sistema, sugerimos
+        que leia o menu <span class="text-bold">Ajuda</span>, onde você
+        encontrará informações detalhadas sobre como utilizar o ThemPlus de
+        maneira otimizada. <br /><br />
+        Caso tenha alguma dúvida não resolvida, clique no ícone de mensagem na
+        barra superior para entrar em contato com nosso time. Estamos aqui para
+        ajudar você por meio de nossos canais de atendimento.
+        <br /><br />
+        Comece a explorar o sistema agora mesmo e aproveite tudo o que o
+        ThemPlus tem a oferecer!
+      </q-step>
 
       <template v-slot:navigation>
         <q-stepper-navigation class="row justify-end q-gutter-x-sm">
@@ -508,6 +531,15 @@ watch(step, () => {
             v-show="step === 2"
             color="primary"
             label="Salvar"
+            unelevated
+            no-caps
+            :loading="loadingEnterprise"
+          />
+          <q-btn
+            @click="emit('update:open')"
+            v-show="step === 3"
+            color="primary"
+            label="Navegar"
             unelevated
             no-caps
             :loading="loadingEnterprise"
