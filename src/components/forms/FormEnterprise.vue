@@ -60,7 +60,7 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
   if (
-    dataEnterprise.email.trim() !== '' &&
+    dataEnterprise.email.trim() === '' ||
     !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
       dataEnterprise.email.trim()
     )
