@@ -2,17 +2,37 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import Banner from 'src/components/shared/Banner.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useFeedStore } from 'src/stores/feed-store';
 
 defineOptions({
   name: 'Feed',
 });
+
+const { loadingFeed, filledData } = storeToRefs(useFeedStore());
+const { getFeed } = useFeedStore();
 
 const showAlertDataEnterprise = ref<boolean>(false);
 
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+const fetchFeed = async () => {
+  await getFeed();
+};
+
+watch(
+  filledData,
+  () => {
+    showAlertDataEnterprise.value = !filledData.value;
+  },
+  { immediate: true }
+);
+
+onMounted(async () => {
+  await fetchFeed();
+});
 </script>
 <template>
   <section>
@@ -26,6 +46,14 @@ const closeAlertDataEnterprise = (): void => {
       <AlertDataEnterprise
         :open="showAlertDataEnterprise"
         @update:open="closeAlertDataEnterprise"
+      />
+      <q-inner-loading
+        :showing="loadingFeed"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
       />
     </main>
   </section>

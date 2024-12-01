@@ -68,17 +68,7 @@ const checkData = (): { status: boolean; message?: string } => {
     return { status: false, message: 'Informe um e-mail válido' };
   }
   if (
-    dataEnterprise.cep.trim() !== '' &&
-    dataEnterprise.cep.trim().length !== 8
-  ) {
-    return {
-      status: false,
-      message: 'Informe um CEP válido',
-    };
-  }
-  if (
     selectedIdentifier.value === 'CPF' &&
-    dataEnterprise.cpf.trim() !== '' &&
     dataEnterprise.cpf.trim().length !== 11
   ) {
     return {
@@ -88,12 +78,26 @@ const checkData = (): { status: boolean; message?: string } => {
   }
   if (
     selectedIdentifier.value === 'CNPJ' &&
-    dataEnterprise.cnpj.trim() !== '' &&
     dataEnterprise.cnpj.trim().length !== 14
   ) {
     return {
       status: false,
       message: 'Informe um CNPJ válido',
+    };
+  }
+  if (
+    dataEnterprise.cep.trim() === '' ||
+    dataEnterprise.cep.trim().length !== 8
+  ) {
+    return {
+      status: false,
+      message: 'Informe um CEP válido',
+    };
+  }
+  if (dataEnterprise.numberAddress.trim() === '') {
+    return {
+      status: false,
+      message: 'Informe um número de endereço válido',
     };
   }
 
@@ -224,11 +228,13 @@ watch(
     () => dataEnterprise.cpf,
     () => dataEnterprise.cnpj,
     () => dataEnterprise.phone,
+    () => dataEnterprise.numberAddress,
   ],
-  ([cpf, cnpj, phone]) => {
+  ([cpf, cnpj, phone, numberAdress]) => {
     dataEnterprise.cpf = cpf.replace(/\D/g, '');
     dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
     dataEnterprise.phone = phone.replace(/\D/g, '');
+    dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
   }
 );
 watch(
@@ -432,6 +438,7 @@ watch(open, () => {
               dense
               input-class="text-black"
               class="input-divider"
+              maxlength="15"
             >
               <template v-slot:prepend>
                 <q-icon name="numbers" color="black" size="20px" />
@@ -468,7 +475,7 @@ watch(open, () => {
           <q-btn
             @click="openConfirmEditEnterprise"
             color="primary"
-            label="Salvar"
+            label="Continuar"
             size="md"
             :loading="loadingEnterprise"
             unelevated
