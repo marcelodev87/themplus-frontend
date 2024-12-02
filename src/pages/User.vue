@@ -189,7 +189,11 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  v-show="user && user.id !== props.row.id"
+                  v-show="
+                    user &&
+                    user.id !== props.row.id &&
+                    props.row.created_by !== null
+                  "
                   @click="handleEdit(props.row)"
                   size="sm"
                   flat
@@ -199,7 +203,11 @@ onMounted(async () => {
                   :disabled="false"
                 />
                 <q-btn
-                  v-show="user && user.id !== props.row.id"
+                  v-show="
+                    user &&
+                    user.id !== props.row.id &&
+                    props.row.created_by !== null
+                  "
                   @click="exclude(props.row.id)"
                   size="sm"
                   flat
