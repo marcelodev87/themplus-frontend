@@ -6,6 +6,7 @@ import { DataEnterprise } from 'src/ts/interfaces/data/Enterprise';
 import { searchCep } from 'src/services/cep-service';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
+import { useAuthStore } from 'src/stores/auth-store';
 import ConfirmEditEnterprise from '../confirm/ConfirmEditEnterprise.vue';
 
 defineOptions({
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 
 const { updateEnterprise, getEnterprise } = useEnterpriseStore();
 const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
+const { user } = storeToRefs(useAuthStore());
 
 const selectedIdentifier = ref<string>('CNPJ');
 const showConfirmEditEnterprise = ref<boolean>(false);
@@ -278,6 +280,7 @@ watch(open, () => {
             label="Nome da organização"
             dense
             input-class="text-black"
+            :readonly="user?.position !== 'admin'"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />
@@ -291,6 +294,7 @@ watch(open, () => {
             label="E-mail da organização"
             dense
             input-class="text-black"
+            :readonly="user?.position !== 'admin'"
           >
             <template v-slot:prepend>
               <q-icon name="mail" color="black" size="20px" />
@@ -305,6 +309,7 @@ watch(open, () => {
             dense
             input-class="text-black"
             maxlength="15"
+            :readonly="user?.position !== 'admin'"
           >
             <template v-slot:prepend>
               <q-icon name="call" color="black" size="20px" />
@@ -321,6 +326,7 @@ watch(open, () => {
               bg-color="white"
               label-color="black"
               class="input-divider"
+              :readonly="user?.position !== 'admin'"
             >
               <template v-slot:prepend>
                 <q-icon name="info" color="black" size="20px" />
@@ -337,6 +343,7 @@ watch(open, () => {
               input-class="text-black"
               class="input-divider"
               maxlength="14"
+              :readonly="user?.position !== 'admin'"
             >
               <template v-slot:prepend>
                 <q-icon name="badge" color="black" size="20px" />
@@ -353,6 +360,7 @@ watch(open, () => {
               input-class="text-black"
               class="input-divider"
               maxlength="11"
+              :readonly="user?.position !== 'admin'"
             >
               <template v-slot:prepend>
                 <q-icon name="badge" color="black" size="20px" />
@@ -369,6 +377,7 @@ watch(open, () => {
             input-class="text-black"
             :loading="loading"
             maxlength="8"
+            :readonly="user?.position !== 'admin'"
           >
             <template v-slot:prepend>
               <q-icon name="search" color="black" size="20px" />
@@ -445,6 +454,7 @@ watch(open, () => {
               input-class="text-black"
               class="input-divider"
               maxlength="15"
+              :readonly="user?.position !== 'admin'"
             >
               <template v-slot:prepend>
                 <q-icon name="numbers" color="black" size="20px" />
@@ -459,6 +469,7 @@ watch(open, () => {
               dense
               input-class="text-black"
               class="input-divider"
+              :readonly="user?.position !== 'admin'"
             >
               <template v-slot:prepend>
                 <q-icon name="numbers" color="black" size="20px" />
@@ -480,6 +491,7 @@ watch(open, () => {
           />
           <q-btn
             @click="openConfirmEditEnterprise"
+            v-show="user?.position === 'admin'"
             color="primary"
             label="Continuar"
             size="md"
