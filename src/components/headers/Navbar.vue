@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import UserOptions from './UserOptions.vue';
+import FormFeedback from '../forms/FormFeedback.vue';
 
 defineOptions({
   name: 'Navbar',
@@ -10,6 +12,15 @@ const emit = defineEmits<{
   'update:openFormEnterprise': [void];
   'update:openEmailInfo': [void];
 }>();
+
+const showFormFedback = ref<boolean>(false);
+
+const openFormFeedback = (): void => {
+  showFormFedback.value = true;
+};
+const closeFormFeedback = (): void => {
+  showFormFedback.value = false;
+};
 </script>
 <template>
   <nav>
@@ -27,8 +38,14 @@ const emit = defineEmits<{
         >
           <q-tooltip> Entrar em contato </q-tooltip>
         </q-btn>
-        <q-btn flat color="black" icon-right="fa-solid fa-headset" rounded>
-          <q-tooltip> Enviar sugestão ou feedback </q-tooltip>
+        <q-btn
+          @click="openFormFeedback"
+          flat
+          color="black"
+          icon-right="fa-solid fa-headset"
+          rounded
+        >
+          <q-tooltip> Enviar sugestão ou dúvida </q-tooltip>
         </q-btn>
         <UserOptions
           @update:open-form-perfil="emit('update:openFormPerfil')"
@@ -36,5 +53,6 @@ const emit = defineEmits<{
         />
       </div>
     </q-toolbar>
+    <FormFeedback :open="showFormFedback" @update:open="closeFormFeedback" />
   </nav>
 </template>
