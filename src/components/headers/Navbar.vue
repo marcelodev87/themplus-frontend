@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import UserOptions from './UserOptions.vue';
 import FormFeedback from '../forms/FormFeedback.vue';
+import Notifications from '../info/Notifications.vue';
 
 defineOptions({
   name: 'Navbar',
@@ -14,12 +15,19 @@ const emit = defineEmits<{
 }>();
 
 const showFormFedback = ref<boolean>(false);
+const showNotifications = ref<boolean>(false);
 
 const openFormFeedback = (): void => {
   showFormFedback.value = true;
 };
 const closeFormFeedback = (): void => {
   showFormFedback.value = false;
+};
+const openNotifications = (): void => {
+  showNotifications.value = true;
+};
+const closeNotificattions = (): void => {
+  showNotifications.value = false;
 };
 </script>
 <template>
@@ -47,6 +55,17 @@ const closeFormFeedback = (): void => {
         >
           <q-tooltip> Enviar sugestão ou dúvida </q-tooltip>
         </q-btn>
+        <q-btn
+          @click="openNotifications()"
+          flat
+          color="black"
+          icon-right="notifications"
+          rounded
+          class="q-mr-md"
+        >
+          <q-tooltip> Notificações </q-tooltip>
+          <q-badge color="red" rounded floating />
+        </q-btn>
         <UserOptions
           @update:open-form-perfil="emit('update:openFormPerfil')"
           @update:open-form-enterprise="emit('update:openFormEnterprise')"
@@ -54,5 +73,9 @@ const closeFormFeedback = (): void => {
       </div>
     </q-toolbar>
     <FormFeedback :open="showFormFedback" @update:open="closeFormFeedback" />
+    <Notifications
+      :open="showNotifications"
+      @update:open="closeNotificattions"
+    />
   </nav>
 </template>
