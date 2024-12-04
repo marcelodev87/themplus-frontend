@@ -1,6 +1,6 @@
 <!-- eslint-disable no-restricted-globals -->
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { DataEntry } from 'src/ts/interfaces/data/Entry';
@@ -49,6 +49,10 @@ const dataEntry = reactive<DataEntry>({
   account: null,
   date: '',
 });
+const optionsCategoriesMovement = ref(listCategoryMovement.value);
+const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
+const optionsAccountsMovement = ref(listAccountMovement.value);
+const optionsAccountsScheduling = ref(listAccountScheduling.value);
 
 const open = computed({
   get: () => props.open,
@@ -214,6 +218,52 @@ const fetchInformations = async () => {
     await getMovementInformations(dataEntry.type);
   }
 };
+const filterFnCategory = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    if (props.mode === 'schedule') {
+      optionsCategoriesScheduling.value =
+        val === ''
+          ? listCategoryScheduling.value
+          : listCategoryScheduling.value.filter((element) =>
+              element.label?.toLowerCase().includes(needle)
+            );
+    } else {
+      optionsCategoriesMovement.value =
+        val === ''
+          ? listCategoryMovement.value
+          : listCategoryMovement.value.filter((element) =>
+              element.label?.toLowerCase().includes(needle)
+            );
+    }
+  });
+};
+const filterFnAccount = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    if (props.mode === 'schedule') {
+      optionsAccountsScheduling.value =
+        val === ''
+          ? listAccountScheduling.value
+          : listAccountScheduling.value.filter((element) =>
+              element.label?.toLowerCase().includes(needle)
+            );
+    } else {
+      optionsAccountsMovement.value =
+        val === ''
+          ? listAccountMovement.value
+          : listAccountMovement.value.filter((element) =>
+              element.label?.toLowerCase().includes(needle)
+            );
+    }
+  });
+};
 
 watch(
   () => dataEntry.value,
@@ -249,9 +299,10 @@ watch(open, async () => {
             v-model="dataEntry.category"
             :options="
               props.mode === 'schedule'
-                ? listCategoryScheduling
-                : listCategoryMovement
+                ? optionsCategoriesScheduling
+                : optionsCategoriesMovement
             "
+            @filter="filterFnCategory"
             label="Categoria"
             filled
             clearable
@@ -260,6 +311,9 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="category" color="black" size="20px" />
@@ -273,7 +327,10 @@ watch(open, async () => {
             label="Digite o valor"
             dense
             input-class="text-black no-spinners"
-            type="number"
+            type="text"
+            mask="#.##"
+            fill-mask="0"
+            reverse-fill-mask
           >
             <template v-slot:prepend>
               <q-icon name="attach_money" color="black" size="20px" />
@@ -283,9 +340,10 @@ watch(open, async () => {
             v-model="dataEntry.account"
             :options="
               props.mode === 'schedule'
-                ? listAccountScheduling
-                : listAccountMovement
+                ? optionsAccountsScheduling
+                : optionsAccountsMovement
             "
+            @filter="filterFnAccount"
             label="Conta"
             filled
             clearable
@@ -294,6 +352,9 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="account_balance" color="black" size="20px" />

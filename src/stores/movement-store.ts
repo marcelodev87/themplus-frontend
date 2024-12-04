@@ -47,15 +47,15 @@ export const useMovementStore = defineStore('movement', {
     },
     setListCategory(categories: CategoryInformation[]) {
       this.listCategory = categories
-        .filter((item) => {
-          return item.active === 1;
-        })
-        .map((item) => ({ label: item.name, value: item.id }));
+        .filter((item) => item.active === 1)
+        .map((item) => ({ label: item.name, value: item.id }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     },
+
     setListAccount(accounts: AccountInformation[]) {
-      accounts.map((item) =>
-        this.listAccount.push({ label: item.name, value: item.id })
-      );
+      this.listAccount = accounts
+        .map((item) => ({ label: item.name, value: item.id }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     },
     createError(error: any) {
       let message = 'Error';
