@@ -104,8 +104,14 @@ onMounted(async () => {
 </script>
 <template>
   <section>
-    <header class="row justify-between no-wrap bg-grey-1">
-      <div class="col-5">
+    <header
+      :class="
+        !$q.screen.lt.sm
+          ? 'row justify-between no-wrap bg-grey-1'
+          : 'column justify-between no-wrap bg-grey-1'
+      "
+    >
+      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Controle contábil" />
       </div>
     </header>

@@ -56,7 +56,7 @@ const exclude = (id: string) => {
       dense: true,
       align: 'center',
     },
-    persistent: true,
+    persistent: false,
   }).onOk(async () => {
     await deleteDepartment(id);
   });

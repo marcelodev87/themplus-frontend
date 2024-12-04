@@ -96,7 +96,7 @@ watch(open, () => {
 });
 </script>
 <template>
-  <q-dialog v-model="open" persistent>
+  <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
         <TitlePage title="Filtro de relatório por mês" />
