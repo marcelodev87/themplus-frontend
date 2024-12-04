@@ -241,10 +241,16 @@ onMounted(async () => {
               options-dense
               filled
               label="Filtrar categorias"
-              style="width: 200px"
+              :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
               class="q-mr-sm"
             />
-            <q-input filled v-model="filterCategory" dense label="Pesquisar">
+            <q-input
+              filled
+              v-model="filterCategory"
+              dense
+              label="Pesquisar"
+              :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+            >
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
