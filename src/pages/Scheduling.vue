@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 
 defineOptions({
   name: 'Scheduling',
@@ -378,7 +379,7 @@ onMounted(async () => {
                 {{ props.row.category.name }}
               </q-td>
               <q-td key="value" :props="props" class="text-left">
-                {{ `R$ ${props.row.value}` }}
+                {{ `${formatCurrencyBRL(props.row.value)}` }}
               </q-td>
               <q-td
                 key="date_movement"

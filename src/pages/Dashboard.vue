@@ -4,6 +4,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 
 defineOptions({
   name: 'Dashboard',
@@ -172,11 +173,17 @@ onMounted(async () => {
 
             <q-card-section class="q-pt-none row justify-between">
               <span>Valor de entrada: </span>
-              <span>{{ `R$ ${movementsDashboard?.entry_value}` }}</span>
+              <span>{{
+                `${formatCurrencyBRL(Number(movementsDashboard?.entry_value))}`
+              }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
               <span> Valor de saída:</span>
-              <span>{{ `R$ ${Number(movementsDashboard?.out_value)}` }} </span>
+              <span
+                >{{
+                  `${formatCurrencyBRL(Number(movementsDashboard?.out_value))}`
+                }}
+              </span>
             </q-card-section>
 
             <q-separator inset />
@@ -184,10 +191,10 @@ onMounted(async () => {
             <q-card-section class="row justify-between">
               <span>Saldo:</span>
               <span>{{
-                `R$ ${
+                `${formatCurrencyBRL(
                   Number(movementsDashboard?.entry_value) -
-                  Number(movementsDashboard?.out_value)
-                }`
+                    Number(movementsDashboard?.out_value)
+                )}`
               }}</span>
             </q-card-section>
           </q-card>
@@ -205,7 +212,7 @@ onMounted(async () => {
               <span>Valor de entrada:</span>
               <span>{{
                 schedulingsDashboard?.entry_value
-                  ? `R$ ${Number(schedulingsDashboard.entry_value)}`
+                  ? `${formatCurrencyBRL(Number(schedulingsDashboard.entry_value))}`
                   : ''
               }}</span>
             </q-card-section>
@@ -213,7 +220,7 @@ onMounted(async () => {
               <span>Valor de saída:</span>
               <span>{{
                 schedulingsDashboard?.out_value
-                  ? `R$ ${Number(schedulingsDashboard.out_value)}`
+                  ? `${formatCurrencyBRL(Number(schedulingsDashboard.out_value))}`
                   : ''
               }}</span>
             </q-card-section>
@@ -225,10 +232,10 @@ onMounted(async () => {
               <span>{{
                 schedulingsDashboard?.out_value &&
                 schedulingsDashboard?.entry_value
-                  ? `R$ ${
+                  ? `${formatCurrencyBRL(
                       Number(schedulingsDashboard.entry_value) -
-                      Number(schedulingsDashboard.out_value)
-                    }`
+                        Number(schedulingsDashboard.out_value)
+                    )}`
                   : ''
               }}</span>
             </q-card-section>
@@ -286,7 +293,7 @@ onMounted(async () => {
               :key="index"
             >
               <span>{{ item.name }}:</span>
-              <span>{{ `R$ ${item.balance}` }}</span>
+              <span>{{ `${formatCurrencyBRL(item.balance)}` }}</span>
             </q-card-section>
           </q-card>
         </div>
@@ -305,7 +312,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
-              <span class="text-subtitle2"
+              <span class="text-subtitle2 text-green"
                 >Movimentações de entrada x categoria</span
               >
             </template>
@@ -328,7 +335,7 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
-                        :label="`R$ ${props.row.value}`"
+                        :label="`${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
                   </q-linear-progress>
@@ -350,7 +357,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
-              <span class="text-subtitle2"
+              <span class="text-subtitle2 text-red"
                 >Movimentações de saída x categoria</span
               >
             </template>
@@ -373,7 +380,7 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
-                        :label="`R$ ${props.row.value}`"
+                        :label="`R$ ${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
                   </q-linear-progress>

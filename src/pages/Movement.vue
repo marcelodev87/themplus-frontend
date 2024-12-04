@@ -10,6 +10,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 
 defineOptions({
   name: 'Movement',
@@ -361,7 +362,7 @@ onMounted(async () => {
                 {{ props.row.category.name }}
               </q-td>
               <q-td key="value" :props="props" class="text-left">
-                {{ `R$ ${props.row.value}` }}
+                {{ `${formatCurrencyBRL(props.row.value)}` }}
               </q-td>
               <q-td key="date_movement" :props="props" class="text-left">
                 {{ formatDate(props.row.date_movement) }}

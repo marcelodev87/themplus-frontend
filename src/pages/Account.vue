@@ -8,6 +8,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Account } from 'src/ts/interfaces/data/Account';
 import FormTransfer from 'src/components/forms/FormTransfer.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 
 defineOptions({
   name: 'Account',
@@ -247,7 +248,7 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'opacity-30' : ''"
               >
-                {{ `R$ ${props.row.balance}` }}
+                {{ `${formatCurrencyBRL(props.row.balance)}` }}
               </q-td>
               <q-td
                 key="description"
