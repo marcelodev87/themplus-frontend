@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'Movement',
@@ -19,6 +20,7 @@ const { getMovements, getMovementsWithParams, exportMovement, deleteMovement } =
 const { loadingMovement, listMovement, filledData } =
   storeToRefs(useMovementStore());
 
+const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
@@ -27,6 +29,7 @@ const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const filterMovement = ref<string>('');
 const selectedDataEdit = ref<Movement | null>(null);
+const selectedExclude = ref<string>('');
 const columnsMovement = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -92,6 +95,18 @@ const columnsMovement = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   selectedDataEdit.value = null;
+  selectedExclude.value = '';
+};
+const openConfirmAction = (): void => {
+  showConfirmAction.value = true;
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await deleteMovement(selectedExclude.value);
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  selectedExclude.value = '';
 };
 const openFormEntry = (): void => {
   showFormEntry.value = true;
@@ -120,8 +135,9 @@ const formatDate = (dateString: string) => {
 
   return `${day}/${month}/${year}`;
 };
-const exclude = async (id: string) => {
-  await deleteMovement(id);
+const saveIdExclude = async (id: string) => {
+  selectedExclude.value = id;
+  openConfirmAction();
 };
 const customFilterMovement = (
   rows: readonly Movement[],
@@ -367,7 +383,7 @@ onMounted(async () => {
                   :disabled="false"
                 />
                 <q-btn
-                  @click="exclude(props.row.id)"
+                  @click="saveIdExclude(props.row.id)"
                   size="sm"
                   flat
                   round
@@ -403,6 +419,13 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <ConfirmAction
+          :open="showConfirmAction"
+          title="Confirmação de exclusão"
+          message="Este processo é irreversível e os dados não poderão ser recuperados. Caso tenha certeza, clique em 'Confirmar' para prosseguir."
+          @update:open="closeConfirmAction"
+          @update:ok="closeConfirmActionOk"
         />
       </main>
     </q-scroll-area>
