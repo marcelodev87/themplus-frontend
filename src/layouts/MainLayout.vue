@@ -7,6 +7,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
+import { useQuasar } from 'quasar';
 
 defineOptions({
   name: 'MainLayout',
@@ -14,6 +15,7 @@ defineOptions({
 
 const { user } = storeToRefs(useAuthStore());
 
+const $q = useQuasar();
 const route = useRoute();
 const leftDrawerOpen = ref<boolean>(false);
 const showFormPerfil = ref<boolean>(false);
@@ -115,6 +117,11 @@ const mountRoute = () => {
 const changeShowMenuList = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 };
+const closeDrawer = (): void => {
+  if ($q.screen.lt.md) {
+    leftDrawerOpen.value = false;
+  }
+};
 
 onMounted(() => {
   mountRoute();
@@ -150,6 +157,7 @@ onMounted(() => {
             :to="{ name: menuItem.name }"
             :active="isActive(menuItem.name)"
             active-class=" text-red text-bold"
+            @click="closeDrawer"
           >
             <q-item-section avatar>
               <q-icon :name="menuItem.icon" />
