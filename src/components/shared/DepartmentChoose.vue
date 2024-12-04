@@ -48,8 +48,8 @@ watch(
 );
 </script>
 <template>
-  <q-dialog v-model="open" persistent>
-    <q-card style="min-width: 500px; min-height: 500px; max-width: 500">
+  <q-dialog v-model="open">
+    <q-card style="width: 500px; max-width: 98%">
       <q-card-section class="bg-grey-2">
         <div class="text-h6">Escolha o departamento</div>
       </q-card-section>

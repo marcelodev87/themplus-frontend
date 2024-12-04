@@ -112,11 +112,20 @@ onMounted(async () => {
 </script>
 <template>
   <section>
-    <header class="row justify-between no-wrap bg-grey-1">
-      <div class="col-6">
+    <header
+      :class="
+        !$q.screen.lt.sm
+          ? 'row justify-between no-wrap bg-grey-1'
+          : 'column justify-between no-wrap bg-grey-1'
+      "
+    >
+      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de usuários" />
       </div>
-      <div class="col-6 row items-center justify-end q-gutter-x-sm">
+      <div
+        v-if="!$q.screen.lt.sm"
+        class="col-6 row items-center justify-end q-gutter-x-sm"
+      >
         <q-btn
           @click="exportData"
           :loading="loadingExport"
@@ -136,6 +145,35 @@ onMounted(async () => {
           unelevated
           no-caps
         />
+      </div>
+      <div v-else class="row justify-end q-mr-sm q-mb-sm">
+        <q-btn-dropdown
+          class="text-white"
+          color="primary"
+          ref="dropdown"
+          label="Ações"
+          unelevated
+          no-caps
+        >
+          <q-list>
+            <q-item clickable v-ripple @click="openFormUser">
+              <q-item-section avatar>
+                <q-avatar>
+                  <q-icon name="group_add" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>Usuários</q-item-section>
+            </q-item>
+            <q-item clickable v-ripple @click="exportData">
+              <q-item-section avatar>
+                <q-avatar>
+                  <q-icon name="download" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>Exportar</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </div>
     </header>
     <q-scroll-area class="main-scroll">

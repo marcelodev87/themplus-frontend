@@ -39,7 +39,7 @@ onMounted(async () => {
 <template>
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
-      <div class="col-5">
+      <div>
         <TitlePage title="Painel de notícias" />
       </div>
     </header>

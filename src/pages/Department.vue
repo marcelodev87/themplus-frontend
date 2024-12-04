@@ -82,11 +82,20 @@ onMounted(async () => {
 </script>
 <template>
   <section>
-    <header class="row justify-between no-wrap bg-grey-1">
-      <div class="col-5">
+    <header
+      :class="
+        !$q.screen.lt.sm
+          ? 'row justify-between no-wrap bg-grey-1'
+          : 'column justify-between no-wrap bg-grey-1'
+      "
+    >
+      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de departamentos" />
       </div>
-      <div class="col-7 row items-center justify-end q-gutter-x-sm">
+      <div
+        class="col-7 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
         <q-btn
           @click="openFormDepartment()"
           color="blue-8"
@@ -133,7 +142,9 @@ onMounted(async () => {
                 <div class="row items-center justify-center">
                   <q-btn
                     @click="openFormDepartment(prop.key)"
-                    label="Adicionar um sub-departamento"
+                    :label="
+                      !$q.screen.lt.sm ? 'Adicionar um sub-departamento' : ''
+                    "
                     :disable="loadingDepartment"
                     size="sm"
                     rounded

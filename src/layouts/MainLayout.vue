@@ -112,6 +112,9 @@ const mountRoute = () => {
     });
   }
 };
+const changeShowMenuList = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
 
 onMounted(() => {
   mountRoute();
@@ -124,35 +127,39 @@ onMounted(() => {
         @update:open-form-perfil="openFormPerfil"
         @update:open-form-enterprise="openFormEnterprise"
         @update:open-email-info="openEmailInfo"
+        @update:change-open-menu="changeShowMenuList"
       />
     </q-header>
 
     <q-drawer
-      show-if-above
       v-model="leftDrawerOpen"
+      :show-if-above="!$q.screen.lt.md"
+      :width="200"
+      :breakpoint="700"
       side="left"
       behavior="desktop"
       bordered
       class="text-black"
-      :width="200"
     >
-      <q-list>
-        <q-item
-          v-for="(menuItem, index) in menuList"
-          :key="index"
-          clickable
-          :to="{ name: menuItem.name }"
-          :active="isActive(menuItem.name)"
-          active-class=" text-red text-bold"
-        >
-          <q-item-section avatar>
-            <q-icon :name="menuItem.icon" />
-          </q-item-section>
-          <q-item-section>
-            {{ menuItem.label }}
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <q-scroll-area class="fit">
+        <q-list>
+          <q-item
+            v-for="(menuItem, index) in menuList"
+            :key="index"
+            clickable
+            :to="{ name: menuItem.name }"
+            :active="isActive(menuItem.name)"
+            active-class=" text-red text-bold"
+          >
+            <q-item-section avatar>
+              <q-icon :name="menuItem.icon" />
+            </q-item-section>
+            <q-item-section>
+              {{ menuItem.label }}
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
     </q-drawer>
 
     <q-page-container>

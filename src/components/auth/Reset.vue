@@ -105,7 +105,7 @@ onMounted(() => {
       <q-btn
         @click="sendEmailReset"
         color="red-6"
-        label="Enviar e-mail de redefinição"
+        label="Restaurar"
         size="md"
         :loading="loadingAuth"
         unelevated

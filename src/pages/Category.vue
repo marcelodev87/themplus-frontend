@@ -173,11 +173,20 @@ onMounted(async () => {
 </script>
 <template>
   <section>
-    <header class="row justify-between no-wrap bg-grey-1">
-      <div class="col-6">
+    <header
+      :class="
+        !$q.screen.lt.sm
+          ? 'row justify-between no-wrap bg-grey-1'
+          : 'column justify-between no-wrap bg-grey-1'
+      "
+    >
+      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de categorias" />
       </div>
-      <div class="col-6 row items-center justify-end q-gutter-x-sm">
+      <div
+        class="col-6 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
         <q-btn
           @click="openFormCategory"
           color="blue-8"

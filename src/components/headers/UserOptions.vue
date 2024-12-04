@@ -41,7 +41,7 @@ const logout = (): void => {
     rounded
     flat
     class="q-pa-none q-px-md q-mr-sm text-black"
-    :label="user?.name ?? ''"
+    :label="!$q.screen.lt.md ? (user?.name ?? '') : ''"
     ref="dropdown"
   >
     <template v-slot:label>

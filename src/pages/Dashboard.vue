@@ -124,7 +124,13 @@ onMounted(async () => {
 </script>
 <template>
   <section>
-    <header class="row justify-between items-center no-wrap bg-grey-1 q-pa-sm">
+    <header
+      :class="
+        !$q.screen.lt.sm
+          ? 'row justify-between items-center bg-grey-1 q-pa-sm'
+          : 'column justify-between items-center bg-grey-1 q-pa-sm q-gutter-y-sm'
+      "
+    >
       <span class="text-h6">{{ getCurrentMonthYear() }}</span>
       <q-separator />
       <q-select
@@ -138,6 +144,7 @@ onMounted(async () => {
         bg-color="grey-1"
         label-color="black"
         style="min-width: 200px"
+        :class="!$q.screen.lt.md ? '' : 'full-width'"
       >
         <template v-slot:prepend>
           <q-icon name="calendar_today" color="black" size="20px" />
@@ -146,8 +153,19 @@ onMounted(async () => {
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-gutter-y-md">
-        <div class="row justify-between q-mt-sm">
-          <q-card flat bordered class="q-mt-sm" style="width: 24%">
+        <div
+          :class="
+            !$q.screen.lt.sm
+              ? 'row justify-between q-mt-sm'
+              : 'column justify-center items-center'
+          "
+        >
+          <q-card
+            flat
+            bordered
+            class="q-mt-sm"
+            :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
+          >
             <q-card-section>
               <div class="text-h6">Movimentações</div>
             </q-card-section>
@@ -173,7 +191,12 @@ onMounted(async () => {
               }}</span>
             </q-card-section>
           </q-card>
-          <q-card flat bordered class="q-mt-sm" style="width: 24%">
+          <q-card
+            flat
+            bordered
+            class="q-mt-sm"
+            :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
+          >
             <q-card-section>
               <div class="text-h6">Agendamentos</div>
             </q-card-section>
@@ -210,7 +233,12 @@ onMounted(async () => {
               }}</span>
             </q-card-section>
           </q-card>
-          <q-card flat bordered class="q-mt-sm" style="width: 24%">
+          <q-card
+            flat
+            bordered
+            class="q-mt-sm"
+            :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
+          >
             <q-card-section>
               <div class="text-h6">Usuários</div>
             </q-card-section>
@@ -231,7 +259,12 @@ onMounted(async () => {
               <span>{{ usersDashboard?.amount_users ?? '' }}</span>
             </q-card-section>
           </q-card>
-          <q-card flat bordered class="q-mt-sm" style="width: 24%">
+          <q-card
+            flat
+            bordered
+            class="q-mt-sm"
+            :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
+          >
             <q-card-section class="row justify-between items-center">
               <div>
                 <span class="text-h6">Contas </span>
