@@ -19,6 +19,7 @@ const { loadingAuth } = storeToRefs(useAuthStore());
 const { doRegister } = useAuthStore();
 
 const isPwd = ref<boolean>(true);
+const isPwd2 = ref<boolean>(true);
 const dataRegister = reactive<DataRegister>({
   name: '',
   email: '',
@@ -188,12 +189,12 @@ onMounted(() => {
         autocomplete="new-password"
         dense
         input-class="text-black"
-        :type="isPwd ? 'password' : 'text'"
+        :type="isPwd2 ? 'password' : 'text'"
       >
         <template v-slot:append>
           <q-icon
-            @click="isPwd = !isPwd"
-            :name="isPwd ? 'visibility_off' : 'visibility'"
+            @click="isPwd2 = !isPwd2"
+            :name="isPwd2 ? 'visibility_off' : 'visibility'"
             class="cursor-pointer"
             size="20px"
           />

@@ -25,6 +25,9 @@ const { listDepartment, loadingDepartment } = storeToRefs(useDepartmentStore());
 const { getDepartments } = useDepartmentStore();
 
 const mode = ref<'data' | 'password'>('data');
+const isPwd = ref<boolean>(true);
+const isPwd2 = ref<boolean>(true);
+const isPwd3 = ref<boolean>(true);
 const showDepartmentChoose = ref<boolean>(false);
 const dataPerfil = reactive<DataPerfil>({
   name: '',
@@ -276,7 +279,16 @@ watch(open, async () => {
               label="Digite a senha do atual"
               dense
               input-class="text-black"
+              :type="isPwd ? 'password' : 'text'"
             >
+              <template v-slot:append>
+                <q-icon
+                  @click="isPwd = !isPwd"
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  size="20px"
+                />
+              </template>
               <template v-slot:prepend>
                 <q-icon name="lock" color="black" size="20px" />
               </template>
@@ -289,8 +301,17 @@ watch(open, async () => {
               label="Digite a nova senha"
               dense
               input-class="text-black"
+              :type="isPwd2 ? 'password' : 'text'"
               :readonly="dataPerfil.passwordActual.trim().length == 0"
             >
+              <template v-slot:append>
+                <q-icon
+                  @click="isPwd2 = !isPwd2"
+                  :name="isPwd2 ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  size="20px"
+                />
+              </template>
               <template v-slot:prepend>
                 <q-icon name="lock" color="black" size="20px" />
               </template>
@@ -303,8 +324,17 @@ watch(open, async () => {
               label="Confirme a nova senha"
               dense
               input-class="text-black"
+              :type="isPwd3 ? 'password' : 'text'"
               :readonly="dataPerfil.passwordActual.trim().length == 0"
             >
+              <template v-slot:append>
+                <q-icon
+                  @click="isPwd3 = !isPwd3"
+                  :name="isPwd3 ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  size="20px"
+                />
+              </template>
               <template v-slot:prepend>
                 <q-icon name="lock" color="black" size="20px" />
               </template>
