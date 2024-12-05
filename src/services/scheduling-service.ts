@@ -90,7 +90,8 @@ export const createSchedulingService = (
   description: string | null,
   file: File | null,
   category: string,
-  account: string
+  account: string,
+  programmed: number
 ): Promise<{
   status: number;
   data: {
@@ -106,6 +107,7 @@ export const createSchedulingService = (
     file,
     category,
     account,
+    programmed,
   });
 
 export const updateSchedulingService = (

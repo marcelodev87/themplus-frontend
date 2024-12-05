@@ -60,7 +60,8 @@ export const createMovementService = (
   description: string | null,
   file: File | null,
   category: string,
-  account: string
+  account: string,
+  programmed: number
 ): Promise<{
   status: number;
   data: {
@@ -76,6 +77,7 @@ export const createMovementService = (
     file,
     category,
     account,
+    programmed,
   });
 
 export const exportMovementService = async (entry: boolean, out: boolean) => {

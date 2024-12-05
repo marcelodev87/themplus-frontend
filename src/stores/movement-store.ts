@@ -138,7 +138,8 @@ export const useMovementStore = defineStore('movement', {
       description: string | null,
       file: File | null,
       category: string,
-      account: string
+      account: string,
+      programmed: number
     ) {
       this.setLoading(true);
       try {
@@ -149,7 +150,8 @@ export const useMovementStore = defineStore('movement', {
           description,
           file,
           category,
-          account
+          account,
+          programmed
         );
         if (response.status === 201) {
           this.clearListMovement();

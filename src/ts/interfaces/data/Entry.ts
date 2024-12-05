@@ -8,4 +8,5 @@ export interface DataEntry {
   description: string | null;
   file: File | null;
   type: string;
+  programmed: QuasarSelect<number>;
 }

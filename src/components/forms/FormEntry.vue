@@ -10,6 +10,7 @@ import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 defineOptions({
   name: 'FormEntry',
@@ -48,11 +49,62 @@ const dataEntry = reactive<DataEntry>({
   category: null,
   account: null,
   date: '',
+  programmed: { label: 'Apenas mês atual', value: 0 },
 });
 const optionsCategoriesMovement = ref(listCategoryMovement.value);
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
 const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
+const optionsProgrammed = reactive<QuasarSelect<number>[]>([
+  {
+    label: 'Apenas mês atual',
+    value: 0,
+  },
+  {
+    label: 'Mês atual + 1 mês',
+    value: 1,
+  },
+  {
+    label: 'Mês atual + 2 meses',
+    value: 2,
+  },
+  {
+    label: 'Mês atual + 3 meses',
+    value: 3,
+  },
+  {
+    label: 'Mês atual + 4 meses',
+    value: 4,
+  },
+  {
+    label: 'Mês atual + 5 meses',
+    value: 5,
+  },
+  {
+    label: 'Mês atual + 6 meses',
+    value: 6,
+  },
+  {
+    label: 'Mês atual + 7 meses',
+    value: 7,
+  },
+  {
+    label: 'Mês atual + 8 meses',
+    value: 8,
+  },
+  {
+    label: 'Mês atual + 9 meses',
+    value: 9,
+  },
+  {
+    label: 'Mês atual + 10 meses',
+    value: 10,
+  },
+  {
+    label: 'Mês atual + 11 meses',
+    value: 11,
+  },
+]);
 
 const open = computed({
   get: () => props.open,
@@ -112,6 +164,7 @@ const clear = (): void => {
     account: null,
     description: '',
     file: null,
+    programmed: { label: 'Apenas mês atual', value: 0 },
   });
 };
 const save = async () => {
@@ -125,7 +178,8 @@ const save = async () => {
         dataEntry.description,
         dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
-        dataEntry.account ? dataEntry.account.value : ''
+        dataEntry.account ? dataEntry.account.value : '',
+        dataEntry.programmed.value
       );
     } else {
       await createMovement(
@@ -135,7 +189,8 @@ const save = async () => {
         dataEntry.description,
         dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
-        dataEntry.account ? dataEntry.account.value : ''
+        dataEntry.account ? dataEntry.account.value : '',
+        dataEntry.programmed.value
       );
     }
     clear();
@@ -395,6 +450,26 @@ watch(open, async () => {
               </q-icon>
             </template>
           </q-input>
+          <q-select
+            v-show="props.dataEdit === null"
+            v-model="dataEntry.programmed"
+            :options="optionsProgrammed"
+            :label="
+              props.mode === 'movement'
+                ? 'Movimentações futuras'
+                : 'Agendamento futuros'
+            "
+            filled
+            dense
+            options-dense
+            map-options
+            bg-color="white"
+            label-color="black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="event_repeat" color="black" size="20px" />
+            </template>
+          </q-select>
           <q-file
             v-model="dataEntry.file"
             filled
