@@ -73,7 +73,7 @@ const save = async () => {
       dataCategory.type,
       selectedAlert.value?.value ?? null
     );
-    if (response?.status === 200) {
+    if (response?.status === 201) {
       clear();
       emit('update:open');
     }
@@ -175,6 +175,7 @@ watch(open, async () => {
             </template>
           </q-select>
           <q-select
+            v-show="false"
             v-model="selectedAlert"
             :options="optionsAlerts"
             :readonly="optionsAlerts.length === 0"

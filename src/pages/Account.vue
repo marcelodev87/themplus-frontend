@@ -222,7 +222,7 @@ onMounted(async () => {
                 key="name"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.name }}
               </q-td>
@@ -230,7 +230,7 @@ onMounted(async () => {
                 key="account_number"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.account_number }}
               </q-td>
@@ -238,7 +238,7 @@ onMounted(async () => {
                 key="agency_number"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.agency_number }}
               </q-td>
@@ -246,7 +246,7 @@ onMounted(async () => {
                 key="balance"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ `${formatCurrencyBRL(props.row.balance)}` }}
               </q-td>
@@ -254,7 +254,7 @@ onMounted(async () => {
                 key="description"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.description }}
               </q-td>

@@ -87,6 +87,7 @@ const handleEdit = (category: Category) => {
 };
 const exclude = async (id: string) => {
   await deleteCategory(id);
+  clear();
 };
 const fetchAlerts = async () => {
   await getCategories();
@@ -262,7 +263,7 @@ onMounted(async () => {
                 key="name"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.name }}
               </q-td>
@@ -270,7 +271,7 @@ onMounted(async () => {
                 key="default"
                 :props="props"
                 class="text-left"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.enterprise_id === null ? 'Sim' : 'Não' }}
               </q-td>
@@ -278,7 +279,7 @@ onMounted(async () => {
                 key="type"
                 :props="props"
                 class="text-left capitalize"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.type }}
               </q-td>
@@ -286,7 +287,7 @@ onMounted(async () => {
                 key="alert"
                 :props="props"
                 class="text-left text-column"
-                :class="props.row.active === 0 ? 'opacity-30' : ''"
+                :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 {{ props.row.alert_id ? props.row.alert.description : '' }}
               </q-td>
