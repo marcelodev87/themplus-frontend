@@ -58,6 +58,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/Department.vue'),
         beforeEnter: isAdminGuard,
       },
+      {
+        path: 'registros',
+        name: 'admin-records',
+        component: () => import('src/pages/Register.vue'),
+        beforeEnter: isAdminGuard,
+      },
       // {
       //   path: 'alertas',
       //   name: 'admin-alert',

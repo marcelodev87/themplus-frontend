@@ -112,6 +112,12 @@ const mountRoute = () => {
       separator: true,
       name: 'admin-departments',
     });
+    menuList.value.splice(8, 0, {
+      icon: 'content_paste_search',
+      label: 'Registros',
+      separator: true,
+      name: 'admin-records',
+    });
   }
 };
 const changeShowMenuList = () => {

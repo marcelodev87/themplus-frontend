@@ -94,6 +94,7 @@ const fetchAlerts = async () => {
 };
 const reactivate = async (id: string) => {
   await updateActiveCategory(id);
+  clear();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;

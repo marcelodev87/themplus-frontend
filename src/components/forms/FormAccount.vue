@@ -108,8 +108,8 @@ const checkDataEdit = () => {
   if (props.dataEdit !== null) {
     Object.assign(dataAccount, {
       name: props.dataEdit.name,
-      agency: props.dataEdit.account_number ?? '',
-      account: props.dataEdit.agency_number ?? '',
+      agency: props.dataEdit.agency_number ?? '',
+      account: props.dataEdit.account_number ?? '',
       description: props.dataEdit.description ?? '',
     });
   }
