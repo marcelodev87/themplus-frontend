@@ -22,7 +22,7 @@ const {
   filledData,
 } = storeToRefs(useDashboardStore());
 
-const filterMonthYear = ref('');
+const filterMonthYear = ref<string>('');
 const showAlertDataEnterprise = ref<boolean>(false);
 const columnsCategoriesDashboard = reactive<QuasarTable[]>([
   {
@@ -46,7 +46,6 @@ const categoriesEntry = computed(() => {
     ?.filter((item) => item.type === 'entrada')
     .sort((a, b) => Number(b.value) - Number(a.value));
 });
-
 const categoriesOut = computed(() => {
   return listCategoryDashboard.value
     ?.filter((item) => item.type !== 'entrada')
@@ -72,9 +71,17 @@ const totalValueOutCategory = computed(() => {
     return total + productValue;
   }, 0);
 });
+const dateActual = computed(() => {
+  const currentDate = new Date();
 
-const fetchInformationsDashboard = async () => {
-  await getDashboard();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const year = currentDate.getFullYear();
+
+  return `${month}/${year}`;
+});
+
+const fetchInformationsDashboard = async (date: string) => {
+  await getDashboard(date);
 };
 const checkCurrentMonthYear = () => {
   const currentDate = new Date();
@@ -117,9 +124,12 @@ watch(
   },
   { immediate: true }
 );
+watch(filterMonthYear, async () => {
+  await fetchInformationsDashboard(filterMonthYear.value.replace('/', '-'));
+});
 
 onMounted(async () => {
-  await fetchInformationsDashboard();
+  await fetchInformationsDashboard(dateActual.value.replace('/', '-'));
   checkCurrentMonthYear();
 });
 </script>

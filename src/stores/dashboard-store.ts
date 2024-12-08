@@ -68,10 +68,10 @@ export const useDashboardStore = defineStore('dashboard', {
         type: 'positive',
       });
     },
-    async getDashboard() {
+    async getDashboard(date: string) {
       this.setLoading(true);
       try {
-        const response = await getDashboardService();
+        const response = await getDashboardService(date);
         this.setListCategoryDashboard(null);
         this.setListMonthYear([]);
         this.setMovementsDashboard(null);

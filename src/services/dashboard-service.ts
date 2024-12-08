@@ -9,7 +9,9 @@ import {
 
 const baseUrl = 'dashboard';
 
-export const getDashboardService = (): Promise<{
+export const getDashboardService = (
+  date: string
+): Promise<{
   status: number;
   data: {
     months_years: string[];
@@ -20,4 +22,4 @@ export const getDashboardService = (): Promise<{
     accounts_dashboard: AccountDashboard | null;
     filled_data: boolean;
   };
-}> => api.get(`${baseUrl}`);
+}> => api.get(`${baseUrl}/${date}`);
