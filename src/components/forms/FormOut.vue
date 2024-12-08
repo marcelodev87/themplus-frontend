@@ -43,7 +43,7 @@ const {
 
 const dataOut = reactive<DataOut>({
   type: 'saída',
-  value: '',
+  value: '0.00',
   description: '',
   file: null,
   category: null,
@@ -129,7 +129,7 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataOut.category == null) {
     return { status: false, message: 'A categoria deve ser selecionada' };
   }
-  if (dataOut.value == null) {
+  if (dataOut.value.trim() === '') {
     return { status: false, message: 'O valor deve ser inserido' };
   }
   if (dataOut.account == null) {
@@ -159,7 +159,7 @@ const checkData = (): { status: boolean; message?: string } => {
 const clear = (): void => {
   Object.assign(dataOut, {
     category: null,
-    value: '',
+    value: '0.00',
     date: '',
     account: null,
     description: '',

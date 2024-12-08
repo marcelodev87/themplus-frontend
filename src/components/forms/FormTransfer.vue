@@ -21,7 +21,7 @@ const { accountsSelect } = storeToRefs(useAccountStore());
 const { createTransfer } = useAccountStore();
 
 const dataTransfer = reactive<DataTransfer>({
-  value: '',
+  value: '0.00',
   date: null,
   account_out: null,
   account_enter: null,
@@ -90,7 +90,7 @@ const save = async () => {
 };
 const clear = (): void => {
   Object.assign(dataTransfer, {
-    value: null,
+    value: '0.00',
     date: null,
     account_enter: null,
     account_out: null,

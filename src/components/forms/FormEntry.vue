@@ -43,7 +43,7 @@ const {
 
 const dataEntry = reactive<DataEntry>({
   type: 'entrada',
-  value: '',
+  value: '0.00',
   description: '',
   file: null,
   category: null,
@@ -129,7 +129,7 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataEntry.category == null) {
     return { status: false, message: 'A categoria deve ser selecionada' };
   }
-  if (dataEntry.value == null || dataEntry.value.trim() === '') {
+  if (dataEntry.value.trim() === '') {
     return { status: false, message: 'O valor deve ser inserido' };
   }
   if (dataEntry.account == null) {
@@ -159,7 +159,7 @@ const checkData = (): { status: boolean; message?: string } => {
 const clear = (): void => {
   Object.assign(dataEntry, {
     category: null,
-    value: '',
+    value: '0.00',
     date: '',
     account: null,
     description: '',
@@ -374,6 +374,7 @@ watch(open, async () => {
               <q-icon name="category" color="black" size="20px" />
             </template>
           </q-select>
+          dataEntry.value {{ dataEntry.value }}
           <q-input
             v-model="dataEntry.value"
             bg-color="white"
