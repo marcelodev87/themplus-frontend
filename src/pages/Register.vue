@@ -1,31 +1,56 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormAlert from 'src/components/forms/FormAlert.vue';
 import { storeToRefs } from 'pinia';
-import { useAlertStore } from 'src/stores/alert-store';
+import { useRegisterStore } from 'src/stores/register-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
-import { Alert } from 'src/ts/interfaces/data/Alert';
+import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
 
 defineOptions({
   name: 'Alert',
 });
 
-const { listAlert, loadingAlert, filledData } = storeToRefs(useAlertStore());
-const { getAlerts, deleteAlert } = useAlertStore();
+const { listRegister, loadingRegister, filledData } =
+  storeToRefs(useRegisterStore());
+const { getRegisters } = useRegisterStore();
 
-const showFormAlert = ref<boolean>(false);
+const showRegisterDetail = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
-const filterAlert = ref<string>('');
-const selectedDataEdit = ref<Alert | null>(null);
-const columnsAlert = reactive<QuasarTable[]>([
+const filterRegister = ref<string>('');
+const selectedDataView = ref<string | null>(null);
+const columnsRegister = reactive<QuasarTable[]>([
   {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
+    name: 'user_name',
+    label: 'Nome',
+    field: 'user_name',
     align: 'left',
     sortable: true,
+  },
+  {
+    name: 'user_email',
+    label: 'Email',
+    field: 'user_email',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'date',
+    label: 'Data',
+    field: 'date',
+    align: 'left',
+  },
+  {
+    name: 'type',
+    label: 'Tipo',
+    field: 'type',
+    align: 'left',
+  },
+  {
+    name: 'text',
+    label: 'Descrição',
+    field: 'text',
+    align: 'left',
   },
   {
     name: 'action',
@@ -36,28 +61,53 @@ const columnsAlert = reactive<QuasarTable[]>([
 ]);
 
 const clear = (): void => {
-  selectedDataEdit.value = null;
-  filterAlert.value = '';
+  selectedDataView.value = null;
+  filterRegister.value = '';
 };
-const openFormAlert = (): void => {
-  showFormAlert.value = true;
+const openRegisterDetail = (): void => {
+  showRegisterDetail.value = true;
 };
-const closeFormAlert = (): void => {
-  showFormAlert.value = false;
+const closeRegisterDetail = (): void => {
+  showRegisterDetail.value = false;
   clear();
 };
-const handleEdit = (alert: Alert) => {
-  selectedDataEdit.value = alert;
-  openFormAlert();
+const handleEdit = (id: string) => {
+  selectedDataView.value = id;
+  openRegisterDetail();
 };
-const exclude = async (id: string) => {
-  await deleteAlert(id);
-};
-const fetchAlerts = async () => {
-  await getAlerts();
+const fetchRegisters = async () => {
+  await getRegisters();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const buildAction = (action: string): string => {
+  if (action === 'created') {
+    return 'Criação';
+  }
+  if (action === 'updated') {
+    return 'Atualização';
+  }
+  if (action === 'deleted') {
+    return 'Exclusão';
+  }
+  if (action === 'finalize') {
+    return 'Finalização';
+  }
+  if (action === 'transfer') {
+    return 'Transferência';
+  }
+  if (action === 'reactivated') {
+    return 'Reativação';
+  }
+  if (action === 'inactivated') {
+    return 'Inativação';
+  }
+  if (action === 'delivered') {
+    return 'Entrega';
+  }
+
+  return '';
 };
 
 watch(
@@ -71,7 +121,7 @@ watch(
 );
 
 onMounted(async () => {
-  await fetchAlerts();
+  await fetchRegisters();
 });
 </script>
 <template>
@@ -84,14 +134,14 @@ onMounted(async () => {
       "
     >
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
-        <TitlePage title="Gerenciamento de alertas" />
+        <TitlePage title="Gerenciamento de registros" />
       </div>
       <div
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          @click="openFormAlert"
+          @click="openRegisterDetail"
           color="blue-8"
           icon-right="warning"
           label="Alertas"
@@ -104,10 +154,10 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          :rows="loadingAlert ? [] : listAlert"
-          :columns="columnsAlert"
-          :filter="filterAlert"
-          :loading="loadingAlert"
+          :rows="loadingRegister ? [] : listRegister"
+          :columns="columnsRegister"
+          :filter="filterRegister"
+          :loading="loadingRegister"
           flat
           bordered
           dense
@@ -117,9 +167,9 @@ onMounted(async () => {
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de alertas</span>
+            <span class="text-subtitle2">Lista de registros</span>
             <q-space />
-            <q-input filled v-model="filterAlert" dense label="Pesquisar">
+            <q-input filled v-model="filterRegister" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
@@ -127,35 +177,41 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
+              <q-td key="user_name" :props="props" class="text-left">
+                {{ props.row.user_name }}
+              </q-td>
+              <q-td key="user_email" :props="props" class="text-left">
+                {{ props.row.user_email }}
+              </q-td>
+              <q-td key="date" :props="props" class="text-left">
+                {{ props.row.date }}
+              </q-td>
+              <q-td key="type" :props="props" class="text-left">
+                {{ buildAction(props.row.action) }}
+              </q-td>
+              <q-td key="text" :props="props" class="text-left">
+                {{ props.row.text }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  @click="handleEdit(props.row)"
+                  @click="handleEdit(props.row.id)"
                   size="sm"
                   flat
                   round
                   color="black"
-                  icon="edit"
-                  :disabled="false"
-                />
-                <q-btn
-                  @click="exclude(props.row.id)"
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                />
+                  icon="visibility"
+                  :disabled="loadingRegister"
+                >
+                  <q-tooltip> Detalhes </q-tooltip>
+                </q-btn>
               </q-td>
             </q-tr>
           </template>
         </q-table>
-        <FormAlert
-          :open="showFormAlert"
-          :data-edit="selectedDataEdit"
-          @update:open="closeFormAlert"
+        <RegisterDetail
+          :open="showRegisterDetail"
+          :data-id="selectedDataView"
+          @update:open="closeRegisterDetail"
         />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
