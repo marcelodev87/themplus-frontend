@@ -27,7 +27,15 @@ export const useDashboardStore = defineStore('dashboard', {
       this.listMonthYear.splice(0, this.listMonthYear.length);
     },
     setListMonthYear(data: string[]) {
-      this.listMonthYear = data;
+      this.listMonthYear = data.sort((a, b) => {
+        const [monthA, yearA] = a.split('/').map(Number);
+        const [monthB, yearB] = b.split('/').map(Number);
+
+        if (yearA === yearB) {
+          return monthA - monthB;
+        }
+        return yearA - yearB;
+      });
     },
     setListCategoryDashboard(data: CategoryDashboard[] | null) {
       this.listCategoryDashboard = data;
