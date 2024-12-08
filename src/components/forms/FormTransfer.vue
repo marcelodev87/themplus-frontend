@@ -21,7 +21,7 @@ const { accountsSelect } = storeToRefs(useAccountStore());
 const { createTransfer } = useAccountStore();
 
 const dataTransfer = reactive<DataTransfer>({
-  value: null,
+  value: '',
   date: null,
   account_out: null,
   account_enter: null,
@@ -51,7 +51,7 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Deve ser selecionado contas distintas para transferência',
     };
   }
-  if (dataTransfer.value === null) {
+  if (dataTransfer.value === null || dataTransfer.value.trim() === '') {
     return {
       status: false,
       message: 'Deve ser informado o valor da transferência',
@@ -77,7 +77,7 @@ const save = async () => {
     await createTransfer(
       dataTransfer.account_out?.value ?? '',
       dataTransfer.account_enter?.value ?? '',
-      dataTransfer.value ?? 0,
+      dataTransfer.value,
       dataTransfer.date ?? ''
     );
     emit('update:open');
@@ -153,7 +153,10 @@ watch(open, () => {
             label="Digite o valor"
             dense
             input-class="text-black no-spinners"
-            type="number"
+            type="text"
+            mask="#.##"
+            fill-mask="0"
+            reverse-fill-mask
             class="full-width"
           >
             <template v-slot:prepend>

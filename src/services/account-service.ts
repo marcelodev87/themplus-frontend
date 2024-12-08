@@ -50,7 +50,7 @@ export const createAccountService = (
 export const createTransferService = (
   accountOut: string,
   accountEntry: string,
-  value: number,
+  value: string,
   date: string
 ): Promise<{
   status: number;

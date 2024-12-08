@@ -110,7 +110,7 @@ export const useAccountStore = defineStore('account', {
     async createTransfer(
       accountOut: string,
       accountEntry: string,
-      value: number,
+      value: string,
       date: string
     ) {
       this.setLoading(true);

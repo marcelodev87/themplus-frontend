@@ -43,7 +43,8 @@ const close = () => {
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
             @click="close"
-            color="red"
+            color="black"
+            flat
             label="Voltar"
             size="md"
             unelevated
@@ -51,8 +52,8 @@ const close = () => {
           />
           <q-btn
             @click="confirm"
-            color="primary"
-            label="Confirmar"
+            color="red"
+            label="Excluir"
             size="md"
             unelevated
             no-caps

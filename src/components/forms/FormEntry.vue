@@ -129,7 +129,7 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataEntry.category == null) {
     return { status: false, message: 'A categoria deve ser selecionada' };
   }
-  if (dataEntry.value == null) {
+  if (dataEntry.value == null || dataEntry.value.trim() === '') {
     return { status: false, message: 'O valor deve ser inserido' };
   }
   if (dataEntry.account == null) {

@@ -424,7 +424,7 @@ onMounted(async () => {
         <ConfirmAction
           :open="showConfirmAction"
           title="Confirmação de exclusão"
-          message="Este processo é irreversível e os dados não poderão ser recuperados. Caso tenha certeza, clique em 'Confirmar' para prosseguir."
+          message="Este processo é irreversível e os dados não poderão ser recuperados. Caso tenha certeza, clique em 'Excluir' para prosseguir."
           @update:open="closeConfirmAction"
           @update:ok="closeConfirmActionOk"
         />
