@@ -15,11 +15,12 @@ const { getFeed } = useFeedStore();
 
 const showAlertDataEnterprise = ref<boolean>(false);
 
-const closeAlertDataEnterprise = (): void => {
-  showAlertDataEnterprise.value = false;
-};
 const fetchFeed = async () => {
   await getFeed();
+};
+const closeAlertDataEnterprise = async (): Promise<void> => {
+  showAlertDataEnterprise.value = false;
+  await fetchFeed();
 };
 
 watch(
