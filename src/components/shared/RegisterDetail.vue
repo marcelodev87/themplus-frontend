@@ -55,7 +55,7 @@ watch(open, async () => {
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
             @click="emit('update:open')"
-            color="black"
+            color="red"
             flat
             label="Fechar"
             size="md"
