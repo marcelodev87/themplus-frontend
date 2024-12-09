@@ -3,7 +3,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { storeToRefs } from 'pinia';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
@@ -15,7 +15,7 @@ defineOptions({
   name: 'Scheduling',
 });
 
-const { loadingScheduling, listScheduling, filledData } =
+const { loadingScheduling, listScheduling, filledData, listMonthYear } =
   storeToRefs(useSchedulingStore());
 const {
   getSchedulings,
@@ -97,12 +97,22 @@ const columnsScheduling = reactive<QuasarTable[]>([
   },
 ]);
 
+const dateActual = computed(() => {
+  const currentDate = new Date();
+
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const year = currentDate.getFullYear();
+
+  return `${month}/${year}`;
+});
+const filterMonthYear = ref<string>(dateActual.value);
 const clear = (): void => {
   onlyEntry.value = false;
   onlyOut.value = false;
   onlyExpired.value = false;
   filterScheduling.value = '';
   selectedDataEdit.value = null;
+  filterMonthYear.value = dateActual.value;
 };
 const openFormEntry = (): void => {
   showFormEntry.value = true;
@@ -178,7 +188,12 @@ const isPastDate = (dateString: string) => {
 };
 const exportData = async (): Promise<void> => {
   loadingExport.value = true;
-  await exportScheduling(onlyEntry.value, onlyOut.value, onlyExpired.value);
+  await exportScheduling(
+    onlyEntry.value,
+    onlyOut.value,
+    onlyExpired.value,
+    filterMonthYear.value.replace('/', '-')
+  );
   loadingExport.value = false;
 };
 
@@ -213,9 +228,14 @@ watch(
     }
 
     if (shouldCallWithParams) {
-      await getSchedulingsWithParams(newExpired, newEntry, newOut);
+      await getSchedulingsWithParams(
+        newExpired,
+        newEntry,
+        newOut,
+        filterMonthYear.value.replace('/', '-')
+      );
     } else {
-      await getSchedulings();
+      await getSchedulings(filterMonthYear.value.replace('/', '-'));
     }
   }
 );
@@ -228,9 +248,12 @@ watch(
   },
   { immediate: true }
 );
+watch(filterMonthYear, async () => {
+  await getSchedulings(filterMonthYear.value.replace('/', '-'));
+});
 
 onMounted(async () => {
-  await getSchedulings();
+  await getSchedulings(dateActual.value.replace('/', '-'));
 });
 </script>
 <template>
@@ -352,6 +375,24 @@ onMounted(async () => {
               label="Saídas"
               left-label
             />
+            <q-select
+              v-model="filterMonthYear"
+              :options="listMonthYear"
+              :readonly="listMonthYear.length === 0"
+              label="Filtrar momento"
+              filled
+              dense
+              options-dense
+              bg-color="grey-1"
+              label-color="black"
+              style="min-width: 200px"
+              :class="!$q.screen.lt.md ? '' : 'full-width'"
+              class="q-mr-sm"
+            >
+              <template v-slot:prepend>
+                <q-icon name="calendar_today" color="black" size="20px" />
+              </template>
+            </q-select>
             <q-input filled v-model="filterScheduling" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />

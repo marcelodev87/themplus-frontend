@@ -22,7 +22,6 @@ const {
   filledData,
 } = storeToRefs(useDashboardStore());
 
-const filterMonthYear = ref<string>('');
 const showAlertDataEnterprise = ref<boolean>(false);
 const columnsCategoriesDashboard = reactive<QuasarTable[]>([
   {
@@ -79,19 +78,9 @@ const dateActual = computed(() => {
 
   return `${month}/${year}`;
 });
-
+const filterMonthYear = ref<string>(dateActual.value);
 const fetchInformationsDashboard = async (date: string) => {
   await getDashboard(date);
-};
-const checkCurrentMonthYear = () => {
-  const currentDate = new Date();
-  const currentMonthYear = `${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
-
-  if (listMonthYear.value.includes(currentMonthYear)) {
-    filterMonthYear.value = currentMonthYear;
-  } else {
-    filterMonthYear.value = '';
-  }
 };
 const getCurrentMonthYear = () => {
   const currentDate = new Date();
@@ -130,7 +119,6 @@ watch(filterMonthYear, async () => {
 
 onMounted(async () => {
   await fetchInformationsDashboard(dateActual.value.replace('/', '-'));
-  checkCurrentMonthYear();
 });
 </script>
 <template>

@@ -23,12 +23,27 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 export const useSchedulingStore = defineStore('scheduling', {
   state: () => ({
     filledData: true as boolean,
+    listMonthYear: [] as string[],
     loadingScheduling: false as boolean,
     listScheduling: [] as Scheduling[],
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
   }),
   actions: {
+    clearListMonthYear() {
+      this.listMonthYear.splice(0, this.listMonthYear.length);
+    },
+    setListMonthYear(data: string[]) {
+      this.listMonthYear = data.sort((a, b) => {
+        const [monthA, yearA] = a.split('/').map(Number);
+        const [monthB, yearB] = b.split('/').map(Number);
+
+        if (yearA === yearB) {
+          return monthA - monthB;
+        }
+        return yearA - yearB;
+      });
+    },
     clearListScheduling() {
       this.listScheduling.splice(0, this.listScheduling.length);
     },
@@ -45,7 +60,11 @@ export const useSchedulingStore = defineStore('scheduling', {
       this.filledData = data;
     },
     setListScheduling(schedulings: Scheduling[]) {
-      schedulings.map((item) => this.listScheduling.push(item));
+      this.listScheduling = schedulings.sort((a, b) => {
+        const dateA = new Date(a.date_movement);
+        const dateB = new Date(b.date_movement);
+        return dateB.getTime() - dateA.getTime();
+      });
     },
     setListCategory(categories: CategoryInformation[]) {
       this.listCategory = categories
@@ -75,13 +94,14 @@ export const useSchedulingStore = defineStore('scheduling', {
         type: 'positive',
       });
     },
-    async getSchedulings() {
+    async getSchedulings(date: string) {
       try {
         this.setLoading(true);
-        const response = await getSchedulingsService();
+        const response = await getSchedulingsService(date);
         if (response.status === 200) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
+          this.setListMonthYear(response.data.months_years);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
@@ -93,18 +113,21 @@ export const useSchedulingStore = defineStore('scheduling', {
     async getSchedulingsWithParams(
       expired: boolean,
       entry: boolean,
-      out: boolean
+      out: boolean,
+      date: string
     ) {
       try {
         this.setLoading(true);
         const response = await getSchedulingsWithParamsService(
           expired,
           entry,
-          out
+          out,
+          date
         );
         if (response.status === 200) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
+          this.setListMonthYear(response.data.months_years);
         }
       } catch (error) {
         this.createError(error);
@@ -128,10 +151,15 @@ export const useSchedulingStore = defineStore('scheduling', {
         this.setLoading(false);
       }
     },
-    async exportScheduling(entry: boolean, out: boolean, expired: boolean) {
+    async exportScheduling(
+      entry: boolean,
+      out: boolean,
+      expired: boolean,
+      date: string
+    ) {
       try {
         this.setLoading(true);
-        await exportSchedulingService(entry, out, expired);
+        await exportSchedulingService(entry, out, expired, date);
       } catch (error) {
         this.createError(error);
       } finally {
@@ -163,6 +191,7 @@ export const useSchedulingStore = defineStore('scheduling', {
         if (response.status === 201) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
+          this.setListMonthYear(response.data.months_years);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
@@ -196,6 +225,7 @@ export const useSchedulingStore = defineStore('scheduling', {
         if (response.status === 200) {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
+          this.setListMonthYear(response.data.months_years);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -22,25 +22,33 @@ const createError = (error: any) => {
     type: 'negative',
   });
 };
-export const getSchedulingsService = (): Promise<{
-  status: number;
-  data: {
-    schedulings: Scheduling[];
-    filled_data: boolean;
-  };
-}> => api.get(`${baseUrl}`);
-
-export const getSchedulingsWithParamsService = (
-  expired: boolean,
-  entry: boolean,
-  out: boolean
+export const getSchedulingsService = (
+  date: string
 ): Promise<{
   status: number;
   data: {
     schedulings: Scheduling[];
+    months_years: string[];
+    filled_data: boolean;
+  };
+}> => api.get(`${baseUrl}/${date}`);
+
+export const getSchedulingsWithParamsService = (
+  expired: boolean,
+  entry: boolean,
+  out: boolean,
+  date: string
+): Promise<{
+  status: number;
+  data: {
+    schedulings: Scheduling[];
+    months_years: string[];
     message: string;
   };
-}> => api.get(`${baseUrl}/filter?expired=${expired}&entry=${entry}&out=${out}`);
+}> =>
+  api.get(
+    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}`
+  );
 
 export const getSchedulingInformationsService = (
   type: string
@@ -55,11 +63,12 @@ export const getSchedulingInformationsService = (
 export const exportSchedulingService = async (
   entry: boolean,
   out: boolean,
-  expired: boolean
+  expired: boolean,
+  date: string
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export?entry=${entry}&out=${out}&expired=${expired}`,
+      `${baseUrl}/export/${date}?entry=${entry}&out=${out}&expired=${expired}`,
       null,
       {
         responseType: 'blob',
@@ -96,6 +105,7 @@ export const createSchedulingService = (
   status: number;
   data: {
     schedulings: Scheduling[];
+    months_years: string[];
     message: string;
   };
 }> =>
@@ -123,6 +133,7 @@ export const updateSchedulingService = (
   status: number;
   data: {
     schedulings: Scheduling[];
+    months_years: string[];
     message: string;
   };
 }> =>

@@ -3,7 +3,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useMovementStore } from 'src/stores/movement-store';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -18,7 +18,7 @@ defineOptions({
 
 const { getMovements, getMovementsWithParams, exportMovement, deleteMovement } =
   useMovementStore();
-const { loadingMovement, listMovement, filledData } =
+const { loadingMovement, listMovement, filledData, listMonthYear } =
   storeToRefs(useMovementStore());
 
 const showConfirmAction = ref<boolean>(false);
@@ -94,9 +94,20 @@ const columnsMovement = reactive<QuasarTable[]>([
   },
 ]);
 
+const dateActual = computed(() => {
+  const currentDate = new Date();
+
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const year = currentDate.getFullYear();
+
+  return `${month}/${year}`;
+});
+const filterMonthYear = ref<string>(dateActual.value);
+
 const clear = (): void => {
   selectedDataEdit.value = null;
   selectedExclude.value = '';
+  filterMonthYear.value = dateActual.value;
 };
 const openConfirmAction = (): void => {
   showConfirmAction.value = true;
@@ -170,7 +181,11 @@ const customFilterMovement = (
 };
 const exportData = async (): Promise<void> => {
   loadingExport.value = true;
-  await exportMovement(onlyEntry.value, onlyOut.value);
+  await exportMovement(
+    onlyEntry.value,
+    onlyOut.value,
+    filterMonthYear.value.replace('/', '-')
+  );
   loadingExport.value = false;
 };
 const closeAlertDataEnterprise = (): void => {
@@ -205,9 +220,13 @@ watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
   }
 
   if (shouldCallWithParams) {
-    await getMovementsWithParams(newEntry, newOut);
+    await getMovementsWithParams(
+      newEntry,
+      newOut,
+      filterMonthYear.value.replace('/', '-')
+    );
   } else {
-    await getMovements();
+    await getMovements(filterMonthYear.value.replace('/', '-'));
   }
 });
 watch(
@@ -219,9 +238,12 @@ watch(
   },
   { immediate: true }
 );
+watch(filterMonthYear, async () => {
+  await getMovements(filterMonthYear.value.replace('/', '-'));
+});
 
 onMounted(async () => {
-  await getMovements();
+  await getMovements(dateActual.value.replace('/', '-'));
 });
 </script>
 <template>
@@ -337,6 +359,24 @@ onMounted(async () => {
               label="Saídas"
               left-label
             />
+            <q-select
+              v-model="filterMonthYear"
+              :options="listMonthYear"
+              :readonly="listMonthYear.length === 0"
+              label="Filtrar momento"
+              filled
+              dense
+              options-dense
+              bg-color="grey-1"
+              label-color="black"
+              style="min-width: 200px"
+              :class="!$q.screen.lt.md ? '' : 'full-width'"
+              class="q-mr-sm"
+            >
+              <template v-slot:prepend>
+                <q-icon name="calendar_today" color="black" size="20px" />
+              </template>
+            </q-select>
             <q-input filled v-model="filterMovement" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />

@@ -23,25 +23,30 @@ const createError = (error: any) => {
   });
 };
 
-export const getMovementsService = (): Promise<{
-  status: number;
-  data: {
-    movements: Movement[];
-    filled_data: boolean;
-    message: string;
-  };
-}> => api.get(`${baseUrl}`);
-
-export const getMovementsWithParamsService = (
-  entry: boolean,
-  out: boolean
+export const getMovementsService = (
+  date: string
 ): Promise<{
   status: number;
   data: {
     movements: Movement[];
+    months_years: string[];
+    filled_data: boolean;
     message: string;
   };
-}> => api.get(`${baseUrl}/filter?entry=${entry}&out=${out}`);
+}> => api.get(`${baseUrl}/${date}`);
+
+export const getMovementsWithParamsService = (
+  entry: boolean,
+  out: boolean,
+  date: string
+): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+    months_years: string[];
+    message: string;
+  };
+}> => api.get(`${baseUrl}/filter/${date}?entry=${entry}&out=${out}`);
 
 export const getMovementInformationsService = (
   type: string
@@ -66,6 +71,7 @@ export const createMovementService = (
   status: number;
   data: {
     movements: Movement[];
+    months_years: string[];
     message: string;
   };
 }> =>
@@ -80,10 +86,14 @@ export const createMovementService = (
     programmed,
   });
 
-export const exportMovementService = async (entry: boolean, out: boolean) => {
+export const exportMovementService = async (
+  entry: boolean,
+  out: boolean,
+  date: string
+) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export?entry=${entry}&out=${out}`,
+      `${baseUrl}/export/${date}?entry=${entry}&out=${out}`,
       null,
       {
         responseType: 'blob',
@@ -120,6 +130,7 @@ export const updateMovementService = (
   status: number;
   data: {
     movements: Movement[];
+    months_years: string[];
     message: string;
   };
 }> =>

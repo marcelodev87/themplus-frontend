@@ -22,11 +22,26 @@ export const useMovementStore = defineStore('movement', {
   state: () => ({
     filledData: true as boolean,
     loadingMovement: false as boolean,
+    listMonthYear: [] as string[],
     listMovement: [] as Movement[],
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
   }),
   actions: {
+    clearListMonthYear() {
+      this.listMonthYear.splice(0, this.listMonthYear.length);
+    },
+    setListMonthYear(data: string[]) {
+      this.listMonthYear = data.sort((a, b) => {
+        const [monthA, yearA] = a.split('/').map(Number);
+        const [monthB, yearB] = b.split('/').map(Number);
+
+        if (yearA === yearB) {
+          return monthA - monthB;
+        }
+        return yearA - yearB;
+      });
+    },
     clearListMovement() {
       this.listMovement.splice(0, this.listMovement.length);
     },
@@ -43,7 +58,11 @@ export const useMovementStore = defineStore('movement', {
       this.filledData = data;
     },
     setListMovement(movements: Movement[]) {
-      movements.map((item) => this.listMovement.push(item));
+      this.listMovement = movements.sort((a, b) => {
+        const dateA = new Date(a.date_movement);
+        const dateB = new Date(b.date_movement);
+        return dateB.getTime() - dateA.getTime();
+      });
     },
     setListCategory(categories: CategoryInformation[]) {
       this.listCategory = categories
@@ -75,13 +94,14 @@ export const useMovementStore = defineStore('movement', {
         type: 'positive',
       });
     },
-    async getMovements() {
+    async getMovements(date: string) {
       this.setLoading(true);
       try {
-        const response = await getMovementsService();
+        const response = await getMovementsService(date);
         if (response.status === 200) {
           this.clearListMovement();
           this.setListMovement(response.data.movements);
+          this.setListMonthYear(response.data.months_years);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
@@ -90,12 +110,13 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async getMovementsWithParams(entry: boolean, out: boolean) {
+    async getMovementsWithParams(entry: boolean, out: boolean, date: string) {
       try {
         this.setLoading(true);
-        const response = await getMovementsWithParamsService(entry, out);
+        const response = await getMovementsWithParamsService(entry, out, date);
         if (response.status === 200) {
           this.clearListMovement();
+          this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
         }
       } catch (error) {
@@ -120,17 +141,16 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async exportMovement(entry: boolean, out: boolean) {
+    async exportMovement(entry: boolean, out: boolean, date: string) {
       try {
         this.setLoading(true);
-        await exportMovementService(entry, out);
+        await exportMovementService(entry, out, date);
       } catch (error) {
         this.createError(error);
       } finally {
         this.setLoading(false);
       }
     },
-
     async createMovement(
       type: string,
       value: string,
@@ -155,6 +175,7 @@ export const useMovementStore = defineStore('movement', {
         );
         if (response.status === 201) {
           this.clearListMovement();
+          this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
           this.createSuccess(response.data.message);
         }
@@ -188,6 +209,7 @@ export const useMovementStore = defineStore('movement', {
         );
         if (response.status === 200) {
           this.clearListMovement();
+          this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
           this.createSuccess(response.data.message);
         }
