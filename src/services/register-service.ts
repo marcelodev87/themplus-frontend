@@ -17,7 +17,7 @@ export const getRegisterDetailService = (
 ): Promise<{
   status: number;
   data: {
-    register: Register;
+    register: string;
     message: string;
   };
 }> => api.get(`${baseUrl}/${id}`);

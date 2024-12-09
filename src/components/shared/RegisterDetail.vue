@@ -25,10 +25,6 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-const buildDetail = (): string => {
-  return registerDetail.value?.text ?? '';
-};
-
 watch(open, async () => {
   if (open.value && props.dataId !== null) {
     await getRegisterDetail(props.dataId);
@@ -44,7 +40,7 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section>
         <div class="text-body2">
-          {{ buildDetail() }}
+          {{ registerDetail }}
         </div>
         <q-inner-loading
           :showing="loadingRegisterDetail"

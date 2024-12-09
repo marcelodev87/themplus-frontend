@@ -374,7 +374,6 @@ watch(open, async () => {
               <q-icon name="category" color="black" size="20px" />
             </template>
           </q-select>
-          dataEntry.value {{ dataEntry.value }}
           <q-input
             v-model="dataEntry.value"
             bg-color="white"

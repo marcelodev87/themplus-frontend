@@ -136,20 +136,6 @@ onMounted(async () => {
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de registros" />
       </div>
-      <div
-        class="col-6 row items-center justify-end q-gutter-x-sm"
-        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
-      >
-        <q-btn
-          @click="openRegisterDetail"
-          color="blue-8"
-          icon-right="warning"
-          label="Alertas"
-          class="q-mr-sm"
-          unelevated
-          no-caps
-        />
-      </div>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">

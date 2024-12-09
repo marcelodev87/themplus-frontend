@@ -14,7 +14,7 @@ export const useRegisterStore = defineStore('register', {
     loadingRegister: false as boolean,
     loadingRegisterDetail: false as boolean,
     listRegister: [] as Register[],
-    registerDetail: null as Register | null,
+    registerDetail: null as string | null,
   }),
   actions: {
     clearListRegister() {
@@ -38,7 +38,7 @@ export const useRegisterStore = defineStore('register', {
         return dateB.getTime() - dateA.getTime();
       });
     },
-    setRegisterDetail(register: Register | null) {
+    setRegisterDetail(register: string | null) {
       this.registerDetail = register;
     },
     createError(error: any) {
@@ -77,6 +77,7 @@ export const useRegisterStore = defineStore('register', {
     async getRegisterDetail(id: string) {
       try {
         this.setLoadingDetail(true);
+        this.setRegisterDetail(null);
         const response = await getRegisterDetailService(id);
         if (response.status === 200) {
           this.setRegisterDetail(response.data.register);
