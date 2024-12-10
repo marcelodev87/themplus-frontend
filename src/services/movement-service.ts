@@ -116,6 +116,31 @@ export const exportMovementService = async (
     createError(error);
   }
 };
+export const exportMovementInsertExampleService = async () => {
+  try {
+    const response = await api.post(`${baseUrl}/insert-example/`, null, {
+      responseType: 'blob',
+    });
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute(
+      'download',
+      `movimentacoes_insert_example_${timestamp}.xlsx`
+    );
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
 
 export const updateMovementService = (
   id: string,

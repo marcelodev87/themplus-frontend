@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import {
   createMovementService,
   deleteMovementService,
+  exportMovementInsertExampleService,
   exportMovementService,
   getMovementInformationsService,
   getMovementsService,
@@ -145,6 +146,16 @@ export const useMovementStore = defineStore('movement', {
       try {
         this.setLoading(true);
         await exportMovementService(entry, out, date);
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportMovementInsertExample() {
+      try {
+        this.setLoading(true);
+        await exportMovementInsertExampleService();
       } catch (error) {
         this.createError(error);
       } finally {

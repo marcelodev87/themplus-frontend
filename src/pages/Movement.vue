@@ -11,6 +11,7 @@ import { Movement } from 'src/ts/interfaces/data/Movement';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
 
 defineOptions({
   name: 'Movement',
@@ -23,6 +24,7 @@ const { loadingMovement, listMovement, filledData, listMonthYear } =
 
 const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
+const showFormInsertMovement = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
@@ -132,6 +134,13 @@ const openFormOut = (): void => {
 };
 const closeFormOut = (): void => {
   showFormOut.value = false;
+  clear();
+};
+const openFormInsertMovement = (): void => {
+  showFormInsertMovement.value = true;
+};
+const closeFormInsertMovement = (): void => {
+  showFormInsertMovement.value = false;
   clear();
 };
 const handleEdit = (movement: Movement) => {
@@ -262,6 +271,16 @@ onMounted(async () => {
         v-if="!$q.screen.lt.sm"
         class="col-7 row items-center justify-end q-gutter-x-sm"
       >
+        <q-btn
+          @click="openFormInsertMovement"
+          :loading="loadingExport"
+          flat
+          color="black"
+          icon-right="publish"
+          label="Inserir"
+          unelevated
+          no-caps
+        />
         <q-btn
           @click="exportData"
           :loading="loadingExport"
@@ -460,6 +479,10 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <FormInsertMovement
+          :open="showFormInsertMovement"
+          @update:open="closeFormInsertMovement"
         />
         <ConfirmAction
           :open="showConfirmAction"
