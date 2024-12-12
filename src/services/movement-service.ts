@@ -85,6 +85,15 @@ export const createMovementService = (
     account,
     programmed,
   });
+export const insertMovementService = (
+  file: File
+): Promise<{
+  status: number;
+  data: {
+    movements_inserts: any[];
+    message: string;
+  };
+}> => api.post(`${baseUrl}/insert`, { file });
 
 export const exportMovementService = async (
   entry: boolean,

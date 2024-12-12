@@ -10,6 +10,7 @@ import {
   getMovementInformationsService,
   getMovementsService,
   getMovementsWithParamsService,
+  insertMovementService,
   updateMovementService,
 } from 'src/services/movement-service';
 import {
@@ -188,6 +189,20 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async insertMovement(file: File) {
+      this.setLoading(true);
+      try {
+        const response = await insertMovementService(file);
+        if (response.status === 201) {
+          this.clearListMovement();
           this.createSuccess(response.data.message);
         }
       } catch (error) {
