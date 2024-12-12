@@ -21,56 +21,68 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { exportMovementInsertExample, setLoading } = useMovementStore();
-const { loadingMovement } = storeToRefs(useMovementStore());
+const { exportMovementInsertExample, setLoading, getMovementInformations } =
+  useMovementStore();
+const { loadingMovement, listAccount, listCategoryAll } =
+  storeToRefs(useMovementStore());
 
 const viewMode = ref<'add' | 'process'>('add');
+const optionsCategories = ref(listCategoryAll.value);
+const optionsAccounts = ref(listAccount.value);
 const listInsertMovement = ref<any[]>([]);
 const dataInsert = reactive({
   file: null as File | null,
 });
 const columnsMovement = reactive<QuasarTable[]>([
   {
-    name: 'dateMovement',
+    name: 'dataMovimentacao',
     label: 'Data de movimentação',
-    field: 'dateMovement',
+    field: 'dataMovimentacao',
     align: 'left',
+    style: 'width: 120px;',
   },
   {
-    name: 'type',
+    name: 'tipo',
     label: 'Tipo',
-    field: 'type',
+    field: 'tipo',
     align: 'left',
+    style: 'width: 120px;',
   },
   {
-    name: 'value',
+    name: 'valor',
     label: 'Valor',
-    field: 'value',
+    field: 'valor',
     align: 'left',
+    style: 'width: 120px;',
   },
   {
-    name: 'name',
+    name: 'account',
     label: 'Banco',
     field: 'account',
     align: 'left',
+    style: 'max-width: 120px;',
   },
   {
     name: 'category',
     label: 'Categoria',
     field: 'category',
     align: 'left',
+    style: 'max-width:100px;',
   },
   {
-    name: 'description',
+    name: 'descricao',
     label: 'Descrição',
-    field: 'description',
+    field: 'descricao',
     align: 'left',
+    style:
+      'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
   {
     name: 'receipt',
     label: 'Arquivo',
     field: 'receipt',
     align: 'left',
+    style: 'width: 10%;',
   },
 ]);
 
@@ -147,7 +159,6 @@ const normalizeAndValidateValue = (valor: string): string | null => {
 
   return null;
 };
-
 const process = () => {
   const check = checkData();
   if (check.status) {
@@ -299,6 +310,8 @@ const process = () => {
     if (dataInsert.file) {
       reader.readAsArrayBuffer(dataInsert.file);
     }
+
+    viewMode.value = 'process';
   } else {
     Notify.create({
       message: check.message,
@@ -306,12 +319,35 @@ const process = () => {
     });
   }
 };
-
-const formatDate = (dateString: string) => {
-  const [year, month, day] = dateString.split('-');
-
-  return `${day}/${month}/${year}`;
+const filterFnAccount = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    optionsAccounts.value =
+      val === ''
+        ? listAccount.value
+        : listAccount.value.filter((element) =>
+            element.label?.toLowerCase().includes(needle)
+          );
+  });
 };
+const filterFnCategory = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    optionsCategories.value =
+      val === ''
+        ? listCategoryAll.value
+        : listCategoryAll.value.filter((element) =>
+            element.name?.toLowerCase().includes(needle)
+          );
+  });
+};
+
 watch(
   () => dataInsert.file,
   (file) => {
@@ -324,12 +360,16 @@ watch(
 watch(open, async () => {
   if (open.value) {
     clear();
+    await getMovementInformations(null);
   }
 });
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2 form-basic">
+    <q-card
+      class="bg-grey-2"
+      :style="viewMode === 'process' ? 'min-width: 98vw' : 'min-width: 40vw'"
+    >
       <q-card-section class="q-pa-none">
         <TitlePage title="Inserção de movimentações em lote" />
       </q-card-section>
@@ -350,6 +390,7 @@ watch(open, async () => {
             </template>
           </q-file>
         </q-form>
+
         <q-table
           v-else
           :rows="loadingMovement ? [] : listInsertMovement"
@@ -360,8 +401,9 @@ watch(open, async () => {
           dense
           row-key="name"
           no-data-label="Nenhuma movimentação para mostrar"
+          style="height: 500px"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[0]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Planilha processada</span>
@@ -370,28 +412,103 @@ watch(open, async () => {
             <q-tr
               :props="props"
               style="height: 28px"
-              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+              :class="props.row.tipo === 'entrada' ? 'text-green' : 'text-red'"
             >
-              <q-td key="dateMovement" :props="props" class="text-left">
-                {{ formatDate(props.row.date_movement) }}
+              <q-td key="dataMovimentacao" :props="props" class="text-left">
+                {{ props.row.dataMovimentacao }}
               </q-td>
-              <q-td key="type" :props="props" class="text-left">
-                {{ formatDate(props.row.date_movement) }}
+              <q-td key="tipo" :props="props" class="text-left capitalize">
+                {{ props.row.tipo }}
               </q-td>
-              <q-td key="value" :props="props" class="text-left">
-                {{ `${formatCurrencyBRL(props.row.value)}` }}
+              <q-td key="valor" :props="props" class="text-left">
+                {{ `${formatCurrencyBRL(props.row.valor)}` }}
               </q-td>
               <q-td key="account" :props="props" class="text-left">
-                {{ props.row.account }}
+                <q-select
+                  v-model="props.row.account"
+                  :options="optionsAccounts"
+                  @filter="filterFnAccount"
+                  label="Conta"
+                  filled
+                  dense
+                  options-dense
+                  map-options
+                  bg-color="white"
+                  label-color="black"
+                  use-input
+                  input-debounce="0"
+                  behavior="menu"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="account_balance" color="black" size="16px" />
+                  </template>
+                </q-select>
               </q-td>
               <q-td key="category" :props="props" class="text-left">
-                {{ props.row.category }}
+                <q-select
+                  v-model="props.row.category"
+                  :options="
+                    (props.row.tipo === 'entrada'
+                      ? optionsCategories.filter(
+                          (item) => item.type === 'entrada'
+                        )
+                      : optionsCategories.filter(
+                          (item) => item.type === 'saída'
+                        )
+                    ).map((item) => ({ value: item.id, label: item.name }))
+                  "
+                  @filter="filterFnCategory"
+                  label="Categoria"
+                  filled
+                  dense
+                  options-dense
+                  map-options
+                  bg-color="white"
+                  label-color="black"
+                  use-input
+                  input-debounce="0"
+                  behavior="menu"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="category" color="black" size="16px" />
+                  </template>
+                </q-select>
               </q-td>
-              <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
+              <!-- <q-td key="descricao" :props="props" class="text-left">
+                {{ props.row.descricao }}
+              </q-td> -->
+              <q-td key="descricao" :props="props">
+                {{ props.row.descricao }}
+                <q-popup-edit
+                  v-model="props.row.descricao"
+                  auto-save
+                  v-slot="scope"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    dense
+                    autofocus
+                    counter
+                    @keyup.enter="scope.set"
+                  />
+                </q-popup-edit>
               </q-td>
               <q-td key="receipt" :props="props" class="text-left">
-                {{ props.row.receipt }}
+                <q-file
+                  v-model="props.row.receipt"
+                  filled
+                  bg-color="white"
+                  label-color="black"
+                  label="Arquivo"
+                  dense
+                  clearable
+                  accept=".pdf"
+                  :max-file-size="2 * 1024 * 1024"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" color="black" size="20px" />
+                  </template>
+                </q-file>
               </q-td>
             </q-tr>
           </template>
@@ -400,6 +517,7 @@ watch(open, async () => {
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
+            v-show="viewMode === 'add'"
             color="red"
             label="Fechar"
             size="md"
@@ -409,6 +527,17 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            v-show="viewMode === 'process'"
+            color="red"
+            label="Voltar"
+            size="md"
+            flat
+            @click="viewMode = 'add'"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-show="viewMode === 'add'"
             @click="exportInsert"
             color="black"
             icon-right="download"
@@ -420,10 +549,22 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            v-show="viewMode === 'add'"
             @click="process"
             color="primary"
             label="Processar"
             icon-right="sync"
+            size="md"
+            :loading="loadingMovement"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-show="viewMode === 'process'"
+            @click="save"
+            color="primary"
+            label="Salvar"
+            icon-right="save"
             size="md"
             :loading="loadingMovement"
             unelevated

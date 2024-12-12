@@ -69,12 +69,16 @@ export const useSchedulingStore = defineStore('scheduling', {
     setListCategory(categories: CategoryInformation[]) {
       this.listCategory = categories
         .filter((item) => item.active === 1)
-        .map((item) => ({ label: item.name, value: item.id }));
+        .map((item) => ({ label: item.name, value: item.id }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     },
     setListAccount(accounts: AccountInformation[]) {
-      accounts.map((item) =>
-        this.listAccount.push({ label: item.name, value: item.id })
-      );
+      this.listAccount = accounts
+        .map((item) => ({
+          label: `${item.name} ${item.account_number && item.agency_number ? ` | Nº C: ${item.account_number} | Ag: ${item.agency_number}` : ''} `,
+          value: item.id,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     },
     createError(error: any) {
       let message = 'Error';

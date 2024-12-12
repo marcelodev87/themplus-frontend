@@ -49,14 +49,14 @@ export const getMovementsWithParamsService = (
 }> => api.get(`${baseUrl}/filter/${date}?entry=${entry}&out=${out}`);
 
 export const getMovementInformationsService = (
-  type: string
+  type: string | null
 ): Promise<{
   status: number;
   data: {
     categories: CategoryInformation[];
     accounts: AccountInformation[];
   };
-}> => api.get(`${baseUrl}/informations/${type}`);
+}> => api.get(`${baseUrl}/informations/${type ?? 'all'}`);
 
 export const createMovementService = (
   type: string,

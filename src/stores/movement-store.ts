@@ -28,6 +28,7 @@ export const useMovementStore = defineStore('movement', {
     listMovement: [] as Movement[],
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
+    listCategoryAll: [] as CategoryInformation[],
   }),
   actions: {
     clearListMonthYear() {
@@ -49,6 +50,9 @@ export const useMovementStore = defineStore('movement', {
     },
     clearCategories() {
       this.listCategory.splice(0, this.listCategory.length);
+    },
+    clearCategoriesAll() {
+      this.listCategoryAll.splice(0, this.listCategoryAll.length);
     },
     clearAccounts() {
       this.listAccount.splice(0, this.listAccount.length);
@@ -72,10 +76,18 @@ export const useMovementStore = defineStore('movement', {
         .map((item) => ({ label: item.name, value: item.id }))
         .sort((a, b) => a.label.localeCompare(b.label));
     },
+    setListCategoryAll(categories: CategoryInformation[]) {
+      this.listCategoryAll = categories
+        .filter((item) => item.active === 1)
+        .sort((a, b) => a.name.localeCompare(b.name));
+    },
 
     setListAccount(accounts: AccountInformation[]) {
       this.listAccount = accounts
-        .map((item) => ({ label: item.name, value: item.id }))
+        .map((item) => ({
+          label: `${item.name} ${item.account_number && item.agency_number ? ` | Nº C: ${item.account_number} | Ag: ${item.agency_number}` : ''} `,
+          value: item.id,
+        }))
         .sort((a, b) => a.label.localeCompare(b.label));
     },
     createError(error: any) {
@@ -127,15 +139,17 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async getMovementInformations(type: string) {
+    async getMovementInformations(type: string | null) {
       this.setLoading(true);
       try {
         this.clearCategories();
+        this.clearCategoriesAll();
         this.clearAccounts();
         const response = await getMovementInformationsService(type);
         if (response.status === 200) {
           this.setListAccount(response.data.accounts);
           this.setListCategory(response.data.categories);
+          this.setListCategoryAll(response.data.categories);
         }
       } catch (error) {
         this.createError(error);
