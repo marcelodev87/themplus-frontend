@@ -27,7 +27,7 @@ const closeFormFeedback = (): void => {
 const openNotifications = (): void => {
   showNotifications.value = true;
 };
-const closeNotificattions = (): void => {
+const closeNotifications = (): void => {
   showNotifications.value = false;
 };
 </script>
@@ -127,7 +127,7 @@ const closeNotificattions = (): void => {
     <FormFeedback :open="showFormFedback" @update:open="closeFormFeedback" />
     <Notifications
       :open="showNotifications"
-      @update:open="closeNotificattions"
+      @update:open="closeNotifications"
     />
   </nav>
 </template>
