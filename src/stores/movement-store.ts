@@ -17,7 +17,7 @@ import {
   AccountInformation,
   CategoryInformation,
 } from 'src/ts/interfaces/data/InformationsForms';
-import { Movement } from 'src/ts/interfaces/data/Movement';
+import { InsertMovementData, Movement } from 'src/ts/interfaces/data/Movement';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useMovementStore = defineStore('movement', {
@@ -81,7 +81,6 @@ export const useMovementStore = defineStore('movement', {
         .filter((item) => item.active === 1)
         .sort((a, b) => a.name.localeCompare(b.name));
     },
-
     setListAccount(accounts: AccountInformation[]) {
       this.listAccount = accounts
         .map((item) => ({
@@ -211,16 +210,21 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async insertMovement(file: File) {
+    async insertMovement(movements: InsertMovementData[]) {
       this.setLoading(true);
       try {
-        const response = await insertMovementService(file);
+        const response = await insertMovementService(movements);
         if (response.status === 201) {
           this.clearListMovement();
+          this.setListMonthYear(response.data.months_years);
+          this.setListMovement(response.data.movements);
           this.createSuccess(response.data.message);
         }
+
+        return response;
       } catch (error) {
         this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

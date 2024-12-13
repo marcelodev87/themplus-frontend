@@ -9,6 +9,10 @@ import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import * as XLSX from 'xlsx';
+import {
+  InsertMovement,
+  InsertMovementData,
+} from 'src/ts/interfaces/data/Movement';
 
 defineOptions({
   name: 'FormInsertMovement',
@@ -21,15 +25,20 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { exportMovementInsertExample, setLoading, getMovementInformations } =
-  useMovementStore();
+const {
+  exportMovementInsertExample,
+  setLoading,
+  getMovementInformations,
+  insertMovement,
+} = useMovementStore();
 const { loadingMovement, listAccount, listCategoryAll } =
   storeToRefs(useMovementStore());
 
 const viewMode = ref<'add' | 'process'>('add');
 const optionsCategories = ref(listCategoryAll.value);
 const optionsAccounts = ref(listAccount.value);
-const listInsertMovement = ref<any[]>([]);
+const listInsertMovement = ref<InsertMovement[]>([]);
+const mountPayloadData = reactive<InsertMovementData[]>([]);
 const dataInsert = reactive({
   file: null as File | null,
 });
@@ -111,6 +120,27 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
 
+  const hasNoAccount = listInsertMovement.value.some(
+    (movement) => !movement.account
+  );
+  const hasNoCategory = listInsertMovement.value.some(
+    (movement) => !movement.category
+  );
+
+  if (hasNoAccount) {
+    return {
+      status: false,
+      message: 'Há registros sem conta selecionada.',
+    };
+  }
+
+  if (hasNoCategory) {
+    return {
+      status: false,
+      message: 'Há registros sem categoria selecionada.',
+    };
+  }
+
   return { status: true };
 };
 const clear = (): void => {
@@ -119,12 +149,32 @@ const clear = (): void => {
   });
   viewMode.value = 'add';
   listInsertMovement.value = [];
+  mountPayloadData.splice(0, mountPayloadData.length);
+};
+const mountPayload = (): void => {
+  mountPayloadData.splice(0, mountPayloadData.length);
+  listInsertMovement.value.forEach((item) => {
+    mountPayloadData.push({
+      type: item.tipo.toLowerCase() === 'entrada' ? 'entrada' : 'saída',
+      value: item.valor,
+      description: item.descricao,
+      receipt: item.receipt && item.receipt !== null ? item.receipt : null,
+      category: item.category.value,
+      account: item.account.value,
+      date: item.dataMovimentacao,
+      programmed: 0,
+    });
+  });
 };
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    // Criar função para criar
-    clear();
+    mountPayload();
+    const response = await insertMovement(mountPayloadData);
+    if (response?.status === 201) {
+      clear();
+      emit('update:open');
+    }
   } else {
     Notify.create({
       message: check.message,

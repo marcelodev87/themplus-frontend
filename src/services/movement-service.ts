@@ -6,7 +6,7 @@ import {
   AccountInformation,
   CategoryInformation,
 } from 'src/ts/interfaces/data/InformationsForms';
-import { Movement } from 'src/ts/interfaces/data/Movement';
+import { InsertMovementData, Movement } from 'src/ts/interfaces/data/Movement';
 
 const baseUrl = 'movement';
 
@@ -86,14 +86,15 @@ export const createMovementService = (
     programmed,
   });
 export const insertMovementService = (
-  file: File
+  movements: InsertMovementData[]
 ): Promise<{
   status: number;
   data: {
-    movements_inserts: any[];
+    movements: Movement[];
+    months_years: string[];
     message: string;
   };
-}> => api.post(`${baseUrl}/insert`, { file });
+}> => api.post(`${baseUrl}/insert`, { movements });
 
 export const exportMovementService = async (
   entry: boolean,
