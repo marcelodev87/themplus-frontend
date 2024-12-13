@@ -7,6 +7,9 @@ import { User } from 'src/ts/interfaces/data/User';
 import {
   doLoginService,
   doRegisterService,
+  doResetService,
+  doVerifyService,
+  setNewPasswordService,
   updateUserDataService,
   updateUserPasswordService,
 } from 'src/services/auth-service';
@@ -26,6 +29,12 @@ export const useAuthStore = defineStore('auth', {
     },
     setLoading(loading: boolean) {
       this.loadingAuth = loading;
+    },
+    createSuccess(message: string) {
+      Notify.create({
+        message,
+        type: 'positive',
+      });
     },
     createError(error: any) {
       let message = 'Error';
@@ -50,6 +59,54 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async doReset(email: string) {
+      try {
+        this.setLoading(true);
+        const response = await doResetService(email);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async doVerify(code: string, email: string) {
+      try {
+        this.setLoading(true);
+        const response = await doVerifyService(code, email);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async setNewPassword(code: string, email: string) {
+      try {
+        this.setLoading(true);
+        const response = await setNewPasswordService(code, email);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

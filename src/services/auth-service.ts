@@ -14,6 +14,33 @@ export const doLoginService = (
   };
 }> => api.post('/login', { email, password });
 
+export const doResetService = (
+  email: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post('/reset', { email });
+export const doVerifyService = (
+  code: string,
+  email: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post('/verify', { code, email });
+export const setNewPasswordService = (
+  password: string,
+  email: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post('/newPassword', { password, email });
+
 export const doRegisterService = (
   name: string,
   email: string,
