@@ -120,6 +120,42 @@ export const createSchedulingService = (
     programmed,
   });
 
+// export const createSchedulingService = (
+//   type: string,
+//   value: string,
+//   date: string,
+//   description: string | null,
+//   file: File | null,
+//   category: string,
+//   account: string,
+//   programmed: number
+// ): Promise<{
+//   status: number;
+//   data: {
+//     schedulings: Scheduling[];
+//     months_years: string[];
+//     message: string;
+//   };
+// }> => {
+//   const formData = new FormData();
+//   formData.append('type', type);
+//   formData.append('value', value);
+//   formData.append('date', date);
+//   formData.append('description', description || ''); // Adiciona uma string vazia se for null
+//   if (file) {
+//     formData.append('file', file); // Adiciona o arquivo se não for null
+//   }
+//   formData.append('category', category);
+//   formData.append('account', account);
+//   formData.append('programmed', programmed.toString()); // Converte o número para string
+
+//   return api.post(`${baseUrl}/`, formData, {
+//     headers: {
+//       'Content-Type': 'multipart/form-data',
+//     },
+//   });
+// };
+
 export const updateSchedulingService = (
   id: string,
   type: string,

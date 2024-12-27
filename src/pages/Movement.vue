@@ -17,8 +17,13 @@ defineOptions({
   name: 'Movement',
 });
 
-const { getMovements, getMovementsWithParams, exportMovement, deleteMovement } =
-  useMovementStore();
+const {
+  getMovements,
+  getMovementsWithParams,
+  exportMovement,
+  deleteMovement,
+  downloadFile,
+} = useMovementStore();
 const { loadingMovement, listMovement, filledData, listMonthYear } =
   storeToRefs(useMovementStore());
 
@@ -87,6 +92,8 @@ const columnsMovement = reactive<QuasarTable[]>([
     label: 'Arquivo',
     field: 'receipt',
     align: 'left',
+    style:
+      'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
   {
     name: 'action',
@@ -199,6 +206,9 @@ const exportData = async (): Promise<void> => {
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const download = async (file: string) => {
+  await downloadFile(file.split('receipts/')[1]);
 };
 
 watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
@@ -429,7 +439,13 @@ onMounted(async () => {
               <q-td key="description" :props="props" class="text-left">
                 {{ props.row.description }}
               </q-td>
-              <q-td key="receipt" :props="props" class="text-left">
+              <q-td
+                @click="download(props.row.receipt)"
+                key="receipt"
+                :props="props"
+                class="text-left cursor-pointer"
+              >
+                <q-tooltip> {{ props.row.receipt }} </q-tooltip>
                 {{ props.row.receipt }}
               </q-td>
               <q-td key="action" :props="props">

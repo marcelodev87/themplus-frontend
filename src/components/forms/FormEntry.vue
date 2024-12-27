@@ -475,7 +475,11 @@ watch(open, async () => {
             filled
             bg-color="white"
             label-color="black"
-            label="Adicione um documento (Máx 2Mb)"
+            :label="
+              props.dataEdit && props.dataEdit.receipt
+                ? props.dataEdit.receipt.split('/')[1]
+                : 'Adicione um documento (Máx 2Mb)'
+            "
             dense
             clearable
           >
