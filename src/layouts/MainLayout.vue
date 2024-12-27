@@ -72,6 +72,30 @@ const menuList = computed(() => [
     name: 'admin-financial-control',
   },
   {
+    icon: 'holiday_village',
+    label: 'Filiais',
+    separator: true,
+    name: 'admin-office',
+  },
+  {
+    icon: 'cases',
+    label: 'Contador',
+    separator: true,
+    name: 'admin-counter',
+  },
+  {
+    icon: 'person_search',
+    label: 'Solicitações',
+    separator: true,
+    name: 'admin-order',
+  },
+  {
+    icon: 'how_to_reg',
+    label: 'Vínculos',
+    separator: true,
+    name: 'admin-bond',
+  },
+  {
     icon: 'help',
     label: 'Ajuda',
     separator: true,

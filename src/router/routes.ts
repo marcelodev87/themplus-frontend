@@ -64,6 +64,30 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/Register.vue'),
         beforeEnter: isAdminGuard,
       },
+      {
+        path: 'filial',
+        name: 'admin-office',
+        component: () => import('src/pages/Office.vue'),
+        beforeEnter: isAdminGuard,
+      },
+      {
+        path: 'contador',
+        name: 'admin-counter',
+        component: () => import('src/pages/Counter.vue'),
+        beforeEnter: isAdminGuard,
+      },
+      {
+        path: 'solicitações',
+        name: 'admin-order',
+        component: () => import('src/pages/Order.vue'),
+        beforeEnter: isAdminGuard,
+      },
+      {
+        path: 'vínculos',
+        name: 'admin-bond',
+        component: () => import('src/pages/Bond.vue'),
+        beforeEnter: isAdminGuard,
+      },
       // {
       //   path: 'alertas',
       //   name: 'admin-alert',
@@ -74,6 +98,7 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-financial-control',
         component: () => import('src/pages/FinancialControl.vue'),
       },
+
       {
         path: 'ajuda',
         name: 'admin-help',

@@ -30,3 +30,11 @@ export interface Enterprise {
   phone: string | null;
   subscription_id?: string;
 }
+
+export interface Office {
+  id: string;
+  name: string;
+  number_users: number;
+  balance: number;
+  counter: string | null;
+}
