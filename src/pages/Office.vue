@@ -1,31 +1,45 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormAlert from 'src/components/forms/FormAlert.vue';
 import { storeToRefs } from 'pinia';
-import { useAlertStore } from 'src/stores/alert-store';
+import { useOfficeStore } from 'src/stores/office-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
+import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
+import FormUser from 'src/components/forms/FormUser.vue';
 
 defineOptions({
   name: 'Office',
 });
 
-const { listAlert, loadingAlert, filledData } = storeToRefs(useAlertStore());
-const { getAlerts, deleteAlert } = useAlertStore();
+const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
+const { getOffices } = useOfficeStore();
 
-const showFormAlert = ref<boolean>(false);
+const showFormEnterprise = ref<boolean>(false);
+const dataNull = ref<null>(null);
+const showFormUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterAlert = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
 const columnsAlert = reactive<QuasarTable[]>([
   {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
+    name: 'name',
+    label: 'Nome',
+    field: 'name',
     align: 'left',
-    sortable: true,
+  },
+  {
+    name: 'total_users',
+    label: 'Total de usuários',
+    field: 'total_users',
+    align: 'left',
+  },
+  {
+    name: 'counter',
+    label: 'Contador',
+    field: 'counter',
+    align: 'left',
   },
   {
     name: 'action',
@@ -39,25 +53,32 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   filterAlert.value = '';
 };
-const openFormAlert = (): void => {
-  showFormAlert.value = true;
+const openFormEnterprise = (): void => {
+  showFormEnterprise.value = true;
 };
-const closeFormAlert = (): void => {
-  showFormAlert.value = false;
+const closeFormEnterprise = (): void => {
+  showFormEnterprise.value = false;
   clear();
 };
 const handleEdit = (alert: Alert) => {
   selectedDataEdit.value = alert;
-  openFormAlert();
+  openFormEnterprise();
 };
 const exclude = async (id: string) => {
-  await deleteAlert(id);
+  // await deleteAlert(id);
+  console.log('excluir ', id);
 };
-const fetchAlerts = async () => {
-  await getAlerts();
+const fetchOffices = async () => {
+  await getOffices();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const openFormUser = (): void => {
+  showFormUser.value = true;
+};
+const closeFormUser = (): void => {
+  showFormUser.value = false;
 };
 
 watch(
@@ -71,7 +92,8 @@ watch(
 );
 
 onMounted(async () => {
-  await fetchAlerts();
+  await fetchOffices();
+  console.log('teste');
 });
 </script>
 <template>
@@ -91,10 +113,10 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          @click="openFormAlert"
+          @click="openFormEnterprise"
           color="blue-8"
-          icon-right="warning"
-          label="Alertas"
+          icon-right="add_home"
+          label="Filiais"
           class="q-mr-sm"
           unelevated
           no-caps
@@ -104,15 +126,15 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          :rows="loadingAlert ? [] : listAlert"
+          :rows="loadingOffice ? [] : listOffice"
           :columns="columnsAlert"
           :filter="filterAlert"
-          :loading="loadingAlert"
+          :loading="loadingOffice"
           flat
           bordered
           dense
           row-key="name"
-          no-data-label="Nenhuma alerta para mostrar"
+          no-data-label="Nenhuma filial para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
         >
@@ -127,8 +149,14 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="total_users" :props="props" class="text-left">
+                {{ props.row.total_users }}
+              </q-td>
+              <q-td key="counter" :props="props" class="text-left">
+                {{ props.row.counter ?? 'Sem contador vinculado' }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
@@ -138,7 +166,16 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="edit"
-                  :disabled="false"
+                  :disabled="loadingOffice"
+                />
+                <q-btn
+                  @click="openFormUser"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="person_add"
+                  :disabled="loadingOffice"
                 />
                 <q-btn
                   @click="exclude(props.row.id)"
@@ -147,15 +184,21 @@ onMounted(async () => {
                   round
                   color="red"
                   icon="delete"
+                  :disabled="loadingOffice"
                 />
               </q-td>
             </q-tr>
           </template>
         </q-table>
-        <FormAlert
-          :open="showFormAlert"
-          :data-edit="selectedDataEdit"
-          @update:open="closeFormAlert"
+        <FormEnterprise
+          :open="showFormEnterprise"
+          mode="office"
+          @update:open="closeFormEnterprise"
+        />
+        <FormUser
+          :open="showFormUser"
+          :data-edit="dataNull"
+          @update:open="closeFormUser"
         />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"

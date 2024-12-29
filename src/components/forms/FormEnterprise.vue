@@ -7,6 +7,7 @@ import { searchCep } from 'src/services/cep-service';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useOfficeStore } from 'src/stores/office-store';
 import ConfirmEditEnterprise from '../confirm/ConfirmEditEnterprise.vue';
 
 defineOptions({
@@ -15,6 +16,7 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  mode: 'actual' | 'office';
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -22,6 +24,8 @@ const emit = defineEmits<{
 
 const { updateEnterprise, getEnterprise } = useEnterpriseStore();
 const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
+const { createOffice } = useOfficeStore();
+const { loadingOffice } = storeToRefs(useOfficeStore());
 const { user } = storeToRefs(useAuthStore());
 
 const selectedIdentifier = ref<string>('CNPJ');
@@ -62,14 +66,16 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
   if (
-    dataEnterprise.email.trim() === '' ||
-    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-      dataEnterprise.email.trim()
-    )
+    props.mode === 'actual' &&
+    (dataEnterprise.email.trim() === '' ||
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+        dataEnterprise.email.trim()
+      ))
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
   if (
+    props.mode === 'actual' &&
     selectedIdentifier.value === 'CPF' &&
     dataEnterprise.cpf.trim().length !== 11
   ) {
@@ -79,6 +85,7 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
   if (
+    props.mode === 'actual' &&
     selectedIdentifier.value === 'CNPJ' &&
     dataEnterprise.cnpj.trim().length !== 14
   ) {
@@ -135,6 +142,41 @@ const openConfirmEditEnterprise = (): void => {
 };
 const closeConfirmEditEnterprise = (): void => {
   showConfirmEditEnterprise.value = false;
+};
+const saveOffice = async () => {
+  const check = checkData();
+  if (check.status) {
+    await createOffice(
+      dataEnterprise.name,
+      selectedIdentifier.value === 'CNPJ'
+        ? dataEnterprise.cnpj.trim() === ''
+          ? null
+          : dataEnterprise.cnpj
+        : null,
+      selectedIdentifier.value === 'CPF'
+        ? dataEnterprise.cpf.trim() === ''
+          ? null
+          : dataEnterprise.cpf
+        : null,
+      dataEnterprise.cep,
+      dataEnterprise.state,
+      dataEnterprise.city,
+      dataEnterprise.neighborhood,
+      dataEnterprise.address,
+      dataEnterprise.complement.trim() === ''
+        ? null
+        : dataEnterprise.complement,
+      dataEnterprise.numberAddress,
+      dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
+      dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone
+    );
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
 };
 const update = async () => {
   const check = checkData();
@@ -260,7 +302,9 @@ watch(open, () => {
   if (open.value) {
     clear();
     closeConfirmEditEnterprise();
-    fetchEnterprise();
+    if (props.mode === 'actual') {
+      fetchEnterprise();
+    }
   }
 });
 </script>
@@ -490,12 +534,24 @@ watch(open, () => {
             no-caps
           />
           <q-btn
+            v-if="props.mode === 'actual'"
             @click="openConfirmEditEnterprise"
             v-show="user?.position === 'admin'"
             color="primary"
             label="Continuar"
             size="md"
-            :loading="loadingEnterprise"
+            :loading="loadingEnterprise || loadingOffice"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="saveOffice"
+            v-show="user?.position === 'admin'"
+            color="primary"
+            label="Salvar"
+            size="md"
+            :loading="loadingEnterprise || loadingOffice"
             unelevated
             no-caps
           />

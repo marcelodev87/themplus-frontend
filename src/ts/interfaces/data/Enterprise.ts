@@ -34,7 +34,6 @@ export interface Enterprise {
 export interface Office {
   id: string;
   name: string;
-  number_users: number;
-  balance: number;
+  total_users: number;
   counter: string | null;
 }

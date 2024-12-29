@@ -206,6 +206,7 @@ onMounted(() => {
       <EmailInfo :open="showEmailInfo" @update:open="closeEmailInfo" />
       <FormEnterprise
         :open="showFormEnterprise"
+        mode="actual"
         @update:open="closeFormEnterprise"
       />
     </q-page-container>
