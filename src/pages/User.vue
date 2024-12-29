@@ -260,6 +260,7 @@ onMounted(async () => {
         <FormUser
           :open="showFormUser"
           :data-edit="selectedDataEdit"
+          mode="actual"
           @update:open="closeFormUser"
         />
         <AlertDataEnterprise

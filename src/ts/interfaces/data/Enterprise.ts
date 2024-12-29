@@ -1,3 +1,5 @@
+import { User } from './User';
+
 export interface DataEnterprise {
   id: string;
   name: string;
@@ -34,6 +36,6 @@ export interface Enterprise {
 export interface Office {
   id: string;
   name: string;
-  total_users: number;
+  users: User[];
   counter: string | null;
 }

@@ -7,6 +7,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { storeToRefs } from 'pinia';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { useDepartmentStore } from 'src/stores/department_store';
+import { Office } from 'src/ts/interfaces/data/Enterprise';
 import DepartmentChoose from '../shared/DepartmentChoose.vue';
 
 defineOptions({
@@ -16,6 +17,8 @@ defineOptions({
 const props = defineProps<{
   open: boolean;
   dataEdit: User | null;
+  mode: 'actual' | 'office';
+  office?: Office;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -27,6 +30,7 @@ const { loadingUsersMembers } = storeToRefs(useUsersMembersStore());
 const { createUserMember, updateUserMember } = useUsersMembersStore();
 
 const showDepartmentChoose = ref<boolean>(false);
+const tab = ref<string>('list');
 const dataUser = reactive<DataUserMember>({
   name: '',
   position: 'common_user',
@@ -176,6 +180,11 @@ const checkDataEdit = () => {
         : { label: 'Usuário comum', value: 'common_user' };
   }
 };
+const checkModeOffice = () => {
+  if (props.mode === 'office') {
+    console.log('teste');
+  }
+};
 const openDepartmentChoose = (): void => {
   showDepartmentChoose.value = true;
 };
@@ -198,6 +207,7 @@ watch(open, async () => {
     clear();
     await fetchDepartments();
     checkDataEdit();
+    checkModeOffice();
   }
 });
 </script>
@@ -208,7 +218,9 @@ watch(open, async () => {
         <TitlePage
           :title="
             props.dataEdit === null
-              ? 'Cadastre um usuário'
+              ? props.mode === 'actual'
+                ? 'Cadastre um usuário'
+                : 'Inicie sua filial'
               : 'Atualize um usuário'
           "
         />
@@ -328,6 +340,7 @@ watch(open, async () => {
           </q-input>
         </q-form>
       </q-card-section>
+
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
@@ -341,7 +354,7 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
-            v-if="props.dataEdit === null"
+            v-show="props.dataEdit === null && tab === 'register'"
             @click="save"
             color="primary"
             label="Salvar"
@@ -351,7 +364,7 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
-            v-else
+            v-show="props.dataEdit !== null"
             @click="update"
             color="primary"
             label="Atualizar"

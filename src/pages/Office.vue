@@ -8,6 +8,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
+import { Office } from 'src/ts/interfaces/data/Enterprise';
 
 defineOptions({
   name: 'Office',
@@ -17,6 +18,7 @@ const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices } = useOfficeStore();
 
 const showFormEnterprise = ref<boolean>(false);
+const dataOffice = ref<Office | null>(null);
 const dataNull = ref<null>(null);
 const showFormUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -30,9 +32,9 @@ const columnsAlert = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
-    name: 'total_users',
+    name: 'users',
     label: 'Total de usuários',
-    field: 'total_users',
+    field: 'users',
     align: 'left',
   },
   {
@@ -74,10 +76,12 @@ const fetchOffices = async () => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
-const openFormUser = (): void => {
+const openFormUser = (office: Office): void => {
+  dataOffice.value = office;
   showFormUser.value = true;
 };
 const closeFormUser = (): void => {
+  dataOffice.value = null;
   showFormUser.value = false;
 };
 
@@ -152,8 +156,8 @@ onMounted(async () => {
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="total_users" :props="props" class="text-left">
-                {{ props.row.total_users }}
+              <q-td key="users" :props="props" class="text-left">
+                {{ props.row.users.length }}
               </q-td>
               <q-td key="counter" :props="props" class="text-left">
                 {{ props.row.counter ?? 'Sem contador vinculado' }}
@@ -169,12 +173,12 @@ onMounted(async () => {
                   :disabled="loadingOffice"
                 />
                 <q-btn
-                  @click="openFormUser"
+                  @click="openFormUser(props.row.id)"
                   size="sm"
                   flat
                   round
                   color="black"
-                  icon="person_add"
+                  icon="groups"
                   :disabled="loadingOffice"
                 />
                 <q-btn
@@ -198,6 +202,7 @@ onMounted(async () => {
         <FormUser
           :open="showFormUser"
           :data-edit="dataNull"
+          mode="office"
           @update:open="closeFormUser"
         />
         <AlertDataEnterprise
