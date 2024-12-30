@@ -8,6 +8,7 @@ import { storeToRefs } from 'pinia';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { useDepartmentStore } from 'src/stores/department_store';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
+import { useOfficeStore } from 'src/stores/office-store';
 import DepartmentChoose from '../shared/DepartmentChoose.vue';
 
 defineOptions({
@@ -18,7 +19,7 @@ const props = defineProps<{
   open: boolean;
   dataEdit: User | null;
   mode: 'actual' | 'office';
-  office?: Office;
+  office?: Office | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -26,11 +27,12 @@ const emit = defineEmits<{
 
 const { listDepartment, loadingDepartment } = storeToRefs(useDepartmentStore());
 const { getDepartments } = useDepartmentStore();
+const { setListOffice, clearListOffice } = useOfficeStore();
 const { loadingUsersMembers } = storeToRefs(useUsersMembersStore());
-const { createUserMember, updateUserMember } = useUsersMembersStore();
+const { createUserMember, updateUserMember, createUserMemberOffice } =
+  useUsersMembersStore();
 
 const showDepartmentChoose = ref<boolean>(false);
-const tab = ref<string>('list');
 const dataUser = reactive<DataUserMember>({
   name: '',
   position: 'common_user',
@@ -123,14 +125,30 @@ const clear = (): void => {
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    await createUserMember(
-      dataUser.name,
-      selectedUserPosition.value.value,
-      dataUser.email,
-      dataUser.password,
-      dataUser.department ?? null,
-      dataUser.phone?.trim() !== '' ? dataUser.phone : null
-    );
+    if (props.mode === 'actual') {
+      await createUserMember(
+        dataUser.name,
+        selectedUserPosition.value.value,
+        dataUser.email,
+        dataUser.password,
+        dataUser.department ?? null,
+        dataUser.phone?.trim() !== '' ? dataUser.phone : null
+      );
+    } else {
+      const response = await createUserMemberOffice(
+        props.office?.id ?? '',
+        dataUser.name,
+        selectedUserPosition.value.value,
+        dataUser.email,
+        dataUser.password,
+        dataUser.department ?? null,
+        dataUser.phone?.trim() !== '' ? dataUser.phone : null
+      );
+      if (response?.status === 201) {
+        clearListOffice();
+        setListOffice(response?.data.offices);
+      }
+    }
     clear();
     emit('update:open');
   } else {
@@ -182,7 +200,10 @@ const checkDataEdit = () => {
 };
 const checkModeOffice = () => {
   if (props.mode === 'office') {
-    console.log('teste');
+    selectedUserPosition.value = {
+      label: 'Administrador',
+      value: 'admin',
+    };
   }
 };
 const openDepartmentChoose = (): void => {
@@ -191,6 +212,24 @@ const openDepartmentChoose = (): void => {
 const closeDepartmentChoose = (): void => {
   showDepartmentChoose.value = false;
 };
+const getTextStartUser = (): string => {
+  const users = props.office?.users;
+
+  if (!users || users.length === 0) {
+    return 'Não há usuários cadastrados.';
+  }
+
+  const oldestUser = users.reduce((oldest: User | null, user) => {
+    return !oldest || new Date(user.created_at) < new Date(oldest.created_at)
+      ? user
+      : oldest;
+  }, null);
+
+  return oldestUser
+    ? `Já foi inserido um usuário inicial. Acesse como usuário de e-mail: '${oldestUser.email}' ou algum outro administrador da filial para configurar todo restante da filial.`
+    : 'Não foi possível encontrar um usuário.';
+};
+
 const handleChooseDepartment = (
   tree: { id: string; label: string } | null
 ): void => {
@@ -226,7 +265,15 @@ watch(open, async () => {
         />
       </q-card-section>
       <q-card-section class="q-pa-sm">
-        <q-form class="q-gutter-y-sm">
+        <q-banner
+          v-if="(props.office?.users ?? []).length > 0"
+          dense
+          class="text-white bg-red"
+          rounded
+        >
+          {{ getTextStartUser() }}
+        </q-banner>
+        <q-form v-else class="q-gutter-y-sm">
           <q-input
             v-model="dataUser.name"
             bg-color="white"
@@ -255,6 +302,7 @@ watch(open, async () => {
           </q-input>
           <q-input
             v-model="dataUser.phone"
+            v-show="props.mode !== 'office'"
             bg-color="white"
             label-color="black"
             filled
@@ -277,6 +325,7 @@ watch(open, async () => {
             map-options
             label-color="black"
             class="full-width"
+            :disable="props.mode === 'office'"
           >
             <template v-slot:prepend>
               <q-icon name="supervisor_account" color="black" size="20px" />
@@ -284,6 +333,8 @@ watch(open, async () => {
           </q-select>
           <q-input
             v-model="dataUser.departmentName"
+            v-show="props.mode !== 'office'"
+            :disable="props.mode === 'office'"
             bg-color="white"
             label-color="black"
             filled
@@ -354,7 +405,10 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
-            v-show="props.dataEdit === null && tab === 'register'"
+            v-show="
+              props.dataEdit === null &&
+              (props.office?.users ?? []).length === 0
+            "
             @click="save"
             color="primary"
             label="Salvar"
@@ -364,7 +418,10 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
-            v-show="props.dataEdit !== null"
+            v-show="
+              props.dataEdit !== null &&
+              (props.office?.users ?? []).length === 0
+            "
             @click="update"
             color="primary"
             label="Atualizar"

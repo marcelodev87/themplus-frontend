@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
+  createUserMemberOfficeService,
   createUserMemberService,
   deleteUserMemberService,
   exportUserService,
@@ -88,6 +89,39 @@ export const useUsersMembersStore = defineStore('members', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async createUserMemberOffice(
+      enterpriseId: string,
+      name: string,
+      position: string,
+      email: string,
+      password: string,
+      department: string | null,
+      phone: string | null
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await createUserMemberOfficeService({
+          enterpriseId,
+          name,
+          position,
+          email,
+          password,
+          department,
+          phone,
+        });
+        if (response.status === 201) {
+          this.clearListUser();
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

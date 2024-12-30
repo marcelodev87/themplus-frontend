@@ -5,7 +5,6 @@ import { useOfficeStore } from 'src/stores/office-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
-import { Alert } from 'src/ts/interfaces/data/Alert';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
@@ -23,7 +22,6 @@ const dataNull = ref<null>(null);
 const showFormUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterAlert = ref<string>('');
-const selectedDataEdit = ref<Alert | null>(null);
 const columnsAlert = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -52,7 +50,6 @@ const columnsAlert = reactive<QuasarTable[]>([
 ]);
 
 const clear = (): void => {
-  selectedDataEdit.value = null;
   filterAlert.value = '';
 };
 const openFormEnterprise = (): void => {
@@ -61,10 +58,6 @@ const openFormEnterprise = (): void => {
 const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
   clear();
-};
-const handleEdit = (alert: Alert) => {
-  selectedDataEdit.value = alert;
-  openFormEnterprise();
 };
 const exclude = async (id: string) => {
   // await deleteAlert(id);
@@ -97,7 +90,6 @@ watch(
 
 onMounted(async () => {
   await fetchOffices();
-  console.log('teste');
 });
 </script>
 <template>
@@ -164,16 +156,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  @click="handleEdit(props.row)"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                  :disabled="loadingOffice"
-                />
-                <q-btn
-                  @click="openFormUser(props.row.id)"
+                  @click="openFormUser(props.row)"
                   size="sm"
                   flat
                   round
@@ -202,6 +185,7 @@ onMounted(async () => {
         <FormUser
           :open="showFormUser"
           :data-edit="dataNull"
+          :office="dataOffice"
           mode="office"
           @update:open="closeFormUser"
         />

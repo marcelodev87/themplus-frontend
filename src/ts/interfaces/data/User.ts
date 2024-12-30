@@ -26,6 +26,17 @@ export interface DataUserMember2 {
   departmentName?: string | null;
   phone: string | null;
 }
+export interface DataUserMember3 {
+  enterpriseId: string;
+  name: string;
+  position: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  department: string | null;
+  departmentName?: string | null;
+  phone: string | null;
+}
 
 export interface DataRegister {
   name: string;
@@ -60,4 +71,5 @@ export interface User {
   enterprise_id: string;
   department_id: string | null;
   created_by: string | null;
+  created_at: string;
 }

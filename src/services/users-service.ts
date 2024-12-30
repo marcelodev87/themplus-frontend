@@ -2,7 +2,12 @@
 import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
 import { Notify } from 'quasar';
-import { DataUserMember2, User } from 'src/ts/interfaces/data/User';
+import { Office } from 'src/ts/interfaces/data/Enterprise';
+import {
+  DataUserMember2,
+  DataUserMember3,
+  User,
+} from 'src/ts/interfaces/data/User';
 
 const baseUrl = 'member';
 
@@ -36,6 +41,16 @@ export const createUserMemberService = (
     message: string;
   };
 }> => api.post(`${baseUrl}/`, payload);
+
+export const createUserMemberOfficeService = (
+  payload: DataUserMember3
+): Promise<{
+  status: number;
+  data: {
+    offices: Office[];
+    message: string;
+  };
+}> => api.post(`${baseUrl}/start-office`, payload);
 
 export const exportUserService = async () => {
   try {
