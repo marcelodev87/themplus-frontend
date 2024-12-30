@@ -11,6 +11,7 @@ export const doLoginService = (
   data: {
     user: User;
     enterprise_created: string | null;
+    enterprise_position: string;
     token: string;
   };
 }> => api.post('/login', { email, password });
@@ -46,7 +47,8 @@ export const doRegisterService = (
   name: string,
   email: string,
   password: string,
-  nameEnterprise: string
+  nameEnterprise: string,
+  position: string
 ): Promise<{
   status: number;
   data: {
@@ -56,10 +58,11 @@ export const doRegisterService = (
   };
 }> =>
   api.post('/register', {
+    name,
     email,
     password,
-    name,
     nameEnterprise,
+    position,
   });
 
 export const updateUserDataService = (

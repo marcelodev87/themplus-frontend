@@ -44,6 +44,7 @@ export interface DataRegister {
   password: string;
   confirmPassword: string;
   nameEnterprise: string;
+  position: 'Cliente' | 'Contador';
 }
 
 export interface DataPerfil {

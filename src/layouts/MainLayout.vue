@@ -3,7 +3,7 @@ import FormPerfil from 'src/components/forms/FormPerfil.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import EmailInfo from 'src/components/info/EmailInfo.vue';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
@@ -13,7 +13,8 @@ defineOptions({
   name: 'MainLayout',
 });
 
-const { user, enterpriseCreated } = storeToRefs(useAuthStore());
+const { user, enterpriseCreated, enterprisePosition } =
+  storeToRefs(useAuthStore());
 
 const $q = useQuasar();
 const route = useRoute();
@@ -22,81 +23,14 @@ const showFormPerfil = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const showEmailInfo = ref<boolean>(false);
 
-const menuList = computed(() => [
+const menuList = ref<
   {
-    icon: 'rss_feed',
-    label: 'Feed',
-    separator: true,
-    name: 'admin-feed',
-  },
-  {
-    icon: 'space_dashboard',
-    label: 'Dashboard',
-    separator: true,
-    name: 'admin-dashboard',
-  },
-  {
-    icon: 'attach_money',
-    label: 'Movimentações',
-    separator: true,
-    name: 'admin-movement',
-  },
-  {
-    icon: 'calendar_month',
-    label: 'Agendamentos',
-    separator: true,
-    name: 'admin-scheduling',
-  },
-  {
-    icon: 'category',
-    label: 'Categorias',
-    separator: true,
-    name: 'admin-category',
-  },
-  {
-    icon: 'account_balance',
-    label: 'Contas',
-    separator: true,
-    name: 'admin-account',
-  },
-  // {
-  //   icon: 'warning',
-  //   label: 'Alertas',
-  //   separator: true,
-  //   name: 'admin-alert',
-  // },
-  {
-    icon: 'savings',
-    label: 'Contabilidade',
-    separator: true,
-    name: 'admin-financial-control',
-  },
-
-  {
-    icon: 'cases',
-    label: 'Contador',
-    separator: true,
-    name: 'admin-counter',
-  },
-  {
-    icon: 'person_search',
-    label: 'Solicitações',
-    separator: true,
-    name: 'admin-order',
-  },
-  {
-    icon: 'how_to_reg',
-    label: 'Vínculos',
-    separator: true,
-    name: 'admin-bond',
-  },
-  {
-    icon: 'help',
-    label: 'Ajuda',
-    separator: true,
-    name: 'admin-help',
-  },
-]);
+    icon: string;
+    label: string;
+    separator: boolean;
+    name: string;
+  }[]
+>([]);
 
 const isActive = (routeName: string) => route.name === routeName;
 const openFormPerfil = (): void => {
@@ -118,34 +52,116 @@ const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
 };
 const mountRoute = () => {
-  if (user.value?.position === 'admin') {
-    menuList.value.splice(6, 0, {
-      icon: 'person',
-      label: 'Usuários',
+  menuList.value = [];
+  menuList.value.push({
+    icon: 'rss_feed',
+    label: 'Feed',
+    separator: true,
+    name: 'admin-feed',
+  });
+
+  // {
+  //   icon: 'warning',
+  //   label: 'Alertas',
+  //   separator: true,
+  //   name: 'admin-alert',
+  // },
+
+  if (enterprisePosition.value === 'client') {
+    menuList.value.push({
+      icon: 'space_dashboard',
+      label: 'Dashboard',
       separator: true,
-      name: 'admin-users',
+      name: 'admin-dashboard',
     });
-    menuList.value.splice(6, 0, {
-      icon: 'group_work',
-      label: 'Departamentos',
+    menuList.value.push({
+      icon: 'attach_money',
+      label: 'Movimentações',
       separator: true,
-      name: 'admin-departments',
+      name: 'admin-movement',
     });
-    menuList.value.splice(8, 0, {
+    menuList.value.push({
+      icon: 'calendar_month',
+      label: 'Agendamentos',
+      separator: true,
+      name: 'admin-scheduling',
+    });
+    menuList.value.push({
+      icon: 'category',
+      label: 'Categorias',
+      separator: true,
+      name: 'admin-category',
+    });
+    menuList.value.push({
+      icon: 'account_balance',
+      label: 'Contas',
+      separator: true,
+      name: 'admin-account',
+    });
+    menuList.value.push({
+      icon: 'savings',
+      label: 'Contabilidade',
+      separator: true,
+      name: 'admin-financial-control',
+    });
+    menuList.value.push({
+      icon: 'cases',
+      label: 'Contador',
+      separator: true,
+      name: 'admin-counter',
+    });
+    menuList.value.push({
       icon: 'content_paste_search',
       label: 'Registros',
       separator: true,
       name: 'admin-records',
     });
   }
-  if (enterpriseCreated.value === null) {
-    menuList.value.splice(8, 0, {
+  if (enterprisePosition.value === 'counter') {
+    menuList.value.push({
+      icon: 'person_search',
+      label: 'Solicitações',
+      separator: true,
+      name: 'admin-order',
+    });
+    menuList.value.push({
+      icon: 'how_to_reg',
+      label: 'Vínculos',
+      separator: true,
+      name: 'admin-bond',
+    });
+  }
+  if (user.value?.position === 'admin') {
+    menuList.value.push({
+      icon: 'person',
+      label: 'Usuários',
+      separator: true,
+      name: 'admin-users',
+    });
+    menuList.value.push({
+      icon: 'group_work',
+      label: 'Departamentos',
+      separator: true,
+      name: 'admin-departments',
+    });
+  }
+  if (
+    enterpriseCreated.value === null &&
+    enterprisePosition.value === 'client'
+  ) {
+    menuList.value.push({
       icon: 'holiday_village',
       label: 'Filiais',
       separator: true,
       name: 'admin-office',
     });
   }
+  menuList.value.push({
+    icon: 'help',
+    label: 'Ajuda',
+    separator: true,
+    name: 'admin-help',
+  });
 };
 const changeShowMenuList = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;

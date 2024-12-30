@@ -19,7 +19,8 @@ export const useAuthStore = defineStore('auth', {
     loadingAuth: false as boolean,
     user: useStorage('themplus_user', {} as User | null),
     token: useStorage('themplus_token', null as string | null),
-    enterpriseCreated: null as string | null,
+    enterpriseCreated: useStorage('enterprise_created', null as string | null),
+    enterprisePosition: useStorage('enterprise_position', 'client' as string),
   }),
   actions: {
     setUser(user: User | null) {
@@ -57,6 +58,7 @@ export const useAuthStore = defineStore('auth', {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
           this.enterpriseCreated = response.data.enterprise_created;
+          this.enterprisePosition = response.data.enterprise_position;
           this.router.push({ name: 'admin-feed' });
         }
       } catch (error) {
@@ -117,7 +119,8 @@ export const useAuthStore = defineStore('auth', {
       name: string,
       email: string,
       password: string,
-      nameEnterprise: string
+      nameEnterprise: string,
+      position: string
     ) {
       this.setLoading(true);
       try {
@@ -126,7 +129,8 @@ export const useAuthStore = defineStore('auth', {
           name,
           email,
           password,
-          nameEnterprise
+          nameEnterprise,
+          position
         );
         if (response.status === 201) {
           this.setUser(response.data.user);

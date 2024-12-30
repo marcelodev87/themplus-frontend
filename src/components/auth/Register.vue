@@ -26,6 +26,7 @@ const dataRegister = reactive<DataRegister>({
   password: '',
   confirmPassword: '',
   nameEnterprise: '',
+  position: 'Cliente',
 });
 
 const clear = (): void => {
@@ -35,6 +36,7 @@ const clear = (): void => {
     nameEnterprise: '',
     password: '',
     confirmPassword: '',
+    position: 'Cliente',
   });
 };
 const changeRender = (render: RenderAuth): void => {
@@ -93,7 +95,8 @@ const register = async () => {
       dataRegister.name,
       dataRegister.email,
       dataRegister.password,
-      dataRegister.nameEnterprise
+      dataRegister.nameEnterprise,
+      dataRegister.position === 'Cliente' ? 'client' : 'counter'
     );
   } else {
     Notify.create({
@@ -117,6 +120,22 @@ onMounted(() => {
       <TitleAuth title="Faça seu cadastro" />
     </div>
     <div class="q-pb-sm q-px-md q-gutter-y-sm">
+      <q-select
+        v-model="dataRegister.position"
+        :options="['Cliente', 'Contador']"
+        label="Você é ... ?"
+        filled
+        dense
+        options-dense
+        map-options
+        bg-color="white"
+        label-color="black"
+        class="full-width"
+      >
+        <template v-slot:prepend>
+          <q-icon name="verified" color="black" size="20px" />
+        </template>
+      </q-select>
       <q-input
         v-model="dataRegister.name"
         bg-color="white"
