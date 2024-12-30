@@ -31,6 +31,7 @@ export interface Enterprise {
   email: string | null;
   phone: string | null;
   subscription_id?: string;
+  created_by: string | null;
 }
 
 export interface Office {

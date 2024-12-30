@@ -13,7 +13,7 @@ defineOptions({
   name: 'MainLayout',
 });
 
-const { user } = storeToRefs(useAuthStore());
+const { user, enterpriseCreated } = storeToRefs(useAuthStore());
 
 const $q = useQuasar();
 const route = useRoute();
@@ -71,12 +71,7 @@ const menuList = computed(() => [
     separator: true,
     name: 'admin-financial-control',
   },
-  {
-    icon: 'holiday_village',
-    label: 'Filiais',
-    separator: true,
-    name: 'admin-office',
-  },
+
   {
     icon: 'cases',
     label: 'Contador',
@@ -141,6 +136,14 @@ const mountRoute = () => {
       label: 'Registros',
       separator: true,
       name: 'admin-records',
+    });
+  }
+  if (enterpriseCreated.value === null) {
+    menuList.value.splice(8, 0, {
+      icon: 'holiday_village',
+      label: 'Filiais',
+      separator: true,
+      name: 'admin-office',
     });
   }
 };

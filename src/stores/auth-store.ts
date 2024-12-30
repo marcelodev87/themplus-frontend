@@ -19,6 +19,7 @@ export const useAuthStore = defineStore('auth', {
     loadingAuth: false as boolean,
     user: useStorage('themplus_user', {} as User | null),
     token: useStorage('themplus_token', null as string | null),
+    enterpriseCreated: null as string | null,
   }),
   actions: {
     setUser(user: User | null) {
@@ -55,6 +56,7 @@ export const useAuthStore = defineStore('auth', {
         if (response.status === 200) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
+          this.enterpriseCreated = response.data.enterprise_created;
           this.router.push({ name: 'admin-feed' });
         }
       } catch (error) {

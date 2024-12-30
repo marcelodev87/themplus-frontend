@@ -10,6 +10,7 @@ export const doLoginService = (
   status: number;
   data: {
     user: User;
+    enterprise_created: string | null;
     token: string;
   };
 }> => api.post('/login', { email, password });
