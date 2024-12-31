@@ -105,12 +105,6 @@ const mountRoute = () => {
       name: 'admin-financial-control',
     });
     menuList.value.push({
-      icon: 'cases',
-      label: 'Contador',
-      separator: true,
-      name: 'admin-counter',
-    });
-    menuList.value.push({
       icon: 'content_paste_search',
       label: 'Registros',
       separator: true,

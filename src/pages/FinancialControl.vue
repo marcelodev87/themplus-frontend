@@ -114,6 +114,28 @@ onMounted(async () => {
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Controle contábil" />
       </div>
+      <div
+        class="col-6 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
+        <q-btn
+          color="black"
+          icon-right="person_add"
+          label="Solicitações"
+          class="q-mr-sm"
+          unelevated
+          no-caps
+          flat
+        />
+        <q-btn
+          color="blue-8"
+          icon-right="visibility"
+          label="Dados do contador"
+          class="q-mr-sm"
+          unelevated
+          no-caps
+        />
+      </div>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">

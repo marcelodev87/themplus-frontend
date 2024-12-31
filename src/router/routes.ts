@@ -71,12 +71,6 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: isAdminGuard,
       },
       {
-        path: 'contador',
-        name: 'admin-counter',
-        component: () => import('src/pages/Counter.vue'),
-        beforeEnter: isAdminGuard,
-      },
-      {
         path: 'solicitações',
         name: 'admin-order',
         component: () => import('src/pages/Order.vue'),
