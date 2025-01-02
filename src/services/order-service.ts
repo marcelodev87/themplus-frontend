@@ -52,7 +52,7 @@ export const actionRequestEnterpriseService = (
     orders: Order[];
     message: string;
   };
-}> => api.put(`${baseUrl}`, { id, status });
+}> => api.post(`${baseUrl}/responseClient`, { id, status });
 
 export const deleteOrderService = (
   id: string
