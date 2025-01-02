@@ -1,5 +1,8 @@
 import { api } from 'boot/axios';
-import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
+import {
+  Enterprise,
+  ResultEnterprise,
+} from 'src/ts/interfaces/data/Enterprise';
 
 const baseUrl = 'enterprise';
 
@@ -21,6 +24,23 @@ export const getEnterpriseService = (): Promise<{
 //     message: string;
 //   };
 // }> => api.post(`${baseUrl}/`, { name, type });
+
+export const searchEnterpriseService = (
+  text: string
+): Promise<{
+  status: number;
+  data: {
+    enterprises: ResultEnterprise[];
+  };
+}> => api.get(`${baseUrl}/search/${text}`);
+export const sendRequestEnterpriseService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post(`${baseUrl}/sendRequest`, { id });
 
 export const updateEnterpriseService = (payload: {
   id: string;

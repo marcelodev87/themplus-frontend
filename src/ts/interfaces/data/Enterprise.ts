@@ -34,6 +34,14 @@ export interface Enterprise {
   created_by: string | null;
 }
 
+export interface ResultEnterprise {
+  id: string;
+  name: string;
+  email: string | null;
+  cnpj: string | null;
+  cpf: string | null;
+}
+
 export interface Office {
   id: string;
   name: string;

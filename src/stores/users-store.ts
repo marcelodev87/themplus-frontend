@@ -17,10 +17,24 @@ export const useUsersMembersStore = defineStore('members', {
     filledData: true as boolean,
     loadingUsersMembers: false as boolean,
     listUserMember: [] as User[],
+    resultSearchMember: [] as User[],
   }),
+  getters: {
+    resultUserSelect: (state) => {
+      return state.resultSearchMember.map((item) => {
+        return {
+          label: `${item.name} | ${item.email}`,
+          value: item.id,
+        };
+      });
+    },
+  },
   actions: {
     clearListUser() {
       this.listUserMember.splice(0, this.listUserMember.length);
+    },
+    clearResultSearchMember() {
+      this.resultSearchMember.splice(0, this.resultSearchMember.length);
     },
     setLoading(loading: boolean) {
       this.loadingUsersMembers = loading;

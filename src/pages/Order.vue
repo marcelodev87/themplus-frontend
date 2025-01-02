@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormAlert from 'src/components/forms/FormAlert.vue';
 import { storeToRefs } from 'pinia';
 import { useAlertStore } from 'src/stores/alert-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import FormRequestUser from 'src/components/forms/FormRequestUser.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
 
 defineOptions({
@@ -15,7 +15,7 @@ defineOptions({
 const { listAlert, loadingAlert, filledData } = storeToRefs(useAlertStore());
 const { getAlerts, deleteAlert } = useAlertStore();
 
-const showFormAlert = ref<boolean>(false);
+const showFormRequestUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterAlert = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
@@ -39,16 +39,16 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   filterAlert.value = '';
 };
-const openFormAlert = (): void => {
-  showFormAlert.value = true;
+const openFormRequestUser = (): void => {
+  showFormRequestUser.value = true;
 };
-const closeFormAlert = (): void => {
-  showFormAlert.value = false;
+const closeFormRequestUser = (): void => {
+  showFormRequestUser.value = false;
   clear();
 };
 const handleEdit = (alert: Alert) => {
   selectedDataEdit.value = alert;
-  openFormAlert();
+  openFormRequestUser();
 };
 const exclude = async (id: string) => {
   await deleteAlert(id);
@@ -84,17 +84,17 @@ onMounted(async () => {
       "
     >
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
-        <TitlePage title="Gerenciamento de alertas" />
+        <TitlePage title="Solicitações para usuários" />
       </div>
       <div
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          @click="openFormAlert"
+          @click="openFormRequestUser"
           color="blue-8"
-          icon-right="warning"
-          label="Alertas"
+          icon-right="person_add"
+          label="Solicitações"
           class="q-mr-sm"
           unelevated
           no-caps
@@ -112,12 +112,12 @@ onMounted(async () => {
           bordered
           dense
           row-key="name"
-          no-data-label="Nenhuma alerta para mostrar"
+          no-data-label="Nenhuma solicitação para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de alertas</span>
+            <span class="text-subtitle2">Lista de solicitações</span>
             <q-space />
             <q-input filled v-model="filterAlert" dense label="Pesquisar">
               <template v-slot:prepend>
@@ -152,10 +152,9 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
-        <FormAlert
-          :open="showFormAlert"
-          :data-edit="selectedDataEdit"
-          @update:open="closeFormAlert"
+        <FormRequestUser
+          :open="showFormRequestUser"
+          @update:open="closeFormRequestUser"
         />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
