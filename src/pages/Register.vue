@@ -106,6 +106,12 @@ const buildAction = (action: string): string => {
   if (action === 'delivered') {
     return 'Entrega';
   }
+  if (action === 'invite') {
+    return 'Solicitação';
+  }
+  if (action === 'unlink') {
+    return 'Desvínculo';
+  }
 
   return '';
 };
