@@ -33,6 +33,16 @@ export const searchEnterpriseService = (
     enterprises: ResultEnterprise[];
   };
 }> => api.get(`${baseUrl}/search/${text}`);
+
+export const showEnterpriseService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    counter: Enterprise;
+  };
+}> => api.get(`${baseUrl}/show/${id}`);
+
 export const sendRequestEnterpriseService = (
   id: string
 ): Promise<{
@@ -63,6 +73,13 @@ export const updateEnterpriseService = (payload: {
     message: string;
   };
 }> => api.put(`${baseUrl}/`, payload);
+
+export const unlinkCounterService = (): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.put(`${baseUrl}/unlink`);
 
 // export const deleteCategoryService = (
 //   id: string

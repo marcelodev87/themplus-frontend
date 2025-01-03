@@ -18,6 +18,7 @@ export const useOrderStore = defineStore('order', {
     loadingOrder: false as boolean,
     listOrderClient: [] as OrderClient[],
     listOrderCounter: [] as OrderCounter[],
+    hasCounter: null as string | null,
   }),
   actions: {
     clearListOrderClient() {
@@ -28,6 +29,9 @@ export const useOrderStore = defineStore('order', {
     },
     setLoading(loading: boolean) {
       this.loadingOrder = loading;
+    },
+    setHasCounter(counter: string | null) {
+      this.hasCounter = counter;
     },
     setFilledData(data: boolean) {
       this.filledData = data;
@@ -134,9 +138,13 @@ export const useOrderStore = defineStore('order', {
         if (response.status === 200) {
           this.clearListOrderClient();
           this.setListOrderClient(response.data.orders);
+          this.setHasCounter(response.data.counter);
+          this.createSuccess(response.data.message);
         }
+        return response;
       } catch (error) {
         this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

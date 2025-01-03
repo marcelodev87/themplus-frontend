@@ -5,17 +5,23 @@ import { useFinancialStore } from 'src/stores/financial-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import InviteCounter from 'src/components/shared/InviteCounter.vue';
+import { useOrderStore } from 'src/stores/order-store';
+import CounterInfo from 'src/components/info/CounterInfo.vue';
 
 defineOptions({
   name: 'FinancialControl',
 });
 
+const { hasCounter } = storeToRefs(useOrderStore());
 const { listDelivery, loadingDelivery, filledData } =
   storeToRefs(useFinancialStore());
 const { getDelivery, updateDelivery } = useFinancialStore();
 
 const filterDelivery = ref<string>('');
+const showCounterInfo = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
+const showInviteCounter = ref<boolean>(false);
 const columnsDelivery = reactive<QuasarTable[]>([
   {
     name: 'month_year',
@@ -54,6 +60,18 @@ const fetchDelivery = async () => {
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const openInviteCounter = (): void => {
+  showInviteCounter.value = true;
+};
+const closeInviteCounter = (): void => {
+  showInviteCounter.value = false;
+};
+const openCounterInfo = (): void => {
+  showCounterInfo.value = true;
+};
+const closeCounterInfo = (): void => {
+  showCounterInfo.value = false;
 };
 const convertMonthYear = (monthYear: string): string => {
   const months: { [key: string]: string } = {
@@ -119,6 +137,7 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
+          @click="openInviteCounter"
           color="black"
           icon-right="person_add"
           label="Solicitações"
@@ -128,6 +147,8 @@ onMounted(async () => {
           flat
         />
         <q-btn
+          v-show="hasCounter !== null"
+          @click="openCounterInfo"
           color="blue-8"
           icon-right="visibility"
           label="Dados do contador"
@@ -190,6 +211,11 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
+        <InviteCounter
+          :open="showInviteCounter"
+          @update:open="closeInviteCounter"
+        />
+        <CounterInfo :open="showCounterInfo" @update:open="closeCounterInfo" />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"

@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosError } from 'axios';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
   getDeliveriesService,
   updateDeliveryService,
 } from 'src/services/financial-service';
 import { Delivery } from 'src/ts/interfaces/data/Delivery';
+import { useOrderStore } from './order-store';
+
+const { hasCounter } = storeToRefs(useOrderStore());
 
 export const useFinancialStore = defineStore('financial', {
   state: () => ({
@@ -53,6 +56,7 @@ export const useFinancialStore = defineStore('financial', {
           this.clearListFinancial();
           this.setListDelivery(response.data.deliveries);
           this.setFilledData(response.data.filled_data);
+          hasCounter.value = response.data.counter;
         }
       } catch (error) {
         this.createError(error);

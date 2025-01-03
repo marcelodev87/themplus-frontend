@@ -18,7 +18,7 @@ export interface OrderClient {
   enterprise_id: string;
   enterprise_counter_id: string;
   description: string | null;
-  enterprise: {
+  counter: {
     cnpj: string | null;
     cpf: string | null;
     email: string;

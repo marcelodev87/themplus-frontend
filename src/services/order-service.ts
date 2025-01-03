@@ -50,6 +50,7 @@ export const actionRequestEnterpriseService = (
   status: number;
   data: {
     orders: OrderClient[];
+    counter: string | null;
     message: string;
   };
 }> => api.post(`${baseUrl}/responseClient`, { id, status });

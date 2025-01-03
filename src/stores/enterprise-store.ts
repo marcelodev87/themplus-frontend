@@ -1,19 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosError } from 'axios';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
   getEnterpriseService,
   searchEnterpriseService,
+  showEnterpriseService,
+  unlinkCounterService,
   updateEnterpriseService,
 } from 'src/services/enterprise-service';
 import { Enterprise, ResultEnterprise } from '../ts/interfaces/data/Enterprise';
+import { useOrderStore } from './order-store';
+
+const { hasCounter } = storeToRefs(useOrderStore());
 
 export const useEnterpriseStore = defineStore('enterprise', {
   state: () => ({
     loadingEnterprise: false as boolean,
     enterprise: null as Enterprise | null,
     listSearchEnterprise: [] as ResultEnterprise[],
+    counterSearch: null as Enterprise | null,
   }),
   getters: {
     resultEnterpriseSelect: (state) => {
@@ -31,6 +37,9 @@ export const useEnterpriseStore = defineStore('enterprise', {
     },
     setEnterprise(enterprise: Enterprise) {
       this.enterprise = enterprise;
+    },
+    setCounterSearch(enterprise: Enterprise | null) {
+      this.counterSearch = enterprise;
     },
     createError(error: any) {
       let message = 'Error';
@@ -71,6 +80,20 @@ export const useEnterpriseStore = defineStore('enterprise', {
         this.setLoading(false);
       }
     },
+    async showEnterprise(id: string) {
+      this.setLoading(true);
+      try {
+        this.setCounterSearch(null);
+        const response = await showEnterpriseService(id);
+        if (response.status === 200) {
+          this.setCounterSearch(response.data.counter);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async searchEnterprise(text: string) {
       this.setLoading(true);
       try {
@@ -80,7 +103,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
           this.setResultSearchEnterprise(response.data.enterprises);
           if (this.listSearchEnterprise.length === 0) {
             Notify.create({
-              message: 'Nenhum usuário foi encontrado',
+              message: 'Nenhuma organização foi encontrada',
               type: 'warning',
             });
           }
@@ -109,6 +132,23 @@ export const useEnterpriseStore = defineStore('enterprise', {
     //     this.setLoading(false);
     //   }
     // },
+    async unlinkCounter() {
+      this.setLoading(true);
+      try {
+        const response = await unlinkCounterService();
+        if (response.status === 200) {
+          hasCounter.value = null;
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async updateEnterprise(payload: {
       id: string;
       name: string;

@@ -9,6 +9,7 @@ defineOptions({
 const props = defineProps<{
   open: boolean;
   title: string;
+  labelAction: string;
   message: string;
 }>();
 const emit = defineEmits<{
@@ -53,7 +54,7 @@ const close = () => {
           <q-btn
             @click="confirm"
             color="red"
-            label="Excluir"
+            :label="props.labelAction"
             size="md"
             unelevated
             no-caps
