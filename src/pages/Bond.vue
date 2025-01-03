@@ -1,29 +1,59 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormAlert from 'src/components/forms/FormAlert.vue';
 import { storeToRefs } from 'pinia';
-import { useAlertStore } from 'src/stores/alert-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
+import { useOrderStore } from 'src/stores/order-store';
+import { OrderCounter } from 'src/ts/interfaces/data/Order';
 
 defineOptions({
   name: 'Bond',
 });
 
-const { listAlert, loadingAlert, filledData } = storeToRefs(useAlertStore());
-const { getAlerts, deleteAlert } = useAlertStore();
+const { loadingOrder, listBond, filledData } = storeToRefs(useOrderStore());
+const { getBonds } = useOrderStore();
 
 const showFormAlert = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
-const filterAlert = ref<string>('');
+const filterOrder = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
-const columnsAlert = reactive<QuasarTable[]>([
+const columnsBond = reactive<QuasarTable[]>([
   {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
+    name: 'name',
+    label: 'Nome',
+    field: 'name',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'email',
+    label: 'E-mail',
+    field: 'email',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'cnpj',
+    label: 'CNPJ',
+    field: 'cnpj',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'cpf',
+    label: 'CPF',
+    field: 'cpf',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'phone',
+    label: 'Telefone',
+    field: 'phone',
     align: 'left',
     sortable: true,
   },
@@ -37,7 +67,7 @@ const columnsAlert = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   selectedDataEdit.value = null;
-  filterAlert.value = '';
+  filterOrder.value = '';
 };
 const openFormAlert = (): void => {
   showFormAlert.value = true;
@@ -51,13 +81,34 @@ const handleEdit = (alert: Alert) => {
   openFormAlert();
 };
 const exclude = async (id: string) => {
-  await deleteAlert(id);
+  console.log('escluir vinculo', id);
 };
-const fetchAlerts = async () => {
-  await getAlerts();
+const fetchBonds = async () => {
+  await getBonds();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const customFilterOrder = (
+  rows: readonly OrderCounter[],
+  terms: string,
+  cols: readonly OrderCounter[],
+  getCellValue: (row: OrderCounter, col: QuasarTable) => unknown
+): readonly OrderCounter[] => {
+  const searchTerm = terms.toLowerCase();
+
+  return rows.filter((item) => {
+    return (
+      (item.enterprise.name &&
+        item.enterprise.name.toLowerCase().includes(searchTerm)) ||
+      (item.enterprise.email &&
+        item.enterprise.email.toLowerCase().includes(searchTerm)) ||
+      (item.enterprise.cpf &&
+        item.enterprise.cpf.toLowerCase().includes(searchTerm)) ||
+      (item.enterprise.cnpj &&
+        item.enterprise.cnpj.toLowerCase().includes(searchTerm))
+    );
+  });
 };
 
 watch(
@@ -71,7 +122,7 @@ watch(
 );
 
 onMounted(async () => {
-  await fetchAlerts();
+  await fetchBonds();
 });
 </script>
 <template>
@@ -84,7 +135,7 @@ onMounted(async () => {
       "
     >
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
-        <TitlePage title="Gerenciamento de alertas" />
+        <TitlePage title="Gerenciamento de vínculos" />
       </div>
       <div
         class="col-6 row items-center justify-end q-gutter-x-sm"
@@ -104,22 +155,22 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          :rows="loadingAlert ? [] : listAlert"
-          :columns="columnsAlert"
-          :filter="filterAlert"
-          :loading="loadingAlert"
+          :rows="loadingOrder ? [] : listBond"
+          :columns="columnsBond"
+          :filter="filterOrder"
+          :loading="loadingOrder"
           flat
           bordered
           dense
           row-key="name"
-          no-data-label="Nenhuma alerta para mostrar"
+          no-data-label="Nenhuma vin para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de alertas</span>
+            <span class="text-subtitle2">Lista de vínculos</span>
             <q-space />
-            <q-input filled v-model="filterAlert" dense label="Pesquisar">
+            <q-input filled v-model="filterOrder" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
@@ -127,8 +178,20 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="email" :props="props" class="text-left">
+                {{ props.row.email }}
+              </q-td>
+              <q-td key="cnpj" :props="props" class="text-left">
+                {{ props.row.cnpj }}
+              </q-td>
+              <q-td key="cpf" :props="props" class="text-left">
+                {{ props.row.cpf }}
+              </q-td>
+              <q-td key="phone" :props="props" class="text-left">
+                {{ props.row.phone }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

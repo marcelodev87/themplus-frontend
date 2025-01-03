@@ -5,11 +5,13 @@ import { Notify } from 'quasar';
 import {
   actionRequestEnterpriseService,
   deleteOrderService,
+  getBondsService,
   getOrdersViewClientService,
   getOrdersViewCounterService,
   sendRequestEnterpriseService,
   updateRequestEnterpriseService,
 } from 'src/services/order-service';
+import { Bond } from 'src/ts/interfaces/data/Bond';
 import { OrderClient, OrderCounter } from 'src/ts/interfaces/data/Order';
 
 export const useOrderStore = defineStore('order', {
@@ -18,6 +20,7 @@ export const useOrderStore = defineStore('order', {
     loadingOrder: false as boolean,
     listOrderClient: [] as OrderClient[],
     listOrderCounter: [] as OrderCounter[],
+    listBond: [] as Bond[],
     hasCounter: null as string | null,
   }),
   actions: {
@@ -26,6 +29,9 @@ export const useOrderStore = defineStore('order', {
     },
     clearListOrderCounter() {
       this.listOrderCounter.splice(0, this.listOrderCounter.length);
+    },
+    clearListBond() {
+      this.listBond.splice(0, this.listBond.length);
     },
     setLoading(loading: boolean) {
       this.loadingOrder = loading;
@@ -41,6 +47,9 @@ export const useOrderStore = defineStore('order', {
     },
     setListOrderCounter(orders: OrderCounter[]) {
       orders.map((item) => this.listOrderCounter.push(item));
+    },
+    setListBond(bonds: Bond[]) {
+      bonds.map((item) => this.listBond.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -82,6 +91,21 @@ export const useOrderStore = defineStore('order', {
         if (response.status === 200) {
           this.clearListOrderCounter();
           this.setListOrderCounter(response.data.orders);
+          this.setFilledData(response.data.filled_data);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getBonds() {
+      try {
+        this.setLoading(true);
+        const response = await getBondsService();
+        if (response.status === 200) {
+          this.clearListBond();
+          this.setListBond(response.data.bonds);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {

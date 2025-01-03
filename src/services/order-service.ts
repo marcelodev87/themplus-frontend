@@ -1,4 +1,5 @@
 import { api } from 'boot/axios';
+import { Bond } from 'src/ts/interfaces/data/Bond';
 import { OrderClient, OrderCounter } from 'src/ts/interfaces/data/Order';
 
 const baseUrl = 'order';
@@ -20,6 +21,15 @@ export const getOrdersViewCounterService = (): Promise<{
     message: string;
   };
 }> => api.get(`${baseUrl}/counter`);
+
+export const getBondsService = (): Promise<{
+  status: number;
+  data: {
+    bonds: Bond[];
+    filled_data: boolean;
+    message: string;
+  };
+}> => api.get(`${baseUrl}/bonds`);
 
 export const sendRequestEnterpriseService = (
   enterpriseId: string,
