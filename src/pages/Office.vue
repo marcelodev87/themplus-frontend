@@ -37,7 +37,7 @@ const columnsAlert = reactive<QuasarTable[]>([
   },
   {
     name: 'counter',
-    label: 'Contador',
+    label: 'Empresa contabilidade',
     field: 'counter',
     align: 'left',
   },
@@ -152,7 +152,7 @@ onMounted(async () => {
                 {{ props.row.users.length }}
               </q-td>
               <q-td key="counter" :props="props" class="text-left">
-                {{ props.row.counter ?? 'Sem contador vinculado' }}
+                {{ props.row.counter ?? 'Sem organização vinculada' }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
