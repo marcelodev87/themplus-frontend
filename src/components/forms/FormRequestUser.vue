@@ -4,6 +4,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { Notify } from 'quasar';
 
 defineOptions({
   name: 'FormRequestUser',
@@ -46,7 +47,14 @@ const clear = (): void => {
   clearResultSearchEnterprise();
 };
 const filterEnterprise = async () => {
-  await searchEnterprise(dataRequest.search);
+  if (dataRequest.search.trim() !== '') {
+    await searchEnterprise(dataRequest.search);
+  } else {
+    Notify.create({
+      message: 'Necessário ter algum valor diferente de vazio',
+      type: 'negative',
+    });
+  }
 };
 const sendRequest = () => {
   console.log('teste');
