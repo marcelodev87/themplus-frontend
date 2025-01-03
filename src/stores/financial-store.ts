@@ -8,8 +8,10 @@ import {
 } from 'src/services/financial-service';
 import { Delivery } from 'src/ts/interfaces/data/Delivery';
 import { useOrderStore } from './order-store';
+import { useEnterpriseStore } from './enterprise-store';
 
 const { hasCounter } = storeToRefs(useOrderStore());
+const { enterpriseHeadquarters } = storeToRefs(useEnterpriseStore());
 
 export const useFinancialStore = defineStore('financial', {
   state: () => ({
@@ -57,6 +59,7 @@ export const useFinancialStore = defineStore('financial', {
           this.setListDelivery(response.data.deliveries);
           this.setFilledData(response.data.filled_data);
           hasCounter.value = response.data.counter;
+          enterpriseHeadquarters.value = response.data.is_headquarters;
         }
       } catch (error) {
         this.createError(error);

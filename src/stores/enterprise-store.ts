@@ -20,6 +20,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
     enterprise: null as Enterprise | null,
     listSearchEnterprise: [] as ResultEnterprise[],
     counterSearch: null as Enterprise | null,
+    enterpriseHeadquarters: false as boolean,
   }),
   getters: {
     resultEnterpriseSelect: (state) => {

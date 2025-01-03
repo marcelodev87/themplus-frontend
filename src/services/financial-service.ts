@@ -9,6 +9,7 @@ export const getDeliveriesService = (): Promise<{
     deliveries: Delivery[];
     filled_data: boolean;
     counter: string | null;
+    is_headquarters: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

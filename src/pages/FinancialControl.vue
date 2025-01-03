@@ -8,11 +8,13 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import InviteCounter from 'src/components/shared/InviteCounter.vue';
 import { useOrderStore } from 'src/stores/order-store';
 import CounterInfo from 'src/components/info/CounterInfo.vue';
+import { useEnterpriseStore } from 'src/stores/enterprise-store';
 
 defineOptions({
   name: 'FinancialControl',
 });
 
+const { enterpriseHeadquarters } = storeToRefs(useEnterpriseStore());
 const { hasCounter } = storeToRefs(useOrderStore());
 const { listDelivery, loadingDelivery, filledData } =
   storeToRefs(useFinancialStore());
@@ -137,6 +139,7 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
+          v-show="enterpriseHeadquarters && !loadingDelivery"
           @click="openInviteCounter"
           color="black"
           icon-right="person_add"

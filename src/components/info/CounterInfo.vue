@@ -18,7 +18,8 @@ const emit = defineEmits<{
 }>();
 
 const { hasCounter } = storeToRefs(useOrderStore());
-const { loadingEnterprise, counterSearch } = storeToRefs(useEnterpriseStore());
+const { loadingEnterprise, counterSearch, enterpriseHeadquarters } =
+  storeToRefs(useEnterpriseStore());
 const { showEnterprise, unlinkCounter } = useEnterpriseStore();
 
 const open = computed({
@@ -117,6 +118,7 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            v-show="enterpriseHeadquarters"
             @click="unlink"
             color="red"
             label="Desvincular"
