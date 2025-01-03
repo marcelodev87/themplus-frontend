@@ -61,7 +61,7 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-banner dense inline-actions class="text-black bg-grey-4" rounded>
-          Sua organização estpa vinculada a uma outra organização de
+          Sua organização está vinculada a uma outra organização de
           contabilidade nomeada como:
           <span class="text-bold">{{
             counterSearch?.name ?? 'Sem nome cadastrado'
@@ -84,7 +84,7 @@ watch(open, async () => {
           >
           O endereço do mesmo, consta que se localiza no estado
           <span class="text-bold">{{ counterSearch?.state }}</span
-          >, cidade <span class="text-bold">{{ counterSearch?.cnpj }}</span
+          >, cidade <span class="text-bold">{{ counterSearch?.city }}</span
           >, bairro
           <span class="text-bold">{{ counterSearch?.neighborhood }}</span
           >, endereço

@@ -135,6 +135,8 @@ export const useAuthStore = defineStore('auth', {
         if (response.status === 201) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
+          this.enterpriseCreated = response.data.enterprise_created;
+          this.enterprisePosition = response.data.enterprise_position;
 
           Notify.create({
             message: response.data.message,

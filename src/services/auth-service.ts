@@ -54,6 +54,8 @@ export const doRegisterService = (
   data: {
     user: User;
     token: string;
+    enterprise_created: string | null;
+    enterprise_position: string;
     message: string;
   };
 }> =>
