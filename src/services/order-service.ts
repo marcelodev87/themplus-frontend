@@ -1,12 +1,12 @@
 import { api } from 'boot/axios';
-import { Order } from 'src/ts/interfaces/data/Order';
+import { OrderClient, OrderCounter } from 'src/ts/interfaces/data/Order';
 
 const baseUrl = 'order';
 
 export const getOrdersViewClientService = (): Promise<{
   status: number;
   data: {
-    orders: Order[];
+    orders: OrderClient[];
     filled_data: boolean;
     message: string;
   };
@@ -15,7 +15,7 @@ export const getOrdersViewClientService = (): Promise<{
 export const getOrdersViewCounterService = (): Promise<{
   status: number;
   data: {
-    orders: Order[];
+    orders: OrderCounter[];
     filled_data: boolean;
     message: string;
   };
@@ -27,7 +27,7 @@ export const sendRequestEnterpriseService = (
 ): Promise<{
   status: number;
   data: {
-    orders: Order[];
+    orders: OrderCounter[];
     message: string;
   };
 }> => api.post(`${baseUrl}/sendRequest`, { enterpriseId, description });
@@ -38,7 +38,7 @@ export const updateRequestEnterpriseService = (
 ): Promise<{
   status: number;
   data: {
-    orders: Order[];
+    orders: OrderCounter[];
     message: string;
   };
 }> => api.put(`${baseUrl}`, { id, description });
@@ -49,7 +49,7 @@ export const actionRequestEnterpriseService = (
 ): Promise<{
   status: number;
   data: {
-    orders: Order[];
+    orders: OrderClient[];
     message: string;
   };
 }> => api.post(`${baseUrl}/responseClient`, { id, status });

@@ -1,31 +1,60 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { useAlertStore } from 'src/stores/alert-store';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import FormRequestUser from 'src/components/forms/FormRequestUser.vue';
-import { Alert } from 'src/ts/interfaces/data/Alert';
+import { useOrderStore } from 'src/stores/order-store';
+import { OrderCounter } from 'src/ts/interfaces/data/Order';
 
 defineOptions({
   name: 'Order',
 });
 
-const { listAlert, loadingAlert, filledData } = storeToRefs(useAlertStore());
-const { getAlerts, deleteAlert } = useAlertStore();
+const { loadingOrder, filledData, listOrderCounter } =
+  storeToRefs(useOrderStore());
+const { getOrdersViewCounter, deleteOrder } = useOrderStore();
 
+const filterOrder = ref<string>('');
 const showFormRequestUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
-const filterAlert = ref<string>('');
-const selectedDataEdit = ref<Alert | null>(null);
-const columnsAlert = reactive<QuasarTable[]>([
+const selectedDataEdit = ref<OrderCounter | null>(null);
+const columnsOrder = reactive<QuasarTable[]>([
   {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
+    name: 'name',
+    label: 'Organização',
+    field: 'enterprise.name',
     align: 'left',
     sortable: true,
+  },
+  {
+    name: 'email',
+    label: 'E-mail',
+    field: 'enterprise.email',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'cnpj',
+    label: 'CNPJ',
+    field: 'enterprise.cnpj',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'cpf',
+    label: 'CPF',
+    field: 'enterprise.cpf',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'created',
+    label: 'Data de solicitação',
+    field: 'created_at',
+    align: 'left',
   },
   {
     name: 'action',
@@ -37,7 +66,7 @@ const columnsAlert = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   selectedDataEdit.value = null;
-  filterAlert.value = '';
+  filterOrder.value = '';
 };
 const openFormRequestUser = (): void => {
   showFormRequestUser.value = true;
@@ -46,18 +75,53 @@ const closeFormRequestUser = (): void => {
   showFormRequestUser.value = false;
   clear();
 };
-const handleEdit = (alert: Alert) => {
-  selectedDataEdit.value = alert;
+const handleEdit = (order: OrderCounter) => {
+  selectedDataEdit.value = order;
   openFormRequestUser();
 };
 const exclude = async (id: string) => {
-  await deleteAlert(id);
+  await deleteOrder(id);
 };
-const fetchAlerts = async () => {
-  await getAlerts();
+const fetchOrders = async () => {
+  await getOrdersViewCounter();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+
+  return new Intl.DateTimeFormat('pt-BR', options).format(date);
+};
+const customFilterOrder = (
+  rows: readonly OrderCounter[],
+  terms: string,
+  cols: readonly OrderCounter[],
+  getCellValue: (row: OrderCounter, col: QuasarTable) => unknown
+): readonly OrderCounter[] => {
+  const searchTerm = terms.toLowerCase();
+
+  return rows.filter((item) => {
+    return (
+      (item.enterprise.name &&
+        item.enterprise.name.toLowerCase().includes(searchTerm)) ||
+      (item.enterprise.email &&
+        item.enterprise.email.toLowerCase().includes(searchTerm)) ||
+      (item.enterprise.cpf &&
+        item.enterprise.cpf.toLowerCase().includes(searchTerm)) ||
+      (item.enterprise.cnpj &&
+        item.enterprise.cnpj.toLowerCase().includes(searchTerm))
+    );
+  });
 };
 
 watch(
@@ -71,7 +135,8 @@ watch(
 );
 
 onMounted(async () => {
-  await fetchAlerts();
+  clear();
+  await fetchOrders();
 });
 </script>
 <template>
@@ -104,10 +169,11 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          :rows="loadingAlert ? [] : listAlert"
-          :columns="columnsAlert"
-          :filter="filterAlert"
-          :loading="loadingAlert"
+          :rows="loadingOrder ? [] : listOrderCounter"
+          :columns="columnsOrder"
+          :filter="filterOrder"
+          :filter-method="customFilterOrder"
+          :loading="loadingOrder"
           flat
           bordered
           dense
@@ -119,7 +185,7 @@ onMounted(async () => {
           <template v-slot:top>
             <span class="text-subtitle2">Lista de solicitações</span>
             <q-space />
-            <q-input filled v-model="filterAlert" dense label="Pesquisar">
+            <q-input filled v-model="filterOrder" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
@@ -127,6 +193,21 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.enterprise.name }}
+              </q-td>
+              <q-td key="email" :props="props" class="text-left">
+                {{ props.row.enterprise.email }}
+              </q-td>
+              <q-td key="cnpj" :props="props" class="text-left">
+                {{ props.row.enterprise.cnpj }}
+              </q-td>
+              <q-td key="cpf" :props="props" class="text-left">
+                {{ props.row.enterprise.cpf }}
+              </q-td>
+              <q-td key="created" :props="props" class="text-left">
+                {{ formatDate(props.row.created_at) }}
+              </q-td>
               <q-td key="description" :props="props" class="text-left">
                 {{ props.row.description }}
               </q-td>
@@ -154,6 +235,7 @@ onMounted(async () => {
         </q-table>
         <FormRequestUser
           :open="showFormRequestUser"
+          :data-edit="selectedDataEdit"
           @update:open="closeFormRequestUser"
         />
         <AlertDataEnterprise

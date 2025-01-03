@@ -10,17 +10,21 @@ import {
   sendRequestEnterpriseService,
   updateRequestEnterpriseService,
 } from 'src/services/order-service';
-import { Order } from 'src/ts/interfaces/data/Order';
+import { OrderClient, OrderCounter } from 'src/ts/interfaces/data/Order';
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
     filledData: true as boolean,
     loadingOrder: false as boolean,
-    listOrder: [] as Order[],
+    listOrderClient: [] as OrderClient[],
+    listOrderCounter: [] as OrderCounter[],
   }),
   actions: {
-    clearListOrder() {
-      this.listOrder.splice(0, this.listOrder.length);
+    clearListOrderClient() {
+      this.listOrderClient.splice(0, this.listOrderClient.length);
+    },
+    clearListOrderCounter() {
+      this.listOrderCounter.splice(0, this.listOrderCounter.length);
     },
     setLoading(loading: boolean) {
       this.loadingOrder = loading;
@@ -28,8 +32,11 @@ export const useOrderStore = defineStore('order', {
     setFilledData(data: boolean) {
       this.filledData = data;
     },
-    setListOrder(orders: Order[]) {
-      orders.map((item) => this.listOrder.push(item));
+    setListOrderClient(orders: OrderClient[]) {
+      orders.map((item) => this.listOrderClient.push(item));
+    },
+    setListOrderCounter(orders: OrderCounter[]) {
+      orders.map((item) => this.listOrderCounter.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -54,8 +61,8 @@ export const useOrderStore = defineStore('order', {
         this.setLoading(true);
         const response = await getOrdersViewClientService();
         if (response.status === 200) {
-          this.clearListOrder();
-          this.setListOrder(response.data.orders);
+          this.clearListOrderClient();
+          this.setListOrderClient(response.data.orders);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
@@ -69,8 +76,8 @@ export const useOrderStore = defineStore('order', {
         this.setLoading(true);
         const response = await getOrdersViewCounterService();
         if (response.status === 200) {
-          this.clearListOrder();
-          this.setListOrder(response.data.orders);
+          this.clearListOrderCounter();
+          this.setListOrderCounter(response.data.orders);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
@@ -89,12 +96,16 @@ export const useOrderStore = defineStore('order', {
           enterpriseId,
           description
         );
-        if (response.status === 200) {
-          this.clearListOrder();
-          this.setListOrder(response.data.orders);
+        if (response.status === 201) {
+          this.clearListOrderCounter();
+          this.setListOrderCounter(response.data.orders);
+          this.createSuccess(response.data.message);
         }
+
+        return response;
       } catch (error) {
         this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }
@@ -104,11 +115,14 @@ export const useOrderStore = defineStore('order', {
         this.setLoading(true);
         const response = await updateRequestEnterpriseService(id, description);
         if (response.status === 200) {
-          this.clearListOrder();
-          this.setListOrder(response.data.orders);
+          this.clearListOrderCounter();
+          this.setListOrderCounter(response.data.orders);
+          this.createSuccess(response.data.message);
         }
+        return response;
       } catch (error) {
         this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }
@@ -118,8 +132,8 @@ export const useOrderStore = defineStore('order', {
         this.setLoading(true);
         const response = await actionRequestEnterpriseService(id, status);
         if (response.status === 200) {
-          this.clearListOrder();
-          this.setListOrder(response.data.orders);
+          this.clearListOrderClient();
+          this.setListOrderClient(response.data.orders);
         }
       } catch (error) {
         this.createError(error);
@@ -132,7 +146,9 @@ export const useOrderStore = defineStore('order', {
       try {
         const response = await deleteOrderService(orderId);
         if (response.status === 200) {
-          this.listOrder = this.listOrder.filter((item) => item.id !== orderId);
+          this.listOrderCounter = this.listOrderCounter.filter(
+            (item) => item.id !== orderId
+          );
           this.createSuccess(response.data.message);
         }
       } catch (error) {
