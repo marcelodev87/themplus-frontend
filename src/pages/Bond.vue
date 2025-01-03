@@ -58,6 +58,13 @@ const columnsBond = reactive<QuasarTable[]>([
     sortable: true,
   },
   {
+    name: 'delivery',
+    label: 'Entregas não analisadas',
+    field: 'delivery',
+    align: 'left',
+    sortable: true,
+  },
+  {
     name: 'action',
     label: 'Ação',
     field: 'action',
@@ -134,22 +141,8 @@ onMounted(async () => {
           : 'column justify-between no-wrap bg-grey-1'
       "
     >
-      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
+      <div class="col-11">
         <TitlePage title="Gerenciamento de vínculos" />
-      </div>
-      <div
-        class="col-6 row items-center justify-end q-gutter-x-sm"
-        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
-      >
-        <q-btn
-          @click="openFormAlert"
-          color="blue-8"
-          icon-right="warning"
-          label="Alertas"
-          class="q-mr-sm"
-          unelevated
-          no-caps
-        />
       </div>
     </header>
     <q-scroll-area class="main-scroll">
@@ -193,6 +186,9 @@ onMounted(async () => {
               <q-td key="phone" :props="props" class="text-left">
                 {{ props.row.phone }}
               </q-td>
+              <q-td key="delivery" :props="props" class="text-left">
+                <q-badge rounded color="green" label="0" />
+              </q-td>
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
@@ -200,9 +196,11 @@ onMounted(async () => {
                   flat
                   round
                   color="black"
-                  icon="edit"
-                  :disabled="false"
-                />
+                  icon="visibility"
+                >
+                  <q-tooltip> Analisar </q-tooltip>
+                </q-btn>
+
                 <q-btn
                   @click="exclude(props.row.id)"
                   size="sm"

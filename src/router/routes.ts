@@ -74,7 +74,6 @@ const routes: RouteRecordRaw[] = [
         path: 'solicitacoes',
         name: 'admin-order',
         component: () => import('src/pages/Order.vue'),
-        beforeEnter: isAdminGuard,
       },
       {
         path: 'vinculos',
