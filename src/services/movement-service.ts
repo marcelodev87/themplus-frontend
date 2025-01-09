@@ -31,6 +31,7 @@ export const getMovementsService = (
     movements: Movement[];
     months_years: string[];
     filled_data: boolean;
+    delivered: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}/${date}`);
@@ -44,6 +45,7 @@ export const getMovementsWithParamsService = (
   data: {
     movements: Movement[];
     months_years: string[];
+    delivered: boolean;
     message: string;
   };
 }> => api.get(`${baseUrl}/filter/${date}?entry=${entry}&out=${out}`);
@@ -57,34 +59,6 @@ export const getMovementInformationsService = (
     accounts: AccountInformation[];
   };
 }> => api.get(`${baseUrl}/informations/${type ?? 'all'}`);
-
-// export const createMovementService = (
-//   type: string,
-//   value: string,
-//   date: string,
-//   description: string | null,
-//   file: File | null,
-//   category: string,
-//   account: string,
-//   programmed: number
-// ): Promise<{
-//   status: number;
-//   data: {
-//     movements: Movement[];
-//     months_years: string[];
-//     message: string;
-//   };
-// }> =>
-//   api.post(`${baseUrl}/`, {
-//     type,
-//     value,
-//     date,
-//     description,
-//     file,
-//     category,
-//     account,
-//     programmed,
-//   });
 
 export const createMovementService = (
   type: string,
@@ -100,6 +74,7 @@ export const createMovementService = (
   data: {
     movements: Movement[];
     months_years: string[];
+    delivered: boolean;
     message: string;
   };
 }> => {
@@ -131,6 +106,7 @@ export const insertMovementService = (
   data: {
     movements: Movement[];
     months_years: string[];
+    delivered: boolean;
     message: string;
   };
 }> => api.post(`${baseUrl}/insert`, { movements });
@@ -265,6 +241,7 @@ export const updateMovementService = (
   data: {
     movements: Movement[];
     months_years: string[];
+    delivered: boolean;
     message: string;
   };
 }> => {

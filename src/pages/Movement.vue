@@ -24,7 +24,7 @@ const {
   deleteMovement,
   downloadFile,
 } = useMovementStore();
-const { loadingMovement, listMovement, filledData, listMonthYear } =
+const { loadingMovement, listMovement, filledData, listMonthYear, delivered } =
   storeToRefs(useMovementStore());
 
 const showConfirmAction = ref<boolean>(false);
@@ -450,6 +450,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  v-show="!delivered"
                   @click="handleEdit(props.row)"
                   size="sm"
                   flat
@@ -459,6 +460,7 @@ onMounted(async () => {
                   :disabled="false"
                 />
                 <q-btn
+                  v-show="!delivered"
                   @click="saveIdExclude(props.row.id)"
                   size="sm"
                   flat

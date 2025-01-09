@@ -30,21 +30,18 @@ const columnsDelivery = reactive<QuasarTable[]>([
     label: 'Mês / Ano',
     field: 'month_year',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'status',
     label: 'Status',
     field: 'status',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'date_delivery',
     label: 'Data de entrega',
     field: 'date_delivery',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'action',

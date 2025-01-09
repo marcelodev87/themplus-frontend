@@ -30,6 +30,7 @@ export const useMovementStore = defineStore('movement', {
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
     listCategoryAll: [] as CategoryInformation[],
+    delivered: false as boolean,
   }),
   actions: {
     clearListMonthYear() {
@@ -63,6 +64,9 @@ export const useMovementStore = defineStore('movement', {
     },
     setFilledData(data: boolean) {
       this.filledData = data;
+    },
+    setDelivered(data: boolean) {
+      this.delivered = data;
     },
     setListMovement(movements: Movement[]) {
       this.listMovement = movements.sort((a, b) => {
@@ -117,6 +121,7 @@ export const useMovementStore = defineStore('movement', {
           this.setListMovement(response.data.movements);
           this.setListMonthYear(response.data.months_years);
           this.setFilledData(response.data.filled_data);
+          this.setDelivered(response.data.delivered);
         }
       } catch (error) {
         this.createError(error);
@@ -132,6 +137,7 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.setDelivered(response.data.delivered);
         }
       } catch (error) {
         this.createError(error);
@@ -213,6 +219,7 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.setDelivered(response.data.delivered);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
@@ -229,6 +236,7 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.setDelivered(response.data.delivered);
           this.createSuccess(response.data.message);
         }
 
@@ -266,6 +274,7 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.setDelivered(response.data.delivered);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

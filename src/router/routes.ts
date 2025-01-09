@@ -89,6 +89,7 @@ const routes: RouteRecordRaw[] = [
         path: 'contabilidade',
         name: 'admin-financial-control',
         component: () => import('src/pages/FinancialControl.vue'),
+        beforeEnter: isAdminGuard,
       },
 
       {
