@@ -22,6 +22,7 @@ const emit = defineEmits<{
 const { setToken, setUser } = useAuthStore();
 const { updateEnterprise, getEnterprise } = useEnterpriseStore();
 const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
+const { enterprisePosition } = storeToRefs(useAuthStore());
 
 const router = useRouter();
 const step = ref<number>(1);
@@ -273,14 +274,25 @@ watch(step, () => {
         icon="favorite"
         :done="step > 1"
       >
-        <span class="text-bold">Bem-vindo ao ThemPlus!</span> Aqui, você poderá
-        organizar melhor a gestão da sua igreja, tornando tudo mais fácil e
-        permitindo que você se concentre no que realmente importa. Com nosso
-        sistema, você poderá registrar movimentações, agendamentos, criar
-        contas, convidar usuários para sua organização, categorizar usuários por
-        departamentos, conceder permissões, entre outras funcionalidades. Antes
-        de começar a utilizar nosso sistema, pedimos que você preencha alguns
-        dados. <span class="text-bold">É rapidinho! Vamos lá?</span>
+        <p v-if="enterprisePosition === 'client'">
+          <span class="text-bold">Bem-vindo ao ThemPlus!</span> Aqui, você
+          poderá organizar melhor a gestão da sua igreja, tornando tudo mais
+          fácil e permitindo que você se concentre no que realmente importa. Com
+          nosso sistema, você poderá registrar movimentações, agendamentos,
+          criar contas, convidar usuários para sua organização, categorizar
+          usuários por departamentos, conceder permissões, entre outras
+          funcionalidades. Antes de começar a utilizar nosso sistema, pedimos
+          que você preencha alguns dados.
+          <span class="text-bold">É rapidinho! Vamos lá?</span>
+        </p>
+        <p v-else>
+          <span class="text-bold">Bem-vindo ao ThemPlus!</span> Aqui, você
+          poderá organizar melhor a gestão de seus clientes, tornando tudo mais
+          fácil e permitindo que você se concentre no que realmente importa.
+          Antes de começar a utilizar nosso sistema, pedimos que você preencha
+          alguns dados.
+          <span class="text-bold">É rapidinho! Vamos lá?</span>
+        </p>
       </q-step>
 
       <q-step
@@ -488,19 +500,36 @@ watch(step, () => {
         </q-form>
       </q-step>
       <q-step :name="3" title="Parabéns!" icon="celebration" :done="step > 3">
-        <span class="text-bold">Parabéns!</span> Seus dados foram salvos com
-        sucesso. Agora você pode começar a usar o ThemPlus para organizar e
-        gerenciar sua igreja de forma ainda mais eficiente. <br /><br />
-        Para aproveitar ao máximo todas as funcionalidades do sistema, sugerimos
-        que leia o menu <span class="text-bold">Ajuda</span>, onde você
-        encontrará informações detalhadas sobre como utilizar o ThemPlus de
-        maneira otimizada. <br /><br />
-        Caso tenha alguma dúvida não resolvida, clique no ícone de mensagem na
-        barra superior para entrar em contato com nosso time. Estamos aqui para
-        ajudar você por meio de nossos canais de atendimento.
-        <br /><br />
-        Comece a explorar o sistema agora mesmo e aproveite tudo o que o
-        ThemPlus tem a oferecer!
+        <p v-if="enterprisePosition === 'client'">
+          <span class="text-bold">Parabéns!</span> Seus dados foram salvos com
+          sucesso. Agora você pode começar a usar o ThemPlus para organizar e
+          gerenciar sua igreja de forma mais eficiente. <br /><br />
+          Para aproveitar ao máximo todas as funcionalidades do sistema,
+          sugerimos que leia o menu <span class="text-bold">Ajuda</span>, onde
+          você encontrará informações detalhadas sobre como utilizar o ThemPlus
+          de maneira otimizada. <br /><br />
+          Caso tenha alguma dúvida não resolvida, clique no ícone de mensagem na
+          barra superior para entrar em contato com nosso time. Estamos aqui
+          para ajudar você por meio de nossos canais de atendimento.
+          <br /><br />
+          Comece a explorar o sistema agora mesmo e aproveite tudo o que o
+          ThemPlus tem a oferecer!
+        </p>
+        <p v-else>
+          <span class="text-bold">Parabéns!</span> Seus dados foram salvos com
+          sucesso. Agora você pode começar a usar o ThemPlus para organizar e
+          gerenciar seus clientes de forma mais eficiente. <br /><br />
+          Para aproveitar ao máximo todas as funcionalidades do sistema,
+          sugerimos que leia o menu <span class="text-bold">Ajuda</span>, onde
+          você encontrará informações detalhadas sobre como utilizar o ThemPlus
+          de maneira otimizada. <br /><br />
+          Caso tenha alguma dúvida não resolvida, clique no ícone de mensagem na
+          barra superior para entrar em contato com nosso time. Estamos aqui
+          para ajudar você por meio de nossos canais de atendimento.
+          <br /><br />
+          Comece a explorar o sistema agora mesmo e aproveite tudo o que o
+          ThemPlus tem a oferecer!
+        </p>
       </q-step>
 
       <template v-slot:navigation>
