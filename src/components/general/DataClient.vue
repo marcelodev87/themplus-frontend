@@ -4,15 +4,21 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { useAuthStore } from 'src/stores/auth-store';
+import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'DataClient',
 });
 
-const { getReports, reopenByCounter, finalizeReportCounter } = useReportStore();
+const {
+  getReports,
+  reopenByCounter,
+  finalizeReportCounter,
+  undoReportCounter,
+} = useReportStore();
 const { loadingReport, listReport } = storeToRefs(useReportStore());
-const { enterprise } = storeToRefs(useEnterpriseStore());
+const { user } = storeToRefs(useAuthStore());
 
 const props = defineProps<{
   open: boolean;
@@ -25,6 +31,7 @@ const emit = defineEmits<{
 const showConfirmAction = ref<boolean>(false);
 const dataReopenId = ref<string | null>(null);
 const dataFinalizeId = ref<string | null>(null);
+const dataUndoId = ref<string | null>(null);
 const actionSelected = ref<string | null>(null);
 const columnsDataClient = reactive<QuasarTable[]>([
   {
@@ -65,6 +72,7 @@ const clear = (): void => {
   dataFinalizeId.value = null;
   dataReopenId.value = null;
   actionSelected.value = null;
+  dataUndoId.value = null;
 };
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -106,22 +114,29 @@ const closeConfirmActionOk = async (): Promise<void> => {
   showConfirmAction.value = false;
   if (actionSelected.value === 'reopen') {
     await reopenByCounter(dataReopenId.value ?? '');
-  }
-  if (actionSelected.value === 'finalize') {
-    await finalizeReportCounter(dataReopenId.value ?? '');
+  } else if (actionSelected.value === 'finalize') {
+    await finalizeReportCounter(dataFinalizeId.value ?? '');
+  } else {
+    await undoReportCounter(dataUndoId.value ?? '');
   }
 };
 const closeConfirmAction = (): void => {
   showConfirmAction.value = false;
   clear();
 };
-const openConfirmAction = (action: 'reopen' | 'finalize', id: string): void => {
+const openConfirmAction = (
+  action: 'reopen' | 'finalize' | 'undo',
+  id: string
+): void => {
   if (action === 'reopen') {
     dataReopenId.value = id;
     actionSelected.value = 'reopen';
-  } else {
+  } else if (action === 'finalize') {
     dataFinalizeId.value = id;
     actionSelected.value = 'finalize';
+  } else {
+    dataUndoId.value = id;
+    actionSelected.value = 'undo';
   }
   showConfirmAction.value = true;
 };
@@ -168,7 +183,7 @@ watch(open, async () => {
               </q-td>
               <q-td key="check_counter" :props="props" class="text-left">
                 <q-icon
-                  v-show="props.row.check_counter === enterprise?.id"
+                  v-show="props.row.check_counter === user?.enterprise_id"
                   name="verified"
                   color="green"
                   size="20px"
@@ -177,7 +192,7 @@ watch(open, async () => {
                 </q-icon>
                 <q-icon
                   v-show="
-                    props.row.check_counter !== enterprise?.id &&
+                    props.row.check_counter !== user?.enterprise_id &&
                     props.row.check_counter !== null
                   "
                   name="verified"
@@ -189,6 +204,10 @@ watch(open, async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  v-show="
+                    props.row.check_counter === null ||
+                    props.row.check_counter === user?.enterprise_id
+                  "
                   :disable="loadingReport"
                   icon="search"
                   size="sm"
@@ -199,6 +218,7 @@ watch(open, async () => {
                   <q-tooltip> Analisar </q-tooltip>
                 </q-btn>
                 <q-btn
+                  v-show="props.row.check_counter === null"
                   @click="openConfirmAction('reopen', props.row.id)"
                   icon="replay"
                   size="sm"
@@ -210,6 +230,7 @@ watch(open, async () => {
                   <q-tooltip> Reabrir </q-tooltip>
                 </q-btn>
                 <q-btn
+                  v-show="props.row.check_counter === null"
                   @click="openConfirmAction('finalize', props.row.id)"
                   icon="task_alt"
                   size="sm"
@@ -219,6 +240,18 @@ watch(open, async () => {
                   :disable="loadingReport"
                 >
                   <q-tooltip> Finalizar </q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-show="props.row.check_counter === user?.enterprise_id"
+                  @click="openConfirmAction('undo', props.row.id)"
+                  icon="cancel"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  :disable="loadingReport"
+                >
+                  <q-tooltip> Desafazer verificação </q-tooltip>
                 </q-btn>
               </q-td>
             </q-tr>
@@ -241,7 +274,13 @@ watch(open, async () => {
       <ConfirmAction
         :open="showConfirmAction"
         label-action="Continuar"
-        title="Confirmação de desvínculo"
+        :title="
+          actionSelected === 'finalize'
+            ? 'Confirmação de verificação de relatório'
+            : actionSelected === 'reopen'
+              ? 'Confirmação de reabertura de relatório'
+              : 'Confirmação de reversão verificação de entrega'
+        "
         message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
         @update:open="closeConfirmAction"
         @update:ok="closeConfirmActionOk"

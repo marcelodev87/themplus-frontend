@@ -23,6 +23,16 @@ export const finalizeReportCounterService = (
   };
 }> => api.post(`${baseUrl}/finalize/${id}`);
 
+export const undoReportCounterService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    client_name: string;
+    reports: Report[];
+  };
+}> => api.post(`${baseUrl}/undo/${id}`);
+
 export const reopenByCounterService = (
   id: string
 ): Promise<{

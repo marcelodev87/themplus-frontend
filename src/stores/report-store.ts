@@ -6,6 +6,7 @@ import {
   finalizeReportCounterService,
   getReportsService,
   reopenByCounterService,
+  undoReportCounterService,
 } from 'src/services/report-service';
 import { Report } from 'src/ts/interfaces/data/Report';
 
@@ -66,6 +67,22 @@ export const useReportStore = defineStore('report', {
       try {
         this.setLoading(true);
         const response = await reopenByCounterService(id);
+        this.setClientName(null);
+        if (response.status === 200) {
+          this.clearListReport();
+          this.setListReport(response.data.reports);
+          this.setClientName(response.data.client_name);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async undoReportCounter(id: string) {
+      try {
+        this.setLoading(true);
+        const response = await undoReportCounterService(id);
         this.setClientName(null);
         if (response.status === 200) {
           this.clearListReport();
