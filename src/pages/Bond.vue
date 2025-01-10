@@ -10,6 +10,7 @@ import { Alert } from 'src/ts/interfaces/data/Alert';
 import { useOrderStore } from 'src/stores/order-store';
 import { OrderCounter } from 'src/ts/interfaces/data/Order';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import DataClient from 'src/components/general/DataClient.vue';
 
 defineOptions({
   name: 'Bond',
@@ -23,6 +24,8 @@ const showAlertDataEnterprise = ref<boolean>(false);
 const filterOrder = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
 const showConfirmAction = ref<boolean>(false);
+const showDataClient = ref<boolean>(false);
+const dataClient = ref<string | null>(null);
 const dataBond = ref<string | null>(null);
 const columnsBond = reactive<QuasarTable[]>([
   {
@@ -79,6 +82,7 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   filterOrder.value = '';
   dataBond.value = null;
+  dataClient.value = null;
 };
 const openFormAlert = (): void => {
   showFormAlert.value = true;
@@ -97,27 +101,6 @@ const fetchBonds = async () => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
-const customFilterOrder = (
-  rows: readonly OrderCounter[],
-  terms: string,
-  cols: readonly OrderCounter[],
-  getCellValue: (row: OrderCounter, col: QuasarTable) => unknown
-): readonly OrderCounter[] => {
-  const searchTerm = terms.toLowerCase();
-
-  return rows.filter((item) => {
-    return (
-      (item.enterprise.name &&
-        item.enterprise.name.toLowerCase().includes(searchTerm)) ||
-      (item.enterprise.email &&
-        item.enterprise.email.toLowerCase().includes(searchTerm)) ||
-      (item.enterprise.cpf &&
-        item.enterprise.cpf.toLowerCase().includes(searchTerm)) ||
-      (item.enterprise.cnpj &&
-        item.enterprise.cnpj.toLowerCase().includes(searchTerm))
-    );
-  });
-};
 const closeConfirmActionOk = async (): Promise<void> => {
   showConfirmAction.value = false;
   await deleteBond(dataBond.value ?? '');
@@ -129,6 +112,14 @@ const closeConfirmAction = (): void => {
 const openConfirmAction = (orderId: string): void => {
   dataBond.value = orderId;
   showConfirmAction.value = true;
+};
+const openDataClient = (id: string) => {
+  dataClient.value = id;
+  showDataClient.value = true;
+};
+const closeDataClient = () => {
+  clear();
+  showDataClient.value = false;
 };
 
 watch(
@@ -204,7 +195,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  @click="handleEdit(props.row)"
+                  @click="openDataClient(props.row.id)"
                   size="sm"
                   flat
                   round
@@ -235,6 +226,11 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <DataClient
+          :open="showDataClient"
+          :id-client="dataClient"
+          @update:open="closeDataClient"
         />
         <ConfirmAction
           :open="showConfirmAction"
