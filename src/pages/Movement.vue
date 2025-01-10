@@ -374,7 +374,7 @@ onMounted(async () => {
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de categorias</span>
+            <span class="text-subtitle2">Lista de movimentações</span>
             <q-space />
             <q-toggle
               v-model="onlyEntry"

@@ -5,6 +5,8 @@ import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useAuthStore } from 'src/stores/auth-store';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+import { useMovementStore } from 'src/stores/movement-store';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -16,9 +18,12 @@ const {
   reopenByCounter,
   finalizeReportCounter,
   undoReportCounter,
+  detailsReport,
 } = useReportStore();
-const { loadingReport, listReport } = storeToRefs(useReportStore());
+const { loadingReport, listReport, listMovement } =
+  storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
+const { downloadFile } = useMovementStore();
 
 const props = defineProps<{
   open: boolean;
@@ -29,9 +34,11 @@ const emit = defineEmits<{
 }>();
 
 const showConfirmAction = ref<boolean>(false);
+const modeTable = ref<'reports' | 'details'>('reports');
 const dataReopenId = ref<string | null>(null);
 const dataFinalizeId = ref<string | null>(null);
 const dataUndoId = ref<string | null>(null);
+const dataDetailsReport = ref<string | null>(null);
 const actionSelected = ref<string | null>(null);
 const columnsDataClient = reactive<QuasarTable[]>([
   {
@@ -59,6 +66,58 @@ const columnsDataClient = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const columnsMovement = reactive<QuasarTable[]>([
+  {
+    name: 'name',
+    label: 'Banco',
+    field: 'account.name',
+    align: 'left',
+  },
+  {
+    name: 'account_number',
+    label: 'Conta',
+    field: 'account.account_number',
+    align: 'left',
+  },
+  {
+    name: 'agency_number',
+    label: 'Agência',
+    field: 'account.agency_number',
+    align: 'left',
+  },
+  {
+    name: 'category',
+    label: 'Categoria',
+    field: 'category.name',
+    align: 'left',
+  },
+  {
+    name: 'value',
+    label: 'Valor',
+    field: 'value',
+    align: 'left',
+  },
+  {
+    name: 'date_movement',
+    label: 'Data de movimentação',
+    field: 'date_movement',
+    align: 'left',
+  },
+  {
+    name: 'description',
+    label: 'Descrição',
+    field: 'description',
+    align: 'left',
+  },
+  {
+    name: 'receipt',
+    label: 'Arquivo',
+    field: 'receipt',
+    align: 'left',
+    style:
+      'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+  },
+]);
 
 const open = computed({
   get: () => props.open,
@@ -73,6 +132,8 @@ const clear = (): void => {
   dataReopenId.value = null;
   actionSelected.value = null;
   dataUndoId.value = null;
+  dataDetailsReport.value = null;
+  modeTable.value = 'reports';
 };
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -140,7 +201,19 @@ const openConfirmAction = (
   }
   showConfirmAction.value = true;
 };
+const searchDetails = async (id: string) => {
+  dataDetailsReport.value = id;
+  modeTable.value = 'details';
+};
+const download = async (file: string) => {
+  await downloadFile(file.split('receipts/')[1]);
+};
 
+watch(modeTable, async () => {
+  if (modeTable.value === 'details') {
+    await detailsReport(dataDetailsReport.value ?? '');
+  }
+});
 watch(open, async () => {
   if (open.value) {
     clear();
@@ -152,10 +225,17 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2" style="min-width: 98vw">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Informações de entrega de relatório" />
+        <TitlePage
+          :title="
+            modeTable === 'reports'
+              ? 'Informações de entrega de relatório'
+              : 'Detalhes de movimentações do período'
+          "
+        />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-table
+          v-if="modeTable === 'reports'"
           :rows="loadingReport ? [] : listReport"
           :columns="columnsDataClient"
           :loading="loadingReport"
@@ -168,7 +248,10 @@ watch(open, async () => {
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Períodos de movimentações</span>
+            <span v-if="modeTable === 'reports'" class="text-subtitle2"
+              >Períodos de movimentações</span
+            >
+            <span v-else class="text-subtitle2"></span>
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
@@ -208,6 +291,7 @@ watch(open, async () => {
                     props.row.check_counter === null ||
                     props.row.check_counter === user?.enterprise_id
                   "
+                  @click="searchDetails(props.row.id)"
                   :disable="loadingReport"
                   icon="search"
                   size="sm"
@@ -257,6 +341,61 @@ watch(open, async () => {
             </q-tr>
           </template>
         </q-table>
+        <q-table
+          v-else
+          :rows="loadingReport ? [] : listMovement"
+          :columns="columnsMovement"
+          :loading="loadingReport"
+          flat
+          bordered
+          dense
+          row-key="index"
+          no-data-label="Nenhuma movimentação para mostrar"
+          virtual-scroll
+          :rows-per-page-options="[20]"
+        >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de movimentações</span>
+          </template>
+          <template v-slot:body="props">
+            <q-tr
+              :props="props"
+              style="height: 28px"
+              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+            >
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.account.name }}
+              </q-td>
+              <q-td key="account_number" :props="props" class="text-left">
+                {{ props.row.account.account_number }}
+              </q-td>
+              <q-td key="agency_number" :props="props" class="text-left">
+                {{ props.row.account.agency_number }}
+              </q-td>
+              <q-td key="category" :props="props" class="text-left">
+                {{ props.row.category.name }}
+              </q-td>
+              <q-td key="value" :props="props" class="text-left">
+                {{ `${formatCurrencyBRL(props.row.value)}` }}
+              </q-td>
+              <q-td key="date_movement" :props="props" class="text-left">
+                {{ formatDate(props.row.date_movement) }}
+              </q-td>
+              <q-td key="description" :props="props" class="text-left">
+                {{ props.row.description }}
+              </q-td>
+              <q-td
+                @click="download(props.row.receipt)"
+                key="receipt"
+                :props="props"
+                class="text-left cursor-pointer"
+              >
+                <q-tooltip> {{ props.row.receipt }} </q-tooltip>
+                {{ props.row.receipt }}
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
       </q-card-section>
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
@@ -268,6 +407,16 @@ watch(open, async () => {
             flat
             unelevated
             no-caps
+          />
+          <q-btn
+            v-show="modeTable === 'details'"
+            @click="modeTable = 'reports'"
+            color="red"
+            label="Voltar"
+            size="md"
+            unelevated
+            no-caps
+            icon-right="undo"
           />
         </div>
       </q-card-actions>
@@ -284,6 +433,14 @@ watch(open, async () => {
         message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
         @update:open="closeConfirmAction"
         @update:ok="closeConfirmActionOk"
+      />
+      <q-inner-loading
+        :showing="loadingReport"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
       />
     </q-card>
   </q-dialog>

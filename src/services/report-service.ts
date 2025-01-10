@@ -1,4 +1,5 @@
 import { api } from 'boot/axios';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
 
 const baseUrl = 'report';
@@ -12,6 +13,15 @@ export const getReportsService = (
     reports: Report[];
   };
 }> => api.get(`${baseUrl}/${id}`);
+
+export const detailsReportService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+  };
+}> => api.get(`${baseUrl}/details/${id}`);
 
 export const finalizeReportCounterService = (
   id: string
