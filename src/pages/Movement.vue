@@ -443,9 +443,12 @@ onMounted(async () => {
                 @click="download(props.row.receipt)"
                 key="receipt"
                 :props="props"
-                class="text-left cursor-pointer"
+                class="text-left"
+                :class="props.row.receipt ? 'cursor-pointer' : ''"
               >
-                <q-tooltip> {{ props.row.receipt }} </q-tooltip>
+                <q-tooltip v-if="props.row.receipt">
+                  {{ props.row.receipt }}
+                </q-tooltip>
                 {{ props.row.receipt }}
               </q-td>
               <q-td key="action" :props="props">
