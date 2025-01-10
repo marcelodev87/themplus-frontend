@@ -209,7 +209,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  v-if="props.row.status === false"
+                  v-show="props.row.status === false"
                   @click="finalize(props.row.month_year)"
                   size="sm"
                   flat
@@ -219,9 +219,9 @@ onMounted(async () => {
                 >
                   <q-tooltip> Entregar </q-tooltip>
                 </q-btn>
-                <q-btn v-else size="sm" flat round color="black" icon="replay">
+                <!-- <q-btn v-else size="sm" flat round color="black" icon="replay">
                   <q-tooltip> Reabrir </q-tooltip>
-                </q-btn>
+                </q-btn> -->
               </q-td>
             </q-tr>
           </template>
