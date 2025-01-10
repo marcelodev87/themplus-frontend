@@ -9,6 +9,7 @@ import InviteCounter from 'src/components/shared/InviteCounter.vue';
 import { useOrderStore } from 'src/stores/order-store';
 import CounterInfo from 'src/components/info/CounterInfo.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'FinancialControl',
@@ -24,6 +25,8 @@ const filterDelivery = ref<string>('');
 const showCounterInfo = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showInviteCounter = ref<boolean>(false);
+const showConfirmAction = ref<boolean>(false);
+const dataMonthYear = ref<string | null>(null);
 const columnsDelivery = reactive<QuasarTable[]>([
   {
     name: 'month_year',
@@ -51,14 +54,22 @@ const columnsDelivery = reactive<QuasarTable[]>([
   },
 ]);
 
-const finalize = async (monthYear: string): Promise<void> => {
-  await updateDelivery(monthYear);
-};
 const fetchDelivery = async () => {
   await getDelivery();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await updateDelivery(dataMonthYear.value ?? '');
+  dataMonthYear.value = null;
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+};
+const openConfirmAction = (): void => {
+  showConfirmAction.value = true;
 };
 const openInviteCounter = (): void => {
   showInviteCounter.value = true;
@@ -103,6 +114,10 @@ const formatDateToBrazilian = (dateTime: string | null | undefined) => {
   const [year, month, day] = datePart.split('-');
 
   return `${day}/${month}/${year}`;
+};
+const finalize = async (monthYear: string): Promise<void> => {
+  dataMonthYear.value = monthYear;
+  openConfirmAction();
 };
 
 watch(
@@ -216,6 +231,14 @@ onMounted(async () => {
           @update:open="closeInviteCounter"
         />
         <CounterInfo :open="showCounterInfo" @update:open="closeCounterInfo" />
+        <ConfirmAction
+          :open="showConfirmAction"
+          label-action="Continuar"
+          title="Confirmação de entrega de movimentações"
+          message="Caso entregue as movimentações, não será possível realizar qualquer ação sobre movimentações do mês do relatório que está sendo entregue. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+          @update:open="closeConfirmAction"
+          @update:ok="closeConfirmActionOk"
+        />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
