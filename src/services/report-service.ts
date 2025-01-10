@@ -20,6 +20,7 @@ export const finalizeReportCounterService = (
   data: {
     client_name: string;
     reports: Report[];
+    message: string;
   };
 }> => api.post(`${baseUrl}/finalize/${id}`);
 
@@ -30,6 +31,7 @@ export const undoReportCounterService = (
   data: {
     client_name: string;
     reports: Report[];
+    message: string;
   };
 }> => api.post(`${baseUrl}/undo/${id}`);
 
@@ -40,5 +42,6 @@ export const reopenByCounterService = (
   data: {
     client_name: string;
     reports: Report[];
+    message: string;
   };
-}> => api.delete(`${baseUrl}/${id}`);
+}> => api.delete(`${baseUrl}/reopen/${id}`);

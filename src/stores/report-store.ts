@@ -72,6 +72,7 @@ export const useReportStore = defineStore('report', {
           this.clearListReport();
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
+          this.createSuccess(response.data.message);
         }
       } catch (error) {
         this.createError(error);
@@ -88,6 +89,7 @@ export const useReportStore = defineStore('report', {
           this.clearListReport();
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
+          this.createSuccess(response.data.message);
         }
       } catch (error) {
         this.createError(error);
@@ -104,6 +106,7 @@ export const useReportStore = defineStore('report', {
           this.clearListReport();
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
+          this.createSuccess(response.data.message);
         }
       } catch (error) {
         this.createError(error);
