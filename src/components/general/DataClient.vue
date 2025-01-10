@@ -10,7 +10,7 @@ defineOptions({
   name: 'DataClient',
 });
 
-const { getReports } = useReportStore();
+const { getReports, reopenByCounter, finalizeReportCounter } = useReportStore();
 const { loadingReport, listReport } = storeToRefs(useReportStore());
 const { enterprise } = storeToRefs(useEnterpriseStore());
 
@@ -22,11 +22,14 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const filterDataClient = ref<string>('');
+const showConfirmAction = ref<boolean>(false);
+const dataReopenId = ref<string | null>(null);
+const dataFinalizeId = ref<string | null>(null);
+const actionSelected = ref<string | null>(null);
 const columnsDataClient = reactive<QuasarTable[]>([
   {
     name: 'month_year',
-    label: 'Período de movimentação',
+    label: 'Período',
     field: 'month_year',
     align: 'left',
   },
@@ -59,7 +62,9 @@ const fetchReports = async () => {
   await getReports(props.idClient ?? '');
 };
 const clear = (): void => {
-  filterDataClient.value = '';
+  dataFinalizeId.value = null;
+  dataReopenId.value = null;
+  actionSelected.value = null;
 };
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -97,6 +102,29 @@ const convertMonthYear = (monthYear: string): string => {
 
   return `${monthName} ${year}`;
 };
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  if (actionSelected.value === 'reopen') {
+    await reopenByCounter(dataReopenId.value ?? '');
+  }
+  if (actionSelected.value === 'finalize') {
+    await finalizeReportCounter(dataReopenId.value ?? '');
+  }
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  clear();
+};
+const openConfirmAction = (action: 'reopen' | 'finalize', id: string): void => {
+  if (action === 'reopen') {
+    dataReopenId.value = id;
+    actionSelected.value = 'reopen';
+  } else {
+    dataFinalizeId.value = id;
+    actionSelected.value = 'finalize';
+  }
+  showConfirmAction.value = true;
+};
 
 watch(open, async () => {
   if (open.value) {
@@ -115,7 +143,6 @@ watch(open, async () => {
         <q-table
           :rows="loadingReport ? [] : listReport"
           :columns="columnsDataClient"
-          :filter="filterDataClient"
           :loading="loadingReport"
           flat
           bordered
@@ -127,12 +154,6 @@ watch(open, async () => {
         >
           <template v-slot:top>
             <span class="text-subtitle2">Períodos de movimentações</span>
-            <q-space />
-            <q-input filled v-model="filterDataClient" dense label="Pesquisar">
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
@@ -167,13 +188,36 @@ watch(open, async () => {
                 </q-icon>
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn icon="search" size="sm" flat round color="black">
+                <q-btn
+                  :disable="loadingReport"
+                  icon="search"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                >
                   <q-tooltip> Analisar </q-tooltip>
                 </q-btn>
-                <q-btn icon="replay" size="sm" flat round color="orange">
+                <q-btn
+                  @click="openConfirmAction('reopen', props.row.id)"
+                  icon="replay"
+                  size="sm"
+                  flat
+                  round
+                  color="orange"
+                  :disable="loadingReport"
+                >
                   <q-tooltip> Reabrir </q-tooltip>
                 </q-btn>
-                <q-btn icon="task_alt" size="sm" flat round color="green">
+                <q-btn
+                  @click="openConfirmAction('finalize', props.row.id)"
+                  icon="task_alt"
+                  size="sm"
+                  flat
+                  round
+                  color="green"
+                  :disable="loadingReport"
+                >
                   <q-tooltip> Finalizar </q-tooltip>
                 </q-btn>
               </q-td>
@@ -194,6 +238,14 @@ watch(open, async () => {
           />
         </div>
       </q-card-actions>
+      <ConfirmAction
+        :open="showConfirmAction"
+        label-action="Continuar"
+        title="Confirmação de desvínculo"
+        message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+        @update:open="closeConfirmAction"
+        @update:ok="closeConfirmActionOk"
+      />
     </q-card>
   </q-dialog>
 </template>

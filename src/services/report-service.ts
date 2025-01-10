@@ -12,3 +12,23 @@ export const getReportsService = (
     reports: Report[];
   };
 }> => api.get(`${baseUrl}/${id}`);
+
+export const finalizeReportCounterService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    client_name: string;
+    reports: Report[];
+  };
+}> => api.post(`${baseUrl}/finalize/${id}`);
+
+export const reopenByCounterService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    client_name: string;
+    reports: Report[];
+  };
+}> => api.delete(`${baseUrl}/${id}`);
