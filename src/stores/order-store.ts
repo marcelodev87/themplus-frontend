@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
   actionRequestEnterpriseService,
+  deleteBondService,
   deleteOrderService,
   getBondsService,
   getOrdersViewClientService,
@@ -181,6 +182,21 @@ export const useOrderStore = defineStore('order', {
           this.listOrderCounter = this.listOrderCounter.filter(
             (item) => item.id !== orderId
           );
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteBond(id: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteBondService(id);
+        if (response.status === 200) {
+          this.clearListBond();
+          this.setListBond(response.data.bonds);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

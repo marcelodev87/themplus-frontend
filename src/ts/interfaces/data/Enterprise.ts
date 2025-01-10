@@ -46,5 +46,4 @@ export interface Office {
   id: string;
   name: string;
   users: User[];
-  counter: string | null;
 }

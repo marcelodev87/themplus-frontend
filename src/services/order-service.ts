@@ -73,3 +73,13 @@ export const deleteOrderService = (
     message: string;
   };
 }> => api.delete(`${baseUrl}/${id}`);
+
+export const deleteBondService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    bonds: Bond[];
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/bond/${id}`);

@@ -9,18 +9,21 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
 import { useOrderStore } from 'src/stores/order-store';
 import { OrderCounter } from 'src/ts/interfaces/data/Order';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'Bond',
 });
 
 const { loadingOrder, listBond, filledData } = storeToRefs(useOrderStore());
-const { getBonds } = useOrderStore();
+const { getBonds, deleteBond } = useOrderStore();
 
 const showFormAlert = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterOrder = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
+const showConfirmAction = ref<boolean>(false);
+const dataBond = ref<string | null>(null);
 const columnsBond = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -75,6 +78,7 @@ const columnsBond = reactive<QuasarTable[]>([
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterOrder.value = '';
+  dataBond.value = null;
 };
 const openFormAlert = (): void => {
   showFormAlert.value = true;
@@ -86,9 +90,6 @@ const closeFormAlert = (): void => {
 const handleEdit = (alert: Alert) => {
   selectedDataEdit.value = alert;
   openFormAlert();
-};
-const exclude = async (id: string) => {
-  console.log('escluir vinculo', id);
 };
 const fetchBonds = async () => {
   await getBonds();
@@ -116,6 +117,18 @@ const customFilterOrder = (
         item.enterprise.cnpj.toLowerCase().includes(searchTerm))
     );
   });
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await deleteBond(dataBond.value ?? '');
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+};
+const openConfirmAction = (orderId: string): void => {
+  dataBond.value = orderId;
+  showConfirmAction.value = true;
 };
 
 watch(
@@ -156,7 +169,7 @@ onMounted(async () => {
           bordered
           dense
           row-key="name"
-          no-data-label="Nenhuma vin para mostrar"
+          no-data-label="Nenhuma vinculação para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
         >
@@ -202,7 +215,8 @@ onMounted(async () => {
                 </q-btn>
 
                 <q-btn
-                  @click="exclude(props.row.id)"
+                  v-show="props.row.created_by === null"
+                  @click="openConfirmAction(props.row.id)"
                   size="sm"
                   flat
                   round
@@ -221,6 +235,14 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <ConfirmAction
+          :open="showConfirmAction"
+          label-action="Continuar"
+          title="Confirmação de desvínculo"
+          message="Não poderá ter mais acesso aos dados do cliente, além das filiais serem removidas também, caso existam. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+          @update:open="closeConfirmAction"
+          @update:ok="closeConfirmActionOk"
         />
       </main>
     </q-scroll-area>

@@ -5,4 +5,5 @@ export interface Bond {
   cpf: string | null;
   email: string;
   phone: string | null;
+  created_by: string | null;
 }
