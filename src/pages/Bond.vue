@@ -64,9 +64,9 @@ const columnsBond = reactive<QuasarTable[]>([
     sortable: true,
   },
   {
-    name: 'delivery',
+    name: 'no_verified',
     label: 'Entregas não analisadas',
-    field: 'delivery',
+    field: 'no_verified',
     align: 'left',
     sortable: true,
   },
@@ -190,8 +190,12 @@ onMounted(async () => {
               <q-td key="phone" :props="props" class="text-left">
                 {{ props.row.phone }}
               </q-td>
-              <q-td key="delivery" :props="props" class="text-left">
-                <q-badge rounded color="green" label="0" />
+              <q-td key="no_verified" :props="props" class="text-left">
+                <q-badge
+                  rounded
+                  :color="props.row.no_verified > 0 ? 'red' : 'green'"
+                  :label="props.row.no_verified"
+                />
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

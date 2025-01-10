@@ -6,4 +6,5 @@ export interface Bond {
   email: string;
   phone: string | null;
   created_by: string | null;
+  no_verified: number;
 }
