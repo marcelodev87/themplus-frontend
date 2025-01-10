@@ -312,7 +312,11 @@ watch(open, () => {
   <q-dialog v-model="open">
     <q-card v-if="!showConfirmEditEnterprise" class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Dados da organização" />
+        <TitlePage
+          :title="
+            props.mode === 'office' ? 'Dados da filial' : 'Dados da organização'
+          "
+        />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
