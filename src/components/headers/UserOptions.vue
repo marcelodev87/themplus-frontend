@@ -9,7 +9,7 @@ defineOptions({
 });
 
 const { setToken, setUser } = useAuthStore();
-const { user } = storeToRefs(useAuthStore());
+const { user, enterprisePosition } = storeToRefs(useAuthStore());
 
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
@@ -67,6 +67,19 @@ const logout = (): void => {
           </q-avatar>
         </q-item-section>
         <q-item-section>Perfil</q-item-section>
+      </q-item>
+      <q-item
+        v-show="enterprisePosition === 'client'"
+        clickable
+        v-ripple
+        @click="openPerfil"
+      >
+        <q-item-section avatar>
+          <q-avatar>
+            <q-icon name="fa-solid fa-gears" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>Mudar visão</q-item-section>
       </q-item>
       <q-item clickable v-ripple @click="logout">
         <q-item-section avatar>

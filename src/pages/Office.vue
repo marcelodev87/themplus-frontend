@@ -53,10 +53,6 @@ const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
   clear();
 };
-// const exclude = async (id: string) => {
-//   // await deleteAlert(id);
-//   console.log('excluir ', id);
-// };
 const fetchOffices = async () => {
   await getOffices();
 };
