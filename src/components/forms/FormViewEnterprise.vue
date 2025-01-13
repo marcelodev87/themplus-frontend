@@ -92,10 +92,10 @@ watch(open, async () => {
             <span class="text-bold">matriz</span>, você poderá configurar a
             organização que deseja <span class="text-bold">visualizar</span> os
             dados da organização filial. Caso, selecione uma organização filial,
-            será permitido apenas ações de
+            será permitido apenas ação de
             <span class="text-bold">leitura.</span> Toda vez que você realizar
             login novamente, será resetada a configuração para visualizar os
-            dados de sua organização, sendoo necessário voltar aqui e selecionar
+            dados de sua organização, sendo necessário voltar aqui e selecionar
             a organização que deseja novamente.
           </q-banner>
           <q-select
