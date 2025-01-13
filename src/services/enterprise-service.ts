@@ -2,6 +2,7 @@ import { api } from 'boot/axios';
 import {
   Enterprise,
   ResultEnterprise,
+  ViewEnterprise,
 } from 'src/ts/interfaces/data/Enterprise';
 
 const baseUrl = 'enterprise';
@@ -13,6 +14,23 @@ export const getEnterpriseService = (): Promise<{
     message: string;
   };
 }> => api.get(`${baseUrl}`);
+
+export const getEnterprisesViewService = (): Promise<{
+  status: number;
+  data: {
+    enterprises: ViewEnterprise[];
+    message: string;
+  };
+}> => api.get(`${baseUrl}/view`);
+export const saveEnterpriseViewService = (
+  value: string | null
+): Promise<{
+  status: number;
+  data: {
+    enterprises: ViewEnterprise[];
+    message: string;
+  };
+}> => api.post(`${baseUrl}/view`, { viewEnterprise: value });
 
 // export const createCategoryService = (
 //   name: string,

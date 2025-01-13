@@ -47,3 +47,9 @@ export interface Office {
   name: string;
   users: User[];
 }
+
+export interface ViewEnterprise {
+  id: string;
+  name: string;
+  selected: boolean;
+}

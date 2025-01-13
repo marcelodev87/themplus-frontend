@@ -14,6 +14,7 @@ const { user, enterprisePosition } = storeToRefs(useAuthStore());
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
   'update:openFormEnterprise': [void];
+  'update:openFormViewEnterprise': [void];
 }>();
 
 const router = useRouter();
@@ -28,6 +29,11 @@ const openEnterprise = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dropdown.value as any).hide();
   emit('update:openFormEnterprise');
+};
+const openViewEnterprise = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dropdown.value as any).hide();
+  emit('update:openFormViewEnterprise');
 };
 const logout = (): void => {
   setToken(null);
@@ -72,7 +78,7 @@ const logout = (): void => {
         v-show="enterprisePosition === 'client'"
         clickable
         v-ripple
-        @click="openPerfil"
+        @click="openViewEnterprise"
       >
         <q-item-section avatar>
           <q-avatar>

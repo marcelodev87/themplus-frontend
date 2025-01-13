@@ -3,6 +3,7 @@ import FormPerfil from 'src/components/forms/FormPerfil.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import EmailInfo from 'src/components/info/EmailInfo.vue';
+import FormViewEnterprise from 'src/components/forms/FormViewEnterprise.vue';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
@@ -22,6 +23,7 @@ const leftDrawerOpen = ref<boolean>(false);
 const showFormPerfil = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const showEmailInfo = ref<boolean>(false);
+const showFormViewEnterprise = ref<boolean>(false);
 
 const menuList = ref<
   {
@@ -47,6 +49,12 @@ const closeFormPerfil = (): void => {
 };
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
+};
+const openViewEnterprise = (): void => {
+  showFormViewEnterprise.value = true;
+};
+const closeViewEnterprise = (): void => {
+  showFormViewEnterprise.value = false;
 };
 const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
@@ -177,6 +185,7 @@ onMounted(() => {
         @update:open-form-perfil="openFormPerfil"
         @update:open-form-enterprise="openFormEnterprise"
         @update:open-email-info="openEmailInfo"
+        @update:open-view-enterprise="openViewEnterprise"
         @update:change-open-menu="changeShowMenuList"
       />
     </q-header>
@@ -217,6 +226,10 @@ onMounted(() => {
       <router-view />
       <FormPerfil :open="showFormPerfil" @update:open="closeFormPerfil" />
       <EmailInfo :open="showEmailInfo" @update:open="closeEmailInfo" />
+      <FormViewEnterprise
+        :open="showFormViewEnterprise"
+        @update:open="closeViewEnterprise"
+      />
       <FormEnterprise
         :open="showFormEnterprise"
         mode="actual"

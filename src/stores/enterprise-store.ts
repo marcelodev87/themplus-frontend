@@ -4,12 +4,18 @@ import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
   getEnterpriseService,
+  getEnterprisesViewService,
+  saveEnterpriseViewService,
   searchEnterpriseService,
   showEnterpriseService,
   unlinkCounterService,
   updateEnterpriseService,
 } from 'src/services/enterprise-service';
-import { Enterprise, ResultEnterprise } from '../ts/interfaces/data/Enterprise';
+import {
+  Enterprise,
+  ResultEnterprise,
+  ViewEnterprise,
+} from '../ts/interfaces/data/Enterprise';
 import { useOrderStore } from './order-store';
 
 const { hasCounter } = storeToRefs(useOrderStore());
@@ -21,6 +27,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
     listSearchEnterprise: [] as ResultEnterprise[],
     counterSearch: null as Enterprise | null,
     enterpriseHeadquarters: false as boolean,
+    listViewEnterprise: [] as ViewEnterprise[],
   }),
   getters: {
     resultEnterpriseSelect: (state) => {
@@ -41,6 +48,12 @@ export const useEnterpriseStore = defineStore('enterprise', {
     },
     setCounterSearch(enterprise: Enterprise | null) {
       this.counterSearch = enterprise;
+    },
+    setListViewEnterprise(enterprises: ViewEnterprise[]) {
+      enterprises.map((item) => this.listViewEnterprise.push(item));
+    },
+    clearListViewEnterprise() {
+      this.listViewEnterprise.splice(0, this.listViewEnterprise.length);
     },
     createError(error: any) {
       let message = 'Error';
@@ -79,6 +92,37 @@ export const useEnterpriseStore = defineStore('enterprise', {
         return undefined;
       } finally {
         this.setLoading(false);
+      }
+    },
+    async getEnterprisesView() {
+      this.setLoading(true);
+      try {
+        this.clearListViewEnterprise();
+        const response = await getEnterprisesViewService();
+        if (response.status === 200) {
+          this.setListViewEnterprise(response.data.enterprises);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async saveEnterpriseView(enterprise: string | null) {
+      this.setLoading(true);
+      try {
+        this.clearListViewEnterprise();
+        const response = await saveEnterpriseViewService(enterprise);
+        if (response.status === 200) {
+          this.setListViewEnterprise(response.data.enterprises);
+          this.createSuccess(response.data.message);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return undefined;
       }
     },
     async showEnterprise(id: string) {
