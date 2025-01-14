@@ -7,6 +7,7 @@ import { useDepartmentStore } from 'src/stores/department_store';
 import { Department } from 'src/ts/interfaces/data/Department';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useQuasar } from 'quasar';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'Department',
@@ -15,6 +16,7 @@ defineOptions({
 const { loadingDepartment, treeDepartment, filledData } =
   storeToRefs(useDepartmentStore());
 const { getDepartments, deleteDepartment } = useDepartmentStore();
+const { user } = storeToRefs(useAuthStore());
 
 const $q = useQuasar();
 const showFormDepartment = ref<boolean>(false);
@@ -41,8 +43,10 @@ const closeFormDepartment = (): void => {
   clear();
 };
 const handleEdit = (department: Department) => {
-  departmentEdit.value = department;
-  openFormDepartment();
+  if (user.value?.enterprise_id === user.value?.view_enterprise_id) {
+    departmentEdit.value = department;
+    openFormDepartment();
+  }
 };
 const exclude = (id: string) => {
   $q.dialog({
@@ -97,6 +101,7 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormDepartment()"
           color="blue-8"
           icon-right="groups"
@@ -141,6 +146,7 @@ onMounted(async () => {
                 <q-separator />
                 <div class="row items-center justify-center">
                   <q-btn
+                    v-show="user?.enterprise_id === user?.view_enterprise_id"
                     @click="openFormDepartment(prop.key)"
                     :label="
                       !$q.screen.lt.sm ? 'Adicionar um sub-departamento' : ''
@@ -154,6 +160,7 @@ onMounted(async () => {
                     unelevated
                   />
                   <q-btn
+                    v-show="user?.enterprise_id === user?.view_enterprise_id"
                     @click="exclude(prop.node.id)"
                     :disable="loadingDepartment"
                     size="sm"

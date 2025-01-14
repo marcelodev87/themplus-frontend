@@ -10,11 +10,13 @@ import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'Scheduling',
 });
 
+const { user } = storeToRefs(useAuthStore());
 const { loadingScheduling, listScheduling, filledData, listMonthYear } =
   storeToRefs(useSchedulingStore());
 const {
@@ -283,6 +285,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormOut"
           color="negative"
           icon-right="remove"
@@ -291,6 +294,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormEntry"
           color="positive"
           icon-right="add"
@@ -310,7 +314,12 @@ onMounted(async () => {
           no-caps
         >
           <q-list>
-            <q-item clickable v-ripple @click="openFormEntry">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              clickable
+              v-ripple
+              @click="openFormEntry"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="add" />
@@ -318,7 +327,12 @@ onMounted(async () => {
               </q-item-section>
               <q-item-section>Formulário de entrada</q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="openFormOut">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              clickable
+              v-ripple
+              @click="openFormOut"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="remove" />
@@ -445,6 +459,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  v-show="user?.enterprise_id === user?.view_enterprise_id"
                   @click="handleEdit(props.row)"
                   size="sm"
                   flat
@@ -453,6 +468,7 @@ onMounted(async () => {
                   icon="edit"
                 />
                 <q-btn
+                  v-show="user?.enterprise_id === user?.view_enterprise_id"
                   @click="exclude(props.row.id)"
                   size="sm"
                   flat
@@ -461,6 +477,7 @@ onMounted(async () => {
                   icon="delete"
                 />
                 <q-icon
+                  v-show="user?.enterprise_id === user?.view_enterprise_id"
                   @click="finalize(props.row.id)"
                   name="task_alt"
                   size="16px"

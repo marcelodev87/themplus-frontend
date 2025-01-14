@@ -137,6 +137,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormUser"
           color="blue-8"
           icon-right="group_add"
@@ -156,7 +157,12 @@ onMounted(async () => {
           no-caps
         >
           <q-list>
-            <q-item clickable v-ripple @click="openFormUser">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              @click="openFormUser"
+              clickable
+              v-ripple
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="group_add" />
@@ -230,7 +236,8 @@ onMounted(async () => {
                   v-show="
                     user &&
                     user.id !== props.row.id &&
-                    props.row.created_by !== null
+                    props.row.created_by !== null &&
+                    user?.enterprise_id === user?.view_enterprise_id
                   "
                   @click="handleEdit(props.row)"
                   size="sm"
@@ -244,7 +251,8 @@ onMounted(async () => {
                   v-show="
                     user &&
                     user.id !== props.row.id &&
-                    props.row.created_by !== null
+                    props.row.created_by !== null &&
+                    user?.enterprise_id === user?.view_enterprise_id
                   "
                   @click="exclude(props.row.id)"
                   size="sm"

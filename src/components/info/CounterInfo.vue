@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import { useOrderStore } from 'src/stores/order-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import TitlePage from '../shared/TitlePage.vue';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
@@ -17,6 +18,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { user } = storeToRefs(useAuthStore());
 const { hasCounter } = storeToRefs(useOrderStore());
 const { loadingEnterprise, counterSearch, enterpriseHeadquarters } =
   storeToRefs(useEnterpriseStore());
@@ -118,7 +120,10 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
-            v-show="enterpriseHeadquarters"
+            v-show="
+              enterpriseHeadquarters &&
+              user?.enterprise_id === user?.view_enterprise_id
+            "
             @click="unlink"
             color="red"
             label="Desvincular"

@@ -10,11 +10,13 @@ import { useOrderStore } from 'src/stores/order-store';
 import CounterInfo from 'src/components/info/CounterInfo.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'FinancialControl',
 });
 
+const { user } = storeToRefs(useAuthStore());
 const { enterpriseHeadquarters } = storeToRefs(useEnterpriseStore());
 const { hasCounter } = storeToRefs(useOrderStore());
 const { listDelivery, loadingDelivery, filledData } =
@@ -151,7 +153,11 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          v-show="enterpriseHeadquarters && !loadingDelivery"
+          v-show="
+            enterpriseHeadquarters &&
+            !loadingDelivery &&
+            user?.enterprise_id === user?.view_enterprise_id
+          "
           @click="openInviteCounter"
           color="black"
           icon-right="person_add"
@@ -209,7 +215,10 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  v-show="props.row.status === false"
+                  v-show="
+                    props.row.status === false &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
                   @click="finalize(props.row.month_year)"
                   size="sm"
                   flat

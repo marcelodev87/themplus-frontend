@@ -9,6 +9,7 @@ import { Account } from 'src/ts/interfaces/data/Account';
 import FormTransfer from 'src/components/forms/FormTransfer.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'Account',
@@ -17,6 +18,7 @@ defineOptions({
 const { getAccounts, exportAccount, updateActiveAccount } = useAccountStore();
 const { loadingAccount, listAccount, filledData } =
   storeToRefs(useAccountStore());
+const { user } = storeToRefs(useAuthStore());
 
 const showFormAccount = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -137,6 +139,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormTransfer"
           color="blue-8"
           icon-right="assured_workload"
@@ -145,6 +148,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormAccount"
           color="blue-8"
           icon-right="assured_workload"
@@ -164,7 +168,12 @@ onMounted(async () => {
           no-caps
         >
           <q-list>
-            <q-item clickable v-ripple @click="openFormAccount">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              clickable
+              v-ripple
+              @click="openFormAccount"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="assured_workload" />
@@ -172,7 +181,12 @@ onMounted(async () => {
               </q-item-section>
               <q-item-section>Contas</q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="openFormTransfer">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              clickable
+              v-ripple
+              @click="openFormTransfer"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="assured_workload" />
@@ -262,7 +276,9 @@ onMounted(async () => {
                 <q-btn
                   @click="handleEdit(props.row)"
                   v-show="
-                    props.row.active === 1 && props.row.name !== 'Caixinha'
+                    props.row.active === 1 &&
+                    props.row.name !== 'Caixinha' &&
+                    user?.enterprise_id === user?.view_enterprise_id
                   "
                   size="sm"
                   flat
@@ -274,7 +290,9 @@ onMounted(async () => {
                 <q-btn
                   @click="reactivate(props.row.id)"
                   v-show="
-                    props.row.active === 0 && props.row.name !== 'Caixinha'
+                    props.row.active === 0 &&
+                    props.row.name !== 'Caixinha' &&
+                    user?.enterprise_id === user?.view_enterprise_id
                   "
                   size="sm"
                   flat

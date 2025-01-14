@@ -7,11 +7,13 @@ import { Category } from 'src/ts/interfaces/data/Category';
 import FormCategory from 'src/components/forms/FormCategory.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useCategoryStore } from 'src/stores/category-store';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'Category',
 });
 
+const { user } = storeToRefs(useAuthStore());
 const { listCategory, loadingCategory, filledData } =
   storeToRefs(useCategoryStore());
 const {
@@ -190,6 +192,7 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormCategory"
           color="blue-8"
           icon-right="category"
@@ -296,7 +299,9 @@ onMounted(async () => {
                 <q-btn
                   @click="handleEdit(props.row)"
                   v-show="
-                    props.row.enterprise_id !== null && props.row.active === 1
+                    props.row.enterprise_id !== null &&
+                    props.row.active === 1 &&
+                    user?.enterprise_id === user?.view_enterprise_id
                   "
                   size="sm"
                   flat
@@ -308,7 +313,9 @@ onMounted(async () => {
                 <q-btn
                   @click="exclude(props.row.id)"
                   v-show="
-                    props.row.enterprise_id !== null && props.row.active === 1
+                    props.row.enterprise_id !== null &&
+                    props.row.active === 1 &&
+                    user?.enterprise_id === user?.view_enterprise_id
                   "
                   size="sm"
                   flat
@@ -319,7 +326,10 @@ onMounted(async () => {
                 />
                 <q-btn
                   @click="reactivate(props.row.id)"
-                  v-show="props.row.active === 0"
+                  v-show="
+                    props.row.active === 0 &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
                   size="sm"
                   flat
                   round

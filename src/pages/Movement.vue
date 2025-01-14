@@ -12,6 +12,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'Movement',
@@ -26,6 +27,7 @@ const {
 } = useMovementStore();
 const { loadingMovement, listMovement, filledData, listMonthYear, delivered } =
   storeToRefs(useMovementStore());
+const { user } = storeToRefs(useAuthStore());
 
 const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -282,6 +284,7 @@ onMounted(async () => {
         class="col-7 row items-center justify-end q-gutter-x-sm"
       >
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormInsertMovement"
           :loading="loadingExport"
           flat
@@ -302,6 +305,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormOut"
           color="negative"
           icon-right="remove"
@@ -310,6 +314,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormEntry"
           color="positive"
           icon-right="add"
@@ -329,7 +334,12 @@ onMounted(async () => {
           no-caps
         >
           <q-list>
-            <q-item clickable v-ripple @click="openFormEntry">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              clickable
+              v-ripple
+              @click="openFormEntry"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="add" />
@@ -337,7 +347,12 @@ onMounted(async () => {
               </q-item-section>
               <q-item-section>Formulário de entrada</q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="openFormOut">
+            <q-item
+              v-show="user?.enterprise_id === user?.view_enterprise_id"
+              clickable
+              v-ripple
+              @click="openFormOut"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="remove" />
@@ -453,7 +468,10 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  v-show="!delivered"
+                  v-show="
+                    !delivered &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
                   @click="handleEdit(props.row)"
                   size="sm"
                   flat
@@ -463,7 +481,10 @@ onMounted(async () => {
                   :disabled="false"
                 />
                 <q-btn
-                  v-show="!delivered"
+                  v-show="
+                    !delivered &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
                   @click="saveIdExclude(props.row.id)"
                   size="sm"
                   flat

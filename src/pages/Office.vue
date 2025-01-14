@@ -8,11 +8,13 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'Office',
 });
 
+const { user } = storeToRefs(useAuthStore());
 const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices } = useOfficeStore();
 
@@ -99,6 +101,7 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormEnterprise"
           color="blue-8"
           icon-right="add_home"
@@ -143,6 +146,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  v-show="user?.enterprise_id === user?.view_enterprise_id"
                   @click="openFormUser(props.row)"
                   size="sm"
                   flat
@@ -152,6 +156,7 @@ onMounted(async () => {
                   :disabled="loadingOffice"
                 />
                 <q-btn
+                  v-show="user?.enterprise_id === user?.view_enterprise_id"
                   size="sm"
                   flat
                   round
