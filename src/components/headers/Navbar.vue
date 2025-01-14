@@ -77,6 +77,7 @@ const closeNotifications = (): void => {
             <q-tooltip> Entrar em contato </q-tooltip>
           </q-btn>
           <q-btn
+            v-show="user?.enterprise_id === user?.view_enterprise_id"
             @click="openFormFeedback"
             flat
             color="black"

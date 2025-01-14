@@ -168,7 +168,10 @@ onMounted(async () => {
           flat
         />
         <q-btn
-          v-show="hasCounter !== null"
+          v-show="
+            hasCounter !== null &&
+            user?.enterprise_id === user?.view_enterprise_id
+          "
           @click="openCounterInfo"
           color="blue-8"
           icon-right="visibility"

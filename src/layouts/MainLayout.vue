@@ -4,7 +4,7 @@ import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import EmailInfo from 'src/components/info/EmailInfo.vue';
 import FormViewEnterprise from 'src/components/forms/FormViewEnterprise.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
@@ -149,7 +149,8 @@ const mountRoute = () => {
   }
   if (
     enterpriseCreated.value === null &&
-    enterprisePosition.value === 'client'
+    enterprisePosition.value === 'client' &&
+    user.value?.enterprise_id === user.value?.view_enterprise_id
   ) {
     menuList.value.push({
       icon: 'holiday_village',
@@ -173,6 +174,10 @@ const closeDrawer = (): void => {
     leftDrawerOpen.value = false;
   }
 };
+
+watch(user, () => {
+  mountRoute();
+});
 
 onMounted(() => {
   mountRoute();
