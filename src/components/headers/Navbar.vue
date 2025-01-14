@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useAuthStore } from 'src/stores/auth-store';
+import { storeToRefs } from 'pinia';
 import UserOptions from './UserOptions.vue';
 import FormFeedback from '../forms/FormFeedback.vue';
 import Notifications from '../info/Notifications.vue';
@@ -7,6 +9,8 @@ import Notifications from '../info/Notifications.vue';
 defineOptions({
   name: 'Navbar',
 });
+
+const { user } = storeToRefs(useAuthStore());
 
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
@@ -53,6 +57,16 @@ const closeNotifications = (): void => {
       </div>
       <div class="row justify-end">
         <div v-if="!$q.screen.lt.md">
+          <q-btn
+            v-show="user?.enterprise_id !== user?.view_enterprise_id"
+            class="fade-button"
+            flat
+            color="red"
+            icon-right="preview"
+            rounded
+          >
+            <q-tooltip> Modo espectador ativado </q-tooltip>
+          </q-btn>
           <q-btn
             @click="emit('update:openEmailInfo')"
             flat
@@ -133,3 +147,20 @@ const closeNotifications = (): void => {
     />
   </nav>
 </template>
+<style scoped lang="scss">
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fade-button {
+  animation: fadeInOut 2s infinite;
+}
+</style>
