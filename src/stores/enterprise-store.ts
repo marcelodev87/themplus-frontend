@@ -17,8 +17,10 @@ import {
   ViewEnterprise,
 } from '../ts/interfaces/data/Enterprise';
 import { useOrderStore } from './order-store';
+import { useAuthStore } from './auth-store';
 
 const { hasCounter } = storeToRefs(useOrderStore());
+const { setUser } = useAuthStore();
 
 export const useEnterpriseStore = defineStore('enterprise', {
   state: () => ({
@@ -117,6 +119,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
         const response = await saveEnterpriseViewService(enterprise);
         if (response.status === 200) {
           this.setListViewEnterprise(response.data.enterprises);
+          setUser(response.data.user);
           this.createSuccess(response.data.message);
         }
         return response;

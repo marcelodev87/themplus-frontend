@@ -4,6 +4,7 @@ import {
   ResultEnterprise,
   ViewEnterprise,
 } from 'src/ts/interfaces/data/Enterprise';
+import { User } from 'src/ts/interfaces/data/User';
 
 const baseUrl = 'enterprise';
 
@@ -28,6 +29,7 @@ export const saveEnterpriseViewService = (
   status: number;
   data: {
     enterprises: ViewEnterprise[];
+    user: User;
     message: string;
   };
 }> => api.post(`${baseUrl}/view`, { viewEnterprise: value });
