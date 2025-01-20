@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { useOrderStore } from 'src/stores/order-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { OrderClient } from 'src/ts/interfaces/data/Order';
+import { useFinancialStore } from 'src/stores/financial-store';
 import TitlePage from './TitlePage.vue';
 
 defineOptions({
@@ -18,6 +19,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { orderCount } = storeToRefs(useFinancialStore());
 const { listOrderClient, loadingOrder } = storeToRefs(useOrderStore());
 const { actionRequestEnterprise, getOrdersViewClient } = useOrderStore();
 
@@ -102,7 +104,10 @@ const fetchOrders = async () => {
   await getOrdersViewClient();
 };
 const actionInvite = async (id: string, action: 'accepted' | 'declined') => {
-  await actionRequestEnterprise(id, action);
+  const response = await actionRequestEnterprise(id, action);
+  if (response?.status === 200) {
+    orderCount.value = response.data.orders.length;
+  }
 };
 const clear = (): void => {
   filterOrder.value = '';

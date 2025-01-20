@@ -18,6 +18,7 @@ export const useFinancialStore = defineStore('financial', {
     filledData: true as boolean,
     loadingDelivery: false as boolean,
     listDelivery: [] as Delivery[],
+    orderCount: 0 as number,
   }),
   actions: {
     clearListFinancial() {
@@ -28,6 +29,9 @@ export const useFinancialStore = defineStore('financial', {
     },
     setFilledData(data: boolean) {
       this.filledData = data;
+    },
+    setOrderCount(order: number) {
+      this.orderCount = order;
     },
     setListDelivery(deliveries: Delivery[]) {
       deliveries.map((item) => this.listDelivery.push(item));
@@ -58,6 +62,7 @@ export const useFinancialStore = defineStore('financial', {
           this.clearListFinancial();
           this.setListDelivery(response.data.deliveries);
           this.setFilledData(response.data.filled_data);
+          this.setOrderCount(response.data.order_count);
           hasCounter.value = response.data.counter;
           enterpriseHeadquarters.value = response.data.is_headquarters;
         }

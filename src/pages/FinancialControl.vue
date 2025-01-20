@@ -19,7 +19,7 @@ defineOptions({
 const { user } = storeToRefs(useAuthStore());
 const { enterpriseHeadquarters } = storeToRefs(useEnterpriseStore());
 const { hasCounter } = storeToRefs(useOrderStore());
-const { listDelivery, loadingDelivery, filledData } =
+const { listDelivery, loadingDelivery, filledData, orderCount } =
   storeToRefs(useFinancialStore());
 const { getDelivery, updateDelivery } = useFinancialStore();
 
@@ -167,7 +167,15 @@ onMounted(async () => {
           unelevated
           no-caps
           flat
-        />
+        >
+          <q-badge
+            v-show="orderCount > 0"
+            color="red"
+            rounded
+            floating
+            :label="orderCount"
+          />
+        </q-btn>
         <q-btn
           v-show="
             hasCounter !== null &&
