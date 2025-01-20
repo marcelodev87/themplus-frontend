@@ -62,7 +62,7 @@ const closeNotifications = (): void => {
             :label="user?.view_enterprise_name"
             flat
             color="red"
-            icon-right="preview"
+            icon-right="holiday_village"
             rounded
           >
             <q-tooltip> Modo espectador ativado </q-tooltip>
