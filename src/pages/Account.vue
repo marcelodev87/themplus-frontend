@@ -141,7 +141,7 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormTransfer"
-          color="blue-8"
+          class="bg-contabilidade"
           icon-right="assured_workload"
           label="Transferências"
           unelevated
@@ -150,10 +150,9 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormAccount"
-          color="blue-8"
           icon-right="assured_workload"
           label="Contas"
-          class="q-mr-sm"
+          class="q-mr-sm bg-contabilidade"
           unelevated
           no-caps
         />

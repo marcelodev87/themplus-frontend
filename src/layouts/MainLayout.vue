@@ -213,7 +213,7 @@ onMounted(() => {
             clickable
             :to="{ name: menuItem.name }"
             :active="isActive(menuItem.name)"
-            active-class=" text-red text-bold"
+            active-class=" active-option-menu text-bold"
             @click="closeDrawer"
           >
             <q-item-section avatar>

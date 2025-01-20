@@ -173,10 +173,9 @@ onMounted(async () => {
             user?.enterprise_id === user?.view_enterprise_id
           "
           @click="openCounterInfo"
-          color="blue-8"
           icon-right="visibility"
           label="Dados do contador"
-          class="q-mr-sm"
+          class="q-mr-sm bg-contabilidade"
           unelevated
           no-caps
         />

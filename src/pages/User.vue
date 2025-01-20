@@ -139,10 +139,9 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormUser"
-          color="blue-8"
           icon-right="group_add"
           label="Usuários"
-          class="q-mr-sm"
+          class="q-mr-sm bg-contabilidade"
           unelevated
           no-caps
         />

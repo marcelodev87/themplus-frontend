@@ -310,7 +310,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
-              <span class="text-subtitle2 text-green"
+              <span class="text-h6 text-green"
                 >Movimentações de entrada x categoria</span
               >
             </template>
@@ -326,7 +326,7 @@ onMounted(async () => {
                       (Number(totalValueEntryCategory) || 1)
                     "
                     size="20px"
-                    class="q-my-sm"
+                    class="q-my-sm bg-white text-green"
                     rounded
                   >
                     <div class="absolute-full flex flex-center">
@@ -355,7 +355,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
-              <span class="text-subtitle2 text-red"
+              <span class="text-h6 text-red"
                 >Movimentações de saída x categoria</span
               >
             </template>
@@ -372,7 +372,7 @@ onMounted(async () => {
                     "
                     size="20px"
                     rounded
-                    class="q-my-sm"
+                    class="q-my-sm bg-white text-red"
                   >
                     <div class="absolute-full flex flex-center">
                       <q-badge

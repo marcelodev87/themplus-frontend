@@ -103,12 +103,11 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormDepartment()"
-          color="blue-8"
           icon-right="groups"
           label="Departamentos"
           unelevated
           no-caps
-          class="q-mr-sm"
+          class="q-mr-sm bg-contabilidade"
         />
       </div>
     </header>
