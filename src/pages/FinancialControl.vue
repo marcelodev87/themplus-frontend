@@ -112,10 +112,11 @@ const formatDateToBrazilian = (dateTime: string | null | undefined) => {
     return '';
   }
 
-  const [datePart] = dateTime.split(' ');
+  const [datePart, timePart] = dateTime.split(' ');
   const [year, month, day] = datePart.split('-');
+  const [hours, minutes, seconds] = timePart.split(':');
 
-  return `${day}/${month}/${year}`;
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };
 const finalize = async (monthYear: string): Promise<void> => {
   dataMonthYear.value = monthYear;
