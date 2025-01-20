@@ -117,7 +117,7 @@ watch(open, async () => {
               bg-color="white"
               label-color="black"
               filled
-              label="Pesquise por Nome, E-mail, CPF ou CNPJ"
+              label="Pesquise por E-mail, CPF ou CNPJ"
               dense
               input-class="text-black"
               :loading="loadingEnterprise"
