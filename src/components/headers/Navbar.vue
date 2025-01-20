@@ -59,7 +59,7 @@ const closeNotifications = (): void => {
         <div v-if="!$q.screen.lt.md">
           <q-btn
             v-show="user?.enterprise_id !== user?.view_enterprise_id"
-            class="fade-button"
+            :label="user?.view_enterprise_name"
             flat
             color="red"
             icon-right="preview"
@@ -148,20 +148,3 @@ const closeNotifications = (): void => {
     />
   </nav>
 </template>
-<style scoped lang="scss">
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-.fade-button {
-  animation: fadeInOut 2s infinite;
-}
-</style>

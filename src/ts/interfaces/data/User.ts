@@ -74,4 +74,5 @@ export interface User {
   created_by: string | null;
   created_at: string;
   view_enterprise_id: string;
+  view_enterprise_name: string;
 }
