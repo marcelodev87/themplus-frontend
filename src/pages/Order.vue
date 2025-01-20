@@ -157,10 +157,9 @@ onMounted(async () => {
       >
         <q-btn
           @click="openFormRequestUser"
-          color="blue-8"
           icon-right="person_add"
           label="Solicitações"
-          class="q-mr-sm"
+          class="q-mr-sm bg-contabilidade"
           unelevated
           no-caps
         />
