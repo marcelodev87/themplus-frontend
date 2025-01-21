@@ -111,6 +111,15 @@ export const insertMovementService = (
   };
 }> => api.post(`${baseUrl}/insert`, { movements });
 
+export const saveObservationsService = (
+  movements: { id: string; observation: string | null }[]
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post(`${baseUrl}/observations`, { movements });
+
 export const exportMovementService = async (
   entry: boolean,
   out: boolean,

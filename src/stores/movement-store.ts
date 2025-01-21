@@ -12,6 +12,7 @@ import {
   getMovementsService,
   getMovementsWithParamsService,
   insertMovementService,
+  saveObservationsService,
   updateMovementService,
 } from 'src/services/movement-service';
 import {
@@ -279,6 +280,22 @@ export const useMovementStore = defineStore('movement', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async saveObservations(data: { id: string; observation: string | null }[]) {
+      this.setLoading(true);
+      try {
+        const response = await saveObservationsService(data);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

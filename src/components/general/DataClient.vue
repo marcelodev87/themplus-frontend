@@ -23,7 +23,8 @@ const {
 const { loadingReport, listReport, listMovement, entepriseInspected } =
   storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
-const { downloadFile } = useMovementStore();
+const { downloadFile, saveObservations } = useMovementStore();
+const { loadingMovement } = storeToRefs(useMovementStore());
 
 const props = defineProps<{
   open: boolean;
@@ -117,6 +118,14 @@ const columnsMovement = reactive<QuasarTable[]>([
     style:
       'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
+  {
+    name: 'observation',
+    label: 'Observação',
+    align: 'left',
+    field: 'observation',
+    style:
+      'max-width:100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+  },
 ]);
 
 const open = computed({
@@ -207,6 +216,28 @@ const searchDetails = async (id: string) => {
 };
 const download = async (file: string) => {
   await downloadFile(file.split('receipts/')[1]);
+};
+const clearObservations = (): void => {
+  listMovement.value = listMovement.value.map((item) => {
+    return {
+      ...item,
+      observation: null,
+    };
+  });
+};
+const updateObservations = async () => {
+  const data: { id: string; observation: string | null }[] = [];
+  listMovement.value.forEach((item) => {
+    data.push({
+      id: item.id,
+      observation: item.observation,
+    });
+  });
+
+  const response = await saveObservations(data);
+  if (response?.status === 200) {
+    modeTable.value = 'reports';
+  }
 };
 
 watch(modeTable, async () => {
@@ -394,6 +425,26 @@ watch(
                 </q-tooltip>
                 {{ props.row.receipt }}
               </q-td>
+              <q-td key="observation" :props="props">
+                <q-icon name="edit" color="black" />
+                {{ props.row.observation }}
+                <q-popup-edit
+                  v-model="props.row.observation"
+                  title="Escreva uma observação"
+                  auto-save
+                  v-slot="scope"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    dense
+                    autofocus
+                    counter
+                    style="min-width: 600px; max-width: 98vw"
+                    @keyup.enter="scope.set"
+                  >
+                  </q-input>
+                </q-popup-edit>
+              </q-td>
             </q-tr>
           </template>
         </q-table>
@@ -414,6 +465,26 @@ watch(
             @click="modeTable = 'reports'"
             color="red"
             label="Voltar"
+            size="md"
+            flat
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-show="modeTable === 'details'"
+            @click="clearObservations"
+            color="red"
+            label="Limpar"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-show="modeTable === 'details'"
+            @click="updateObservations"
+            :disable="loadingReport || loadingMovement"
+            color="primary"
+            label="Salvar"
             size="md"
             unelevated
             no-caps

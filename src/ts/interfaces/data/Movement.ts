@@ -13,6 +13,7 @@ export interface Movement {
   account_id: string;
   account: Account | null;
   category: Category | null;
+  observation: string | null;
 }
 
 export interface InsertMovement {
