@@ -8,7 +8,6 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
 import { useOrderStore } from 'src/stores/order-store';
-import { OrderCounter } from 'src/ts/interfaces/data/Order';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import DataClient from 'src/components/general/DataClient.vue';
 import { useRouter, useRoute } from 'vue-router';

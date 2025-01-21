@@ -350,7 +350,7 @@ watch(
           row-key="index"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[12]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de movimentações</span>
@@ -401,11 +401,11 @@ watch(
       <div>
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
+            v-show="modeTable === 'reports'"
             @click="open = false"
             color="red"
             label="Fechar"
             size="md"
-            flat
             unelevated
             no-caps
           />
@@ -417,7 +417,6 @@ watch(
             size="md"
             unelevated
             no-caps
-            icon-right="undo"
           />
         </div>
       </div>
