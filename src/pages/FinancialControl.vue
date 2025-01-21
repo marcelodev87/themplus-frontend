@@ -9,8 +9,11 @@ import InviteCounter from 'src/components/shared/InviteCounter.vue';
 import { useOrderStore } from 'src/stores/order-store';
 import CounterInfo from 'src/components/info/CounterInfo.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useMovementStore } from 'src/stores/movement-store';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 
 defineOptions({
   name: 'FinancialControl',
@@ -19,15 +22,25 @@ defineOptions({
 const { user } = storeToRefs(useAuthStore());
 const { enterpriseHeadquarters } = storeToRefs(useEnterpriseStore());
 const { hasCounter } = storeToRefs(useOrderStore());
-const { listDelivery, loadingDelivery, filledData, orderCount } =
-  storeToRefs(useFinancialStore());
+const {
+  listDelivery,
+  loadingDelivery,
+  filledData,
+  orderCount,
+  listMovementFinancial,
+} = storeToRefs(useFinancialStore());
 const { getDelivery, updateDelivery } = useFinancialStore();
+const { downloadFile } = useMovementStore();
 
+const mode = ref<'reports' | 'observations'>('reports');
 const filterDelivery = ref<string>('');
 const showCounterInfo = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
+const selectedDataEdit = ref<Movement | null>(null);
 const showInviteCounter = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
+const showFormEntry = ref<boolean>(false);
+const showFormOut = ref<boolean>(false);
 const dataMonthYear = ref<string | null>(null);
 const columnsDelivery = reactive<QuasarTable[]>([
   {
@@ -47,6 +60,64 @@ const columnsDelivery = reactive<QuasarTable[]>([
     label: 'Data de entrega',
     field: 'date_delivery',
     align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Ação',
+    field: 'action',
+    align: 'right',
+  },
+]);
+const columnsMovement = reactive<QuasarTable[]>([
+  {
+    name: 'name',
+    label: 'Banco',
+    field: 'account.name',
+    align: 'left',
+  },
+  {
+    name: 'account_number',
+    label: 'Conta',
+    field: 'account.account_number',
+    align: 'left',
+  },
+  {
+    name: 'agency_number',
+    label: 'Agência',
+    field: 'account.agency_number',
+    align: 'left',
+  },
+  {
+    name: 'category',
+    label: 'Categoria',
+    field: 'category.name',
+    align: 'left',
+  },
+  {
+    name: 'value',
+    label: 'Valor',
+    field: 'value',
+    align: 'left',
+  },
+  {
+    name: 'date_movement',
+    label: 'Data de movimentação',
+    field: 'date_movement',
+    align: 'left',
+  },
+  {
+    name: 'description',
+    label: 'Descrição',
+    field: 'description',
+    align: 'left',
+  },
+  {
+    name: 'receipt',
+    label: 'Arquivo',
+    field: 'receipt',
+    align: 'left',
+    style:
+      'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
   {
     name: 'action',
@@ -122,6 +193,34 @@ const finalize = async (monthYear: string): Promise<void> => {
   dataMonthYear.value = monthYear;
   openConfirmAction();
 };
+const formatDate = (dateString: string) => {
+  const [year, month, day] = dateString.split('-');
+
+  return `${day}/${month}/${year}`;
+};
+const openFormEntry = (): void => {
+  showFormEntry.value = true;
+};
+const closeFormEntry = (): void => {
+  showFormEntry.value = false;
+};
+const openFormOut = (): void => {
+  showFormOut.value = true;
+};
+const closeFormOut = (): void => {
+  showFormOut.value = false;
+};
+const download = async (file: string) => {
+  await downloadFile(file.split('receipts/')[1]);
+};
+const handleEdit = (movement: Movement) => {
+  selectedDataEdit.value = movement;
+  if (selectedDataEdit.value.type === 'entrada') {
+    openFormEntry();
+  } else {
+    openFormOut();
+  }
+};
 
 watch(
   filledData,
@@ -193,6 +292,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
+          v-if="mode === 'reports'"
           :rows="loadingDelivery ? [] : listDelivery"
           :columns="columnsDelivery"
           :filter="filterDelivery"
@@ -228,6 +328,20 @@ onMounted(async () => {
                 <q-btn
                   v-show="
                     props.row.status === false &&
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    props.row.has_observation
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="warning"
+                  icon="error"
+                >
+                  <q-tooltip> Anotações </q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-show="
+                    props.row.status === false &&
                     user?.enterprise_id === user?.view_enterprise_id
                   "
                   @click="finalize(props.row.month_year)"
@@ -239,9 +353,75 @@ onMounted(async () => {
                 >
                   <q-tooltip> Entregar </q-tooltip>
                 </q-btn>
-                <!-- <q-btn v-else size="sm" flat round color="black" icon="replay">
-                  <q-tooltip> Reabrir </q-tooltip>
-                </q-btn> -->
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <q-table
+          v-else
+          :rows="loadingDelivery ? [] : listMovementFinancial"
+          :columns="columnsMovement"
+          :loading="loadingDelivery"
+          flat
+          bordered
+          dense
+          row-key="name"
+          no-data-label="Nenhuma movimentação para mostrar"
+          virtual-scroll
+          :rows-per-page-options="[20]"
+        >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de movimentações</span>
+          </template>
+          <template v-slot:body="props">
+            <q-tr
+              :props="props"
+              style="height: 28px"
+              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+            >
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.account.name }}
+              </q-td>
+              <q-td key="account_number" :props="props" class="text-left">
+                {{ props.row.account.account_number }}
+              </q-td>
+              <q-td key="agency_number" :props="props" class="text-left">
+                {{ props.row.account.agency_number }}
+              </q-td>
+              <q-td key="category" :props="props" class="text-left">
+                {{ props.row.category.name }}
+              </q-td>
+              <q-td key="value" :props="props" class="text-left">
+                {{ `${formatCurrencyBRL(props.row.value)}` }}
+              </q-td>
+              <q-td key="date_movement" :props="props" class="text-left">
+                {{ formatDate(props.row.date_movement) }}
+              </q-td>
+              <q-td key="description" :props="props" class="text-left">
+                {{ props.row.description }}
+              </q-td>
+              <q-td
+                @click="download(props.row.receipt)"
+                key="receipt"
+                :props="props"
+                class="text-left"
+                :class="props.row.receipt ? 'cursor-pointer' : ''"
+              >
+                <q-tooltip v-if="props.row.receipt">
+                  {{ props.row.receipt }}
+                </q-tooltip>
+                {{ props.row.receipt }}
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn
+                  @click="handleEdit(props.row)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                  :disabled="false"
+                />
               </q-td>
             </q-tr>
           </template>
@@ -262,6 +442,20 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <FormEntry
+          :open="showFormEntry"
+          :data-edit="selectedDataEdit"
+          title="Atualize uma entrada"
+          mode="movement"
+          @update:open="closeFormEntry"
+        />
+        <FormOut
+          :open="showFormOut"
+          :data-edit="selectedDataEdit"
+          title="Atualize uma saída"
+          mode="movement"
+          @update:open="closeFormOut"
         />
       </main>
     </q-scroll-area>

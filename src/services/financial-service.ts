@@ -1,5 +1,6 @@
 import { api } from 'boot/axios';
 import { Delivery } from 'src/ts/interfaces/data/Delivery';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 
 const baseUrl = 'financial';
 
@@ -14,6 +15,13 @@ export const getDeliveriesService = (): Promise<{
     message: string;
   };
 }> => api.get(`${baseUrl}`);
+
+export const getMovementsWithObservationsService = (): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+  };
+}> => api.get(`${baseUrl}/movements-observations`);
 
 export const updateDeliveryService = (
   monthYear: string
