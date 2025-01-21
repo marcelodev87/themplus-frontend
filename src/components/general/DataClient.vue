@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
-import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -8,6 +7,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
+import DataEnterprise from '../info/DataEnterprise.vue';
 
 defineOptions({
   name: 'DataClient',
@@ -20,7 +20,7 @@ const {
   undoReportCounter,
   detailsReport,
 } = useReportStore();
-const { loadingReport, listReport, listMovement } =
+const { loadingReport, listReport, listMovement, entepriseInspected } =
   storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
 const { downloadFile } = useMovementStore();
@@ -214,38 +214,36 @@ watch(modeTable, async () => {
     await detailsReport(dataDetailsReport.value ?? '');
   }
 });
-watch(open, async () => {
-  if (open.value) {
-    clear();
-    await fetchReports();
-  }
-});
+watch(
+  open,
+  async () => {
+    if (open.value) {
+      clear();
+      await fetchReports();
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
-  <q-dialog v-model="open">
-    <q-card class="bg-grey-2" style="min-width: 98vw">
-      <q-card-section class="q-pa-none">
-        <TitlePage
-          :title="
-            modeTable === 'reports'
-              ? 'Informações de entrega de relatório'
-              : 'Detalhes de movimentações do período'
-          "
-        />
-      </q-card-section>
-      <q-card-section class="q-pa-sm q-gutter-y-sm">
+  <section v-show="open">
+    <div class="bg-grey-2 q-pa-md">
+      <div v-if="entepriseInspected">
+        <DataEnterprise :enterprise="entepriseInspected" />
+      </div>
+      <div class="q-py-sm q-gutter-y-sm">
         <q-table
           v-if="modeTable === 'reports'"
           :rows="loadingReport ? [] : listReport"
           :columns="columnsDataClient"
           :loading="loadingReport"
           flat
-          bordered
           dense
           row-key="name"
           no-data-label="Nenhum período para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[12]"
+          bordered
         >
           <template v-slot:top>
             <span v-if="modeTable === 'reports'" class="text-subtitle2"
@@ -399,8 +397,8 @@ watch(open, async () => {
             </q-tr>
           </template>
         </q-table>
-      </q-card-section>
-      <q-card-actions align="right">
+      </div>
+      <div>
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
             @click="open = false"
@@ -422,7 +420,7 @@ watch(open, async () => {
             icon-right="undo"
           />
         </div>
-      </q-card-actions>
+      </div>
       <ConfirmAction
         :open="showConfirmAction"
         label-action="Continuar"
@@ -445,6 +443,6 @@ watch(open, async () => {
         color="primary"
         size="50px"
       />
-    </q-card>
-  </q-dialog>
+    </div>
+  </section>
 </template>

@@ -11,6 +11,7 @@ import { useOrderStore } from 'src/stores/order-store';
 import { OrderCounter } from 'src/ts/interfaces/data/Order';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import DataClient from 'src/components/general/DataClient.vue';
+import { useRouter, useRoute } from 'vue-router';
 
 defineOptions({
   name: 'Bond',
@@ -19,6 +20,8 @@ defineOptions({
 const { loadingOrder, listBond, filledData } = storeToRefs(useOrderStore());
 const { getBonds, deleteBond } = useOrderStore();
 
+const router = useRouter();
+const route = useRoute();
 const showFormAlert = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterOrder = ref<string>('');
@@ -114,12 +117,17 @@ const openConfirmAction = (orderId: string): void => {
   showConfirmAction.value = true;
 };
 const openDataClient = (id: string) => {
-  dataClient.value = id;
-  showDataClient.value = true;
+  const routeData = router.resolve({
+    name: 'admin-bond-with-id',
+    params: { id },
+  });
+
+  window.open(routeData.href, '_blank');
 };
 const closeDataClient = () => {
   clear();
   showDataClient.value = false;
+  window.close();
 };
 
 watch(
@@ -130,6 +138,18 @@ watch(
     }
   },
   { immediate: true }
+);
+watch(
+  () => route,
+  () => {
+    if ('id' in route.params) {
+      dataClient.value = Array.isArray(route.params.id)
+        ? route.params.id[0]
+        : route.params.id;
+      showDataClient.value = true;
+    }
+  },
+  { immediate: true, deep: true }
 );
 
 onMounted(async () => {
@@ -152,6 +172,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
+          v-show="!showDataClient"
           :rows="loadingOrder ? [] : listBond"
           :columns="columnsBond"
           :filter="filterOrder"
@@ -222,6 +243,11 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
+        <DataClient
+          :id-client="dataClient"
+          :open="showDataClient"
+          @update:open="closeDataClient"
+        />
         <FormAlert
           :open="showFormAlert"
           :data-edit="selectedDataEdit"
@@ -230,11 +256,6 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
-        />
-        <DataClient
-          :open="showDataClient"
-          :id-client="dataClient"
-          @update:open="closeDataClient"
         />
         <ConfirmAction
           :open="showConfirmAction"

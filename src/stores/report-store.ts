@@ -9,6 +9,7 @@ import {
   reopenByCounterService,
   undoReportCounterService,
 } from 'src/services/report-service';
+import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
 
@@ -18,6 +19,7 @@ export const useReportStore = defineStore('report', {
     listReport: [] as Report[],
     clientName: null as string | null,
     listMovement: [] as Movement[],
+    entepriseInspected: null as Enterprise | null,
   }),
   actions: {
     clearListReport() {
@@ -38,6 +40,9 @@ export const useReportStore = defineStore('report', {
     },
     setClientName(name: string | null) {
       this.clientName = name;
+    },
+    setEnterpriseInspected(enterprise: Enterprise | null) {
+      this.entepriseInspected = enterprise;
     },
     setListReport(report: Report[]) {
       report.map((item) => this.listReport.push(item));
@@ -65,10 +70,12 @@ export const useReportStore = defineStore('report', {
         this.setLoading(true);
         const response = await getReportsService(id);
         this.setClientName(null);
+        this.setEnterpriseInspected(null);
         if (response.status === 200) {
           this.clearListReport();
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
+          this.setEnterpriseInspected(response.data.enterprise_inspected);
         }
       } catch (error) {
         this.createError(error);

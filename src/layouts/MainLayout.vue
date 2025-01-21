@@ -34,7 +34,12 @@ const menuList = ref<
   }[]
 >([]);
 
-const isActive = (routeName: string) => route.name === routeName;
+const isActive = (routeName: string) => {
+  return (
+    route.name === routeName ||
+    (route.name === 'admin-bond-with-id' && routeName === 'admin-bond')
+  );
+};
 const openFormPerfil = (): void => {
   showFormPerfil.value = true;
 };

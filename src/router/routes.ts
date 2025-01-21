@@ -75,11 +75,24 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-order',
         component: () => import('src/pages/Order.vue'),
       },
+
       {
         path: 'vinculos',
-        name: 'admin-bond',
         component: () => import('src/pages/Bond.vue'),
+        children: [
+          {
+            path: '',
+            name: 'admin-bond',
+            component: () => import('src/pages/Bond.vue'),
+          },
+          {
+            path: ':id',
+            name: 'admin-bond-with-id',
+            component: () => import('src/pages/Bond.vue'),
+          },
+        ],
       },
+
       // {
       //   path: 'alertas',
       //   name: 'admin-alert',

@@ -1,6 +1,7 @@
 import { api } from 'boot/axios';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
+import { Enterprise } from '../ts/interfaces/data/Enterprise';
 
 const baseUrl = 'report';
 
@@ -10,6 +11,7 @@ export const getReportsService = (
   status: number;
   data: {
     client_name: string;
+    enterprise_inspected: Enterprise | null;
     reports: Report[];
   };
 }> => api.get(`${baseUrl}/${id}`);
