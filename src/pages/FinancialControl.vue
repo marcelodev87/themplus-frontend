@@ -14,6 +14,8 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useMovementStore } from 'src/stores/movement-store';
 import { Movement } from 'src/ts/interfaces/data/Movement';
+import FormEntry from 'src/components/forms/FormEntry.vue';
+import FormOut from 'src/components/forms/FormOut.vue';
 
 defineOptions({
   name: 'FinancialControl',
@@ -29,7 +31,8 @@ const {
   orderCount,
   listMovementFinancial,
 } = storeToRefs(useFinancialStore());
-const { getDelivery, updateDelivery } = useFinancialStore();
+const { getDelivery, updateDelivery, getMovementsWithObservations } =
+  useFinancialStore();
 const { downloadFile } = useMovementStore();
 
 const mode = ref<'reports' | 'observations'>('reports');
@@ -42,6 +45,7 @@ const showConfirmAction = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const dataMonthYear = ref<string | null>(null);
+const dateSelected = ref<string | null>(null);
 const columnsDelivery = reactive<QuasarTable[]>([
   {
     name: 'month_year',
@@ -115,6 +119,14 @@ const columnsMovement = reactive<QuasarTable[]>([
     name: 'receipt',
     label: 'Arquivo',
     field: 'receipt',
+    align: 'left',
+    style:
+      'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+  },
+  {
+    name: 'observation',
+    label: 'Observação',
+    field: 'observation',
     align: 'left',
     style:
       'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
@@ -201,14 +213,16 @@ const formatDate = (dateString: string) => {
 const openFormEntry = (): void => {
   showFormEntry.value = true;
 };
-const closeFormEntry = (): void => {
+const closeFormEntry = async () => {
   showFormEntry.value = false;
+  await getMovementsWithObservations(dateSelected.value!.replace(/\//g, '-'));
 };
 const openFormOut = (): void => {
   showFormOut.value = true;
 };
-const closeFormOut = (): void => {
+const closeFormOut = async () => {
   showFormOut.value = false;
+  await getMovementsWithObservations(dateSelected.value!.replace(/\//g, '-'));
 };
 const download = async (file: string) => {
   await downloadFile(file.split('receipts/')[1]);
@@ -220,6 +234,18 @@ const handleEdit = (movement: Movement) => {
   } else {
     openFormOut();
   }
+};
+const openTableMovements = async (date: string) => {
+  mode.value = 'observations';
+  dateSelected.value = date;
+  await getMovementsWithObservations(date.replace(/\//g, '-'));
+};
+const closeTableMovements = async () => {
+  mode.value = 'reports';
+};
+const clear = () => {
+  mode.value = 'reports';
+  dateSelected.value = null;
 };
 
 watch(
@@ -233,6 +259,7 @@ watch(
 );
 
 onMounted(async () => {
+  clear();
   fetchDelivery();
 });
 </script>
@@ -303,7 +330,7 @@ onMounted(async () => {
           row-key="name"
           no-data-label="Nenhuma entrega para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[12]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de entregas</span>
@@ -331,6 +358,7 @@ onMounted(async () => {
                     user?.enterprise_id === user?.view_enterprise_id &&
                     props.row.has_observation
                   "
+                  @click="openTableMovements(props.row.month_year)"
                   size="sm"
                   flat
                   round
@@ -412,6 +440,9 @@ onMounted(async () => {
                 </q-tooltip>
                 {{ props.row.receipt }}
               </q-td>
+              <q-td key="observation" :props="props" class="text-left">
+                {{ props.row.observation }}
+              </q-td>
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
@@ -426,6 +457,17 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
+        <div class="q-mt-sm row justify-end">
+          <q-btn
+            v-show="mode === 'observations'"
+            @click="closeTableMovements"
+            color="red"
+            label="Voltar"
+            size="md"
+            unelevated
+            no-caps
+          />
+        </div>
         <InviteCounter
           :open="showInviteCounter"
           @update:open="closeInviteCounter"

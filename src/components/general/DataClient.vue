@@ -474,7 +474,7 @@ watch(
             v-show="modeTable === 'details'"
             @click="clearObservations"
             color="red"
-            label="Limpar"
+            label="Limpar observações"
             size="md"
             unelevated
             no-caps

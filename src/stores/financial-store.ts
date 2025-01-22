@@ -85,11 +85,11 @@ export const useFinancialStore = defineStore('financial', {
         this.setLoading(false);
       }
     },
-    async getMovementsWithObservations() {
+    async getMovementsWithObservations(date: string) {
       this.setLoading(true);
       try {
         this.clearListMovementFinancial();
-        const response = await getMovementsWithObservationsService();
+        const response = await getMovementsWithObservationsService(date);
         if (response.status === 200) {
           this.setListMovementFinancial(response.data.movements);
         }

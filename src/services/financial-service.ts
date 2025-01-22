@@ -16,12 +16,14 @@ export const getDeliveriesService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
-export const getMovementsWithObservationsService = (): Promise<{
+export const getMovementsWithObservationsService = (
+  date: string
+): Promise<{
   status: number;
   data: {
     movements: Movement[];
   };
-}> => api.get(`${baseUrl}/movements-observations`);
+}> => api.get(`${baseUrl}/movements-observations/${date}`);
 
 export const updateDeliveryService = (
   monthYear: string
