@@ -441,6 +441,7 @@ watch(
                     counter
                     style="min-width: 600px; max-width: 98vw"
                     @keyup.enter="scope.set"
+                    maxlength="400"
                   >
                   </q-input>
                 </q-popup-edit>

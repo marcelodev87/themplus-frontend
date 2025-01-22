@@ -9,4 +9,5 @@ export interface DataOut {
   file: File | null;
   type: string;
   programmed: QuasarSelect<number>;
+  observation: string | null;
 }

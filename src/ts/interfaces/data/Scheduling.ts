@@ -13,4 +13,5 @@ export interface Scheduling {
   account_id: string;
   category: Category | null;
   account: Account | null;
+  observation?: string | null;
 }

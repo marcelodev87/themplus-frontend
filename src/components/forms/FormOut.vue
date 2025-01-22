@@ -50,6 +50,7 @@ const dataOut = reactive<DataOut>({
   account: null,
   date: '',
   programmed: { label: 'Apenas mês atual', value: 0 },
+  observation: null,
 });
 const optionsCategoriesMovement = ref(listCategoryMovement.value);
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
@@ -165,6 +166,7 @@ const clear = (): void => {
     description: '',
     file: null,
     programmed: { label: 'Apenas mês atual', value: 0 },
+    observation: null,
   });
 };
 const save = async () => {
@@ -262,6 +264,7 @@ const mountEdit = (): void => {
         (item) => item.value === props.dataEdit?.account_id
       ),
       description: props.dataEdit?.description ?? '',
+      observation: props.dataEdit?.observation ?? '',
       file: props.dataEdit?.receipt ?? null,
     });
   }
@@ -350,6 +353,24 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
+          <q-input
+            v-show="dataOut.observation !== null"
+            v-model="dataOut.observation"
+            style="height: 150px; max-height: 130px"
+            bg-color="red-2"
+            label-color="black"
+            filled
+            label="Observação da contabilidade"
+            dense
+            input-class="text-black no-resize "
+            type="textarea"
+            class="no-resize"
+            readonly
+          >
+            <template v-slot:prepend>
+              <q-icon name="info" color="black" size="20px" />
+            </template>
+          </q-input>
           <q-select
             v-model="dataOut.category"
             :options="
