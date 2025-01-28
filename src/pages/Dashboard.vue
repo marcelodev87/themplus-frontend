@@ -641,7 +641,7 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
-                        :label="`R$ ${formatCurrencyBRL(props.row.value)}`"
+                        :label="`${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
                   </q-linear-progress>
