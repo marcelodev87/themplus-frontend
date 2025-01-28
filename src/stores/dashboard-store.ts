@@ -2,7 +2,10 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { getDashboardService } from 'src/services/dashboard-service';
+import {
+  downloadDashboardService,
+  getDashboardService,
+} from 'src/services/dashboard-service';
 import { Category } from 'src/ts/interfaces/data/Category';
 import { DatePeriod } from 'src/ts/interfaces/data/Date';
 import {
@@ -117,6 +120,20 @@ export const useDashboardStore = defineStore('dashboard', {
           this.setListCategoryFilters(response.data.categories);
           this.setFilledData(response.data.filled_data);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async downloadDashboard(
+      mode: string,
+      date: DatePeriod | string,
+      category: string | null
+    ) {
+      this.setLoading(true);
+      try {
+        await downloadDashboardService(mode, date, category);
       } catch (error) {
         this.createError(error);
       } finally {

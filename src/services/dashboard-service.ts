@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
+import { Notify } from 'quasar';
 import { Category } from 'src/ts/interfaces/data/Category';
 import { DatePeriod } from 'src/ts/interfaces/data/Date';
 import {
@@ -11,6 +14,19 @@ import {
 } from 'src/ts/interfaces/data/Graphics';
 
 const baseUrl = 'dashboard';
+
+const createError = (error: any) => {
+  let message = 'Error';
+  if (error instanceof AxiosError) {
+    message = error.response?.data?.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  Notify.create({
+    message,
+    type: 'negative',
+  });
+};
 
 export const getDashboardService = (
   mode: string,
@@ -30,3 +46,34 @@ export const getDashboardService = (
     filled_data: boolean;
   };
 }> => api.post(`${baseUrl}/`, { mode, date, category });
+
+export const downloadDashboardService = async (
+  mode: string,
+  date: DatePeriod | string,
+  category: string | null
+) => {
+  try {
+    const response = await api.post(
+      `${baseUrl}/export`,
+      { mode, date, category },
+      {
+        responseType: 'blob',
+      }
+    );
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `dashboard_${timestamp}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};

@@ -11,7 +11,7 @@ defineOptions({
   name: 'Dashboard',
 });
 
-const { getDashboard } = useDashboardStore();
+const { getDashboard, downloadDashboard } = useDashboardStore();
 const {
   loadingDashboard,
   listCategoryMovementsDashboard,
@@ -63,6 +63,16 @@ const optionsFilters = reactive<QuasarSelect<string>[]>([
   },
 ]);
 
+const allowDownload = computed(() => {
+  if (
+    selectedFilter.value.value === 'period' &&
+    (selectedDatePeriod.value.from === null ||
+      selectedDatePeriod.value.to === null)
+  ) {
+    return true;
+  }
+  return false;
+});
 const optionsCategoriesFilter = computed(() => {
   const baseCategories = [
     {
@@ -209,6 +219,18 @@ const closeAlertDataEnterprise = (): void => {
 };
 const clearDatePeriod = () => {
   selectedDatePeriod.value = { from: null, to: null };
+};
+const download = async () => {
+  await downloadDashboard(
+    selectedFilter.value.value,
+    selectedFilter.value.value === 'month'
+      ? filterMonthYear.value.replace('/', '-')
+      : {
+          from: selectedDatePeriod.value.from!.replace('/', '-'),
+          to: selectedDatePeriod.value.to!.replace('/', '-'),
+        },
+    selectedCategory.value.value
+  );
 };
 
 watch(
@@ -358,6 +380,16 @@ onMounted(async () => {
             <q-icon name="category" color="black" size="20px" />
           </template>
         </q-select>
+        <q-btn
+          @click="download"
+          :loading="loadingDashboard"
+          :disable="allowDownload"
+          flat
+          icon-right="download"
+          label="Exportar PDF"
+          unelevated
+          no-caps
+        />
       </div>
     </header>
     <q-scroll-area class="main-scroll">
