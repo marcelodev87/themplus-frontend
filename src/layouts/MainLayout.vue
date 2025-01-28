@@ -100,6 +100,12 @@ const mountRoute = () => {
       name: 'admin-scheduling',
     });
     menuList.value.push({
+      icon: 'savings',
+      label: 'Contabilidade',
+      separator: true,
+      name: 'admin-financial-control',
+    });
+    menuList.value.push({
       icon: 'category',
       label: 'Categorias',
       separator: true,
@@ -110,12 +116,6 @@ const mountRoute = () => {
       label: 'Contas',
       separator: true,
       name: 'admin-account',
-    });
-    menuList.value.push({
-      icon: 'savings',
-      label: 'Contabilidade',
-      separator: true,
-      name: 'admin-financial-control',
     });
     menuList.value.push({
       icon: 'content_paste_search',
@@ -140,16 +140,16 @@ const mountRoute = () => {
   }
   if (user.value?.position === 'admin') {
     menuList.value.push({
-      icon: 'person',
-      label: 'Usuários',
-      separator: true,
-      name: 'admin-users',
-    });
-    menuList.value.push({
       icon: 'group_work',
       label: 'Departamentos',
       separator: true,
       name: 'admin-departments',
+    });
+    menuList.value.push({
+      icon: 'person',
+      label: 'Usuários',
+      separator: true,
+      name: 'admin-users',
     });
   }
   if (
