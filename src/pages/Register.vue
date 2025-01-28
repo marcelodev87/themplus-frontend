@@ -2,8 +2,8 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useRegisterStore } from 'src/stores/register-store';
-import { onMounted, reactive, ref, watch } from 'vue';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
 
@@ -11,11 +11,15 @@ defineOptions({
   name: 'Alert',
 });
 
-const { listRegister, loadingRegister, filledData } =
+const { listRegister, loadingRegister, filledData, listOptionsUsers } =
   storeToRefs(useRegisterStore());
 const { getRegisters } = useRegisterStore();
 
 const showRegisterDetail = ref<boolean>(false);
+const selectedUser = ref<QuasarSelect<string | null>>({
+  value: null,
+  label: 'Todos usuários',
+});
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
 const selectedDataView = ref<string | null>(null);
@@ -116,6 +120,24 @@ const buildAction = (action: string): string => {
   return '';
 };
 
+const optionUsersFilter = computed(() => {
+  const baseUsers = [
+    {
+      value: null,
+      label: 'Todos usuários',
+    },
+  ];
+
+  const additionalUsers = listOptionsUsers.value
+    .map((item) => ({
+      label: item.name,
+      value: item.id,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  return [...baseUsers, ...additionalUsers];
+});
+
 watch(
   filledData,
   () => {
@@ -141,6 +163,28 @@ onMounted(async () => {
     >
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de registros" />
+      </div>
+      <div
+        class="col-6 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
+        <q-select
+          v-model="selectedUser"
+          :options="optionUsersFilter"
+          :readonly="loadingRegister"
+          label="Filtre usuário"
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          style="min-width: 200px"
+          :class="!$q.screen.lt.md ? '' : 'full-width'"
+        >
+          <template v-slot:prepend>
+            <q-icon name="group" color="black" size="20px" />
+          </template>
+        </q-select>
       </div>
     </header>
     <q-scroll-area class="main-scroll">

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
@@ -15,10 +16,38 @@ export const useRegisterStore = defineStore('register', {
     loadingRegisterDetail: false as boolean,
     listRegister: [] as Register[],
     registerDetail: null as string | null,
+    listOptionsUsers: [] as { id: string; name: string }[],
   }),
   actions: {
+    parseCustomDate(dateString: string): Date | null {
+      const parts = dateString.split(/[- :]/);
+      if (parts.length !== 6) return null;
+
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      const hours = parseInt(parts[3], 10);
+      const minutes = parseInt(parts[4], 10);
+      const seconds = parseInt(parts[5], 10);
+
+      if (
+        isNaN(day) ||
+        isNaN(month) ||
+        isNaN(year) ||
+        isNaN(hours) ||
+        isNaN(minutes) ||
+        isNaN(seconds)
+      ) {
+        return null;
+      }
+
+      return new Date(year, month, day, hours, minutes, seconds);
+    },
     clearListRegister() {
       this.listRegister.splice(0, this.listRegister.length);
+    },
+    clearListOptionsUsers() {
+      this.listOptionsUsers.splice(0, this.listOptionsUsers.length);
     },
     setLoading(loading: boolean) {
       this.loadingRegister = loading;
@@ -29,12 +58,20 @@ export const useRegisterStore = defineStore('register', {
     setFilledData(data: boolean) {
       this.filledData = data;
     },
+    setListOptionsUsers(users: { id: string; name: string }[]) {
+      users.map((item) => this.listOptionsUsers.push(item));
+    },
     setListRegister(registers: Register[]) {
       this.listRegister = registers.slice();
 
       this.listRegister.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
+        const dateA = this.parseCustomDate(a.date);
+        const dateB = this.parseCustomDate(b.date);
+
+        if (!dateA || !dateB) {
+          return 0;
+        }
+
         return dateB.getTime() - dateA.getTime();
       });
     },
@@ -62,10 +99,12 @@ export const useRegisterStore = defineStore('register', {
     async getRegisters() {
       try {
         this.setLoading(true);
+        this.clearListRegister();
+        this.clearListOptionsUsers();
         const response = await getRegistersService();
         if (response.status === 200) {
-          this.clearListRegister();
           this.setListRegister(response.data.registers);
+          this.setListOptionsUsers(response.data.users);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
