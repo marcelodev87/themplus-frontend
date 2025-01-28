@@ -354,7 +354,7 @@ watch(open, async () => {
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
           <q-input
-            v-show="dataOut.observation !== null"
+            v-show="dataOut.observation"
             v-model="dataOut.observation"
             style="height: 150px; max-height: 130px"
             bg-color="red-2"
