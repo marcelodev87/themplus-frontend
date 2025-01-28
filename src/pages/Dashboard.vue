@@ -2,9 +2,10 @@
 import { useDashboardStore } from 'src/stores/dashboard-store';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+import { DatePeriod } from 'src/ts/interfaces/data/Date';
 
 defineOptions({
   name: 'Dashboard',
@@ -20,10 +21,21 @@ const {
   usersDashboard,
   accountsDashboard,
   filledData,
+  listCategoryFilters,
 } = storeToRefs(useDashboardStore());
 
+const selectedFilter = ref<QuasarSelect<string>>({
+  label: 'Filtrar por mês',
+  value: 'month',
+});
+const selectedCategory = ref<QuasarSelect<string | null>>({
+  label: 'Sem categoria',
+  value: null,
+});
+const showDatePeriod = ref<boolean>(false);
+const selectedDatePeriod = ref<DatePeriod>({ from: null, to: null });
 const showAlertDataEnterprise = ref<boolean>(false);
-const columnsCategoriesDashboard = reactive<QuasarTable[]>([
+const columnsCategoriesDashboard = ref<QuasarTable[]>([
   {
     name: 'name',
     label: 'Categoria',
@@ -39,7 +51,34 @@ const columnsCategoriesDashboard = reactive<QuasarTable[]>([
     style: 'width: 70%',
   },
 ]);
+const optionsFilters = reactive<QuasarSelect<string>[]>([
+  {
+    label: 'Filtrar por mês',
+    value: 'month',
+  },
+  {
+    label: 'Filtrar por período',
+    value: 'period',
+  },
+]);
 
+const optionsCategoriesFilter = computed(() => {
+  const baseCategories = [
+    {
+      label: 'Sem categoria',
+      value: null,
+    },
+  ];
+
+  const additionalCategories = listCategoryFilters.value
+    .map((item) => ({
+      label: item.name,
+      value: item.id,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  return [...baseCategories, ...additionalCategories];
+});
 const categoriesEntry = computed(() => {
   return listCategoryDashboard.value
     ?.filter((item) => item.type === 'entrada')
@@ -78,12 +117,24 @@ const dateActual = computed(() => {
 
   return `${month}/${year}`;
 });
+const formattedDate = computed(() => {
+  if (selectedDatePeriod.value) {
+    const { from, to } = selectedDatePeriod.value;
+    if (from && to) {
+      return `${from} até ${to}`;
+    }
+  }
+  return 'Sem período selecionado';
+});
 const filterMonthYear = ref<string>(dateActual.value);
-const fetchInformationsDashboard = async (date: string) => {
-  await getDashboard(date);
+const fetchInformationsDashboard = async (date: string | DatePeriod) => {
+  await getDashboard(
+    selectedFilter.value.value,
+    date,
+    selectedCategory.value.value
+  );
 };
 const getCurrentMonthYear = () => {
-  const currentDate = new Date();
   const monthNames = [
     'Janeiro',
     'Fevereiro',
@@ -98,10 +149,20 @@ const getCurrentMonthYear = () => {
     'Novembro',
     'Dezembro',
   ];
-  return `${monthNames[currentDate.getMonth()]} de ${currentDate.getFullYear()}`;
+
+  const [month, year] = filterMonthYear.value.split('/').map(Number);
+
+  if (month >= 1 && month <= 12) {
+    return `${monthNames[month - 1]} de ${year}`;
+  }
+
+  return 'Mês ou ano inválido';
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const clearDatePeriod = () => {
+  selectedDatePeriod.value = { from: null, to: null };
 };
 
 watch(
@@ -113,9 +174,32 @@ watch(
   },
   { immediate: true }
 );
-watch(filterMonthYear, async () => {
-  await fetchInformationsDashboard(filterMonthYear.value.replace('/', '-'));
-});
+watch(
+  [
+    filterMonthYear,
+    selectedFilter,
+    selectedDatePeriod,
+    selectedCategory,
+    showDatePeriod,
+  ],
+  async () => {
+    if (selectedFilter.value.value === 'month') {
+      await fetchInformationsDashboard(filterMonthYear.value.replace('/', '-'));
+    }
+    if (
+      selectedFilter.value.value === 'period' &&
+      selectedDatePeriod.value.from !== null &&
+      selectedDatePeriod.value.to !== null &&
+      showDatePeriod.value === false
+    ) {
+      await fetchInformationsDashboard({
+        from: selectedDatePeriod.value.from.replace('/', '-'),
+        to: selectedDatePeriod.value.to.replace('/', '-'),
+      });
+    }
+  },
+  { deep: true }
+);
 
 onMounted(async () => {
   await fetchInformationsDashboard(dateActual.value.replace('/', '-'));
@@ -132,23 +216,103 @@ onMounted(async () => {
     >
       <span class="text-h6">{{ getCurrentMonthYear() }}</span>
       <q-separator />
-      <q-select
-        v-model="filterMonthYear"
-        :options="listMonthYear"
-        :readonly="listMonthYear.length === 0"
-        :label="listMonthYear.length === 0 ? 'Sem dados' : 'Filtrar momento'"
-        filled
-        dense
-        options-dense
-        bg-color="grey-1"
-        label-color="black"
-        style="min-width: 200px"
-        :class="!$q.screen.lt.md ? '' : 'full-width'"
-      >
-        <template v-slot:prepend>
-          <q-icon name="calendar_today" color="black" size="20px" />
-        </template>
-      </q-select>
+      <div class="row q-gutter-x-md">
+        <q-select
+          v-model="selectedFilter"
+          :options="optionsFilters"
+          :readonly="loadingDashboard"
+          label="Tipo de filtro"
+          map-options
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          style="min-width: 200px"
+          :class="!$q.screen.lt.md ? '' : 'full-width'"
+        >
+          <template v-slot:prepend>
+            <q-icon name="filter_alt" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-select
+          v-if="selectedFilter.value === 'month'"
+          v-model="filterMonthYear"
+          :options="listMonthYear"
+          :readonly="listMonthYear.length === 0"
+          :label="listMonthYear.length === 0 ? 'Sem dados' : 'Filtrar mês'"
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          style="min-width: 200px"
+          :class="!$q.screen.lt.md ? '' : 'full-width'"
+        >
+          <template v-slot:prepend>
+            <q-icon name="calendar_today" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-input
+          v-else
+          v-model="formattedDate"
+          filled
+          dense
+          bg-color="grey-1"
+          label-color="black"
+          style="min-width: 240px"
+          :class="!$q.screen.lt.md ? '' : 'full-width'"
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+                @show="showDatePeriod = true"
+                @hide="showDatePeriod = false"
+              >
+                <q-date v-model="selectedDatePeriod" range>
+                  <div class="row items-center justify-end q-gutter-x-sm">
+                    <q-btn
+                      v-close-popup
+                      label="Fechar"
+                      color="red"
+                      flat
+                      unelevated
+                      no-caps
+                    />
+                    <q-btn
+                      @click="clearDatePeriod"
+                      label="Limpar"
+                      color="primary"
+                      unelevated
+                      no-caps
+                    />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+        <q-select
+          v-model="selectedCategory"
+          :options="optionsCategoriesFilter"
+          :readonly="loadingDashboard"
+          label="Filtre categoria"
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          style="min-width: 200px"
+          :class="!$q.screen.lt.md ? '' : 'full-width'"
+        >
+          <template v-slot:prepend>
+            <q-icon name="category" color="black" size="20px" />
+          </template>
+        </q-select>
+      </div>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-gutter-y-md">

@@ -3,6 +3,8 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import { getDashboardService } from 'src/services/dashboard-service';
+import { Category } from 'src/ts/interfaces/data/Category';
+import { DatePeriod } from 'src/ts/interfaces/data/Date';
 import {
   AccountDashboard,
   CategoryDashboard,
@@ -17,6 +19,7 @@ export const useDashboardStore = defineStore('dashboard', {
     loadingDashboard: false as boolean,
     listMonthYear: [] as string[],
     listCategoryDashboard: null as CategoryDashboard[] | null,
+    listCategoryFilters: [] as Category[],
     movementsDashboard: null as MovementDashboard | null,
     usersDashboard: null as UsersDashboard | null,
     schedulingsDashboard: null as SchedulingDashboard | null,
@@ -42,6 +45,9 @@ export const useDashboardStore = defineStore('dashboard', {
     },
     setMovementsDashboard(data: MovementDashboard | null) {
       this.movementsDashboard = data;
+    },
+    setListCategoryFilters(data: Category[]) {
+      this.listCategoryFilters = data;
     },
     setUsersDashboard(data: UsersDashboard | null) {
       this.usersDashboard = data;
@@ -76,10 +82,14 @@ export const useDashboardStore = defineStore('dashboard', {
         type: 'positive',
       });
     },
-    async getDashboard(date: string) {
+    async getDashboard(
+      mode: string,
+      date: DatePeriod | string,
+      category: string | null
+    ) {
       this.setLoading(true);
       try {
-        const response = await getDashboardService(date);
+        const response = await getDashboardService(mode, date, category);
         this.setListCategoryDashboard(null);
         this.setListMonthYear([]);
         this.setMovementsDashboard(null);
@@ -93,6 +103,7 @@ export const useDashboardStore = defineStore('dashboard', {
           this.setSchedulingsDashboard(response.data.schedulings_dashboard);
           this.setUsersDashboard(response.data.users_dashboard);
           this.setAccountsDashboard(response.data.accounts_dashboard);
+          this.setListCategoryFilters(response.data.categories);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
