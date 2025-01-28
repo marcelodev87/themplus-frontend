@@ -4,7 +4,12 @@ export interface CategoryDashboard {
   type: string;
   value: string;
 }
-
+export interface ScheduleDashboard {
+  category_id: string;
+  name: string;
+  type: string;
+  value: string;
+}
 export interface MovementDashboard {
   month_year: string;
   entry_value: number;

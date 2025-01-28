@@ -14,7 +14,8 @@ defineOptions({
 const { getDashboard } = useDashboardStore();
 const {
   loadingDashboard,
-  listCategoryDashboard,
+  listCategoryMovementsDashboard,
+  listCategorySchedulesDashboard,
   listMonthYear,
   movementsDashboard,
   schedulingsDashboard,
@@ -79,32 +80,74 @@ const optionsCategoriesFilter = computed(() => {
 
   return [...baseCategories, ...additionalCategories];
 });
-const categoriesEntry = computed(() => {
-  return listCategoryDashboard.value
+const categoriesMovementsEntry = computed(() => {
+  return listCategoryMovementsDashboard.value
     ?.filter((item) => item.type === 'entrada')
     .sort((a, b) => Number(b.value) - Number(a.value));
 });
-const categoriesOut = computed(() => {
-  return listCategoryDashboard.value
+const categoriesMovementsOut = computed(() => {
+  return listCategoryMovementsDashboard.value
     ?.filter((item) => item.type !== 'entrada')
     .sort((a, b) => Number(b.value) - Number(a.value));
 });
-const totalValueEntryCategory = computed(() => {
-  if (!categoriesEntry.value || categoriesEntry.value.length === 0) {
+const categoriesSchedulesEntry = computed(() => {
+  return listCategorySchedulesDashboard.value
+    ?.filter((item) => item.type === 'entrada')
+    .sort((a, b) => Number(b.value) - Number(a.value));
+});
+const categoriesSchedulesOut = computed(() => {
+  return listCategorySchedulesDashboard.value
+    ?.filter((item) => item.type !== 'entrada')
+    .sort((a, b) => Number(b.value) - Number(a.value));
+});
+const totalValueEntryCategorySchedules = computed(() => {
+  if (
+    !categoriesSchedulesEntry.value ||
+    categoriesSchedulesEntry.value.length === 0
+  ) {
     return 0;
   }
 
-  return categoriesEntry.value.reduce((total, product) => {
+  return categoriesSchedulesEntry.value.reduce((total, product) => {
     const productValue = Number(product.value) || 0;
     return total + productValue;
   }, 0);
 });
-const totalValueOutCategory = computed(() => {
-  if (!categoriesOut.value || categoriesOut.value.length === 0) {
+const totalValueOutCategorySchedules = computed(() => {
+  if (
+    !categoriesSchedulesOut.value ||
+    categoriesSchedulesOut.value.length === 0
+  ) {
     return 0;
   }
 
-  return categoriesOut.value.reduce((total, product) => {
+  return categoriesSchedulesOut.value.reduce((total, product) => {
+    const productValue = Number(product.value) || 0;
+    return total + productValue;
+  }, 0);
+});
+const totalValueEntryCategoryMovements = computed(() => {
+  if (
+    !categoriesMovementsEntry.value ||
+    categoriesMovementsEntry.value.length === 0
+  ) {
+    return 0;
+  }
+
+  return categoriesMovementsEntry.value.reduce((total, product) => {
+    const productValue = Number(product.value) || 0;
+    return total + productValue;
+  }, 0);
+});
+const totalValueOutCategoryMovements = computed(() => {
+  if (
+    !categoriesMovementsOut.value ||
+    categoriesMovementsOut.value.length === 0
+  ) {
+    return 0;
+  }
+
+  return categoriesMovementsOut.value.reduce((total, product) => {
     const productValue = Number(product.value) || 0;
     return total + productValue;
   }, 0);
@@ -459,12 +502,12 @@ onMounted(async () => {
             </q-card-section>
           </q-card>
         </div>
-        <div class="q-gutter-y-sm q-mt-sm q-mb-lg">
+        <div class="row justify-between q-mt-sm q-mb-lg">
           <q-table
-            :rows="loadingDashboard ? [] : (categoriesEntry ?? [])"
+            :rows="loadingDashboard ? [] : (categoriesMovementsEntry ?? [])"
             :columns="columnsCategoriesDashboard"
             :loading="loadingDashboard"
-            style="max-height: 400px"
+            style="max-height: 400px; width: 49.3%"
             flat
             bordered
             dense
@@ -487,7 +530,7 @@ onMounted(async () => {
                   <q-linear-progress
                     :value="
                       (Number(props.row.value) || 0) /
-                      (Number(totalValueEntryCategory) || 1)
+                      (Number(totalValueEntryCategoryMovements) || 1)
                     "
                     size="20px"
                     class="q-my-sm bg-white text-green"
@@ -506,10 +549,10 @@ onMounted(async () => {
             </template>
           </q-table>
           <q-table
-            :rows="loadingDashboard ? [] : (categoriesOut ?? [])"
+            :rows="loadingDashboard ? [] : (categoriesMovementsOut ?? [])"
             :columns="columnsCategoriesDashboard"
             :loading="loadingDashboard"
-            style="max-height: 400px"
+            style="max-height: 400px; width: 49.3%"
             flat
             bordered
             dense
@@ -532,7 +575,99 @@ onMounted(async () => {
                   <q-linear-progress
                     :value="
                       (Number(props.row.value) || 0) /
-                      (Number(totalValueOutCategory) || 1)
+                      (Number(totalValueOutCategoryMovements) || 1)
+                    "
+                    size="20px"
+                    rounded
+                    class="q-my-sm bg-white text-red"
+                  >
+                    <div class="absolute-full flex flex-center">
+                      <q-badge
+                        color="white"
+                        text-color="black"
+                        :label="`R$ ${formatCurrencyBRL(props.row.value)}`"
+                      />
+                    </div>
+                  </q-linear-progress>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
+        <div class="row justify-between q-mt-sm q-mb-lg">
+          <q-table
+            :rows="loadingDashboard ? [] : (categoriesSchedulesEntry ?? [])"
+            :columns="columnsCategoriesDashboard"
+            :loading="loadingDashboard"
+            style="max-height: 400px; width: 49.3%"
+            flat
+            bordered
+            dense
+            row-key="id"
+            no-data-label="Nenhuma categoria de entrada para mostrar"
+            virtual-scroll
+            :rows-per-page-options="[5]"
+          >
+            <template v-slot:top>
+              <span class="text-h6 text-green"
+                >Agendamentos de entrada x categoria</span
+              >
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props" style="height: 28px">
+                <q-td key="name" :props="props" class="text-left">
+                  {{ props.row.name }}
+                </q-td>
+                <q-td key="value" :props="props" class="text-left">
+                  <q-linear-progress
+                    :value="
+                      (Number(props.row.value) || 0) /
+                      (Number(totalValueEntryCategorySchedules) || 1)
+                    "
+                    size="20px"
+                    class="q-my-sm bg-white text-green"
+                    rounded
+                  >
+                    <div class="absolute-full flex flex-center">
+                      <q-badge
+                        color="white"
+                        text-color="black"
+                        :label="`${formatCurrencyBRL(props.row.value)}`"
+                      />
+                    </div>
+                  </q-linear-progress>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+          <q-table
+            :rows="loadingDashboard ? [] : (categoriesSchedulesOut ?? [])"
+            :columns="columnsCategoriesDashboard"
+            :loading="loadingDashboard"
+            style="max-height: 400px; width: 49.3%"
+            flat
+            bordered
+            dense
+            row-key="id"
+            no-data-label="Nenhuma categoria de saída para mostrar"
+            virtual-scroll
+            :rows-per-page-options="[5]"
+          >
+            <template v-slot:top>
+              <span class="text-h6 text-red"
+                >Agendamentos de saída x categoria</span
+              >
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props" style="height: 28px">
+                <q-td key="name" :props="props" class="text-left">
+                  {{ props.row.name }}
+                </q-td>
+                <q-td key="value" :props="props" class="text-left">
+                  <q-linear-progress
+                    :value="
+                      (Number(props.row.value) || 0) /
+                      (Number(totalValueOutCategorySchedules) || 1)
                     "
                     size="20px"
                     rounded

@@ -9,6 +9,7 @@ import {
   AccountDashboard,
   CategoryDashboard,
   MovementDashboard,
+  ScheduleDashboard,
   SchedulingDashboard,
   UsersDashboard,
 } from 'src/ts/interfaces/data/Graphics';
@@ -18,7 +19,8 @@ export const useDashboardStore = defineStore('dashboard', {
     filledData: true as boolean,
     loadingDashboard: false as boolean,
     listMonthYear: [] as string[],
-    listCategoryDashboard: null as CategoryDashboard[] | null,
+    listCategoryMovementsDashboard: null as CategoryDashboard[] | null,
+    listCategorySchedulesDashboard: null as ScheduleDashboard[] | null,
     listCategoryFilters: [] as Category[],
     movementsDashboard: null as MovementDashboard | null,
     usersDashboard: null as UsersDashboard | null,
@@ -40,8 +42,11 @@ export const useDashboardStore = defineStore('dashboard', {
         return yearA - yearB;
       });
     },
-    setListCategoryDashboard(data: CategoryDashboard[] | null) {
-      this.listCategoryDashboard = data;
+    setListCategoryMovementsDashboard(data: CategoryDashboard[] | null) {
+      this.listCategoryMovementsDashboard = data;
+    },
+    setListCategorySchedulesDashboard(data: ScheduleDashboard[] | null) {
+      this.listCategorySchedulesDashboard = data;
     },
     setMovementsDashboard(data: MovementDashboard | null) {
       this.movementsDashboard = data;
@@ -90,14 +95,20 @@ export const useDashboardStore = defineStore('dashboard', {
       this.setLoading(true);
       try {
         const response = await getDashboardService(mode, date, category);
-        this.setListCategoryDashboard(null);
+        this.setListCategoryMovementsDashboard(null);
+        this.setListCategorySchedulesDashboard(null);
         this.setListMonthYear([]);
         this.setMovementsDashboard(null);
         this.setSchedulingsDashboard(null);
         this.setUsersDashboard(null);
         this.setAccountsDashboard(null);
         if (response.status === 200) {
-          this.setListCategoryDashboard(response.data.categories_dashboard);
+          this.setListCategoryMovementsDashboard(
+            response.data.categories_movements_dashboard
+          );
+          this.setListCategorySchedulesDashboard(
+            response.data.categories_schedules_dashboard
+          );
           this.setListMonthYear(response.data.months_years);
           this.setMovementsDashboard(response.data.movements_dashboard);
           this.setSchedulingsDashboard(response.data.schedulings_dashboard);

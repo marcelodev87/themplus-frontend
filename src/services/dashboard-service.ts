@@ -5,6 +5,7 @@ import {
   AccountDashboard,
   CategoryDashboard,
   MovementDashboard,
+  ScheduleDashboard,
   SchedulingDashboard,
   UsersDashboard,
 } from 'src/ts/interfaces/data/Graphics';
@@ -19,7 +20,8 @@ export const getDashboardService = (
   status: number;
   data: {
     months_years: string[];
-    categories_dashboard: CategoryDashboard[] | null;
+    categories_movements_dashboard: CategoryDashboard[] | null;
+    categories_schedules_dashboard: ScheduleDashboard[] | null;
     categories: Category[];
     movements_dashboard: MovementDashboard | null;
     users_dashboard: UsersDashboard | null;
