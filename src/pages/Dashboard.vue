@@ -178,28 +178,31 @@ const fetchInformationsDashboard = async (date: string | DatePeriod) => {
   );
 };
 const getCurrentMonthYear = () => {
-  const monthNames = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
+  if (selectedFilter.value.value === 'month') {
+    const monthNames = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ];
 
-  const [month, year] = filterMonthYear.value.split('/').map(Number);
+    const [month, year] = filterMonthYear.value.split('/').map(Number);
 
-  if (month >= 1 && month <= 12) {
-    return `${monthNames[month - 1]} de ${year}`;
+    if (month >= 1 && month <= 12) {
+      return `${monthNames[month - 1]} de ${year}`;
+    }
+
+    return 'Mês ou ano inválido';
   }
-
-  return 'Mês ou ano inválido';
+  return 'Filtro por período';
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
@@ -372,7 +375,13 @@ onMounted(async () => {
             class="q-mt-sm"
             :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
           >
-            <q-card-section>
+            <q-card-section class="row items-center">
+              <q-icon
+                name="sync_alt"
+                size="20px"
+                class="q-mr-sm"
+                color="black"
+              />
               <div class="text-h6">Movimentações</div>
             </q-card-section>
 
@@ -409,7 +418,8 @@ onMounted(async () => {
             class="q-mt-sm"
             :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
           >
-            <q-card-section>
+            <q-card-section class="row items-center">
+              <q-icon name="event" size="20px" class="q-mr-sm" color="black" />
               <div class="text-h6">Agendamentos</div>
             </q-card-section>
 
@@ -451,7 +461,8 @@ onMounted(async () => {
             class="q-mt-sm"
             :style="!$q.screen.lt.sm ? 'width: 24%' : 'width: 100%'"
           >
-            <q-card-section>
+            <q-card-section class="row items-center">
+              <q-icon name="group" size="20px" class="q-mr-sm" color="black" />
               <div class="text-h6">Usuários</div>
             </q-card-section>
 
@@ -479,6 +490,12 @@ onMounted(async () => {
           >
             <q-card-section class="row justify-between items-center">
               <div>
+                <q-icon
+                  name="account_balance"
+                  size="20px"
+                  class="q-mr-sm"
+                  color="black"
+                />
                 <span class="text-h6">Contas </span>
                 <span class="text-body2 text-bold">TOP 3</span>
               </div>
@@ -517,6 +534,12 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
+              <q-icon
+                name="sync_alt"
+                size="20px"
+                class="q-mr-sm"
+                color="green"
+              />
               <span class="text-h6 text-green"
                 >Movimentações de entrada x categoria</span
               >
@@ -562,6 +585,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
+              <q-icon name="sync_alt" size="20px" class="q-mr-sm" color="red" />
               <span class="text-h6 text-red"
                 >Movimentações de saída x categoria</span
               >
@@ -609,6 +633,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
+              <q-icon name="event" size="20px" class="q-mr-sm" color="green" />
               <span class="text-h6 text-green"
                 >Agendamentos de entrada x categoria</span
               >
@@ -654,6 +679,7 @@ onMounted(async () => {
             :rows-per-page-options="[5]"
           >
             <template v-slot:top>
+              <q-icon name="event" size="20px" class="q-mr-sm" color="red" />
               <span class="text-h6 text-red"
                 >Agendamentos de saída x categoria</span
               >
