@@ -7,6 +7,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
 import { useAuthStore } from 'src/stores/auth-store';
 
@@ -16,9 +17,11 @@ defineOptions({
 
 const { user } = storeToRefs(useAuthStore());
 const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
-const { getOffices } = useOfficeStore();
+const { getOffices, deleteOffice } = useOfficeStore();
 
+const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
+const selectedOffice = ref<string | null>(null);
 const dataOffice = ref<Office | null>(null);
 const dataNull = ref<null>(null);
 const showFormUser = ref<boolean>(false);
@@ -47,6 +50,7 @@ const columnsAlert = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   filterAlert.value = '';
+  selectedOffice.value = null;
 };
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
@@ -68,6 +72,19 @@ const openFormUser = (office: Office): void => {
 const closeFormUser = (): void => {
   dataOffice.value = null;
   showFormUser.value = false;
+};
+const openConfirmAction = async (id: string): Promise<void> => {
+  selectedOffice.value = id;
+  showConfirmAction.value = true;
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await deleteOffice(selectedOffice.value ?? '');
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  clear();
 };
 
 watch(
@@ -155,6 +172,7 @@ onMounted(async () => {
                   :disabled="loadingOffice"
                 />
                 <q-btn
+                  @click="openConfirmAction(props.row.id)"
                   v-show="user?.enterprise_id === user?.view_enterprise_id"
                   size="sm"
                   flat
@@ -182,6 +200,14 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <ConfirmAction
+          :open="showConfirmAction"
+          label-action="Continuar"
+          title="Confirmação de exclusão de filial "
+          message="Este processo é irreversível e caso tenha certeza que deseja excluir a filial, todos os dados  vinculados do mesmo, serão apagados. Clique em 'Continuar' para prosseguir."
+          @update:open="closeConfirmAction"
+          @update:ok="closeConfirmActionOk"
         />
       </main>
     </q-scroll-area>

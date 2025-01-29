@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
   createOfficeService,
+  deleteOfficeService,
   getOfficesService,
 } from 'src/services/office-service';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
@@ -116,19 +117,21 @@ export const useOfficeStore = defineStore('office', {
     //     this.setLoading(false);
     //   }
     // },
-    // async deleteAlert(alertId: string) {
-    //   this.setLoading(true);
-    //   try {
-    //     const response = await deleteAlertService(alertId);
-    //     if (response.status === 200) {
-    //       this.listAlert = this.listAlert.filter((item) => item.id !== alertId);
-    //       this.createSuccess(response.data.message);
-    //     }
-    //   } catch (error) {
-    //     this.createError(error);
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
+    async deleteOffice(officeId: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteOfficeService(officeId);
+        if (response.status === 200) {
+          this.listOffice = this.listOffice.filter(
+            (item) => item.id !== officeId
+          );
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
   },
 });

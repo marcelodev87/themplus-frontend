@@ -62,11 +62,11 @@ export const createOfficeService = (
 //     description,
 //   });
 
-// export const deleteAlertService = (
-//   id: string
-// ): Promise<{
-//   status: number;
-//   data: {
-//     message: string;
-//   };
-// }> => api.delete(`${baseUrl}/${id}`);
+export const deleteOfficeService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/${id}`);
