@@ -7,7 +7,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { storeToRefs } from 'pinia';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
@@ -18,8 +18,13 @@ defineOptions({
 });
 
 const { user } = storeToRefs(useAuthStore());
-const { loadingScheduling, listScheduling, filledData, listMonthYear } =
-  storeToRefs(useSchedulingStore());
+const {
+  loadingScheduling,
+  listScheduling,
+  filledData,
+  listMonthYear,
+  listCategoryFilters,
+} = storeToRefs(useSchedulingStore());
 const {
   getSchedulings,
   getSchedulingsWithParams,
@@ -39,6 +44,10 @@ const showFormOut = ref<boolean>(false);
 const selectedDataEdit = ref<Scheduling | null>(null);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterScheduling = ref<string>('');
+const selectedCategory = ref<QuasarSelect<string | null>>({
+  label: 'Todas categorias',
+  value: null,
+});
 const columnsScheduling = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -110,6 +119,25 @@ const dateActual = computed(() => {
 
   return `${month}/${year}`;
 });
+const optionsCategoriesFilter = computed(() => {
+  const baseCategories = [
+    {
+      label: 'Todas categorias',
+      value: null,
+    },
+  ];
+
+  const additionalCategories = (listCategoryFilters.value || [])
+    .slice()
+    .sort((a, b) => {
+      const labelA = a.label || '';
+      const labelB = b.label || '';
+      return labelA.localeCompare(labelB);
+    });
+
+  return [...baseCategories, ...additionalCategories];
+});
+
 const filterMonthYear = ref<string>(dateActual.value);
 const clear = (): void => {
   onlyEntry.value = false;
@@ -197,7 +225,8 @@ const exportDataExcel = async (): Promise<void> => {
     onlyEntry.value,
     onlyOut.value,
     onlyExpired.value,
-    filterMonthYear.value.replace('/', '-')
+    filterMonthYear.value.replace('/', '-'),
+    selectedCategory.value.value
   );
   loadingExport.value = false;
 };
@@ -207,7 +236,8 @@ const exportDataPdf = async (): Promise<void> => {
     onlyEntry.value,
     onlyOut.value,
     onlyExpired.value,
-    filterMonthYear.value.replace('/', '-')
+    filterMonthYear.value.replace('/', '-'),
+    selectedCategory.value.value
   );
   loadingExport.value = false;
 };
@@ -227,8 +257,11 @@ const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
 };
 
 watch(
-  [onlyExpired, onlyEntry, onlyOut],
-  async ([newExpired, newEntry, newOut], [oldExpired, oldEntry, oldOut]) => {
+  [onlyExpired, onlyEntry, onlyOut, selectedCategory],
+  async (
+    [newExpired, newEntry, newOut, newCategory],
+    [oldExpired, oldEntry, oldOut, oldCategory]
+  ) => {
     let lastChanged = null;
 
     if (newEntry !== oldEntry) {
@@ -238,6 +271,8 @@ watch(
     } else if (newExpired !== oldExpired) {
       lastChanged = 'onlyExpired';
     }
+
+    const selectedCategoryChanged = newCategory !== oldCategory;
 
     if (lastChanged === 'onlyEntry') {
       if (newEntry) {
@@ -250,7 +285,8 @@ watch(
       }
     }
 
-    const shouldCallWithParams = newEntry || newOut || newExpired;
+    const shouldCallWithParams =
+      newEntry || newOut || newExpired || selectedCategoryChanged;
 
     if (newEntry && newOut) {
       return;
@@ -261,10 +297,12 @@ watch(
         newExpired,
         newEntry,
         newOut,
-        filterMonthYear.value.replace('/', '-')
+        filterMonthYear.value.replace('/', '-'),
+        selectedCategory.value.value
       );
     } else {
       await getSchedulings(filterMonthYear.value.replace('/', '-'));
+      selectedCategory.value = { label: 'Todas categorias', value: null };
     }
   }
 );
@@ -432,6 +470,23 @@ onMounted(async () => {
             >
               <template v-slot:prepend>
                 <q-icon name="calendar_today" color="black" size="20px" />
+              </template>
+            </q-select>
+            <q-select
+              v-model="selectedCategory"
+              :options="optionsCategoriesFilter"
+              :readonly="loadingScheduling || loadingExport"
+              label="Filtre categoria"
+              filled
+              dense
+              options-dense
+              bg-color="grey-1"
+              label-color="black"
+              style="min-width: 200px"
+              :class="!$q.screen.lt.md ? '' : 'full-width'"
+            >
+              <template v-slot:prepend>
+                <q-icon name="category" color="black" size="20px" />
               </template>
             </q-select>
             <q-input filled v-model="filterScheduling" dense label="Pesquisar">

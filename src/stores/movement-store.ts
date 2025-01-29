@@ -33,6 +33,7 @@ export const useMovementStore = defineStore('movement', {
     listAccount: [] as QuasarSelect<string>[],
     listCategoryAll: [] as CategoryInformation[],
     delivered: false as boolean,
+    listCategoryFilters: [] as QuasarSelect<string>[],
   }),
   actions: {
     clearListMonthYear() {
@@ -61,6 +62,9 @@ export const useMovementStore = defineStore('movement', {
     clearAccounts() {
       this.listAccount.splice(0, this.listAccount.length);
     },
+    clearListCategoryFilters() {
+      this.listCategoryFilters.splice(0, this.listCategoryFilters.length);
+    },
     setLoading(loading: boolean) {
       this.loadingMovement = loading;
     },
@@ -69,6 +73,9 @@ export const useMovementStore = defineStore('movement', {
     },
     setDelivered(data: boolean) {
       this.delivered = data;
+    },
+    setListCategoryFilters(data: QuasarSelect<string>[]) {
+      this.listCategoryFilters = data;
     },
     setListMovement(movements: Movement[]) {
       this.listMovement = movements.sort((a, b) => {
@@ -115,15 +122,18 @@ export const useMovementStore = defineStore('movement', {
       });
     },
     async getMovements(date: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
+        this.clearListMovement();
+        this.clearListMonthYear();
+        this.clearListCategoryFilters();
         const response = await getMovementsService(date);
         if (response.status === 200) {
-          this.clearListMovement();
           this.setListMovement(response.data.movements);
           this.setListMonthYear(response.data.months_years);
           this.setFilledData(response.data.filled_data);
           this.setDelivered(response.data.delivered);
+          this.setListCategoryFilters(response.data.categories);
         }
       } catch (error) {
         this.createError(error);
@@ -131,15 +141,28 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async getMovementsWithParams(entry: boolean, out: boolean, date: string) {
+    async getMovementsWithParams(
+      entry: boolean,
+      out: boolean,
+      date: string,
+      category: string | null
+    ) {
       try {
         this.setLoading(true);
-        const response = await getMovementsWithParamsService(entry, out, date);
+        this.clearListMovement();
+        this.clearListMonthYear();
+        this.clearListCategoryFilters();
+        const response = await getMovementsWithParamsService(
+          entry,
+          out,
+          date,
+          category
+        );
         if (response.status === 200) {
-          this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
           this.setDelivered(response.data.delivered);
+          this.setListCategoryFilters(response.data.categories);
         }
       } catch (error) {
         this.createError(error);
@@ -165,20 +188,30 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async exportMovementExcel(entry: boolean, out: boolean, date: string) {
+    async exportMovementExcel(
+      entry: boolean,
+      out: boolean,
+      date: string,
+      categoryId: string | null
+    ) {
       try {
         this.setLoading(true);
-        await exportMovementExcelService(entry, out, date);
+        await exportMovementExcelService(entry, out, date, categoryId);
       } catch (error) {
         this.createError(error);
       } finally {
         this.setLoading(false);
       }
     },
-    async exportMovementPDF(entry: boolean, out: boolean, date: string) {
+    async exportMovementPDF(
+      entry: boolean,
+      out: boolean,
+      date: string,
+      categoryId: string | null
+    ) {
       try {
         this.setLoading(true);
-        await exportMovementPDFService(entry, out, date);
+        await exportMovementPDFService(entry, out, date, categoryId);
       } catch (error) {
         this.createError(error);
       } finally {

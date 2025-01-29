@@ -7,6 +7,7 @@ import {
   CategoryInformation,
 } from 'src/ts/interfaces/data/InformationsForms';
 import { InsertMovementData, Movement } from 'src/ts/interfaces/data/Movement';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 const baseUrl = 'movement';
 
@@ -32,6 +33,7 @@ export const getMovementsService = (
     months_years: string[];
     filled_data: boolean;
     delivered: boolean;
+    categories: QuasarSelect<string>[];
     message: string;
   };
 }> => api.get(`${baseUrl}/${date}`);
@@ -39,16 +41,21 @@ export const getMovementsService = (
 export const getMovementsWithParamsService = (
   entry: boolean,
   out: boolean,
-  date: string
+  date: string,
+  category: string | null
 ): Promise<{
   status: number;
   data: {
     movements: Movement[];
     months_years: string[];
     delivered: boolean;
+    categories: QuasarSelect<string>[];
     message: string;
   };
-}> => api.get(`${baseUrl}/filter/${date}?entry=${entry}&out=${out}`);
+}> =>
+  api.get(
+    `${baseUrl}/filter/${date}?entry=${entry}&out=${out}&category=${category}`
+  );
 
 export const getMovementInformationsService = (
   type: string | null
@@ -123,11 +130,12 @@ export const saveObservationsService = (
 export const exportMovementExcelService = async (
   entry: boolean,
   out: boolean,
-  date: string
+  date: string,
+  categoryId: string | null
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}`,
+      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}&category=${categoryId}`,
       null,
       {
         responseType: 'blob',
@@ -153,11 +161,12 @@ export const exportMovementExcelService = async (
 export const exportMovementPDFService = async (
   entry: boolean,
   out: boolean,
-  date: string
+  date: string,
+  categoryId: string | null
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}`,
+      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}&category=${categoryId}`,
       null,
       {
         responseType: 'blob',

@@ -7,6 +7,7 @@ import {
   CategoryInformation,
 } from 'src/ts/interfaces/data/InformationsForms';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 const baseUrl = 'scheduling';
 
@@ -29,6 +30,7 @@ export const getSchedulingsService = (
   data: {
     schedulings: Scheduling[];
     months_years: string[];
+    categories: QuasarSelect<string>[];
     filled_data: boolean;
   };
 }> => api.get(`${baseUrl}/${date}`);
@@ -37,17 +39,19 @@ export const getSchedulingsWithParamsService = (
   expired: boolean,
   entry: boolean,
   out: boolean,
-  date: string
+  date: string,
+  categoryId: string | null
 ): Promise<{
   status: number;
   data: {
     schedulings: Scheduling[];
     months_years: string[];
+    categories: QuasarSelect<string>[];
     message: string;
   };
 }> =>
   api.get(
-    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}`
+    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}&category=${categoryId}`
   );
 
 export const getSchedulingInformationsService = (
@@ -64,11 +68,12 @@ export const exportSchedulingExcelService = async (
   entry: boolean,
   out: boolean,
   expired: boolean,
-  date: string
+  date: string,
+  categoryId: string | null
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}&expired=${expired}`,
+      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}&expired=${expired}&category=${categoryId}`,
       null,
       {
         responseType: 'blob',
@@ -95,11 +100,12 @@ export const exportSchedulingPDFService = async (
   entry: boolean,
   out: boolean,
   expired: boolean,
-  date: string
+  date: string,
+  categoryId: string | null
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}&expired=${expired}`,
+      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}&expired=${expired}&category=${categoryId}`,
       null,
       {
         responseType: 'blob',

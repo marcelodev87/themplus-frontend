@@ -30,7 +30,7 @@ const selectedFilter = ref<QuasarSelect<string>>({
   value: 'month',
 });
 const selectedCategory = ref<QuasarSelect<string | null>>({
-  label: 'Sem categoria',
+  label: 'Todas categorias',
   value: null,
 });
 const showDatePeriod = ref<boolean>(false);
@@ -76,7 +76,7 @@ const allowDownload = computed(() => {
 const optionsCategoriesFilter = computed(() => {
   const baseCategories = [
     {
-      label: 'Sem categoria',
+      label: 'Todas categorias',
       value: null,
     },
   ];

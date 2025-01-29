@@ -29,6 +29,7 @@ export const useSchedulingStore = defineStore('scheduling', {
     listScheduling: [] as Scheduling[],
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
+    listCategoryFilters: [] as QuasarSelect<string>[],
   }),
   actions: {
     clearListMonthYear() {
@@ -48,6 +49,9 @@ export const useSchedulingStore = defineStore('scheduling', {
     clearListScheduling() {
       this.listScheduling.splice(0, this.listScheduling.length);
     },
+    clearListCategoryFilters() {
+      this.listCategoryFilters.splice(0, this.listCategoryFilters.length);
+    },
     clearCategories() {
       this.listCategory.splice(0, this.listCategory.length);
     },
@@ -66,6 +70,9 @@ export const useSchedulingStore = defineStore('scheduling', {
         const dateB = new Date(b.date_movement);
         return dateB.getTime() - dateA.getTime();
       });
+    },
+    setListCategoryFilters(data: QuasarSelect<string>[]) {
+      this.listCategoryFilters = data;
     },
     setListCategory(categories: CategoryInformation[]) {
       this.listCategory = categories
@@ -102,11 +109,14 @@ export const useSchedulingStore = defineStore('scheduling', {
     async getSchedulings(date: string) {
       try {
         this.setLoading(true);
+        this.clearListScheduling();
+        this.clearListCategoryFilters();
+        this.clearListMonthYear();
         const response = await getSchedulingsService(date);
         if (response.status === 200) {
-          this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
+          this.setListCategoryFilters(response.data.categories);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {
@@ -119,18 +129,22 @@ export const useSchedulingStore = defineStore('scheduling', {
       expired: boolean,
       entry: boolean,
       out: boolean,
-      date: string
+      date: string,
+      category: string | null
     ) {
       try {
         this.setLoading(true);
+        this.clearListScheduling();
+        this.clearListCategoryFilters();
         const response = await getSchedulingsWithParamsService(
           expired,
           entry,
           out,
-          date
+          date,
+          category
         );
         if (response.status === 200) {
-          this.clearListScheduling();
+          this.setListCategoryFilters(response.data.categories);
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
         }
@@ -160,11 +174,18 @@ export const useSchedulingStore = defineStore('scheduling', {
       entry: boolean,
       out: boolean,
       expired: boolean,
-      date: string
+      date: string,
+      categoryId: string | null
     ) {
       try {
         this.setLoading(true);
-        await exportSchedulingExcelService(entry, out, expired, date);
+        await exportSchedulingExcelService(
+          entry,
+          out,
+          expired,
+          date,
+          categoryId
+        );
       } catch (error) {
         this.createError(error);
       } finally {
@@ -175,11 +196,12 @@ export const useSchedulingStore = defineStore('scheduling', {
       entry: boolean,
       out: boolean,
       expired: boolean,
-      date: string
+      date: string,
+      categoryId: string | null
     ) {
       try {
         this.setLoading(true);
-        await exportSchedulingPDFService(entry, out, expired, date);
+        await exportSchedulingPDFService(entry, out, expired, date, categoryId);
       } catch (error) {
         this.createError(error);
       } finally {

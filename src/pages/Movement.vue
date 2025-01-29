@@ -6,7 +6,7 @@ import FormOut from 'src/components/forms/FormOut.vue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useMovementStore } from 'src/stores/movement-store';
 import { storeToRefs } from 'pinia';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
@@ -27,8 +27,14 @@ const {
   deleteMovement,
   downloadFile,
 } = useMovementStore();
-const { loadingMovement, listMovement, filledData, listMonthYear, delivered } =
-  storeToRefs(useMovementStore());
+const {
+  loadingMovement,
+  listMovement,
+  filledData,
+  listMonthYear,
+  delivered,
+  listCategoryFilters,
+} = storeToRefs(useMovementStore());
 const { user } = storeToRefs(useAuthStore());
 
 const showConfirmDownloadFile = ref<boolean>(false);
@@ -107,6 +113,10 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const selectedCategory = ref<QuasarSelect<string | null>>({
+  label: 'Todas categorias',
+  value: null,
+});
 
 const dateActual = computed(() => {
   const currentDate = new Date();
@@ -116,6 +126,23 @@ const dateActual = computed(() => {
 
   return `${month}/${year}`;
 });
+const optionsCategoriesFilter = computed(() => {
+  const baseCategories = [
+    {
+      label: 'Todas categorias',
+      value: null,
+    },
+  ];
+
+  const additionalCategories = (listCategoryFilters.value || [])
+    .slice()
+    .sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    });
+
+  return [...baseCategories, ...additionalCategories];
+});
+
 const filterMonthYear = ref<string>(dateActual.value);
 
 const clear = (): void => {
@@ -205,7 +232,8 @@ const exportDataExcel = async (): Promise<void> => {
   await exportMovementExcel(
     onlyEntry.value,
     onlyOut.value,
-    filterMonthYear.value.replace('/', '-')
+    filterMonthYear.value.replace('/', '-'),
+    selectedCategory.value.value
   );
   loadingExport.value = false;
 };
@@ -214,7 +242,8 @@ const exportDataPdf = async (): Promise<void> => {
   await exportMovementPDF(
     onlyEntry.value,
     onlyOut.value,
-    filterMonthYear.value.replace('/', '-')
+    filterMonthYear.value.replace('/', '-'),
+    selectedCategory.value.value
   );
   loadingExport.value = false;
 };
@@ -239,43 +268,50 @@ const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
   showConfirmDownloadFile.value = false;
 };
 
-watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
-  let lastChanged = null;
+watch(
+  [onlyEntry, onlyOut, selectedCategory],
+  async ([newEntry, newOut, newCategory], [oldEntry, oldOut, oldCategory]) => {
+    let lastChanged = null;
 
-  if (newEntry !== oldEntry) {
-    lastChanged = 'onlyEntry';
-  }
-  if (newOut !== oldOut) {
-    lastChanged = 'onlyOut';
-  }
+    if (newEntry !== oldEntry) {
+      lastChanged = 'onlyEntry';
+    }
+    if (newOut !== oldOut) {
+      lastChanged = 'onlyOut';
+    }
 
-  if (lastChanged === 'onlyEntry') {
-    if (newEntry) {
-      onlyOut.value = false;
+    const selectedCategoryChanged = newCategory !== oldCategory;
+
+    if (lastChanged === 'onlyEntry') {
+      if (newEntry) {
+        onlyOut.value = false;
+      }
+    }
+    if (lastChanged === 'onlyOut') {
+      if (newOut) {
+        onlyEntry.value = false;
+      }
+    }
+
+    const shouldCallWithParams = newEntry || newOut || selectedCategoryChanged;
+
+    if (newEntry && newOut) {
+      return;
+    }
+
+    if (shouldCallWithParams) {
+      await getMovementsWithParams(
+        newEntry,
+        newOut,
+        filterMonthYear.value.replace('/', '-'),
+        selectedCategory.value.value
+      );
+    } else {
+      await getMovements(filterMonthYear.value.replace('/', '-'));
     }
   }
-  if (lastChanged === 'onlyOut') {
-    if (newOut) {
-      onlyEntry.value = false;
-    }
-  }
+);
 
-  const shouldCallWithParams = newEntry || newOut;
-
-  if (newEntry && newOut) {
-    return;
-  }
-
-  if (shouldCallWithParams) {
-    await getMovementsWithParams(
-      newEntry,
-      newOut,
-      filterMonthYear.value.replace('/', '-')
-    );
-  } else {
-    await getMovements(filterMonthYear.value.replace('/', '-'));
-  }
-});
 watch(
   filledData,
   () => {
@@ -419,12 +455,14 @@ onMounted(async () => {
             <q-space />
             <q-toggle
               v-model="onlyEntry"
+              :disable="loadingMovement || loadingExport"
               color="primary"
               label="Entradas"
               left-label
             />
             <q-toggle
               v-model="onlyOut"
+              :disable="loadingMovement || loadingExport"
               color="primary"
               label="Saídas"
               left-label
@@ -432,7 +470,9 @@ onMounted(async () => {
             <q-select
               v-model="filterMonthYear"
               :options="listMonthYear"
-              :readonly="listMonthYear.length === 0"
+              :readonly="
+                listMonthYear.length === 0 || loadingMovement || loadingExport
+              "
               label="Filtrar momento"
               filled
               dense
@@ -445,6 +485,23 @@ onMounted(async () => {
             >
               <template v-slot:prepend>
                 <q-icon name="calendar_today" color="black" size="20px" />
+              </template>
+            </q-select>
+            <q-select
+              v-model="selectedCategory"
+              :options="optionsCategoriesFilter"
+              :readonly="loadingMovement || loadingExport"
+              label="Filtre categoria"
+              filled
+              dense
+              options-dense
+              bg-color="grey-1"
+              label-color="black"
+              style="min-width: 200px"
+              :class="!$q.screen.lt.md ? '' : 'full-width'"
+            >
+              <template v-slot:prepend>
+                <q-icon name="category" color="black" size="20px" />
               </template>
             </q-select>
             <q-input filled v-model="filterMovement" dense label="Pesquisar">
