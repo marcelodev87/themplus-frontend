@@ -120,14 +120,14 @@ export const saveObservationsService = (
   };
 }> => api.post(`${baseUrl}/observations`, { movements });
 
-export const exportMovementService = async (
+export const exportMovementExcelService = async (
   entry: boolean,
   out: boolean,
   date: string
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export/${date}?entry=${entry}&out=${out}`,
+      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}`,
       null,
       {
         responseType: 'blob',
@@ -143,6 +143,36 @@ export const exportMovementService = async (
     const link = document.createElement('a');
     link.href = url2;
     link.setAttribute('download', `movimentacoes_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
+export const exportMovementPDFService = async (
+  entry: boolean,
+  out: boolean,
+  date: string
+) => {
+  try {
+    const response = await api.post(
+      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}`,
+      null,
+      {
+        responseType: 'blob',
+      }
+    );
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `movimentacoes_${timestamp}.pdf`);
     document.body.appendChild(link);
     link.click();
     link.remove();

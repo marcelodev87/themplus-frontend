@@ -12,6 +12,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
+import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
@@ -21,7 +22,8 @@ defineOptions({
 const {
   getMovements,
   getMovementsWithParams,
-  exportMovement,
+  exportMovementExcel,
+  exportMovementPDF,
   deleteMovement,
   downloadFile,
 } = useMovementStore();
@@ -29,6 +31,7 @@ const { loadingMovement, listMovement, filledData, listMonthYear, delivered } =
   storeToRefs(useMovementStore());
 const { user } = storeToRefs(useAuthStore());
 
+const showConfirmDownloadFile = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormInsertMovement = ref<boolean>(false);
@@ -197,9 +200,18 @@ const customFilterMovement = (
     );
   });
 };
-const exportData = async (): Promise<void> => {
+const exportDataExcel = async (): Promise<void> => {
   loadingExport.value = true;
-  await exportMovement(
+  await exportMovementExcel(
+    onlyEntry.value,
+    onlyOut.value,
+    filterMonthYear.value.replace('/', '-')
+  );
+  loadingExport.value = false;
+};
+const exportDataPdf = async (): Promise<void> => {
+  loadingExport.value = true;
+  await exportMovementPDF(
     onlyEntry.value,
     onlyOut.value,
     filterMonthYear.value.replace('/', '-')
@@ -211,6 +223,20 @@ const closeAlertDataEnterprise = (): void => {
 };
 const download = async (file: string) => {
   await downloadFile(file.split('receipts/')[1]);
+};
+const openConfirmDownloadFile = (): void => {
+  showConfirmDownloadFile.value = true;
+};
+const closeConfirmDownloadFile = (): void => {
+  showConfirmDownloadFile.value = false;
+};
+const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
+  if (file.toLocaleLowerCase() === 'excel') {
+    exportDataExcel();
+  } else {
+    exportDataPdf();
+  }
+  showConfirmDownloadFile.value = false;
 };
 
 watch([onlyEntry, onlyOut], async ([newEntry, newOut], [oldEntry, oldOut]) => {
@@ -295,7 +321,7 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
-          @click="exportData"
+          @click="openConfirmDownloadFile"
           :loading="loadingExport"
           flat
           color="black"
@@ -360,7 +386,7 @@ onMounted(async () => {
               </q-item-section>
               <q-item-section>Formulário de saída</q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="exportData">
+            <q-item clickable v-ripple @click="openConfirmDownloadFile">
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="download" />
@@ -533,6 +559,12 @@ onMounted(async () => {
           message="Este processo é irreversível e os dados não poderão ser recuperados. Caso tenha certeza, clique em 'Excluir' para prosseguir."
           @update:open="closeConfirmAction"
           @update:ok="closeConfirmActionOk"
+        />
+        <ConfirmDownloadFile
+          :open="showConfirmDownloadFile"
+          title="Selecione o tipo de arquivo"
+          @update:ok="closeConfirmDownloadFileOk"
+          @update:open="closeConfirmDownloadFile"
         />
       </main>
     </q-scroll-area>

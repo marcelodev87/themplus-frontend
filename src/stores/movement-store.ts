@@ -6,8 +6,9 @@ import {
   createMovementService,
   deleteMovementService,
   downloadFileService,
+  exportMovementExcelService,
   exportMovementInsertExampleService,
-  exportMovementService,
+  exportMovementPDFService,
   getMovementInformationsService,
   getMovementsService,
   getMovementsWithParamsService,
@@ -164,10 +165,20 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async exportMovement(entry: boolean, out: boolean, date: string) {
+    async exportMovementExcel(entry: boolean, out: boolean, date: string) {
       try {
         this.setLoading(true);
-        await exportMovementService(entry, out, date);
+        await exportMovementExcelService(entry, out, date);
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportMovementPDF(entry: boolean, out: boolean, date: string) {
+      try {
+        this.setLoading(true);
+        await exportMovementPDFService(entry, out, date);
       } catch (error) {
         this.createError(error);
       } finally {
