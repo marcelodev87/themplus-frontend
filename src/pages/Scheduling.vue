@@ -484,6 +484,7 @@ onMounted(async () => {
               label-color="black"
               style="min-width: 200px"
               :class="!$q.screen.lt.md ? '' : 'full-width'"
+              class="q-mr-sm"
             >
               <template v-slot:prepend>
                 <q-icon name="category" color="black" size="20px" />
