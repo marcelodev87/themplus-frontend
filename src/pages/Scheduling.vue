@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
 
@@ -22,7 +23,8 @@ const { loadingScheduling, listScheduling, filledData, listMonthYear } =
 const {
   getSchedulings,
   getSchedulingsWithParams,
-  exportScheduling,
+  exportSchedulingExcel,
+  exportSchedulingPDF,
   deleteScheduling,
   finalizeScheduling,
 } = useSchedulingStore();
@@ -31,6 +33,7 @@ const onlyExpired = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
+const showConfirmDownloadFile = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const selectedDataEdit = ref<Scheduling | null>(null);
@@ -188,15 +191,39 @@ const isPastDate = (dateString: string) => {
 
   return date <= yesterday;
 };
-const exportData = async (): Promise<void> => {
+const exportDataExcel = async (): Promise<void> => {
   loadingExport.value = true;
-  await exportScheduling(
+  await exportSchedulingExcel(
     onlyEntry.value,
     onlyOut.value,
     onlyExpired.value,
     filterMonthYear.value.replace('/', '-')
   );
   loadingExport.value = false;
+};
+const exportDataPdf = async (): Promise<void> => {
+  loadingExport.value = true;
+  await exportSchedulingPDF(
+    onlyEntry.value,
+    onlyOut.value,
+    onlyExpired.value,
+    filterMonthYear.value.replace('/', '-')
+  );
+  loadingExport.value = false;
+};
+const openConfirmDownloadFile = (): void => {
+  showConfirmDownloadFile.value = true;
+};
+const closeConfirmDownloadFile = (): void => {
+  showConfirmDownloadFile.value = false;
+};
+const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
+  if (file.toLocaleLowerCase() === 'excel') {
+    exportDataExcel();
+  } else {
+    exportDataPdf();
+  }
+  showConfirmDownloadFile.value = false;
 };
 
 watch(
@@ -275,7 +302,7 @@ onMounted(async () => {
         class="col-7 row items-center justify-end q-gutter-x-sm"
       >
         <q-btn
-          @click="exportData"
+          @click="openConfirmDownloadFile"
           :loading="loadingExport"
           flat
           color="black"
@@ -340,7 +367,7 @@ onMounted(async () => {
               </q-item-section>
               <q-item-section>Formulário de saída</q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="exportData">
+            <q-item clickable v-ripple @click="openConfirmDownloadFile">
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="download" />
@@ -489,6 +516,12 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
+        <ConfirmDownloadFile
+          :open="showConfirmDownloadFile"
+          title="Selecione o tipo de arquivo"
+          @update:ok="closeConfirmDownloadFileOk"
+          @update:open="closeConfirmDownloadFile"
+        />
         <FormEntry
           :open="showFormEntry"
           :data-edit="selectedDataEdit"

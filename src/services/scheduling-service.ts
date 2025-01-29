@@ -60,7 +60,7 @@ export const getSchedulingInformationsService = (
   };
 }> => api.get(`${baseUrl}/informations/${type}`);
 
-export const exportSchedulingService = async (
+export const exportSchedulingExcelService = async (
   entry: boolean,
   out: boolean,
   expired: boolean,
@@ -68,7 +68,7 @@ export const exportSchedulingService = async (
 ) => {
   try {
     const response = await api.post(
-      `${baseUrl}/export/${date}?entry=${entry}&out=${out}&expired=${expired}`,
+      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}&expired=${expired}`,
       null,
       {
         responseType: 'blob',
@@ -84,6 +84,37 @@ export const exportSchedulingService = async (
     const link = document.createElement('a');
     link.href = url2;
     link.setAttribute('download', `agendamentos_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
+export const exportSchedulingPDFService = async (
+  entry: boolean,
+  out: boolean,
+  expired: boolean,
+  date: string
+) => {
+  try {
+    const response = await api.post(
+      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}&expired=${expired}`,
+      null,
+      {
+        responseType: 'blob',
+      }
+    );
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `agendamentos_${timestamp}.pdf`);
     document.body.appendChild(link);
     link.click();
     link.remove();

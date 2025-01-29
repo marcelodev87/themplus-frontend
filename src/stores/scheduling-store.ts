@@ -5,12 +5,13 @@ import { Notify } from 'quasar';
 import {
   createSchedulingService,
   deleteSchedulingService,
-  exportSchedulingService,
   finalizeSchedulingService,
   getSchedulingInformationsService,
   getSchedulingsService,
   getSchedulingsWithParamsService,
   updateSchedulingService,
+  exportSchedulingExcelService,
+  exportSchedulingPDFService,
 } from 'src/services/scheduling-service';
 
 import {
@@ -155,7 +156,7 @@ export const useSchedulingStore = defineStore('scheduling', {
         this.setLoading(false);
       }
     },
-    async exportScheduling(
+    async exportSchedulingExcel(
       entry: boolean,
       out: boolean,
       expired: boolean,
@@ -163,7 +164,22 @@ export const useSchedulingStore = defineStore('scheduling', {
     ) {
       try {
         this.setLoading(true);
-        await exportSchedulingService(entry, out, expired, date);
+        await exportSchedulingExcelService(entry, out, expired, date);
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportSchedulingPDF(
+      entry: boolean,
+      out: boolean,
+      expired: boolean,
+      date: string
+    ) {
+      try {
+        this.setLoading(true);
+        await exportSchedulingPDFService(entry, out, expired, date);
       } catch (error) {
         this.createError(error);
       } finally {
