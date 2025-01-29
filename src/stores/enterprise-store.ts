@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
+  deleteEnterpriseService,
   getEnterpriseService,
   getEnterprisesViewService,
   saveEnterpriseViewService,
@@ -228,21 +229,17 @@ export const useEnterpriseStore = defineStore('enterprise', {
         this.setLoading(false);
       }
     },
-    // async deleteCategory(categoryId: string) {
-    //   this.setLoading(true);
-    //   try {
-    //     const response = await deleteCategoryService(categoryId);
-    //     if (response.status === 200) {
-    //       this.listCategory = this.listCategory.filter(
-    //         (item) => item.id !== categoryId
-    //       );
-    //       this.createSuccess(response.data.message);
-    //     }
-    //   } catch (error) {
-    //     this.createError(error);
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
+    async deleteEnterprise(enterpriseId: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteEnterpriseService(enterpriseId);
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
   },
 });

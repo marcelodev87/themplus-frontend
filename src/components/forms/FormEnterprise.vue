@@ -8,7 +8,9 @@ import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useOfficeStore } from 'src/stores/office-store';
+import { useRouter } from 'vue-router';
 import ConfirmEditEnterprise from '../confirm/ConfirmEditEnterprise.vue';
+import ConfirmDeleteEnterprise from '../confirm/ConfirmDeleteEnterprise.vue';
 
 defineOptions({
   name: 'FormEnterprise',
@@ -22,14 +24,18 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { updateEnterprise, getEnterprise } = useEnterpriseStore();
+const { updateEnterprise, getEnterprise, deleteEnterprise } =
+  useEnterpriseStore();
 const { enterprise, loadingEnterprise } = storeToRefs(useEnterpriseStore());
 const { createOffice } = useOfficeStore();
 const { loadingOffice } = storeToRefs(useOfficeStore());
 const { user } = storeToRefs(useAuthStore());
+const { setToken, setUser } = useAuthStore();
 
+const router = useRouter();
 const selectedIdentifier = ref<string>('CNPJ');
 const showConfirmEditEnterprise = ref<boolean>(false);
+const showConfirmDeleteEnterprise = ref<boolean>(false);
 const loading = ref<boolean>(false);
 const dataEnterprise = reactive<DataEnterprise>({
   id: '',
@@ -250,6 +256,20 @@ const fetchEnterprise = async () => {
     }
   }
 };
+const openConfirmDeleteEnterprise = (): void => {
+  showConfirmDeleteEnterprise.value = true;
+};
+const closeConfirmDeleteEnterprise = (): void => {
+  showConfirmDeleteEnterprise.value = false;
+};
+const exclude = async () => {
+  const response = await deleteEnterprise(dataEnterprise.id);
+  if (response?.status === 200) {
+    setToken(null);
+    setUser(null);
+    router.push({ name: 'auth' });
+  }
+};
 
 watch(
   () => dataEnterprise.cep,
@@ -310,7 +330,10 @@ watch(open, () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card v-if="!showConfirmEditEnterprise" class="bg-grey-2 form-basic">
+    <q-card
+      v-if="!showConfirmEditEnterprise && !showConfirmDeleteEnterprise"
+      class="bg-grey-2 form-basic"
+    >
       <q-card-section class="q-pa-none">
         <TitlePage
           :title="
@@ -526,39 +549,53 @@ watch(open, () => {
           </div>
         </q-form>
       </q-card-section>
-      <q-card-actions align="right">
-        <div class="row justify-end items-center q-gutter-x-sm">
-          <q-btn
-            color="red"
-            label="Fechar"
-            size="md"
-            flat
-            @click="open = false"
-            unelevated
-            no-caps
-          />
-          <q-btn
-            v-if="props.mode === 'actual'"
-            @click="openConfirmEditEnterprise"
-            v-show="user?.position === 'admin'"
-            color="primary"
-            label="Continuar"
-            size="md"
-            :loading="loadingEnterprise || loadingOffice"
-            unelevated
-            no-caps
-          />
-          <q-btn
-            v-else
-            @click="saveOffice"
-            v-show="user?.position === 'admin'"
-            color="primary"
-            label="Salvar"
-            size="md"
-            :loading="loadingEnterprise || loadingOffice"
-            unelevated
-            no-caps
-          />
+      <q-card-actions>
+        <div class="row justify-between full-width">
+          <div>
+            <q-btn
+              @click="openConfirmDeleteEnterprise"
+              v-show="props.mode === 'actual' && user?.position === 'admin'"
+              color="negative"
+              label="Deletar organização"
+              size="md"
+              :loading="loadingEnterprise || loadingOffice"
+              unelevated
+              no-caps
+            />
+          </div>
+          <div class="q-gutter-x-sm">
+            <q-btn
+              color="red"
+              label="Fechar"
+              size="md"
+              flat
+              @click="open = false"
+              unelevated
+              no-caps
+            />
+            <q-btn
+              v-if="props.mode === 'actual'"
+              @click="openConfirmEditEnterprise"
+              v-show="user?.position === 'admin'"
+              color="primary"
+              label="Continuar"
+              size="md"
+              :loading="loadingEnterprise || loadingOffice"
+              unelevated
+              no-caps
+            />
+            <q-btn
+              v-else
+              @click="saveOffice"
+              v-show="user?.position === 'admin'"
+              color="primary"
+              label="Salvar"
+              size="md"
+              :loading="loadingEnterprise || loadingOffice"
+              unelevated
+              no-caps
+            />
+          </div>
         </div>
       </q-card-actions>
       <q-inner-loading
@@ -571,10 +608,16 @@ watch(open, () => {
       />
     </q-card>
 
-    <div v-else>
+    <div v-else-if="showConfirmEditEnterprise && !showConfirmDeleteEnterprise">
       <ConfirmEditEnterprise
         @update:open="closeConfirmEditEnterprise"
         @update:ok="update"
+      />
+    </div>
+    <div v-else>
+      <ConfirmDeleteEnterprise
+        @update:open="closeConfirmDeleteEnterprise"
+        @update:ok="exclude"
       />
     </div>
   </q-dialog>

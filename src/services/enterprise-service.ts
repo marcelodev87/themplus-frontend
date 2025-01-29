@@ -101,11 +101,11 @@ export const unlinkCounterService = (): Promise<{
   };
 }> => api.put(`${baseUrl}/unlink`);
 
-// export const deleteCategoryService = (
-//   id: string
-// ): Promise<{
-//   status: number;
-//   data: {
-//     message: string;
-//   };
-// }> => api.delete(`${baseUrl}/${id}`);
+export const deleteEnterpriseService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/${id}`);
