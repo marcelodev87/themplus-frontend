@@ -143,6 +143,27 @@ const optionsCategoriesFilter = computed(() => {
   return [...baseCategories, ...additionalCategories];
 });
 
+const dataMovement = computed(() => {
+  let valueEntry = 0;
+  let valueOut = 0;
+
+  listMovement.value.forEach((item) => {
+    if (item.type === 'entrada') {
+      valueEntry += Number(item.value);
+    } else {
+      valueOut += Number(item.value);
+    }
+  });
+
+  const total = valueEntry - valueOut;
+
+  return {
+    valueEntry: formatCurrencyBRL(valueEntry),
+    valueOut: formatCurrencyBRL(valueOut),
+    total: formatCurrencyBRL(total),
+  };
+});
+
 const filterMonthYear = ref<string>(dateActual.value);
 
 const clear = (): void => {
@@ -436,6 +457,28 @@ onMounted(async () => {
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
+        <q-card flat bordered class="q-my-sm">
+          <q-card-section class="row items-center">
+            <q-icon name="sync_alt" size="20px" class="q-mr-sm" color="black" />
+            <div class="text-h6">Movimentações</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none row justify-between">
+            <span>Valor de entrada: </span>
+            <span>{{ dataMovement.valueEntry }}</span>
+          </q-card-section>
+          <q-card-section class="q-pt-none row justify-between">
+            <span> Valor de saída:</span>
+            <span>{{ dataMovement.valueOut }} </span>
+          </q-card-section>
+
+          <q-separator inset />
+
+          <q-card-section class="row justify-between">
+            <span>Saldo:</span>
+            <span>{{ dataMovement.total }}</span>
+          </q-card-section>
+        </q-card>
         <q-table
           :rows="loadingMovement ? [] : listMovement"
           :columns="columnsMovement"
@@ -448,7 +491,7 @@ onMounted(async () => {
           row-key="name"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[10]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de movimentações</span>
