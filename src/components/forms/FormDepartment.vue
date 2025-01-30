@@ -189,7 +189,7 @@ watch(
             type="text"
             label="Escolher hierarquia"
             readonly
-            disabled
+            disable
             clearable
           >
             <template v-slot:append>

@@ -94,6 +94,26 @@ export const updateEnterpriseService = (payload: {
   };
 }> => api.put(`${baseUrl}/`, payload);
 
+export const createEnterpriseByCounterService = (payload: {
+  name: string;
+  cnpj: string | null;
+  cpf: string | null;
+  cep: string | null;
+  state: string | null;
+  city: string | null;
+  neighborhood: string | null;
+  address: string | null;
+  complement: string | null;
+  number_address: string | null;
+  email: string | null;
+  phone: string | null;
+}): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post(`${baseUrl}/enterprise-counter`, payload);
+
 export const unlinkCounterService = (): Promise<{
   status: number;
   data: {

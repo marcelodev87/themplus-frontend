@@ -605,7 +605,6 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="edit"
-                  :disabled="false"
                 />
                 <q-btn
                   v-show="

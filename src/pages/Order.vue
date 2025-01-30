@@ -218,7 +218,6 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="edit"
-                  :disabled="false"
                 />
                 <q-btn
                   @click="exclude(props.row.id)"

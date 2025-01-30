@@ -341,7 +341,6 @@ watch(open, async () => {
             type="text"
             label="Escolher departamento"
             readonly
-            disabled
             clearable
             dense
           >

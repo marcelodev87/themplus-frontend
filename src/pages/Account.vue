@@ -284,7 +284,6 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="edit"
-                  :disabled="false"
                 />
                 <q-btn
                   @click="reactivate(props.row.id)"
@@ -298,7 +297,6 @@ onMounted(async () => {
                   round
                   color="replay"
                   icon="replay"
-                  :disabled="false"
                 >
                   <q-tooltip> Reativar </q-tooltip>
                 </q-btn>

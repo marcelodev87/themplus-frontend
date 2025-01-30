@@ -249,9 +249,9 @@ watch(open, async () => {
               type="text"
               label="Escolher departamento"
               readonly
-              disabled
               clearable
               dense
+              disable
             >
               <template v-slot:prepend>
                 <q-icon name="groups" color="black" size="20px" />

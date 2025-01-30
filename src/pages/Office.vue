@@ -169,7 +169,7 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="groups"
-                  :disabled="loadingOffice"
+                  :disable="loadingOffice"
                 />
                 <q-btn
                   @click="openConfirmAction(props.row.id)"
@@ -179,7 +179,7 @@ onMounted(async () => {
                   round
                   color="red"
                   icon="delete"
-                  :disabled="loadingOffice"
+                  :disable="loadingOffice"
                 />
               </q-td>
             </q-tr>

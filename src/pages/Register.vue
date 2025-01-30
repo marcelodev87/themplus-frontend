@@ -236,7 +236,7 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="visibility"
-                  :disabled="loadingRegister"
+                  :disable="loadingRegister"
                 >
                   <q-tooltip> Detalhes </q-tooltip>
                 </q-btn>

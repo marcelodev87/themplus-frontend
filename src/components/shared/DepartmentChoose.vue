@@ -60,7 +60,7 @@ watch(
             outlined
             dense
             label="Pesquisar departamento"
-            :disabled="loadingDepartment"
+            :disable="loadingDepartment"
           >
             <template v-slot:prepend>
               <q-icon name="search" />
@@ -82,7 +82,7 @@ watch(
                   color="black"
                   flat
                   rounded
-                  :disabled="loadingDepartment"
+                  :disable="loadingDepartment"
                   @click="selectTree(prop.node)"
                   >{{ prop.node.label }}</q-btn
                 >

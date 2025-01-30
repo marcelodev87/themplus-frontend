@@ -468,7 +468,6 @@ onMounted(async () => {
                   round
                   color="black"
                   icon="edit"
-                  :disabled="false"
                 />
               </q-td>
             </q-tr>

@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
+  createEnterpriseByCounterService,
   deleteEnterpriseService,
   getEnterpriseService,
   getEnterprisesViewService,
@@ -187,6 +188,35 @@ export const useEnterpriseStore = defineStore('enterprise', {
         const response = await unlinkCounterService();
         if (response.status === 200) {
           hasCounter.value = null;
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async createEnterpriseByCounter(payload: {
+      name: string;
+      cnpj: string | null;
+      cpf: string | null;
+      cep: string | null;
+      state: string | null;
+      city: string | null;
+      neighborhood: string | null;
+      address: string | null;
+      complement: string | null;
+      number_address: string | null;
+      email: string | null;
+      phone: string | null;
+    }) {
+      this.setLoading(true);
+      try {
+        const response = await createEnterpriseByCounterService(payload);
+        if (response.status === 201) {
           this.createSuccess(response.data.message);
         }
 

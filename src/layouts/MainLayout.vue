@@ -137,6 +137,12 @@ const mountRoute = () => {
       separator: true,
       name: 'admin-bond',
     });
+    menuList.value.push({
+      icon: 'work',
+      label: 'Organização',
+      separator: true,
+      name: 'admin-enterprise',
+    });
   }
   if (user.value?.position === 'admin') {
     menuList.value.push({
