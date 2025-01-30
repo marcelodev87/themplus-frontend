@@ -1,5 +1,7 @@
 import { RouteRecordRaw } from 'vue-router';
 import { isAdminGuard } from 'src/guards/AdminGuard';
+import { isCounterGuard } from 'src/guards/CounterGuard';
+import { isClientGuard } from 'src/guards/ClientGuard';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -25,65 +27,73 @@ const routes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'admin-dashboard',
         component: () => import('src/pages/Dashboard.vue'),
+        beforeEnter: [isClientGuard],
       },
       {
         path: 'movimentacoes',
         name: 'admin-movement',
         component: () => import('src/pages/Movement.vue'),
+        beforeEnter: [isClientGuard],
       },
       {
         path: 'agendamentos',
         name: 'admin-scheduling',
         component: () => import('src/pages/Scheduling.vue'),
+        beforeEnter: [isClientGuard],
       },
       {
         path: 'contas',
         name: 'admin-account',
         component: () => import('src/pages/Account.vue'),
+        beforeEnter: [isClientGuard],
       },
       {
         path: 'categorias',
         name: 'admin-category',
         component: () => import('src/pages/Category.vue'),
+        beforeEnter: [isClientGuard],
       },
       {
         path: 'usuarios',
         name: 'admin-users',
         component: () => import('src/pages/User.vue'),
-        beforeEnter: isAdminGuard,
+        beforeEnter: [isAdminGuard],
       },
       {
         path: 'departamentos',
         name: 'admin-departments',
         component: () => import('src/pages/Department.vue'),
-        beforeEnter: isAdminGuard,
+        beforeEnter: [isAdminGuard],
       },
       {
         path: 'registros',
         name: 'admin-records',
         component: () => import('src/pages/Register.vue'),
-        beforeEnter: isAdminGuard,
+        beforeEnter: [isAdminGuard],
       },
       {
         path: 'filial',
         name: 'admin-office',
         component: () => import('src/pages/Office.vue'),
-        beforeEnter: isAdminGuard,
+        beforeEnter: [isAdminGuard, isClientGuard],
       },
       {
         path: 'enterprise',
         name: 'admin-enterprise',
         component: () => import('src/pages/Enterprise.vue'),
+        beforeEnter: [isCounterGuard],
       },
       {
         path: 'solicitacoes',
         name: 'admin-order',
         component: () => import('src/pages/Order.vue'),
+        beforeEnter: [isCounterGuard],
       },
 
       {
         path: 'vinculos',
         component: () => import('src/pages/Bond.vue'),
+        beforeEnter: [isCounterGuard],
         children: [
           {
             path: '',
@@ -107,7 +117,7 @@ const routes: RouteRecordRaw[] = [
         path: 'contabilidade',
         name: 'admin-financial-control',
         component: () => import('src/pages/FinancialControl.vue'),
-        beforeEnter: isAdminGuard,
+        beforeEnter: [isAdminGuard, isClientGuard],
       },
 
       {
