@@ -5,10 +5,13 @@ import { Notify } from 'quasar';
 import {
   getDeliveriesService,
   getMovementsWithObservationsService,
+  getSettingsCounterService,
   updateDeliveryService,
+  updateSettingsCounterService,
 } from 'src/services/financial-service';
 import { Delivery } from 'src/ts/interfaces/data/Delivery';
 import { Movement } from 'src/ts/interfaces/data/Movement';
+import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { useOrderStore } from './order-store';
 import { useEnterpriseStore } from './enterprise-store';
 
@@ -22,6 +25,7 @@ export const useFinancialStore = defineStore('financial', {
     listDelivery: [] as Delivery[],
     orderCount: 0 as number,
     listMovementFinancial: [] as Movement[],
+    settingsCounter: null as SettingsCounter | null,
   }),
   actions: {
     clearListFinancial() {
@@ -38,6 +42,9 @@ export const useFinancialStore = defineStore('financial', {
     },
     setOrderCount(order: number) {
       this.orderCount = order;
+    },
+    setSettingsCounter(setting: SettingsCounter | null) {
+      this.settingsCounter = setting;
     },
     setListDelivery(deliveries: Delivery[]) {
       deliveries.map((item) => this.listDelivery.push(item));
@@ -70,14 +77,28 @@ export const useFinancialStore = defineStore('financial', {
     async getDelivery() {
       this.setLoading(true);
       try {
+        this.clearListFinancial();
         const response = await getDeliveriesService();
         if (response.status === 200) {
-          this.clearListFinancial();
           this.setListDelivery(response.data.deliveries);
           this.setFilledData(response.data.filled_data);
           this.setOrderCount(response.data.order_count);
           hasCounter.value = response.data.counter;
           enterpriseHeadquarters.value = response.data.is_headquarters;
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getSettingsCounter() {
+      this.setLoading(true);
+      try {
+        this.setSettingsCounter(null);
+        const response = await getSettingsCounterService();
+        if (response.status === 200) {
+          this.setSettingsCounter(response.data.settings);
         }
       } catch (error) {
         this.createError(error);
@@ -110,6 +131,40 @@ export const useFinancialStore = defineStore('financial', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateSettingsCounter(
+      allowAddUser: number,
+      allowEditUser: number,
+      allowDeleteUser: number,
+      allowEditMovement: number,
+      allowDeleteMovement: number
+    ) {
+      this.setLoading(true);
+      try {
+        this.clearListFinancial();
+        const response = await updateSettingsCounterService(
+          allowAddUser,
+          allowEditUser,
+          allowDeleteUser,
+          allowEditMovement,
+          allowDeleteMovement
+        );
+        if (response.status === 200) {
+          this.setListDelivery(response.data.deliveries);
+          this.setFilledData(response.data.filled_data);
+          this.setOrderCount(response.data.order_count);
+          hasCounter.value = response.data.counter;
+          enterpriseHeadquarters.value = response.data.is_headquarters;
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

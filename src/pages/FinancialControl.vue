@@ -16,6 +16,7 @@ import { useMovementStore } from 'src/stores/movement-store';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
+import FormSettingsCounter from 'src/components/forms/FormSettingsCounter.vue';
 
 defineOptions({
   name: 'FinancialControl',
@@ -44,6 +45,7 @@ const showInviteCounter = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
+const showFormSettingsCounter = ref<boolean>(false);
 const dataMonthYear = ref<string | null>(null);
 const dateSelected = ref<string | null>(null);
 const columnsDelivery = reactive<QuasarTable[]>([
@@ -155,6 +157,12 @@ const closeConfirmAction = (): void => {
 };
 const openConfirmAction = (): void => {
   showConfirmAction.value = true;
+};
+const openFormSettingsCounter = (): void => {
+  showFormSettingsCounter.value = true;
+};
+const closeFormSettingsCounter = (): void => {
+  showFormSettingsCounter.value = false;
 };
 const openInviteCounter = (): void => {
   showInviteCounter.value = true;
@@ -279,6 +287,15 @@ onMounted(async () => {
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
+        <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          @click="openFormSettingsCounter"
+          icon-right="settings"
+          label="Configurações"
+          unelevated
+          no-caps
+          flat
+        />
         <q-btn
           v-show="
             enterpriseHeadquarters &&
@@ -498,6 +515,10 @@ onMounted(async () => {
           title="Atualize uma saída"
           mode="movement"
           @update:open="closeFormOut"
+        />
+        <FormSettingsCounter
+          :open="showFormSettingsCounter"
+          @update:open="closeFormSettingsCounter"
         />
       </main>
     </q-scroll-area>
