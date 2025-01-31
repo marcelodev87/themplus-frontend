@@ -7,4 +7,5 @@ export interface Bond {
   phone: string | null;
   created_by: string | null;
   no_verified: number;
+  manage_users: boolean;
 }

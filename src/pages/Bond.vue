@@ -219,6 +219,17 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  v-show="props.row.manage_users"
+                  @click="openDataClient(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="group"
+                >
+                  <q-tooltip> Usuários </q-tooltip>
+                </q-btn>
+                <q-btn
                   @click="openDataClient(props.row.id)"
                   size="sm"
                   flat
@@ -228,7 +239,6 @@ onMounted(async () => {
                 >
                   <q-tooltip> Analisar </q-tooltip>
                 </q-btn>
-
                 <q-btn
                   v-show="props.row.created_by === null"
                   @click="openConfirmAction(props.row.id)"
