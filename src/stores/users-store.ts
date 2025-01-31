@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import {
   createUserMemberOfficeService,
   createUserMemberService,
+  deleteUserMemberByEnterpriseService,
   deleteUserMemberService,
   exportUserService,
   getUsersMembersByEnterpriseService,
@@ -219,6 +220,24 @@ export const useUsersMembersStore = defineStore('members', {
           this.listUserMember = this.listUserMember.filter(
             (item) => item.id !== userMemberId
           );
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteUserMemberByEnterprise(userMemberId: string) {
+      this.setLoading(true);
+      try {
+        const response =
+          await deleteUserMemberByEnterpriseService(userMemberId);
+        if (response.status === 200) {
+          this.listUserMemberByEnterprise =
+            this.listUserMemberByEnterprise.filter(
+              (item) => item.id !== userMemberId
+            );
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -16,6 +16,15 @@ export interface DataUserMember {
   departmentName?: string | null;
   phone: string;
 }
+
+export interface DataUserByCounter {
+  name: string;
+  position: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  phone: string;
+}
 export interface DataUserMember2 {
   name: string;
   position: string;

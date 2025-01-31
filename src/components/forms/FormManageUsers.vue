@@ -3,8 +3,10 @@
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useUsersMembersStore } from 'src/stores/users-store';
+import { DataUserByCounter } from 'src/ts/interfaces/data/User';
+import { Notify } from 'quasar';
 
 defineOptions({
   name: 'FormManageUsers',
@@ -18,10 +20,35 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { getUsersMembersByEnterprise } = useUsersMembersStore();
+const { getUsersMembersByEnterprise, deleteUserMemberByEnterprise } =
+  useUsersMembersStore();
 const { loadingUsersMembers, listUserMemberByEnterprise, settingsCounter } =
   storeToRefs(useUsersMembersStore());
 
+const dataUser = reactive<DataUserByCounter>({
+  name: '',
+  position: 'common_user',
+  phone: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+});
+const selectedUserPosition = ref<QuasarSelect<string>>({
+  label: 'Usuário comum',
+  value: 'common_user',
+});
+const optionsUserPositions = reactive([
+  {
+    label: 'Administrador',
+    value: 'admin',
+  },
+  {
+    label: 'Usuário comum',
+    value: 'common_user',
+  },
+]);
+const mode = ref<'list' | 'form'>('list');
+const dataEditId = ref<string | null>(null);
 const filterUser = ref<string>('');
 const columnsUser = reactive<QuasarTable[]>([
   {
@@ -72,12 +99,98 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
+const checkData = (): { status: boolean; message?: string } => {
+  if (dataUser.name.trim() === '') {
+    return { status: false, message: 'Deve ser informado o nome do usuário' };
+  }
+  if (dataUser.name.trim().length < 2) {
+    return {
+      status: false,
+      message: 'Nome de usuário deve ter mais de 2 caracteres',
+    };
+  }
+  if (dataUser.email.trim() === '') {
+    return { status: false, message: 'Deve ser informado o e-mail do usuário' };
+  }
+  if (
+    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+      dataUser.email.trim()
+    )
+  ) {
+    return { status: false, message: 'Informe um e-mail válido' };
+  }
+  if (dataUser.phone.trim() !== '') {
+    if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone.trim())) {
+      return { status: false, message: 'Digite um telefone válido' };
+    }
+  }
+  if (dataEditId.value === null) {
+    if (dataUser.password.trim() === '') {
+      return {
+        status: false,
+        message: 'Deve ser informado a senha do usuário',
+      };
+    }
+    if (dataUser.password.trim().length < 7) {
+      return {
+        status: false,
+        message: 'A senha deve conter mais de 7 caracteres',
+      };
+    }
+    if (
+      dataUser.password.trim() !==
+      (dataUser.confirmPassword && dataUser.confirmPassword.trim())
+    ) {
+      return { status: false, message: 'As senhas não coincidem' };
+    }
+  }
+  return { status: true };
+};
+const clear = (): void => {
+  mode.value = 'list';
+  filterUser.value = '';
+  Object.assign(dataUser, {
+    name: '',
+    position: 'common_user',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+  });
+};
 const fetchUsers = async () => {
   await getUsersMembersByEnterprise(props.id ?? '');
+};
+const exclude = async (userId: string) => {
+  await deleteUserMemberByEnterprise(userId);
+};
+const changeMode = (view: 'list' | 'form', data: string | null) => {
+  dataEditId.value = data;
+  mode.value = view;
+};
+const save = async () => {
+  const check = checkData();
+  if (check.status) {
+    await createUserMember(
+      dataUser.name,
+      selectedUserPosition.value.value,
+      dataUser.email,
+      dataUser.password,
+      dataUser.phone?.trim() !== '' ? dataUser.phone : null
+    );
+
+    clear();
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
 };
 
 watch(open, async () => {
   if (open.value) {
+    clear();
     await fetchUsers();
   }
 });
@@ -90,6 +203,7 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-table
+          v-if="mode === 'list'"
           :rows="loadingUsersMembers ? [] : listUserMemberByEnterprise"
           :columns="columnsUser"
           :filter="filterUser"
@@ -106,6 +220,7 @@ watch(open, async () => {
             <span class="text-subtitle2">Lista de usuários</span>
             <q-space />
             <q-btn
+              @click="changeMode('form', null)"
               v-show="settingsCounter?.allow_add_user"
               label="Adicionar usuário"
               icon-right="group_add"
@@ -161,6 +276,7 @@ watch(open, async () => {
                   icon="edit"
                 />
                 <q-btn
+                  @click="exclude(props.row.id)"
                   v-show="settingsCounter?.allow_delete_user"
                   size="sm"
                   flat
@@ -172,6 +288,89 @@ watch(open, async () => {
             </q-tr>
           </template>
         </q-table>
+        <q-form v-else class="q-gutter-y-sm">
+          <q-input
+            v-model="dataUser.name"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite o nome do usuário"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="person" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataUser.email"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite o e-mail do usuário"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="mail" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataUser.phone"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite o telefone do usuário"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="call" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-select
+            filled
+            v-model="selectedUserPosition"
+            label="Selecione o cargo"
+            :options="optionsUserPositions"
+            bg-color="white"
+            dense
+            options-dense
+            map-options
+            label-color="black"
+            class="full-width"
+          >
+            <template v-slot:prepend>
+              <q-icon name="supervisor_account" color="black" size="20px" />
+            </template>
+          </q-select>
+          <q-input
+            v-model="dataUser.password"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Digite a senha do usuário"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataUser.confirmPassword"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Confirme a senha do usuário"
+            dense
+            input-class="text-black"
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock" color="black" size="20px" />
+            </template>
+          </q-input>
+        </q-form>
       </q-card-section>
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
@@ -180,6 +379,25 @@ watch(open, async () => {
             label="Fechar"
             size="md"
             @click="open = false"
+            unelevated
+            no-caps
+            :flat="mode !== 'list'"
+          />
+          <q-btn
+            v-show="mode === 'form'"
+            color="red"
+            label="Voltar"
+            size="md"
+            @click="changeMode('list', null)"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            @click="save"
+            v-show="mode === 'form'"
+            color="primary"
+            label="Salvar"
+            size="md"
             unelevated
             no-caps
           />

@@ -117,3 +117,12 @@ export const deleteUserMemberService = (
     message: string;
   };
 }> => api.delete(`${baseUrl}/${id}`);
+
+export const deleteUserMemberByEnterpriseService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/${id}/counter`);
