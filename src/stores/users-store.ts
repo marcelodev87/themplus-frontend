@@ -7,9 +7,11 @@ import {
   createUserMemberService,
   deleteUserMemberService,
   exportUserService,
+  getUsersMembersByEnterpriseService,
   getUsersMembersService,
   updateUserMemberService,
 } from 'src/services/users-service';
+import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { User } from 'src/ts/interfaces/data/User';
 
 export const useUsersMembersStore = defineStore('members', {
@@ -17,7 +19,9 @@ export const useUsersMembersStore = defineStore('members', {
     filledData: true as boolean,
     loadingUsersMembers: false as boolean,
     listUserMember: [] as User[],
+    listUserMemberByEnterprise: [] as User[],
     resultSearchMember: [] as User[],
+    settingsCounter: null as SettingsCounter | null,
   }),
   getters: {
     resultUserSelect: (state) => {
@@ -33,17 +37,29 @@ export const useUsersMembersStore = defineStore('members', {
     clearListUser() {
       this.listUserMember.splice(0, this.listUserMember.length);
     },
+    clearListUserByEnterprise() {
+      this.listUserMemberByEnterprise.splice(
+        0,
+        this.listUserMemberByEnterprise.length
+      );
+    },
     clearResultSearchMember() {
       this.resultSearchMember.splice(0, this.resultSearchMember.length);
     },
     setLoading(loading: boolean) {
       this.loadingUsersMembers = loading;
     },
+    setSettingsCounter(settings: SettingsCounter | null) {
+      this.settingsCounter = settings;
+    },
     setFilledData(data: boolean) {
       this.filledData = data;
     },
     setListUser(users: User[]) {
       users.map((item) => this.listUserMember.push(item));
+    },
+    setListUserByEnterprise(users: User[]) {
+      users.map((item) => this.listUserMemberByEnterprise.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -71,6 +87,22 @@ export const useUsersMembersStore = defineStore('members', {
           this.clearListUser();
           this.setListUser(response.data.users);
           this.setFilledData(response.data.filled_data);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getUsersMembersByEnterprise(enterpriseId: string) {
+      this.setLoading(true);
+      try {
+        this.clearListUserByEnterprise();
+        this.setSettingsCounter(null);
+        const response = await getUsersMembersByEnterpriseService(enterpriseId);
+        if (response.status === 200) {
+          this.setListUserByEnterprise(response.data.users);
+          this.setSettingsCounter(response.data.settings);
         }
       } catch (error) {
         this.createError(error);

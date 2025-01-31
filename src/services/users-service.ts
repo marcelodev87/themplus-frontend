@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
 import { Notify } from 'quasar';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
+import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import {
   DataUserMember2,
   DataUserMember3,
@@ -31,6 +32,16 @@ export const getUsersMembersService = (): Promise<{
     filled_data: boolean;
   };
 }> => api.get(`${baseUrl}`);
+
+export const getUsersMembersByEnterpriseService = (
+  enterpriseId: string
+): Promise<{
+  status: number;
+  data: {
+    users: User[];
+    settings: SettingsCounter;
+  };
+}> => api.get(`${baseUrl}/${enterpriseId}`);
 
 export const createUserMemberService = (
   payload: DataUserMember2

@@ -10,6 +10,7 @@ import { Alert } from 'src/ts/interfaces/data/Alert';
 import { useOrderStore } from 'src/stores/order-store';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import DataClient from 'src/components/general/DataClient.vue';
+import FormManageUsers from 'src/components/forms/FormManageUsers.vue';
 import { useRouter, useRoute } from 'vue-router';
 
 defineOptions({
@@ -23,11 +24,13 @@ const router = useRouter();
 const route = useRoute();
 const showFormAlert = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
+const showFormManageUsers = ref<boolean>(false);
 const filterOrder = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
 const showConfirmAction = ref<boolean>(false);
 const showDataClient = ref<boolean>(false);
 const dataClient = ref<string | null>(null);
+const dataManage = ref<string | null>(null);
 const dataBond = ref<string | null>(null);
 const columnsBond = reactive<QuasarTable[]>([
   {
@@ -128,6 +131,14 @@ const closeDataClient = () => {
   showDataClient.value = false;
   window.close();
 };
+const openFormManageUsers = (enterpriseId: string): void => {
+  dataManage.value = enterpriseId;
+  showFormManageUsers.value = true;
+};
+const closeFormManageUsers = (): void => {
+  showFormManageUsers.value = false;
+  dataManage.value = null;
+};
 
 watch(
   filledData,
@@ -220,7 +231,7 @@ onMounted(async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   v-show="props.row.manage_users"
-                  @click="openDataClient(props.row.id)"
+                  @click="openFormManageUsers(props.row.id)"
                   size="sm"
                   flat
                   round
@@ -261,6 +272,11 @@ onMounted(async () => {
           :open="showFormAlert"
           :data-edit="selectedDataEdit"
           @update:open="closeFormAlert"
+        />
+        <FormManageUsers
+          :open="showFormManageUsers"
+          :id="dataManage"
+          @update:open="closeFormManageUsers"
         />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
