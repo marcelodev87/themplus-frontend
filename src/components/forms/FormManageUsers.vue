@@ -24,6 +24,8 @@ const {
   getUsersMembersByEnterprise,
   deleteUserMemberByEnterprise,
   createUserMemberByCounter,
+  findUser,
+  updateUserMemberByCounter,
 } = useUsersMembersStore();
 const { loadingUsersMembers, listUserMemberByEnterprise, settingsCounter } =
   storeToRefs(useUsersMembersStore());
@@ -60,21 +62,12 @@ const columnsUser = reactive<QuasarTable[]>([
     label: 'Telefone',
     field: 'phone',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'position',
     label: 'Cargo',
     field: 'position',
     align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'department',
-    label: 'Departamento',
-    field: 'departments.name',
-    align: 'left',
-    sortable: true,
   },
   {
     name: 'action',
@@ -109,7 +102,7 @@ const checkData = (): { status: boolean; message?: string } => {
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
-  if (dataUser.phone?.trim() !== '') {
+  if (dataUser.phone && dataUser.phone.trim() !== '') {
     if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone!.trim())) {
       return { status: false, message: 'Digite um telefone válido' };
     }
@@ -139,9 +132,10 @@ const checkData = (): { status: boolean; message?: string } => {
 const clear = (): void => {
   mode.value = 'list';
   filterUser.value = '';
+  dataEditId.value = null;
   Object.assign(dataUser, {
     name: '',
-    position: 'common_user',
+    position: 'admin',
     email: '',
     password: '',
     confirmPassword: '',
@@ -157,6 +151,9 @@ const exclude = async (userId: string) => {
 const changeMode = (view: 'list' | 'form', data: string | null) => {
   dataEditId.value = data;
   mode.value = view;
+  if (view === 'list') {
+    clear();
+  }
 };
 const save = async () => {
   const check = checkData();
@@ -177,7 +174,41 @@ const save = async () => {
     });
   }
 };
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateUserMemberByCounter(
+      dataEditId.value ?? '',
+      dataUser.name,
+      dataUser.email,
+      dataUser.phone?.trim() !== '' ? dataUser.phone : null
+    );
 
+    clear();
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
+
+watch(dataEditId, async () => {
+  if (dataEditId.value) {
+    const response = await findUser(dataEditId.value);
+    if (response?.status === 200) {
+      Object.assign(dataUser, {
+        name: response.data.user.name,
+        position: 'admin',
+        email: response.data.user.email,
+        phone: response.data.user.phone,
+      });
+    } else {
+      mode.value = 'list';
+      clear();
+    }
+  }
+});
 watch(open, async () => {
   if (open.value) {
     clear();
@@ -254,15 +285,9 @@ watch(open, async () => {
                     : 'Usuário comum'
                 }}
               </q-td>
-              <q-td key="department" :props="props" class="text-left">
-                {{
-                  props.row.department_id
-                    ? props.row.department.name
-                    : `Não definido`
-                }}
-              </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="changeMode('form', props.row.id)"
                   v-show="settingsCounter?.allow_edit_user"
                   size="sm"
                   flat
@@ -284,6 +309,10 @@ watch(open, async () => {
           </template>
         </q-table>
         <q-form v-else class="q-gutter-y-sm">
+          <q-banner dense inline-actions class="text-white bg-red" rounded>
+            Todos os usuários cadastrados por meio desse formulário, serão
+            inseridos como administradores.
+          </q-banner>
           <q-input
             v-model="dataUser.name"
             bg-color="white"
@@ -324,6 +353,7 @@ watch(open, async () => {
             </template>
           </q-input>
           <q-input
+            v-show="dataEditId === null"
             v-model="dataUser.password"
             bg-color="white"
             label-color="black"
@@ -337,6 +367,7 @@ watch(open, async () => {
             </template>
           </q-input>
           <q-input
+            v-show="dataEditId === null"
             v-model="dataUser.confirmPassword"
             bg-color="white"
             label-color="black"
@@ -372,10 +403,21 @@ watch(open, async () => {
             no-caps
           />
           <q-btn
+            v-if="dataEditId === null"
             @click="save"
             v-show="mode === 'form'"
             color="primary"
             label="Salvar"
+            size="md"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="update"
+            v-show="mode === 'form'"
+            color="primary"
+            label="Atualizar"
             size="md"
             unelevated
             no-caps

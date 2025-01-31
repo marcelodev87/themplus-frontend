@@ -9,8 +9,10 @@ import {
   deleteUserMemberByEnterpriseService,
   deleteUserMemberService,
   exportUserService,
+  findUserService,
   getUsersMembersByEnterpriseService,
   getUsersMembersService,
+  updateUserMemberByCounter,
   updateUserMemberService,
 } from 'src/services/users-service';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
@@ -92,6 +94,17 @@ export const useUsersMembersStore = defineStore('members', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async findUser(userId: string) {
+      try {
+        this.setLoading(true);
+        return await findUserService(userId);
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }
@@ -234,6 +247,34 @@ export const useUsersMembersStore = defineStore('members', {
         if (response.status === 200) {
           this.clearListUser();
           this.setListUser(response.data.users);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateUserMemberByCounter(
+      id: string,
+      name: string,
+      email: string,
+      phone: string | null
+    ) {
+      try {
+        this.setLoading(true);
+        this.setLoading(true);
+        this.clearListUserByEnterprise();
+        this.setSettingsCounter(null);
+        const response = await updateUserMemberByCounter(
+          id,
+          name,
+          email,
+          phone
+        );
+        if (response.status === 200) {
+          this.setListUserByEnterprise(response.data.users);
+          this.setSettingsCounter(response.data.settings);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -34,6 +34,15 @@ export const getUsersMembersService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
+export const findUserService = (
+  userId: string
+): Promise<{
+  status: number;
+  data: {
+    user: User;
+  };
+}> => api.get(`${baseUrl}/find/${userId}`);
+
 export const getUsersMembersByEnterpriseService = (
   enterpriseId: string
 ): Promise<{
@@ -119,6 +128,25 @@ export const updateUserMemberService = (
     phone,
     position,
     department,
+  });
+export const updateUserMemberByCounter = (
+  id: string,
+  name: string,
+  email: string,
+  phone: string | null
+): Promise<{
+  status: number;
+  data: {
+    users: User[];
+    settings: SettingsCounter;
+    message: string;
+  };
+}> =>
+  api.put(`${baseUrl}/member-counter`, {
+    id,
+    name,
+    email,
+    phone,
   });
 
 export const deleteUserMemberService = (
