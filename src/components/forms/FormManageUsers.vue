@@ -3,7 +3,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { DataUserByCounter } from 'src/ts/interfaces/data/User';
 import { Notify } from 'quasar';
@@ -20,33 +20,23 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { getUsersMembersByEnterprise, deleteUserMemberByEnterprise } =
-  useUsersMembersStore();
+const {
+  getUsersMembersByEnterprise,
+  deleteUserMemberByEnterprise,
+  createUserMemberByCounter,
+} = useUsersMembersStore();
 const { loadingUsersMembers, listUserMemberByEnterprise, settingsCounter } =
   storeToRefs(useUsersMembersStore());
 
 const dataUser = reactive<DataUserByCounter>({
   name: '',
-  position: 'common_user',
+  position: 'admin',
   phone: '',
   email: '',
   password: '',
   confirmPassword: '',
 });
-const selectedUserPosition = ref<QuasarSelect<string>>({
-  label: 'Usuário comum',
-  value: 'common_user',
-});
-const optionsUserPositions = reactive([
-  {
-    label: 'Administrador',
-    value: 'admin',
-  },
-  {
-    label: 'Usuário comum',
-    value: 'common_user',
-  },
-]);
+
 const mode = ref<'list' | 'form'>('list');
 const dataEditId = ref<string | null>(null);
 const filterUser = ref<string>('');
@@ -119,8 +109,8 @@ const checkData = (): { status: boolean; message?: string } => {
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
-  if (dataUser.phone.trim() !== '') {
-    if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone.trim())) {
+  if (dataUser.phone?.trim() !== '') {
+    if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone!.trim())) {
       return { status: false, message: 'Digite um telefone válido' };
     }
   }
@@ -171,12 +161,12 @@ const changeMode = (view: 'list' | 'form', data: string | null) => {
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    await createUserMember(
+    await createUserMemberByCounter(
       dataUser.name,
-      selectedUserPosition.value.value,
       dataUser.email,
       dataUser.password,
-      dataUser.phone?.trim() !== '' ? dataUser.phone : null
+      dataUser.phone?.trim() !== '' ? dataUser.phone : null,
+      props.id ?? ''
     );
 
     clear();
@@ -197,7 +187,12 @@ watch(open, async () => {
 </script>
 <template>
   <q-dialog v-model="open" persistent>
-    <q-card class="bg-grey-2" style="min-width: 98vw">
+    <q-card
+      class="bg-grey-2"
+      :style="
+        mode === 'form' ? 'width: 600px; max-width:98vw' : 'min-width: 98vw'
+      "
+    >
       <q-card-section class="q-pa-none">
         <TitlePage title="Gerenciamento de usuários" />
       </q-card-section>
@@ -328,22 +323,6 @@ watch(open, async () => {
               <q-icon name="call" color="black" size="20px" />
             </template>
           </q-input>
-          <q-select
-            filled
-            v-model="selectedUserPosition"
-            label="Selecione o cargo"
-            :options="optionsUserPositions"
-            bg-color="white"
-            dense
-            options-dense
-            map-options
-            label-color="black"
-            class="full-width"
-          >
-            <template v-slot:prepend>
-              <q-icon name="supervisor_account" color="black" size="20px" />
-            </template>
-          </q-select>
           <q-input
             v-model="dataUser.password"
             bg-color="white"

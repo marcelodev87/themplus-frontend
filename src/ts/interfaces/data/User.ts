@@ -23,7 +23,15 @@ export interface DataUserByCounter {
   email: string;
   password: string;
   confirmPassword?: string;
-  phone: string;
+  phone: string | null;
+}
+export interface CreateUserByCounter {
+  enterpriseId: string;
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  phone: string | null;
 }
 export interface DataUserMember2 {
   name: string;

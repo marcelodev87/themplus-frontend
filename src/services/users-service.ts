@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import {
+  CreateUserByCounter,
   DataUserMember2,
   DataUserMember3,
   User,
@@ -62,6 +63,17 @@ export const createUserMemberOfficeService = (
     message: string;
   };
 }> => api.post(`${baseUrl}/start-office`, payload);
+
+export const createUserMemberByCounterService = (
+  payload: CreateUserByCounter
+): Promise<{
+  status: number;
+  data: {
+    users: User[];
+    settings: SettingsCounter;
+    message: string;
+  };
+}> => api.post(`${baseUrl}/member-counter`, payload);
 
 export const exportUserService = async () => {
   try {

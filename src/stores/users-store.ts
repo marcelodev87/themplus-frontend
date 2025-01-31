@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
+  createUserMemberByCounterService,
   createUserMemberOfficeService,
   createUserMemberService,
   deleteUserMemberByEnterpriseService,
@@ -81,8 +82,8 @@ export const useUsersMembersStore = defineStore('members', {
       });
     },
     async getUsersMembers() {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await getUsersMembersService();
         if (response.status === 200) {
           this.clearListUser();
@@ -96,8 +97,8 @@ export const useUsersMembersStore = defineStore('members', {
       }
     },
     async getUsersMembersByEnterprise(enterpriseId: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         this.clearListUserByEnterprise();
         this.setSettingsCounter(null);
         const response = await getUsersMembersByEnterpriseService(enterpriseId);
@@ -140,6 +141,35 @@ export const useUsersMembersStore = defineStore('members', {
         this.setLoading(false);
       }
     },
+    async createUserMemberByCounter(
+      name: string,
+      email: string,
+      password: string,
+      phone: string | null,
+      enterpriseId: string
+    ) {
+      try {
+        this.setLoading(true);
+        this.clearListUserByEnterprise();
+        this.setSettingsCounter(null);
+        const response = await createUserMemberByCounterService({
+          name,
+          email,
+          password,
+          phone,
+          enterpriseId,
+        });
+        if (response.status === 201) {
+          this.setListUserByEnterprise(response.data.users);
+          this.setSettingsCounter(response.data.settings);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async createUserMemberOffice(
       enterpriseId: string,
       name: string,
@@ -149,8 +179,8 @@ export const useUsersMembersStore = defineStore('members', {
       department: string | null,
       phone: string | null
     ) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await createUserMemberOfficeService({
           enterpriseId,
           name,
@@ -213,8 +243,8 @@ export const useUsersMembersStore = defineStore('members', {
       }
     },
     async deleteUserMember(userMemberId: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response = await deleteUserMemberService(userMemberId);
         if (response.status === 200) {
           this.listUserMember = this.listUserMember.filter(
@@ -229,8 +259,8 @@ export const useUsersMembersStore = defineStore('members', {
       }
     },
     async deleteUserMemberByEnterprise(userMemberId: string) {
-      this.setLoading(true);
       try {
+        this.setLoading(true);
         const response =
           await deleteUserMemberByEnterpriseService(userMemberId);
         if (response.status === 200) {
