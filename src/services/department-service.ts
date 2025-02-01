@@ -9,6 +9,7 @@ export const getDepartmentsService = (): Promise<{
     departments: Department[];
     filled_data: boolean;
     message: string;
+    notifications: number;
   };
 }> => api.get(`${baseUrl}`);
 

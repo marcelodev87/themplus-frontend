@@ -6,5 +6,6 @@ export const getFeedService = (): Promise<{
   status: number;
   data: {
     filled_data: boolean;
+    notifications: number;
   };
 }> => api.get(`${baseUrl}`);

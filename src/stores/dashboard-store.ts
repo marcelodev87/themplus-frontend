@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   downloadDashboardService,
   getDashboardService,
@@ -118,6 +119,7 @@ export const useDashboardStore = defineStore('dashboard', {
           this.setUsersDashboard(response.data.users_dashboard);
           this.setAccountsDashboard(response.data.accounts_dashboard);
           this.setListCategoryFilters(response.data.categories);
+          updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {

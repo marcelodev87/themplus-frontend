@@ -3,6 +3,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   getRegisterDetailService,
   getRegistersService,
@@ -106,6 +107,7 @@ export const useRegisterStore = defineStore('register', {
           this.setListRegister(response.data.registers);
           this.setListOptionsUsers(response.data.users);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

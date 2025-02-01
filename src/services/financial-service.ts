@@ -13,6 +13,7 @@ export const getDeliveriesService = (): Promise<{
     counter: string | null;
     is_headquarters: boolean;
     order_count: number;
+    notifications: number;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

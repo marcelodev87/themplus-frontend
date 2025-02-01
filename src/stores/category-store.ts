@@ -11,6 +11,7 @@ import {
   getCategoriesWithParamsService,
   updateActiveCategoryService,
 } from 'src/services/category-service';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -56,6 +57,7 @@ export const useCategoryStore = defineStore('category', {
         if (response.status === 200) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
+          updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {

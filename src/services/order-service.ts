@@ -18,6 +18,7 @@ export const getOrdersViewCounterService = (): Promise<{
   data: {
     orders: OrderCounter[];
     filled_data: boolean;
+    notifications: number;
     message: string;
   };
 }> => api.get(`${baseUrl}/counter`);
@@ -28,6 +29,7 @@ export const getBondsService = (): Promise<{
     bonds: Bond[];
     filled_data: boolean;
     message: string;
+    notifications: number;
   };
 }> => api.get(`${baseUrl}/bonds`);
 

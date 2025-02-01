@@ -9,6 +9,7 @@ export const getOfficesService = (): Promise<{
     offices: Office[];
     message: string;
     filled_data: boolean;
+    notifications: number;
   };
 }> => api.get(`${baseUrl}`);
 

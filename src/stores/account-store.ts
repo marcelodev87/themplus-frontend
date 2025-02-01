@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   createAccountService,
   getAccountsService,
@@ -75,6 +76,7 @@ export const useAccountStore = defineStore('account', {
           this.clearListAccount();
           this.setListAccount(response.data.accounts);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

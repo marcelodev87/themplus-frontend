@@ -24,6 +24,7 @@ export const getAccountsService = (): Promise<{
   data: {
     accounts: Account[];
     filled_data: boolean;
+    notifications: number;
     message: string;
   };
 }> => api.get(`${baseUrl}`);

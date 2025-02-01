@@ -31,6 +31,7 @@ export const getUsersMembersService = (): Promise<{
   data: {
     users: User[];
     filled_data: boolean;
+    notifications: number;
   };
 }> => api.get(`${baseUrl}`);
 

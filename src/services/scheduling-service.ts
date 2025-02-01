@@ -31,6 +31,7 @@ export const getSchedulingsService = (
     schedulings: Scheduling[];
     months_years: string[];
     categories: QuasarSelect<string>[];
+    notifications: number;
     filled_data: boolean;
   };
 }> => api.get(`${baseUrl}/${date}`);

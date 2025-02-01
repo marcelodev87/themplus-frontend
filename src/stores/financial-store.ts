@@ -12,6 +12,7 @@ import {
 import { Delivery } from 'src/ts/interfaces/data/Delivery';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import { useOrderStore } from './order-store';
 import { useEnterpriseStore } from './enterprise-store';
 
@@ -83,6 +84,7 @@ export const useFinancialStore = defineStore('financial', {
           this.setListDelivery(response.data.deliveries);
           this.setFilledData(response.data.filled_data);
           this.setOrderCount(response.data.order_count);
+          updateNotifications(response.data.notifications);
           hasCounter.value = response.data.counter;
           enterpriseHeadquarters.value = response.data.is_headquarters;
         }

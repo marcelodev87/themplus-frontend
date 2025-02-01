@@ -34,6 +34,7 @@ export const getMovementsService = (
     filled_data: boolean;
     delivered: boolean;
     categories: QuasarSelect<string>[];
+    notifications: number;
     message: string;
   };
 }> => api.get(`${baseUrl}/${date}`);

@@ -43,6 +43,7 @@ export const getDashboardService = (
     users_dashboard: UsersDashboard | null;
     schedulings_dashboard: SchedulingDashboard | null;
     accounts_dashboard: AccountDashboard | null;
+    notifications: number;
     filled_data: boolean;
   };
 }> => api.post(`${baseUrl}/`, { mode, date, category });

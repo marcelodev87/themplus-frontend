@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   createOfficeService,
   deleteOfficeService,
@@ -54,6 +55,7 @@ export const useOfficeStore = defineStore('office', {
           this.clearListOffice();
           this.setListOffice(response.data.offices);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

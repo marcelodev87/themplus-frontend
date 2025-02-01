@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   createDepartmentService,
   deleteDepartmentService,
@@ -84,6 +85,7 @@ export const useDepartmentStore = defineStore('department', {
           this.clearListDepartment();
           this.setListDepartment(response.data.departments);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

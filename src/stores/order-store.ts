@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   actionRequestEnterpriseService,
   deleteBondService,
@@ -93,6 +94,7 @@ export const useOrderStore = defineStore('order', {
           this.clearListOrderCounter();
           this.setListOrderCounter(response.data.orders);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);
@@ -108,6 +110,7 @@ export const useOrderStore = defineStore('order', {
           this.clearListBond();
           this.setListBond(response.data.bonds);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

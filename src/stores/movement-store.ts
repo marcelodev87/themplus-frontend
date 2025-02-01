@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   createMovementService,
   deleteMovementService,
@@ -134,6 +135,7 @@ export const useMovementStore = defineStore('movement', {
           this.setFilledData(response.data.filled_data);
           this.setDelivered(response.data.delivered);
           this.setListCategoryFilters(response.data.categories);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
+import { useUsersMembersStore } from 'src/stores/users-store';
 import UserOptions from './UserOptions.vue';
 import FormFeedback from '../forms/FormFeedback.vue';
 import Notifications from '../info/Notifications.vue';
@@ -11,6 +12,7 @@ defineOptions({
 });
 
 const { user } = storeToRefs(useAuthStore());
+const { notifications } = storeToRefs(useUsersMembersStore());
 
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
@@ -95,7 +97,13 @@ const closeNotifications = (): void => {
             class="q-mr-md"
           >
             <q-tooltip> Notificações </q-tooltip>
-            <q-badge color="red" rounded floating />
+            <q-badge
+              v-show="notifications > 0"
+              color="red"
+              rounded
+              floating
+              :label="notifications"
+            />
           </q-btn>
         </div>
         <div v-else>

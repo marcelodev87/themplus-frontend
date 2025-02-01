@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   createSchedulingService,
   deleteSchedulingService,
@@ -117,6 +118,7 @@ export const useSchedulingStore = defineStore('scheduling', {
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
           this.setListCategoryFilters(response.data.categories);
+          updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
         }
       } catch (error) {

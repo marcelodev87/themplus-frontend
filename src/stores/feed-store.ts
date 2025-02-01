@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import { getFeedService } from 'src/services/feed-service';
 
 export const useFeedStore = defineStore('feed', {
@@ -40,6 +41,7 @@ export const useFeedStore = defineStore('feed', {
         const response = await getFeedService();
         if (response.status === 200) {
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

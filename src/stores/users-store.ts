@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
+import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
   createUserMemberByCounterService,
   createUserMemberOfficeService,
@@ -26,6 +27,7 @@ export const useUsersMembersStore = defineStore('members', {
     listUserMemberByEnterprise: [] as User[],
     resultSearchMember: [] as User[],
     settingsCounter: null as SettingsCounter | null,
+    notifications: 0 as number,
   }),
   getters: {
     resultUserSelect: (state) => {
@@ -65,6 +67,9 @@ export const useUsersMembersStore = defineStore('members', {
     setListUserByEnterprise(users: User[]) {
       users.map((item) => this.listUserMemberByEnterprise.push(item));
     },
+    setNotifications(notifications: number) {
+      this.notifications = notifications;
+    },
     createError(error: any) {
       let message = 'Error';
       if (error instanceof AxiosError) {
@@ -91,6 +96,7 @@ export const useUsersMembersStore = defineStore('members', {
           this.clearListUser();
           this.setListUser(response.data.users);
           this.setFilledData(response.data.filled_data);
+          updateNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

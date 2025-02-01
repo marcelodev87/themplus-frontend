@@ -91,7 +91,7 @@ const closeDrawer = (): void => {
           <q-item
             clickable
             :to="{ name: 'admin-feed' }"
-            :active="isActive('feed')"
+            :active="isActive('admin-feed')"
             active-class=" active-option-menu text-bold"
             @click="closeDrawer"
           >

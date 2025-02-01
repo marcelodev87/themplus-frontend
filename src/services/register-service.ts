@@ -8,6 +8,7 @@ export const getRegistersService = (): Promise<{
   data: {
     registers: Register[];
     filled_data: boolean;
+    notifications: number;
     users: { id: string; name: string }[];
     message: string;
   };
