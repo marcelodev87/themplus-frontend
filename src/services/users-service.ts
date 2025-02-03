@@ -167,6 +167,16 @@ export const updateUserMemberByCounter = (
     phone,
   });
 
+export const updateActiveUserService = (
+  active: number,
+  userId: string
+): Promise<{
+  status: number;
+  data: {
+    users: User[];
+    message: string;
+  };
+}> => api.put(`${baseUrl}/active/`, { active, userId });
 export const deleteUserMemberService = (
   id: string
 ): Promise<{

@@ -16,6 +16,7 @@ import {
   getUsersMembersByEnterpriseService,
   getUsersMembersService,
   readNotificationService,
+  updateActiveUserService,
   updateUserMemberByCounter,
   updateUserMemberService,
 } from 'src/services/users-service';
@@ -136,6 +137,24 @@ export const useUsersMembersStore = defineStore('members', {
         const response = await readNotificationService(id);
         if (response.status === 200) {
           this.setInbox(response.data.inbox);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateActiveUser(active: number, userId: string) {
+      try {
+        this.setLoading(true);
+        const response = await updateActiveUserService(active, userId);
+        if (response.status === 200) {
+          this.clearListUser();
+          this.setListUser(response.data.users);
+          this.createSuccess(response.data.message);
         }
 
         return response;

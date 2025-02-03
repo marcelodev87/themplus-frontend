@@ -1,7 +1,6 @@
 import { useUsersMembersStore } from '../stores/users-store';
 
-const { setNotifications } = useUsersMembersStore();
-
 export const updateNotifications = (notifications: number) => {
+  const { setNotifications } = useUsersMembersStore();
   setNotifications(notifications);
 };

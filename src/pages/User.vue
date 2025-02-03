@@ -13,7 +13,7 @@ defineOptions({
   name: 'User',
 });
 
-const { getUsersMembers, deleteUserMember, exportUser } =
+const { getUsersMembers, deleteUserMember, exportUser, updateActiveUser } =
   useUsersMembersStore();
 const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(
   useUsersMembersStore()
@@ -45,21 +45,24 @@ const columnsUser = reactive<QuasarTable[]>([
     label: 'Telefone',
     field: 'phone',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'position',
     label: 'Cargo',
     field: 'position',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'department',
     label: 'Departamento',
     field: 'departments.name',
     align: 'left',
-    sortable: true,
+  },
+  {
+    name: 'active',
+    label: 'Ativo',
+    field: 'active',
+    align: 'left',
   },
   {
     name: 'action',
@@ -94,6 +97,9 @@ const exportData = async (): Promise<void> => {
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const setActive = async (active: number, userId: string) => {
+  await updateActiveUser(active, userId);
 };
 
 watch(
@@ -230,7 +236,28 @@ onMounted(async () => {
                     : `Não definido`
                 }}
               </q-td>
+              <q-td key="active" :props="props" class="text-left">
+                <q-icon
+                  :name="props.row.active ? 'person_check' : 'person_cancel'"
+                  :color="props.row.active ? 'green' : 'red'"
+                />
+              </q-td>
               <q-td key="action" :props="props">
+                <q-btn
+                  v-show="user && user.id !== props.row.id"
+                  @click="
+                    setActive(props.row.active === 1 ? 0 : 1, props.row.id)
+                  "
+                  size="sm"
+                  flat
+                  round
+                  :color="props.row.active ? 'red' : 'green'"
+                  :icon="props.row.active ? 'block' : 'check'"
+                >
+                  <q-tooltip>
+                    {{ props.row.active ? 'Inativar' : 'Ativar' }}
+                  </q-tooltip>
+                </q-btn>
                 <q-btn
                   v-show="
                     user &&
