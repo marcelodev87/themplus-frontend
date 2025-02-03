@@ -244,7 +244,11 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  v-show="user && user.id !== props.row.id"
+                  v-show="
+                    user &&
+                    user.id !== props.row.id &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
                   @click="
                     setActive(props.row.active === 1 ? 0 : 1, props.row.id)
                   "
