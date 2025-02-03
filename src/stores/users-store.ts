@@ -11,11 +11,14 @@ import {
   deleteUserMemberService,
   exportUserService,
   findUserService,
+  getInboxService,
   getUsersMembersByEnterpriseService,
   getUsersMembersService,
+  readNotificationService,
   updateUserMemberByCounter,
   updateUserMemberService,
 } from 'src/services/users-service';
+import { Inbox } from 'src/ts/interfaces/data/Inbox';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { User } from 'src/ts/interfaces/data/User';
 
@@ -28,6 +31,7 @@ export const useUsersMembersStore = defineStore('members', {
     resultSearchMember: [] as User[],
     settingsCounter: null as SettingsCounter | null,
     notifications: 0 as number,
+    listInbox: [] as Inbox[],
   }),
   getters: {
     resultUserSelect: (state) => {
@@ -42,6 +46,9 @@ export const useUsersMembersStore = defineStore('members', {
   actions: {
     clearListUser() {
       this.listUserMember.splice(0, this.listUserMember.length);
+    },
+    clearListInbox() {
+      this.listInbox.splice(0, this.listInbox.length);
     },
     clearListUserByEnterprise() {
       this.listUserMemberByEnterprise.splice(
@@ -63,6 +70,9 @@ export const useUsersMembersStore = defineStore('members', {
     },
     setListUser(users: User[]) {
       users.map((item) => this.listUserMember.push(item));
+    },
+    setInbox(listInbox: Inbox[]) {
+      listInbox.map((item) => this.listInbox.push(item));
     },
     setListUserByEnterprise(users: User[]) {
       users.map((item) => this.listUserMemberByEnterprise.push(item));
@@ -100,6 +110,37 @@ export const useUsersMembersStore = defineStore('members', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getInbox() {
+      try {
+        this.setLoading(true);
+        this.clearListInbox();
+        const response = await getInboxService();
+        if (response.status === 200) {
+          this.setInbox(response.data.inbox);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async readNotification(id: string) {
+      try {
+        this.setLoading(true);
+        this.clearListInbox();
+        const response = await readNotificationService(id);
+        if (response.status === 200) {
+          this.setInbox(response.data.inbox);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

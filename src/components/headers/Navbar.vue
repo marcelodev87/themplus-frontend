@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import UserOptions from './UserOptions.vue';
 import FormFeedback from '../forms/FormFeedback.vue';
-import Notifications from '../info/Notifications.vue';
+import Inbox from '../general/Inbox.vue';
 
 defineOptions({
   name: 'Navbar',
@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>();
 
 const showFormFedback = ref<boolean>(false);
-const showNotifications = ref<boolean>(false);
+const showInbox = ref<boolean>(false);
 
 const openFormFeedback = (): void => {
   showFormFedback.value = true;
@@ -31,11 +31,11 @@ const openFormFeedback = (): void => {
 const closeFormFeedback = (): void => {
   showFormFedback.value = false;
 };
-const openNotifications = (): void => {
-  showNotifications.value = true;
+const openInbox = (): void => {
+  showInbox.value = true;
 };
-const closeNotifications = (): void => {
-  showNotifications.value = false;
+const closeInbox = (): void => {
+  showInbox.value = false;
 };
 </script>
 <template>
@@ -89,7 +89,7 @@ const closeNotifications = (): void => {
             <q-tooltip> Enviar sugestão ou dúvida </q-tooltip>
           </q-btn>
           <q-btn
-            @click="openNotifications()"
+            @click="openInbox"
             flat
             color="black"
             icon-right="notifications"
@@ -131,7 +131,7 @@ const closeNotifications = (): void => {
                 </q-item-section>
                 <q-item-section>Enviar sugestão ou dúvida</q-item-section>
               </q-item>
-              <q-item clickable v-ripple @click="openNotifications()">
+              <q-item clickable v-ripple @click="openInbox">
                 <q-item-section avatar>
                   <q-avatar>
                     <q-icon name="notifications" />
@@ -150,9 +150,6 @@ const closeNotifications = (): void => {
       </div>
     </q-toolbar>
     <FormFeedback :open="showFormFedback" @update:open="closeFormFeedback" />
-    <Notifications
-      :open="showNotifications"
-      @update:open="closeNotifications"
-    />
+    <Inbox :open="showInbox" @update:open="closeInbox" />
   </nav>
 </template>

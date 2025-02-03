@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
 import { Notify } from 'quasar';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
+import { Inbox } from 'src/ts/interfaces/data/Inbox';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import {
   CreateUserByCounter,
@@ -34,6 +35,22 @@ export const getUsersMembersService = (): Promise<{
     notifications: number;
   };
 }> => api.get(`${baseUrl}`);
+
+export const getInboxService = (): Promise<{
+  status: number;
+  data: {
+    inbox: Inbox[];
+  };
+}> => api.get(`${baseUrl}/inbox`);
+
+export const readNotificationService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    inbox: Inbox[];
+  };
+}> => api.put(`${baseUrl}/inbox`, { id });
 
 export const findUserService = (
   userId: string
