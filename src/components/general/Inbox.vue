@@ -81,7 +81,21 @@ watch(
         <TitlePage title="Lista de notificações" class="bg-grey-4" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
-        <q-splitter v-model="splitterModel" style="height: 430px" unit="px">
+        <q-banner
+          v-if="listInbox.length === 0"
+          dense
+          inline-actions
+          class="text-white bg-red"
+          rounded
+        >
+          Suas lista de notificações está vazia.
+        </q-banner>
+        <q-splitter
+          v-else
+          v-model="splitterModel"
+          style="height: 430px"
+          unit="px"
+        >
           <template v-slot:before>
             <q-list dense separator>
               <q-item
@@ -138,6 +152,7 @@ watch(
             @click="open = false"
             unelevated
             no-caps
+            :flat="listInbox.length === 0"
           />
           <q-btn
             @click="read"
