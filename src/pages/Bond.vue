@@ -229,6 +229,9 @@ onMounted(async () => {
                 />
               </q-td>
               <q-td key="action" :props="props">
+                <q-btn size="sm" flat round color="black" icon="crisis_alert">
+                  <q-tooltip> Alertas </q-tooltip>
+                </q-btn>
                 <q-btn
                   v-show="props.row.manage_users"
                   @click="openFormManageUsers(props.row.id)"

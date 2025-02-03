@@ -107,12 +107,6 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
-
-      // {
-      //   path: 'alertas',
-      //   name: 'admin-alert',
-      //   component: () => import('src/pages/Alert.vue'),
-      // },
       {
         path: 'contabilidade',
         name: 'admin-financial-control',

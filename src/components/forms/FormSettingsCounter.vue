@@ -86,59 +86,81 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form class="column q-gutter-y-sm">
-          <q-toggle
-            v-model="dataSettings.allowAddUser"
-            :true-value="1"
-            :false-value="0"
+          <q-expansion-item
+            expand-separator
+            icon="perm_identity"
+            label="Configurações para usuários"
           >
-            <span>
-              Permitir contabilidade
-              <span class="text-bold">adicionar usuários</span> á sua
-              organização
-            </span>
-          </q-toggle>
-          <q-toggle
-            v-model="dataSettings.allowEditUser"
-            :true-value="1"
-            :false-value="0"
+            <q-card>
+              <q-card-section>
+                <q-toggle
+                  v-model="dataSettings.allowAddUser"
+                  :true-value="1"
+                  :false-value="0"
+                >
+                  <span>
+                    Permitir contabilidade
+                    <span class="text-bold">adicionar usuários</span> á sua
+                    organização
+                  </span>
+                </q-toggle>
+                <q-toggle
+                  v-model="dataSettings.allowEditUser"
+                  :true-value="1"
+                  :false-value="0"
+                >
+                  <span>
+                    Permitir contabilidade
+                    <span class="text-bold">editar usuários</span> da sua
+                    organização
+                  </span>
+                </q-toggle>
+                <q-toggle
+                  v-model="dataSettings.allowDeleteUser"
+                  :true-value="1"
+                  :false-value="0"
+                >
+                  <span>
+                    Permitir contabilidade
+                    <span class="text-bold">deletar usuários</span> da sua
+                    organização
+                  </span>
+                </q-toggle>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
+          <q-expansion-item
+            expand-separator
+            icon="sync_alt"
+            label="Configurações para movimentações"
           >
-            <span>
-              Permitir contabilidade
-              <span class="text-bold">editar usuários</span> da sua organização
-            </span>
-          </q-toggle>
-          <q-toggle
-            v-model="dataSettings.allowDeleteUser"
-            :true-value="1"
-            :false-value="0"
-          >
-            <span>
-              Permitir contabilidade
-              <span class="text-bold">deletar usuários</span> da sua organização
-            </span>
-          </q-toggle>
-          <q-toggle
-            v-model="dataSettings.allowEditMovement"
-            :true-value="1"
-            :false-value="0"
-          >
-            <span>
-              Permitir contabilidade
-              <span class="text-bold">editar movimentações</span> de relatórios
-              entregues da sua organização
-            </span>
-          </q-toggle>
-          <q-toggle
-            v-model="dataSettings.allowDeleteMovement"
-            :true-value="1"
-            :false-value="0"
-          >
-            <span>
-              Permitir contabilidade
-              <span class="text-bold">deletar movimentações</span> de relatórios
-              entregues da sua organização
-            </span>
-          </q-toggle>
+            <q-card>
+              <q-card-section>
+                <q-toggle
+                  v-model="dataSettings.allowEditMovement"
+                  :true-value="1"
+                  :false-value="0"
+                >
+                  <span>
+                    Permitir contabilidade
+                    <span class="text-bold">editar movimentações</span> de
+                    relatórios entregues da sua organização
+                  </span>
+                </q-toggle>
+                <q-toggle
+                  v-model="dataSettings.allowDeleteMovement"
+                  :true-value="1"
+                  :false-value="0"
+                >
+                  <span>
+                    Permitir contabilidade
+                    <span class="text-bold">deletar movimentações</span> de
+                    relatórios entregues da sua organização
+                  </span>
+                </q-toggle>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
         </q-form>
       </q-card-section>
       <q-card-actions align="right">
