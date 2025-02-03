@@ -7,6 +7,7 @@ import {
   createUserMemberByCounterService,
   createUserMemberOfficeService,
   createUserMemberService,
+  deleteNotificationService,
   deleteUserMemberByEnterpriseService,
   deleteUserMemberService,
   exportUserService,
@@ -135,6 +136,23 @@ export const useUsersMembersStore = defineStore('members', {
         const response = await readNotificationService(id);
         if (response.status === 200) {
           this.setInbox(response.data.inbox);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteNotification(id: string) {
+      try {
+        this.setLoading(true);
+        const response = await deleteNotificationService(id);
+        if (response.status === 200) {
+          this.listInbox = this.listInbox.filter((item) => item.id !== id);
+          this.createSuccess(response.data.message);
         }
 
         return response;

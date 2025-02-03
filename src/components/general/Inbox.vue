@@ -8,7 +8,8 @@ defineOptions({
   name: 'Inbox',
 });
 
-const { getInbox, readNotification } = useUsersMembersStore();
+const { getInbox, readNotification, deleteNotification } =
+  useUsersMembersStore();
 const { loadingUsersMembers, listInbox } = storeToRefs(useUsersMembersStore());
 
 const props = defineProps<{
@@ -62,6 +63,12 @@ const read = async () => {
 const isActive = (id: string) => {
   return dataNotification.value?.id === id;
 };
+const exclude = async () => {
+  const response = await deleteNotification(dataNotification.value?.id ?? '');
+  if (response?.status === 200) {
+    clear();
+  }
+};
 
 watch(
   open,
@@ -80,7 +87,7 @@ watch(
       <q-card-section class="q-pa-none">
         <TitlePage title="Lista de notificações" class="bg-grey-4" />
       </q-card-section>
-      <q-card-section class="q-pa-sm">
+      <q-card-section class="q-pa-none">
         <q-banner
           v-if="listInbox.length === 0"
           dense
@@ -104,7 +111,7 @@ watch(
                 clickable
                 dense
                 @click="selectNotification(item.text, item.read, item.id)"
-                :class="item.read ? 'bg-grey-4' : ''"
+                :class="item.read ? 'bg-grey-4 opacity-50' : ''"
                 :active="isActive(item.id)"
                 active-class="active-option-inbox"
               >
@@ -143,7 +150,7 @@ watch(
           </template>
         </q-splitter>
       </q-card-section>
-      <q-card-actions align="right">
+      <q-card-actions align="right" class="border-top">
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
             color="red"
@@ -152,7 +159,17 @@ watch(
             @click="open = false"
             unelevated
             no-caps
-            :flat="listInbox.length === 0"
+            flat
+          />
+          <q-btn
+            @click="exclude"
+            v-show="dataNotification?.id"
+            color="negative"
+            label="Excluir"
+            icon-right="delete"
+            size="md"
+            unelevated
+            no-caps
           />
           <q-btn
             @click="read"

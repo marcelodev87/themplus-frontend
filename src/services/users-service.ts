@@ -176,6 +176,15 @@ export const deleteUserMemberService = (
   };
 }> => api.delete(`${baseUrl}/${id}`);
 
+export const deleteNotificationService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/inbox/${id}`);
+
 export const deleteUserMemberByEnterpriseService = (
   id: string
 ): Promise<{
