@@ -140,7 +140,9 @@ const closeDrawer = (): void => {
             <q-item-section> Agendamentos </q-item-section>
           </q-item>
           <q-item
-            v-show="enterprisePosition === 'client'"
+            v-show="
+              enterprisePosition === 'client' && user?.position === 'admin'
+            "
             clickable
             :to="{ name: 'admin-financial-control' }"
             :active="isActive('admin-financial-control')"
@@ -153,7 +155,9 @@ const closeDrawer = (): void => {
             <q-item-section> Contabilidade </q-item-section>
           </q-item>
           <q-item
-            v-show="enterprisePosition === 'client'"
+            v-show="
+              enterprisePosition === 'client' && user?.position === 'admin'
+            "
             clickable
             :to="{ name: 'admin-records' }"
             :active="isActive('admin-records')"
@@ -253,7 +257,8 @@ const closeDrawer = (): void => {
               v-show="
                 enterpriseCreated === null &&
                 enterprisePosition === 'client' &&
-                user?.enterprise_id === user?.view_enterprise_id
+                user?.enterprise_id === user?.view_enterprise_id &&
+                user?.position === 'admin'
               "
               clickable
               :to="{ name: 'admin-office' }"
