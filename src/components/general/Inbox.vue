@@ -44,15 +44,27 @@ const selectNotification = async (text: string, read: number, id: string) => {
 const clear = (): void => {
   dataNotification.value = null;
 };
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Meses começam do 0
-  const year = date.getUTCFullYear();
-  const hours = String(date.getUTCHours()).padStart(2, '0');
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
 
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
+  // Configurações de formatação da data e hora para Brasília
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric', // 'numeric' é o tipo correto
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false, // 24 horas
+  };
+
+  // Usando Intl.DateTimeFormat para formatar a data
+  const formatter = new Intl.DateTimeFormat('pt-BR', options);
+
+  // Formatando a data
+  const formattedDate = formatter.format(date);
+
+  return formattedDate;
 };
 const read = async () => {
   const response = await readNotification(dataNotification.value?.id ?? '');
@@ -88,15 +100,14 @@ watch(
         <TitlePage title="Lista de notificações" class="bg-grey-4" />
       </q-card-section>
       <q-card-section class="q-pa-none">
-        <q-banner
-          v-if="listInbox.length === 0"
-          dense
-          inline-actions
-          class="text-white bg-red"
-          rounded
+        <div
+          v-if="listInbox.length === 0 && !loadingUsersMembers"
+          class="q-pa-sm"
         >
-          Suas lista de notificações está vazia.
-        </q-banner>
+          <q-banner dense inline-actions class="text-white bg-red" rounded>
+            Suas lista de notificações está vazia.
+          </q-banner>
+        </div>
         <q-splitter
           v-else
           v-model="splitterModel"
@@ -149,6 +160,14 @@ watch(
             </div>
           </template>
         </q-splitter>
+        <q-inner-loading
+          :showing="loadingUsersMembers"
+          label="Carregando os e-mails..."
+          label-class="black"
+          label-style="font-size: 1.1em"
+          color="primary"
+          size="50px"
+        />
       </q-card-section>
       <q-card-actions align="right" class="border-top">
         <div class="row justify-end items-center q-gutter-x-sm">
@@ -183,14 +202,6 @@ watch(
           />
         </div>
       </q-card-actions>
-      <q-inner-loading
-        :showing="loadingUsersMembers"
-        label="Carregando os e-mails..."
-        label-class="black"
-        label-style="font-size: 1.1em"
-        color="primary"
-        size="50px"
-      />
     </q-card>
   </q-dialog>
 </template>
