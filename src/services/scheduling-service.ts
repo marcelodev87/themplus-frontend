@@ -36,6 +36,39 @@ export const getSchedulingsService = (
   };
 }> => api.get(`${baseUrl}/${date}`);
 
+export const downloadFileService = async (url: string) => {
+  if (url) {
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error('Network response was not OK');
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = '';
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+      console.warn('URL do arquivo não disponível');
+    }
+  } else {
+    console.warn('URL do arquivo não disponível');
+  }
+};
+
 export const getSchedulingsWithParamsService = (
   expired: boolean,
   entry: boolean,
@@ -146,17 +179,27 @@ export const createSchedulingService = (
     months_years: string[];
     message: string;
   };
-}> =>
-  api.post(`${baseUrl}/`, {
-    type,
-    value,
-    date,
-    description,
-    file,
-    category,
-    account,
-    programmed,
+}> => {
+  const formData = new FormData();
+
+  formData.append('type', type);
+  formData.append('value', value);
+  formData.append('date', date);
+  if (description) formData.append('description', description);
+  formData.append('category', category);
+  formData.append('account', account);
+  formData.append('programmed', programmed.toString());
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  return api.post(`${baseUrl}/`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
+};
 
 // export const createSchedulingService = (
 //   type: string,

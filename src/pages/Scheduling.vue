@@ -32,6 +32,7 @@ const {
   exportSchedulingPDF,
   deleteScheduling,
   finalizeScheduling,
+  downloadFile,
 } = useSchedulingStore();
 
 const onlyExpired = ref<boolean>(false);
@@ -191,6 +192,9 @@ const handleEdit = (scheduling: Scheduling): void => {
   } else {
     openFormOut();
   }
+};
+const download = async (url: string) => {
+  await downloadFile(url);
 };
 const exclude = async (id: string): Promise<void> => {
   await deleteScheduling(id);
@@ -579,8 +583,21 @@ onMounted(async () => {
               <q-td key="description" :props="props" class="text-left">
                 {{ props.row.description }}
               </q-td>
-              <q-td key="receipt" :props="props" class="text-left">
-                {{ props.row.receipt }}
+              <q-td
+                @click="download(props.row.receipt)"
+                key="receipt"
+                :props="props"
+                class="text-left"
+                :class="props.row.receipt ? 'cursor-pointer' : ''"
+              >
+                <q-tooltip v-if="props.row.receipt">
+                  {{ props.row.receipt }}
+                </q-tooltip>
+                <q-icon
+                  v-if="props.row.receipt"
+                  name="picture_as_pdf"
+                  size="20px"
+                />
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

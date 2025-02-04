@@ -215,27 +215,36 @@ export const exportMovementInsertExampleService = async () => {
     createError(error);
   }
 };
-export const downloadFileService = async (file: string) => {
-  try {
-    const response = await api.get(`${baseUrl}/download/${file}`, {
-      responseType: 'blob',
-    });
+export const downloadFileService = async (url: string) => {
+  if (url) {
+    try {
+      const response = await fetch(url);
 
-    const now = new Date();
-    const timestamp = now
-      .toISOString()
-      .replace(/[-:]/g, '')
-      .replace(/\..+/, '');
+      if (!response.ok) {
+        throw new Error('Network response was not OK');
+      }
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `comprovante_${timestamp}.pdf`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (error) {
-    createError(error);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = '';
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+      console.warn('URL do arquivo não disponível');
+    }
+  } else {
+    console.warn('URL do arquivo não disponível');
   }
 };
 

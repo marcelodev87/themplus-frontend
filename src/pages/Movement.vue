@@ -271,8 +271,8 @@ const exportDataPdf = async (): Promise<void> => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
-const download = async (file: string) => {
-  await downloadFile(file.split('receipts/')[1]);
+const download = async (url: string) => {
+  await downloadFile(url);
 };
 const openConfirmDownloadFile = (): void => {
   showConfirmDownloadFile.value = true;
@@ -591,7 +591,11 @@ onMounted(async () => {
                 <q-tooltip v-if="props.row.receipt">
                   {{ props.row.receipt }}
                 </q-tooltip>
-                {{ props.row.receipt }}
+                <q-icon
+                  v-if="props.row.receipt"
+                  name="picture_as_pdf"
+                  size="20px"
+                />
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

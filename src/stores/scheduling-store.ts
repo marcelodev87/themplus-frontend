@@ -13,6 +13,7 @@ import {
   updateSchedulingService,
   exportSchedulingExcelService,
   exportSchedulingPDFService,
+  downloadFileService,
 } from 'src/services/scheduling-service';
 
 import {
@@ -115,6 +116,16 @@ export const useSchedulingStore = defineStore('scheduling', {
         message,
         type: 'positive',
       });
+    },
+    async downloadFile(file: string) {
+      try {
+        this.setLoading(true);
+        await downloadFileService(file);
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
     },
     async getSchedulings(date: string) {
       try {
