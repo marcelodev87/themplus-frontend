@@ -11,6 +11,7 @@ import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'FormEntry',
@@ -32,6 +33,7 @@ const {
   loadingMovement,
   listAccount: listAccountMovement,
   listCategory: listCategoryMovement,
+  listCategoryAll: listCategoryAllMovement,
 } = storeToRefs(useMovementStore());
 const { getSchedulingsInformations, createScheduling, updateScheduling } =
   useSchedulingStore();
@@ -39,6 +41,7 @@ const {
   loadingScheduling,
   listAccount: listAccountScheduling,
   listCategory: listCategoryScheduling,
+  listCategoryAll: listCategoryAllScheduling,
 } = storeToRefs(useSchedulingStore());
 
 const dataEntry = reactive<DataEntry>({
@@ -49,60 +52,62 @@ const dataEntry = reactive<DataEntry>({
   category: null,
   account: null,
   date: '',
-  programmed: { label: 'Apenas mês atual', value: 0 },
+  programmed: { label: 'Apenas mês selecionado', value: 0 },
   observation: null,
 });
 const optionsCategoriesMovement = ref(listCategoryMovement.value);
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
 const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
+const showConfirmAction = ref<boolean>(false);
+const textAlert = ref<string | null>(null);
 const optionsProgrammed = reactive<QuasarSelect<number>[]>([
   {
-    label: 'Apenas mês atual',
+    label: 'Apenas mês selecionado',
     value: 0,
   },
   {
-    label: 'Mês atual + 1 mês',
+    label: 'Mês selecionado + 1 mês',
     value: 1,
   },
   {
-    label: 'Mês atual + 2 meses',
+    label: 'Mês selecionado + 2 meses',
     value: 2,
   },
   {
-    label: 'Mês atual + 3 meses',
+    label: 'Mês selecionado + 3 meses',
     value: 3,
   },
   {
-    label: 'Mês atual + 4 meses',
+    label: 'Mês selecionado + 4 meses',
     value: 4,
   },
   {
-    label: 'Mês atual + 5 meses',
+    label: 'Mês selecionado + 5 meses',
     value: 5,
   },
   {
-    label: 'Mês atual + 6 meses',
+    label: 'Mês selecionado + 6 meses',
     value: 6,
   },
   {
-    label: 'Mês atual + 7 meses',
+    label: 'Mês selecionado + 7 meses',
     value: 7,
   },
   {
-    label: 'Mês atual + 8 meses',
+    label: 'Mês selecionado + 8 meses',
     value: 8,
   },
   {
-    label: 'Mês atual + 9 meses',
+    label: 'Mês selecionado + 9 meses',
     value: 9,
   },
   {
-    label: 'Mês atual + 10 meses',
+    label: 'Mês selecionado + 10 meses',
     value: 10,
   },
   {
-    label: 'Mês atual + 11 meses',
+    label: 'Mês selecionado + 11 meses',
     value: 11,
   },
 ]);
@@ -165,9 +170,10 @@ const clear = (): void => {
     account: null,
     description: '',
     file: null,
-    programmed: { label: 'Apenas mês atual', value: 0 },
+    programmed: { label: 'Apenas mês selecionado', value: 0 },
     observation: null,
   });
+  textAlert.value = '';
 };
 const save = async () => {
   const check = checkData();
@@ -321,6 +327,42 @@ const filterFnAccount = (
             );
     }
   });
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  if (props.dataEdit === null) {
+    await save();
+  } else {
+    await update();
+  }
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+};
+const openConfirmAction = (): void => {
+  showConfirmAction.value = true;
+};
+const checkAlert = async () => {
+  const check = checkData();
+  if (check.status) {
+    const categorie =
+      props.mode === 'movement'
+        ? listCategoryAllMovement.value.find(
+            (item) => item.id === (dataEntry.category?.value ?? '')
+          )
+        : listCategoryAllScheduling.value.find(
+            (item) => item.id === (dataEntry.category?.value ?? '')
+          );
+    if (categorie && categorie?.alert !== null) {
+      textAlert.value = categorie.alert;
+      openConfirmAction();
+    } else if (props.dataEdit === null) {
+      await save();
+    } else {
+      await update();
+    }
+  }
 };
 
 watch(
@@ -539,7 +581,7 @@ watch(open, async () => {
           />
           <q-btn
             v-if="props.dataEdit === null"
-            @click="save"
+            @click="checkAlert"
             color="primary"
             label="Salvar"
             size="md"
@@ -549,7 +591,7 @@ watch(open, async () => {
           />
           <q-btn
             v-else
-            @click="update"
+            @click="checkAlert"
             color="primary"
             label="Atualizar"
             size="md"
@@ -559,6 +601,14 @@ watch(open, async () => {
           />
         </div>
       </q-card-actions>
+      <ConfirmAction
+        :open="showConfirmAction"
+        label-action="Continuar"
+        title="Confirmação de movimentação"
+        :message="textAlert ?? ''"
+        @update:open="closeConfirmAction"
+        @update:ok="closeConfirmActionOk"
+      />
       <q-inner-loading
         :showing="loadingMovement || loadingScheduling"
         label="Carregando os dados..."

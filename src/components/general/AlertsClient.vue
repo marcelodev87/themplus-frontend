@@ -66,11 +66,6 @@ const save = async () => {
       alert:
         item.alert?.trim() === '' || item.alert === null ? null : item.alert,
     });
-    console.log(
-      item.name,
-      item.alert?.trim() === '' || item.alert === null ? null : item.alert
-    );
-    console.log('data ', data);
   });
 
   const response = await updateAlert(data, props.enterpriseId ?? '');
@@ -182,7 +177,10 @@ watch(open, async () => {
                   {{ props.row.type }}
                 </q-td>
                 <q-td key="alert" :props="props">
-                  {{ props.row.alert }}
+                  <span v-if="props.row.alert">{{ props.row.alert }}</span>
+                  <span v-else class="text-red">
+                    <q-icon name="edit" /> Adicione uma alerta
+                  </span>
                   <q-popup-edit
                     v-model="props.row.alert"
                     auto-save

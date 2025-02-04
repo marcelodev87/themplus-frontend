@@ -3,6 +3,7 @@ export interface CategoryInformation {
   name: string;
   active: 1 | 0;
   type: string;
+  alert: string | null;
 }
 
 export interface AccountInformation {

@@ -297,7 +297,10 @@ watch(open, async () => {
                 />
                 <q-btn
                   @click="exclude(props.row.id)"
-                  v-show="settingsCounter?.allow_delete_user"
+                  v-show="
+                    settingsCounter?.allow_delete_user &&
+                    listUserMemberByEnterprise.length > 1
+                  "
                   size="sm"
                   flat
                   round

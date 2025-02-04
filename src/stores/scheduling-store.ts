@@ -31,6 +31,7 @@ export const useSchedulingStore = defineStore('scheduling', {
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
     listCategoryFilters: [] as QuasarSelect<string>[],
+    listCategoryAll: [] as CategoryInformation[],
   }),
   actions: {
     clearListMonthYear() {
@@ -56,6 +57,9 @@ export const useSchedulingStore = defineStore('scheduling', {
     clearCategories() {
       this.listCategory.splice(0, this.listCategory.length);
     },
+    clearCategoriesAll() {
+      this.listCategoryAll.splice(0, this.listCategoryAll.length);
+    },
     clearAccounts() {
       this.listAccount.splice(0, this.listAccount.length);
     },
@@ -71,6 +75,11 @@ export const useSchedulingStore = defineStore('scheduling', {
         const dateB = new Date(b.date_movement);
         return dateB.getTime() - dateA.getTime();
       });
+    },
+    setListCategoryAll(categories: CategoryInformation[]) {
+      this.listCategoryAll = categories
+        .filter((item) => item.active === 1)
+        .sort((a, b) => a.name.localeCompare(b.name));
     },
     setListCategoryFilters(data: QuasarSelect<string>[]) {
       this.listCategoryFilters = data;
@@ -160,11 +169,13 @@ export const useSchedulingStore = defineStore('scheduling', {
       try {
         this.setLoading(true);
         this.clearCategories();
+        this.clearCategoriesAll();
         this.clearAccounts();
         const response = await getSchedulingInformationsService(type);
         if (response.status === 200) {
           this.setListAccount(response.data.accounts);
           this.setListCategory(response.data.categories);
+          this.setListCategoryAll(response.data.categories);
         }
       } catch (error) {
         this.createError(error);

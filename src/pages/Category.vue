@@ -292,7 +292,7 @@ onMounted(async () => {
                 class="text-left text-column"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.alert_id ? props.row.alert.description : '' }}
+                {{ props.row.alert }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
@@ -300,6 +300,7 @@ onMounted(async () => {
                   v-show="
                     props.row.enterprise_id !== null &&
                     props.row.active === 1 &&
+                    props.row.default === 0 &&
                     user?.enterprise_id === user?.view_enterprise_id
                   "
                   size="sm"
@@ -313,6 +314,7 @@ onMounted(async () => {
                   v-show="
                     props.row.enterprise_id !== null &&
                     props.row.active === 1 &&
+                    props.row.default === 0 &&
                     user?.enterprise_id === user?.view_enterprise_id
                   "
                   size="sm"
