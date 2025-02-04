@@ -1,7 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormAlert from 'src/components/forms/FormAlert.vue';
 import { storeToRefs } from 'pinia';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -10,6 +9,7 @@ import { Alert } from 'src/ts/interfaces/data/Alert';
 import { useOrderStore } from 'src/stores/order-store';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import DataClient from 'src/components/general/DataClient.vue';
+import AlertsClient from 'src/components/general/AlertsClient.vue';
 import FormManageUsers from 'src/components/forms/FormManageUsers.vue';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -22,9 +22,9 @@ const { getBonds, deleteBond } = useOrderStore();
 
 const router = useRouter();
 const route = useRoute();
-const showFormAlert = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormManageUsers = ref<boolean>(false);
+const showAlertsClient = ref<boolean>(false);
 const filterOrder = ref<string>('');
 const selectedDataEdit = ref<Alert | null>(null);
 const showConfirmAction = ref<boolean>(false);
@@ -52,28 +52,24 @@ const columnsBond = reactive<QuasarTable[]>([
     label: 'CNPJ',
     field: 'cnpj',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'cpf',
     label: 'CPF',
     field: 'cpf',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'phone',
     label: 'Telefone',
     field: 'phone',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'no_verified',
     label: 'Entregas não analisadas',
     field: 'no_verified',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'action',
@@ -88,17 +84,6 @@ const clear = (): void => {
   filterOrder.value = '';
   dataBond.value = null;
   dataClient.value = null;
-};
-const openFormAlert = (): void => {
-  showFormAlert.value = true;
-};
-const closeFormAlert = (): void => {
-  showFormAlert.value = false;
-  clear();
-};
-const handleEdit = (alert: Alert) => {
-  selectedDataEdit.value = alert;
-  openFormAlert();
 };
 const fetchBonds = async () => {
   await getBonds();
@@ -137,6 +122,14 @@ const openFormManageUsers = (enterpriseId: string): void => {
 };
 const closeFormManageUsers = (): void => {
   showFormManageUsers.value = false;
+  dataManage.value = null;
+};
+const openAlertsClient = (enterpriseId: string): void => {
+  dataManage.value = enterpriseId;
+  showAlertsClient.value = true;
+};
+const closeAlertsClient = (): void => {
+  showAlertsClient.value = false;
   dataManage.value = null;
 };
 
@@ -229,7 +222,14 @@ onMounted(async () => {
                 />
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn size="sm" flat round color="black" icon="crisis_alert">
+                <q-btn
+                  @click="openAlertsClient(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="crisis_alert"
+                >
                   <q-tooltip> Alertas </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -271,11 +271,6 @@ onMounted(async () => {
           :open="showDataClient"
           @update:open="closeDataClient"
         />
-        <FormAlert
-          :open="showFormAlert"
-          :data-edit="selectedDataEdit"
-          @update:open="closeFormAlert"
-        />
         <FormManageUsers
           :open="showFormManageUsers"
           :id="dataManage"
@@ -284,6 +279,11 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <AlertsClient
+          :open="showAlertsClient"
+          :enterprise-id="dataManage"
+          @update:open="closeAlertsClient"
         />
         <ConfirmAction
           :open="showConfirmAction"

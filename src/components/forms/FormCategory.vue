@@ -5,7 +5,6 @@ import { Category, DataCategory } from 'src/ts/interfaces/data/Category';
 import { Notify } from 'quasar';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useCategoryStore } from 'src/stores/category-store';
-import { useAlertStore } from 'src/stores/alert-store';
 import { storeToRefs } from 'pinia';
 
 defineOptions({
@@ -22,8 +21,6 @@ const emit = defineEmits<{
 
 const { createCategory, updateCategory } = useCategoryStore();
 const { loadingCategory } = storeToRefs(useCategoryStore());
-const { loadingAlert, listAlert } = storeToRefs(useAlertStore());
-const { getAlerts } = useAlertStore();
 
 const selectedAlert = ref<QuasarSelect<string> | null>(null);
 const filterCategory = ref<string>('');
@@ -36,11 +33,6 @@ const optionsTypeCategory = reactive<string[]>(['Entrada', 'Saída']);
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
-});
-const optionsAlerts = computed(() => {
-  return listAlert.value.map((item) => {
-    return { label: item.description, value: item.id };
-  });
 });
 
 const checkData = (): { status: boolean; message?: string } => {
@@ -104,30 +96,18 @@ const update = async () => {
     });
   }
 };
-const fetchInformations = async () => {
-  await getAlerts();
-};
 const checkEdit = () => {
   if (props.dataEdit !== null) {
     Object.assign(dataCategory, {
       name: props.dataEdit.name,
       type: props.dataEdit.type === 'entrada' ? 'Entrada' : 'Saída',
     });
-
-    const foundItem = props.dataEdit.alert_id
-      ? listAlert.value.find((item) => item.id === props.dataEdit?.alert_id)
-      : null;
-
-    selectedAlert.value = foundItem
-      ? { label: foundItem.description, value: foundItem.id }
-      : null;
   }
 };
 
-watch(open, async () => {
+watch(open, () => {
   if (open.value) {
     clear();
-    await fetchInformations();
     checkEdit();
   }
 });
@@ -174,28 +154,6 @@ watch(open, async () => {
               <q-icon name="sync_alt" color="black" size="20px" />
             </template>
           </q-select>
-          <q-select
-            v-show="false"
-            v-model="selectedAlert"
-            :options="optionsAlerts"
-            :readonly="optionsAlerts.length === 0"
-            clearable
-            :label="
-              optionsAlerts.length === 0
-                ? 'Não existe nenhuma alerta registrada'
-                : 'Selecione uma alerta'
-            "
-            filled
-            dense
-            options-dense
-            bg-color="white"
-            label-color="black"
-            class="full-width"
-          >
-            <template v-slot:prepend>
-              <q-icon name="warning" color="black" size="20px" />
-            </template>
-          </q-select>
         </q-form>
       </q-card-section>
       <q-card-actions align="right">
@@ -232,7 +190,7 @@ watch(open, async () => {
         </div>
       </q-card-actions>
       <q-inner-loading
-        :showing="loadingAlert || loadingCategory"
+        :showing="loadingCategory"
         label="Carregando os dados..."
         label-class="black"
         label-style="font-size: 1.1em"

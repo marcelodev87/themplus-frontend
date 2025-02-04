@@ -1,47 +1,28 @@
 import { api } from 'boot/axios';
-import { Alert } from 'src/ts/interfaces/data/Alert';
+import { Category } from 'src/ts/interfaces/data/Category';
 
 const baseUrl = 'alert';
 
-export const getAlertsService = (): Promise<{
-  status: number;
-  data: {
-    alerts: Alert[];
-    filled_data: boolean;
-    message: string;
-  };
-}> => api.get(`${baseUrl}`);
-
-export const createAlertService = (
-  description: string | null
+export const getCategoriesService = (
+  enterpriseId: string
 ): Promise<{
   status: number;
   data: {
-    alerts: Alert[];
-    message: string;
+    categories: Category[];
   };
-}> => api.post(`${baseUrl}/`, { description });
+}> => api.get(`${baseUrl}/${enterpriseId}`);
 
 export const updateAlertService = (
-  id: string,
-  description: string | null
+  categories: { id: string; alert: string | null }[],
+  enterpriseId: string
 ): Promise<{
   status: number;
   data: {
-    alerts: Alert[];
+    categories: Category[];
     message: string;
   };
 }> =>
   api.put(`${baseUrl}/`, {
-    id,
-    description,
+    categories,
+    enterpriseId,
   });
-
-export const deleteAlertService = (
-  id: string
-): Promise<{
-  status: number;
-  data: {
-    message: string;
-  };
-}> => api.delete(`${baseUrl}/${id}`);

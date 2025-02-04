@@ -3,31 +3,25 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
-  createAlertService,
-  deleteAlertService,
-  getAlertsService,
+  getCategoriesService,
   updateAlertService,
 } from 'src/services/alert-service';
-import { Alert } from 'src/ts/interfaces/data/Alert';
+import { Category } from 'src/ts/interfaces/data/Category';
 
 export const useAlertStore = defineStore('alert', {
   state: () => ({
-    filledData: true as boolean,
     loadingAlert: false as boolean,
-    listAlert: [] as Alert[],
+    listCategory: [] as Category[],
   }),
   actions: {
-    clearListAlert() {
-      this.listAlert.splice(0, this.listAlert.length);
+    clearCategory() {
+      this.listCategory.splice(0, this.listCategory.length);
     },
     setLoading(loading: boolean) {
       this.loadingAlert = loading;
     },
-    setFilledData(data: boolean) {
-      this.filledData = data;
-    },
-    setListAlert(alerts: Alert[]) {
-      alerts.map((item) => this.listAlert.push(item));
+    setListCategories(categories: Category[]) {
+      categories.map((item) => this.listCategory.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -47,14 +41,13 @@ export const useAlertStore = defineStore('alert', {
         type: 'positive',
       });
     },
-    async getAlerts() {
+    async getCategories(id: string) {
       this.setLoading(true);
       try {
-        const response = await getAlertsService();
+        this.clearCategory();
+        const response = await getCategoriesService(id);
         if (response.status === 200) {
-          this.clearListAlert();
-          this.setListAlert(response.data.alerts);
-          this.setFilledData(response.data.filled_data);
+          this.setListCategories(response.data.categories);
         }
       } catch (error) {
         this.createError(error);
@@ -62,46 +55,22 @@ export const useAlertStore = defineStore('alert', {
         this.setLoading(false);
       }
     },
-    async createAlert(description: string | null) {
+    async updateAlert(
+      data: { id: string; alert: string | null }[],
+      enterpriseId: string
+    ) {
       this.setLoading(true);
       try {
-        const response = await createAlertService(description);
-        if (response.status === 201) {
-          this.clearListAlert();
-          this.setListAlert(response.data.alerts);
-          this.createSuccess(response.data.message);
-        }
-      } catch (error) {
-        this.createError(error);
-      } finally {
-        this.setLoading(false);
-      }
-    },
-    async updateAlert(id: string, description: string | null) {
-      this.setLoading(true);
-      try {
-        const response = await updateAlertService(id, description ?? null);
+        this.clearCategory();
+        const response = await updateAlertService(data, enterpriseId);
         if (response.status === 200) {
-          this.clearListAlert();
-          this.setListAlert(response.data.alerts);
+          this.setListCategories(response.data.categories);
           this.createSuccess(response.data.message);
         }
+        return response;
       } catch (error) {
         this.createError(error);
-      } finally {
-        this.setLoading(false);
-      }
-    },
-    async deleteAlert(alertId: string) {
-      this.setLoading(true);
-      try {
-        const response = await deleteAlertService(alertId);
-        if (response.status === 200) {
-          this.listAlert = this.listAlert.filter((item) => item.id !== alertId);
-          this.createSuccess(response.data.message);
-        }
-      } catch (error) {
-        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }
