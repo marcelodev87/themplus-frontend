@@ -160,6 +160,18 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
 
+  if (dataEntry.file) {
+    const fileSizeInMB = dataEntry.file.size / (1024 * 1024);
+    if (fileSizeInMB > 2) {
+      return { status: false, message: 'O arquivo deve ter no máximo 2MB' };
+    }
+
+    const fileType = dataEntry.file.type;
+    if (fileType !== 'application/pdf') {
+      return { status: false, message: 'O arquivo deve ser um PDF.' };
+    }
+  }
+
   return { status: true };
 };
 const clear = (): void => {
@@ -362,6 +374,11 @@ const checkAlert = async () => {
     } else {
       await update();
     }
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
   }
 };
 
