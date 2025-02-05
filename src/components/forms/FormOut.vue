@@ -61,6 +61,7 @@ const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
 const showConfirmAction = ref<boolean>(false);
 const textAlert = ref<string | null>(null);
+const textFile = ref<string | null>(null);
 const optionsProgrammed = reactive<QuasarSelect<number>[]>([
   {
     label: 'Apenas mês selecionado',
@@ -186,6 +187,7 @@ const clear = (): void => {
     observation: null,
   });
   textAlert.value = '';
+  textFile.value = null;
 };
 const save = async () => {
   const check = checkData();
@@ -269,8 +271,8 @@ const mountEdit = (): void => {
         (item) => item.value === props.dataEdit?.account_id
       ),
       description: props.dataEdit?.description ?? '',
-      file: props.dataEdit?.receipt ?? null,
     });
+    textFile.value = props.dataEdit?.receipt ?? null;
   } else {
     Object.assign(dataOut, {
       category: listCategoryMovement.value.find(
@@ -283,8 +285,8 @@ const mountEdit = (): void => {
       ),
       description: props.dataEdit?.description ?? '',
       observation: props.dataEdit?.observation ?? '',
-      file: props.dataEdit?.receipt ?? null,
     });
+    textFile.value = props.dataEdit?.receipt ?? null;
   }
 };
 const fetchInformations = async () => {
@@ -381,6 +383,18 @@ const checkAlert = async () => {
     });
   }
 };
+const clearFile = () => {
+  textFile.value = null;
+};
+
+watch(
+  () => dataOut.file,
+  (file) => {
+    if (file) {
+      textFile.value = null;
+    }
+  }
+);
 
 watch(
   () => dataOut.value,
@@ -555,12 +569,24 @@ watch(open, async () => {
             filled
             bg-color="white"
             label-color="black"
-            label="Adicione um documento (Máx 2Mb)"
+            :label="textFile ? textFile : 'Adicione um documento (Máx 2Mb)'"
             dense
             clearable
           >
             <template v-slot:prepend>
               <q-icon name="attach_file" color="black" size="20px" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                @click="clearFile"
+                v-if="textFile"
+                name="close"
+                color="black"
+                size="20px"
+                class="cursor-pointer hover"
+              >
+                <q-tooltip> Limpar </q-tooltip>
+              </q-icon>
             </template>
           </q-file>
           <q-input
@@ -577,6 +603,18 @@ watch(open, async () => {
           >
             <template v-slot:prepend>
               <q-icon name="description" color="black" size="20px" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                @click="clearFile"
+                v-if="textFile"
+                name="close"
+                color="black"
+                size="20px"
+                class="cursor-pointer hover"
+              >
+                <q-tooltip> Limpar </q-tooltip>
+              </q-icon>
             </template>
           </q-input>
         </q-form>

@@ -301,7 +301,7 @@ export const useMovementStore = defineStore('movement', {
       value: string,
       date: string,
       description: string | null,
-      file: File | null,
+      file: File | string | null,
       category: string,
       account: string
     ) {

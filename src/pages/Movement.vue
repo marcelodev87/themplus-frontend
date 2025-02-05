@@ -586,11 +586,8 @@ onMounted(async () => {
                 key="receipt"
                 :props="props"
                 class="text-left"
-                :class="props.row.receipt ? 'cursor-pointer' : ''"
+                :class="props.row.receipt ? 'cursor-pointer hover' : ''"
               >
-                <q-tooltip v-if="props.row.receipt">
-                  {{ props.row.receipt }}
-                </q-tooltip>
                 <q-icon
                   v-if="props.row.receipt"
                   name="picture_as_pdf"

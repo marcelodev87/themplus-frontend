@@ -106,6 +106,44 @@ export const createMovementService = (
     },
   });
 };
+export const updateMovementService = (
+  id: string,
+  type: string,
+  value: string,
+  date: string,
+  description: string | null,
+  file: File | string | null,
+  category: string,
+  account: string
+): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+    months_years: string[];
+    delivered: boolean;
+    message: string;
+  };
+}> => {
+  const formData = new FormData();
+
+  formData.append('id', id);
+  formData.append('type', type);
+  formData.append('value', value);
+  formData.append('date', date);
+  if (description) formData.append('description', description);
+  formData.append('category', category);
+  formData.append('account', account);
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  return api.post(`${baseUrl}/update`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
 
 export const insertMovementService = (
   movements: InsertMovementData[]
@@ -247,116 +285,6 @@ export const downloadFileService = async (url: string) => {
     console.warn('URL do arquivo não disponível');
   }
 };
-
-// export const updateMovementService = (
-//   id: string,
-//   type: string,
-//   value: string,
-//   date: string,
-//   description: string | null,
-//   file: File | null,
-//   category: string,
-//   account: string
-// ): Promise<{
-//   status: number;
-//   data: {
-//     movements: Movement[];
-//     months_years: string[];
-//     message: string;
-//   };
-// }> => {
-//   const formData = new FormData();
-
-//   formData.append('id', id);
-//   formData.append('type', type);
-//   formData.append('value', value);
-//   formData.append('date', date);
-//   if (description) formData.append('description', description);
-//   formData.append('category', category);
-//   formData.append('account', account);
-
-//   if (file) {
-//     formData.append('file', file);
-//   }
-
-//   return api.put(`${baseUrl}/`, formData, {
-//     headers: {
-//       'Content-Type': 'multipart/form-data',
-//     },
-//   });
-// };
-// export const updateMovementService = (
-//   id: string,
-//   type: string,
-//   value: string,
-//   date: string,
-//   description: string | null,
-//   file: File | null,
-//   category: string,
-//   account: string
-// ): Promise<{
-//   status: number;
-//   data: {
-//     movements: Movement[];
-//     months_years: string[];
-//     delivered: boolean;
-//     message: string;
-//   };
-// }> => {
-//   const formData = new FormData();
-
-//   // Use JSON.stringify para garantir que os valores sejam transmitidos corretamente
-//   formData.append('id', JSON.stringify(id));
-//   formData.append('type', JSON.stringify(type));
-//   formData.append('value', JSON.stringify(value));
-//   formData.append('date', JSON.stringify(date));
-
-//   if (description) {
-//     formData.append('description', JSON.stringify(description));
-//   }
-
-//   formData.append('category', JSON.stringify(category));
-//   formData.append('account', JSON.stringify(account));
-
-//   if (file) {
-//     formData.append('file', file);
-//   }
-
-//   return api.put(`${baseUrl}/`, formData, {
-//     headers: {
-//       'Content-Type': 'multipart/form-data',
-//     },
-//   });
-// };
-
-export const updateMovementService = (
-  id: string,
-  type: string,
-  value: string,
-  date: string,
-  description: string | null,
-  file: File | null,
-  category: string,
-  account: string
-): Promise<{
-  status: number;
-  data: {
-    movements: Movement[];
-    months_years: string[];
-    delivered: boolean;
-    message: string;
-  };
-}> =>
-  api.put(`${baseUrl}/`, {
-    id,
-    type,
-    value,
-    date,
-    description,
-    file,
-    category,
-    account,
-  });
 
 export const deleteMovementService = (
   id: string

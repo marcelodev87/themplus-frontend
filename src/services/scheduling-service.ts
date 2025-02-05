@@ -201,49 +201,13 @@ export const createSchedulingService = (
   });
 };
 
-// export const createSchedulingService = (
-//   type: string,
-//   value: string,
-//   date: string,
-//   description: string | null,
-//   file: File | null,
-//   category: string,
-//   account: string,
-//   programmed: number
-// ): Promise<{
-//   status: number;
-//   data: {
-//     schedulings: Scheduling[];
-//     months_years: string[];
-//     message: string;
-//   };
-// }> => {
-//   const formData = new FormData();
-//   formData.append('type', type);
-//   formData.append('value', value);
-//   formData.append('date', date);
-//   formData.append('description', description || ''); // Adiciona uma string vazia se for null
-//   if (file) {
-//     formData.append('file', file); // Adiciona o arquivo se não for null
-//   }
-//   formData.append('category', category);
-//   formData.append('account', account);
-//   formData.append('programmed', programmed.toString()); // Converte o número para string
-
-//   return api.post(`${baseUrl}/`, formData, {
-//     headers: {
-//       'Content-Type': 'multipart/form-data',
-//     },
-//   });
-// };
-
 export const updateSchedulingService = (
   id: string,
   type: string,
   value: string,
   date: string,
   description: string | null,
-  file: File | null,
+  file: File | string | null,
   category: string,
   account: string
 ): Promise<{
@@ -253,17 +217,27 @@ export const updateSchedulingService = (
     months_years: string[];
     message: string;
   };
-}> =>
-  api.put(`${baseUrl}/`, {
-    id,
-    type,
-    value,
-    date,
-    description,
-    file,
-    category,
-    account,
+}> => {
+  const formData = new FormData();
+
+  formData.append('id', id);
+  formData.append('type', type);
+  formData.append('value', value);
+  formData.append('date', date);
+  if (description) formData.append('description', description);
+  formData.append('category', category);
+  formData.append('account', account);
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  return api.post(`${baseUrl}/update`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
+};
 
 export const finalizeSchedulingService = (
   id: string

@@ -61,6 +61,7 @@ const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
 const showConfirmAction = ref<boolean>(false);
 const textAlert = ref<string | null>(null);
+const textFile = ref<string | null>(null);
 const optionsProgrammed = reactive<QuasarSelect<number>[]>([
   {
     label: 'Apenas mês selecionado',
@@ -186,6 +187,7 @@ const clear = (): void => {
     observation: null,
   });
   textAlert.value = '';
+  textFile.value = null;
 };
 const save = async () => {
   const check = checkData();
@@ -232,7 +234,7 @@ const update = async () => {
         dataEntry.value,
         dataEntry.date.replace(/\//g, '-'),
         dataEntry.description,
-        dataEntry.file,
+        textFile.value ? 'keep' : dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
         dataEntry.account ? dataEntry.account.value : ''
       );
@@ -243,7 +245,7 @@ const update = async () => {
         dataEntry.value,
         dataEntry.date.replace(/\//g, '-'),
         dataEntry.description,
-        dataEntry.file,
+        textFile.value ? 'keep' : dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
         dataEntry.account ? dataEntry.account.value : ''
       );
@@ -269,8 +271,8 @@ const mountEdit = (): void => {
         (item) => item.value === props.dataEdit?.account_id
       ),
       description: props.dataEdit?.description ?? '',
-      file: props.dataEdit?.receipt ?? null,
     });
+    textFile.value = props.dataEdit?.receipt ?? null;
   } else {
     Object.assign(dataEntry, {
       category: listCategoryMovement.value.find(
@@ -283,8 +285,8 @@ const mountEdit = (): void => {
       ),
       description: props.dataEdit?.description ?? '',
       observation: props.dataEdit?.observation ?? '',
-      file: props.dataEdit?.receipt ?? null,
     });
+    textFile.value = props.dataEdit?.receipt ?? null;
   }
 };
 const fetchInformations = async () => {
@@ -381,7 +383,18 @@ const checkAlert = async () => {
     });
   }
 };
+const clearFile = () => {
+  textFile.value = null;
+};
 
+watch(
+  () => dataEntry.file,
+  (file) => {
+    if (file) {
+      textFile.value = null;
+    }
+  }
+);
 watch(
   () => dataEntry.value,
   (value) => {
@@ -555,16 +568,24 @@ watch(open, async () => {
             filled
             bg-color="white"
             label-color="black"
-            :label="
-              props.dataEdit && props.dataEdit.receipt
-                ? props.dataEdit.receipt.split('/')[1]
-                : 'Adicione um documento (Máx 2Mb)'
-            "
+            :label="textFile ? textFile : 'Adicione um documento (Máx 2Mb)'"
             dense
             clearable
           >
             <template v-slot:prepend>
               <q-icon name="attach_file" color="black" size="20px" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                @click="clearFile"
+                v-if="textFile"
+                name="close"
+                color="black"
+                size="20px"
+                class="cursor-pointer hover"
+              >
+                <q-tooltip> Limpar </q-tooltip>
+              </q-icon>
             </template>
           </q-file>
           <q-input
