@@ -4,6 +4,7 @@ import { api } from 'boot/axios';
 import { Notify } from 'quasar';
 import { Category } from 'src/ts/interfaces/data/Category';
 import { DatePeriod } from 'src/ts/interfaces/data/Date';
+import { TotalEnterprise } from 'src/ts/interfaces/data/Enterprise';
 import {
   AccountDashboard,
   CategoryDashboard,
@@ -44,6 +45,7 @@ export const getDashboardService = (
     schedulings_dashboard: SchedulingDashboard | null;
     accounts_dashboard: AccountDashboard | null;
     notifications: number;
+    general: TotalEnterprise;
     filled_data: boolean;
   };
 }> => api.post(`${baseUrl}/`, { mode, date, category });

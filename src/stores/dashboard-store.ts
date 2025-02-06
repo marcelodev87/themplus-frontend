@@ -9,6 +9,7 @@ import {
 } from 'src/services/dashboard-service';
 import { Category } from 'src/ts/interfaces/data/Category';
 import { DatePeriod } from 'src/ts/interfaces/data/Date';
+import { TotalEnterprise } from 'src/ts/interfaces/data/Enterprise';
 import {
   AccountDashboard,
   CategoryDashboard,
@@ -30,6 +31,7 @@ export const useDashboardStore = defineStore('dashboard', {
     usersDashboard: null as UsersDashboard | null,
     schedulingsDashboard: null as SchedulingDashboard | null,
     accountsDashboard: null as AccountDashboard | null,
+    totalEnterprise: null as TotalEnterprise | null,
   }),
   actions: {
     clearListMonthYear() {
@@ -73,6 +75,9 @@ export const useDashboardStore = defineStore('dashboard', {
     setFilledData(data: boolean) {
       this.filledData = data;
     },
+    setTotalEnterprise(data: TotalEnterprise | null) {
+      this.totalEnterprise = data;
+    },
     createError(error: any) {
       let message = 'Error';
       if (error instanceof AxiosError) {
@@ -106,6 +111,7 @@ export const useDashboardStore = defineStore('dashboard', {
         this.setSchedulingsDashboard(null);
         this.setUsersDashboard(null);
         this.setAccountsDashboard(null);
+        this.setTotalEnterprise(null);
         if (response.status === 200) {
           this.setListCategoryMovementsDashboard(
             response.data.categories_movements_dashboard
@@ -119,6 +125,7 @@ export const useDashboardStore = defineStore('dashboard', {
           this.setUsersDashboard(response.data.users_dashboard);
           this.setAccountsDashboard(response.data.accounts_dashboard);
           this.setListCategoryFilters(response.data.categories);
+          this.setTotalEnterprise(response.data.general);
           updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
         }

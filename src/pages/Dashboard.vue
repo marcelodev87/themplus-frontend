@@ -23,6 +23,7 @@ const {
   accountsDashboard,
   filledData,
   listCategoryFilters,
+  totalEnterprise,
 } = storeToRefs(useDashboardStore());
 
 const selectedFilter = ref<QuasarSelect<string>>({
@@ -394,6 +395,53 @@ onMounted(async () => {
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-gutter-y-md">
+        <div
+          :class="
+            !$q.screen.lt.sm
+              ? 'row justify-between q-mt-sm'
+              : 'column justify-center items-center'
+          "
+        >
+          <q-card flat bordered class="q-mt-sm full-width">
+            <q-card-section class="row items-center">
+              <q-icon name="work" size="20px" class="q-mr-sm" color="black" />
+              <div class="text-h6">Geral da organização</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none row justify-between">
+              <span>Valor de entrada: </span>
+              <span>{{
+                `${formatCurrencyBRL(Number(totalEnterprise?.entry))}`
+              }}</span>
+            </q-card-section>
+            <q-card-section class="q-pt-none row justify-between">
+              <span> Valor de saída:</span>
+              <span
+                >{{ `${formatCurrencyBRL(Number(totalEnterprise?.out))}` }}
+              </span>
+            </q-card-section>
+            <q-separator inset />
+
+            <q-card-section class="row justify-between">
+              <span>Saldo:</span>
+              <span
+                :class="
+                  Number(totalEnterprise?.entry) -
+                    Number(totalEnterprise?.out) <
+                  0
+                    ? 'text-red'
+                    : ''
+                "
+                >{{
+                  `${formatCurrencyBRL(
+                    Number(totalEnterprise?.entry) -
+                      Number(totalEnterprise?.out)
+                  )}`
+                }}</span
+              >
+            </q-card-section>
+          </q-card>
+        </div>
         <div
           :class="
             !$q.screen.lt.sm

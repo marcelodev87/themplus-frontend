@@ -53,3 +53,8 @@ export interface ViewEnterprise {
   name: string;
   selected: boolean;
 }
+
+export interface TotalEnterprise {
+  entry: number;
+  out: number;
+}
