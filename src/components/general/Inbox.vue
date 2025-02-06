@@ -22,6 +22,7 @@ const emit = defineEmits<{
 const dataNotification = ref<{
   text: string | null;
   read: number;
+  title: string;
   id: string;
 } | null>(null);
 const splitterModel = ref<number>(300);
@@ -34,9 +35,15 @@ const open = computed({
 const fetchInbox = async () => {
   await getInbox();
 };
-const selectNotification = async (text: string, read: number, id: string) => {
+const selectNotification = async (
+  text: string,
+  title: string,
+  read: number,
+  id: string
+) => {
   dataNotification.value = {
     text,
+    title,
     read,
     id,
   };
@@ -47,21 +54,18 @@ const clear = (): void => {
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
 
-  // Configurações de formatação da data e hora para Brasília
   const options: Intl.DateTimeFormatOptions = {
     timeZone: 'America/Sao_Paulo',
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric', // 'numeric' é o tipo correto
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false, // 24 horas
+    hour12: false,
   };
 
-  // Usando Intl.DateTimeFormat para formatar a data
   const formatter = new Intl.DateTimeFormat('pt-BR', options);
 
-  // Formatando a data
   const formattedDate = formatter.format(date);
 
   return formattedDate;
@@ -113,6 +117,7 @@ watch(
           v-model="splitterModel"
           style="height: 430px"
           unit="px"
+          :limits="[300, 300]"
         >
           <template v-slot:before>
             <q-list dense separator>
@@ -121,10 +126,11 @@ watch(
                 :key="index"
                 clickable
                 dense
-                @click="selectNotification(item.text, item.read, item.id)"
+                @click="
+                  selectNotification(item.text, item.title, item.read, item.id)
+                "
                 :class="item.read ? 'bg-grey-4 opacity-50' : ''"
                 :active="isActive(item.id)"
-                active-class="active-option-inbox"
               >
                 <q-item-section avatar>
                   <q-icon
@@ -151,12 +157,17 @@ watch(
           </template>
 
           <template v-slot:after>
-            <div class="q-pa-md text-h6">
-              {{
-                dataNotification === null
-                  ? 'Não foi selecionado nenhuma notificação'
-                  : dataNotification.text
-              }}
+            <div>
+              <p v-if="dataNotification" class="border-bottom text-h6 q-pa-sm">
+                {{ dataNotification?.title }}
+              </p>
+              <p class="text-subtitle1 q-pa-sm">
+                {{
+                  dataNotification === null
+                    ? 'Não foi selecionado nenhuma notificação'
+                    : dataNotification.text
+                }}
+              </p>
             </div>
           </template>
         </q-splitter>
