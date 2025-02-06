@@ -97,15 +97,14 @@ export const useRegisterStore = defineStore('register', {
         type: 'positive',
       });
     },
-    async getRegisters() {
+    async getRegisters(period: string) {
       try {
         this.setLoading(true);
         this.clearListRegister();
         this.clearListOptionsUsers();
-        const response = await getRegistersService();
+        const response = await getRegistersService(period);
         if (response.status === 200) {
           this.setListRegister(response.data.registers);
-          this.setListOptionsUsers(response.data.users);
           this.setFilledData(response.data.filled_data);
           updateNotifications(response.data.notifications);
         }

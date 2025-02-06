@@ -2,7 +2,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useRegisterStore } from 'src/stores/register-store';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
@@ -11,18 +11,40 @@ defineOptions({
   name: 'Alert',
 });
 
-const { listRegister, loadingRegister, filledData, listOptionsUsers } =
+const { listRegister, loadingRegister, filledData } =
   storeToRefs(useRegisterStore());
 const { getRegisters } = useRegisterStore();
 
 const showRegisterDetail = ref<boolean>(false);
-const selectedUser = ref<QuasarSelect<string | null>>({
-  value: null,
-  label: 'Todos usuários',
-});
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
 const selectedDataView = ref<string | null>(null);
+const selectedPeriod = ref<QuasarSelect<string>>({
+  label: 'Todo o período',
+  value: 'all',
+});
+const optionsFiltersPeriod = reactive<QuasarSelect<string>[]>([
+  {
+    label: 'Todo o período',
+    value: 'all',
+  },
+  {
+    label: 'Hoje',
+    value: 'today',
+  },
+  {
+    label: 'Ontem',
+    value: 'yesterday',
+  },
+  {
+    label: 'Últimos 15 dias',
+    value: 'last15',
+  },
+  {
+    label: 'Últimos 30 dias',
+    value: 'last30',
+  },
+]);
 const columnsRegister = reactive<QuasarTable[]>([
   {
     name: 'user_name',
@@ -80,7 +102,7 @@ const handleEdit = (id: string) => {
   openRegisterDetail();
 };
 const fetchRegisters = async () => {
-  await getRegisters();
+  await getRegisters(selectedPeriod.value.value);
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
@@ -120,22 +142,8 @@ const buildAction = (action: string): string => {
   return '';
 };
 
-const optionUsersFilter = computed(() => {
-  const baseUsers = [
-    {
-      value: null,
-      label: 'Todos usuários',
-    },
-  ];
-
-  const additionalUsers = listOptionsUsers.value
-    .map((item) => ({
-      label: item.name,
-      value: item.id,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-
-  return [...baseUsers, ...additionalUsers];
+watch(selectedPeriod, async () => {
+  await fetchRegisters();
 });
 
 watch(
@@ -167,25 +175,7 @@ onMounted(async () => {
       <div
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
-      >
-        <q-select
-          v-model="selectedUser"
-          :options="optionUsersFilter"
-          :readonly="loadingRegister"
-          label="Filtre usuário"
-          filled
-          dense
-          options-dense
-          bg-color="grey-1"
-          label-color="black"
-          style="min-width: 200px"
-          :class="!$q.screen.lt.md ? '' : 'full-width'"
-        >
-          <template v-slot:prepend>
-            <q-icon name="group" color="black" size="20px" />
-          </template>
-        </q-select>
-      </div>
+      ></div>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
@@ -205,6 +195,24 @@ onMounted(async () => {
           <template v-slot:top>
             <span class="text-subtitle2">Lista de registros</span>
             <q-space />
+            <q-select
+              v-model="selectedPeriod"
+              :options="optionsFiltersPeriod"
+              :readonly="loadingRegister"
+              label="Filtre um período"
+              class="q-mr-sm"
+              filled
+              dense
+              options-dense
+              bg-color="grey-1"
+              label-color="black"
+              style="min-width: 200px"
+              :class="!$q.screen.lt.md ? '' : 'full-width'"
+            >
+              <template v-slot:prepend>
+                <q-icon name="calendar_month" color="black" size="20px" />
+              </template>
+            </q-select>
             <q-input filled v-model="filterRegister" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />
