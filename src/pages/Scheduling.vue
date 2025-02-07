@@ -279,6 +279,19 @@ const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
   }
   showConfirmDownloadFile.value = false;
 };
+const getClassTotal = (total: string) => {
+  const numericValue = parseFloat(
+    total.replace(/R\$|\.|\s/g, '').replace(',', '.')
+  );
+
+  if (numericValue < 0) {
+    return 'bg-red-2';
+  }
+  if (numericValue === 0) {
+    return '';
+  }
+  return 'bg-green-2';
+};
 
 watch(
   [onlyExpired, onlyEntry, onlyOut, selectedCategory],
@@ -450,17 +463,20 @@ onMounted(async () => {
           </q-card-section>
 
           <q-card-section class="q-pt-none row justify-between">
-            <span>Valor de entrada: </span>
-            <span>{{ dataScheduling.valueEntry }}</span>
+            <span>Total de entrada: </span>
+            <span class="text-green">{{ dataScheduling.valueEntry }}</span>
           </q-card-section>
           <q-card-section class="q-pt-none row justify-between">
-            <span> Valor de saída:</span>
-            <span>{{ dataScheduling.valueOut }} </span>
+            <span> Total de saída:</span>
+            <span class="text-red">{{ dataScheduling.valueOut }} </span>
           </q-card-section>
 
           <q-separator inset />
 
-          <q-card-section class="row justify-between">
+          <q-card-section
+            class="row justify-between"
+            :class="getClassTotal(dataScheduling.total)"
+          >
             <span>Saldo:</span>
             <span>{{ dataScheduling.total }}</span>
           </q-card-section>

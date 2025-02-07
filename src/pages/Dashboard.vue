@@ -409,36 +409,34 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Valor de entrada: </span>
-              <span>{{
+              <span>Total de entrada: </span>
+              <span class="text-green">{{
                 `${formatCurrencyBRL(Number(totalEnterprise?.entry))}`
               }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
-              <span> Valor de saída:</span>
-              <span
+              <span> Total de saída:</span>
+              <span class="text-red"
                 >{{ `${formatCurrencyBRL(Number(totalEnterprise?.out))}` }}
               </span>
             </q-card-section>
             <q-separator inset />
 
-            <q-card-section class="row justify-between">
+            <q-card-section
+              class="row justify-between"
+              :class="
+                Number(totalEnterprise?.entry) - Number(totalEnterprise?.out) <
+                0
+                  ? 'bg-red-2'
+                  : 'bg-green-2'
+              "
+            >
               <span>Saldo:</span>
-              <span
-                :class="
-                  Number(totalEnterprise?.entry) -
-                    Number(totalEnterprise?.out) <
-                  0
-                    ? 'text-red'
-                    : ''
-                "
-                >{{
-                  `${formatCurrencyBRL(
-                    Number(totalEnterprise?.entry) -
-                      Number(totalEnterprise?.out)
-                  )}`
-                }}</span
-              >
+              <span>{{
+                `${formatCurrencyBRL(
+                  Number(totalEnterprise?.entry) - Number(totalEnterprise?.out)
+                )}`
+              }}</span>
             </q-card-section>
           </q-card>
         </div>
@@ -466,14 +464,14 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Valor de entrada: </span>
-              <span>{{
+              <span>Total de entrada: </span>
+              <span class="text-green">{{
                 `${formatCurrencyBRL(Number(movementsDashboard?.entry_value))}`
               }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
-              <span> Valor de saída:</span>
-              <span
+              <span> Total de saída:</span>
+              <span class="text-red"
                 >{{
                   `${formatCurrencyBRL(Number(movementsDashboard?.out_value))}`
                 }}
@@ -482,7 +480,16 @@ onMounted(async () => {
 
             <q-separator inset />
 
-            <q-card-section class="row justify-between">
+            <q-card-section
+              class="row justify-between"
+              :class="
+                Number(movementsDashboard?.entry_value) -
+                  Number(movementsDashboard?.out_value) <
+                0
+                  ? 'bg-red-2'
+                  : 'bg-green-2'
+              "
+            >
               <span>Saldo:</span>
               <span>{{
                 `${formatCurrencyBRL(
@@ -504,16 +511,16 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Valor de entrada:</span>
-              <span>{{
+              <span>Total de entrada:</span>
+              <span class="text-green">{{
                 schedulingsDashboard?.entry_value
                   ? `${formatCurrencyBRL(Number(schedulingsDashboard.entry_value))}`
                   : ''
               }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
-              <span>Valor de saída:</span>
-              <span>{{
+              <span>Total de saída:</span>
+              <span class="text-red">{{
                 schedulingsDashboard?.out_value
                   ? `${formatCurrencyBRL(Number(schedulingsDashboard.out_value))}`
                   : ''
@@ -522,7 +529,19 @@ onMounted(async () => {
 
             <q-separator inset />
 
-            <q-card-section class="row justify-between">
+            <q-card-section
+              class="row justify-between"
+              :class="
+                schedulingsDashboard?.out_value &&
+                schedulingsDashboard?.entry_value
+                  ? Number(schedulingsDashboard.entry_value) -
+                      Number(schedulingsDashboard.out_value) <
+                    0
+                    ? 'bg-red-2'
+                    : 'bg-green-2'
+                  : ''
+              "
+            >
               <span>Saldo:</span>
               <span>{{
                 schedulingsDashboard?.out_value &&
