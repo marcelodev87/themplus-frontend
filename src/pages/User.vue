@@ -145,7 +145,7 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormUser"
-          icon-right="group_add"
+          icon-right="add"
           label="Usuários"
           class="q-mr-sm bg-contabilidade"
           unelevated
@@ -170,7 +170,7 @@ onMounted(async () => {
             >
               <q-item-section avatar>
                 <q-avatar>
-                  <q-icon name="group_add" />
+                  <q-icon name="add" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>Usuários</q-item-section>

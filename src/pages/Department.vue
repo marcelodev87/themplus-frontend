@@ -103,7 +103,7 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormDepartment()"
-          icon-right="groups"
+          icon-right="add"
           label="Departamentos"
           unelevated
           no-caps

@@ -194,7 +194,7 @@ onMounted(async () => {
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormCategory"
-          icon-right="category"
+          icon-right="add"
           label="Categorias"
           class="q-mr-sm bg-contabilidade"
           unelevated
