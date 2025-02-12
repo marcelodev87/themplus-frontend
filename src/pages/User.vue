@@ -143,7 +143,6 @@ onMounted(async () => {
           no-caps
         />
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormUser"
           icon-right="add"
           label="Usuários"
@@ -162,12 +161,7 @@ onMounted(async () => {
           no-caps
         >
           <q-list>
-            <q-item
-              v-show="user?.enterprise_id === user?.view_enterprise_id"
-              @click="openFormUser"
-              clickable
-              v-ripple
-            >
+            <q-item @click="openFormUser" clickable v-ripple>
               <q-item-section avatar>
                 <q-avatar>
                   <q-icon name="add" />
@@ -247,7 +241,11 @@ onMounted(async () => {
                   v-show="
                     user &&
                     user.id !== props.row.id &&
-                    user?.enterprise_id === user?.view_enterprise_id
+                    (user?.enterprise_id === user?.view_enterprise_id
+                      ? true
+                      : props.row.created_by !== null
+                        ? true
+                        : false)
                   "
                   @click="
                     setActive(props.row.active === 1 ? 0 : 1, props.row.id)
@@ -266,8 +264,7 @@ onMounted(async () => {
                   v-show="
                     user &&
                     user.id !== props.row.id &&
-                    props.row.created_by !== null &&
-                    user?.enterprise_id === user?.view_enterprise_id
+                    props.row.created_by !== null
                   "
                   @click="handleEdit(props.row)"
                   size="sm"
@@ -280,8 +277,11 @@ onMounted(async () => {
                   v-show="
                     user &&
                     user.id !== props.row.id &&
-                    props.row.created_by !== null &&
-                    user?.enterprise_id === user?.view_enterprise_id
+                    (user?.enterprise_id === user?.view_enterprise_id
+                      ? true
+                      : props.row.created_by !== null
+                        ? true
+                        : false)
                   "
                   @click="exclude(props.row.id)"
                   size="sm"

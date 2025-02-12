@@ -9,6 +9,7 @@ import { useUsersMembersStore } from 'src/stores/users-store';
 import { useDepartmentStore } from 'src/stores/department_store';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
 import { useOfficeStore } from 'src/stores/office-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import DepartmentChoose from '../shared/DepartmentChoose.vue';
 
 defineOptions({
@@ -25,6 +26,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { user } = storeToRefs(useAuthStore());
 const { listDepartment, loadingDepartment } = storeToRefs(useDepartmentStore());
 const { getDepartments } = useDepartmentStore();
 const { setListOffice, clearListOffice } = useOfficeStore();
@@ -219,6 +221,7 @@ const getTextStartUser = (): string => {
     return 'Não há usuários cadastrados.';
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const oldestUser = users.reduce((oldest: User | null, user) => {
     return !oldest || new Date(user.created_at) < new Date(oldest.created_at)
       ? user
@@ -333,7 +336,10 @@ watch(open, async () => {
           </q-select>
           <q-input
             v-model="dataUser.departmentName"
-            v-show="props.mode !== 'office'"
+            v-show="
+              props.mode !== 'office' &&
+              user?.enterprise_id === user?.view_enterprise_id
+            "
             :disable="props.mode === 'office'"
             bg-color="white"
             label-color="black"
