@@ -19,9 +19,15 @@ const {
   finalizeReportCounter,
   undoReportCounter,
   detailsReport,
+  excludeMovement,
 } = useReportStore();
-const { loadingReport, listReport, listMovement, entepriseInspected } =
-  storeToRefs(useReportStore());
+const {
+  loadingReport,
+  listReport,
+  listMovement,
+  entepriseInspected,
+  permissions,
+} = storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
 const { downloadFile, saveObservations } = useMovementStore();
 const { loadingMovement } = storeToRefs(useMovementStore());
@@ -125,6 +131,12 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'observation',
     style:
       'max-width:100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+  },
+  {
+    name: 'action',
+    label: 'Ação',
+    field: 'action',
+    align: 'right',
   },
 ]);
 
@@ -238,6 +250,9 @@ const updateObservations = async () => {
   if (response?.status === 200) {
     modeTable.value = 'reports';
   }
+};
+const exclude = async (id: string) => {
+  await excludeMovement(id);
 };
 
 watch(modeTable, async () => {
@@ -420,10 +435,11 @@ watch(
                 class="text-left"
                 :class="props.row.receipt ? 'cursor-pointer' : ''"
               >
-                <q-tooltip v-if="props.row.receipt">
-                  {{ props.row.receipt }}
-                </q-tooltip>
-                {{ props.row.receipt }}
+                <q-icon
+                  v-if="props.row.receipt"
+                  name="picture_as_pdf"
+                  size="20px"
+                />
               </q-td>
               <q-td key="observation" :props="props">
                 <q-icon name="edit" color="black" />
@@ -445,6 +461,27 @@ watch(
                   >
                   </q-input>
                 </q-popup-edit>
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn
+                  v-show="permissions?.allow_edit_movement"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                  :disable="loadingReport || loadingMovement"
+                />
+                <q-btn
+                  @click="exclude(props.row.id)"
+                  v-show="permissions?.allow_delete_movement"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="delete"
+                  :disable="loadingReport || loadingMovement"
+                />
               </q-td>
             </q-tr>
           </template>

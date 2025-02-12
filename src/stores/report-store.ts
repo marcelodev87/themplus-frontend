@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
   detailsReportService,
+  excludeMovementService,
   finalizeReportCounterService,
   getReportsService,
   reopenByCounterService,
@@ -12,6 +13,7 @@ import {
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
+import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 
 export const useReportStore = defineStore('report', {
   state: () => ({
@@ -20,6 +22,7 @@ export const useReportStore = defineStore('report', {
     clientName: null as string | null,
     listMovement: [] as Movement[],
     entepriseInspected: null as Enterprise | null,
+    permissions: null as SettingsCounter | null,
   }),
   actions: {
     clearListReport() {
@@ -30,6 +33,9 @@ export const useReportStore = defineStore('report', {
     },
     setLoading(loading: boolean) {
       this.loadingReport = loading;
+    },
+    setPermissions(permissions: SettingsCounter | null) {
+      this.permissions = permissions;
     },
     setListMovement(movements: Movement[]) {
       this.listMovement = movements.sort((a, b) => {
@@ -86,10 +92,29 @@ export const useReportStore = defineStore('report', {
     async detailsReport(id: string) {
       try {
         this.setLoading(true);
+        this.setPermissions(null);
         const response = await detailsReportService(id);
-        this.clearListMovement();
         if (response.status === 200) {
+          this.clearListMovement();
           this.setListMovement(response.data.movements);
+          this.setPermissions(response.data.permissions);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async excludeMovement(id: string) {
+      try {
+        this.setLoading(true);
+        const response = await excludeMovementService(id);
+        if (response.status === 200) {
+          this.setPermissions(response.data.permissions);
+          this.listMovement = this.listMovement.filter(
+            (item) => item.id !== id
+          );
+          this.createSuccess(response.data.message);
         }
       } catch (error) {
         this.createError(error);
