@@ -17,7 +17,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { accountsSelect } = storeToRefs(useAccountStore());
+const { accountsSelect, loadingAccount } = storeToRefs(useAccountStore());
 const { createTransfer } = useAccountStore();
 
 const dataTransfer = reactive<DataTransfer>({
@@ -217,7 +217,7 @@ watch(open, () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="false"
+            :loading="loadingAccount"
             unelevated
             no-caps
           />
