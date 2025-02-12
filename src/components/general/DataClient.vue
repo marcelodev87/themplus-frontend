@@ -6,8 +6,11 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useAuthStore } from 'src/stores/auth-store';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
+import { Movement } from 'src/ts/interfaces/data/Movement';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import DataEnterprise from '../info/DataEnterprise.vue';
+import FormEntry from '../forms/FormEntry.vue';
+import FormOut from '../forms/FormOut.vue';
 
 defineOptions({
   name: 'DataClient',
@@ -40,6 +43,9 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const selectedDataEdit = ref<Movement | null>(null);
+const showFormEntry = ref<boolean>(false);
+const showFormOut = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const modeTable = ref<'reports' | 'details'>('reports');
 const dataReopenId = ref<string | null>(null);
@@ -254,6 +260,26 @@ const updateObservations = async () => {
 const exclude = async (id: string) => {
   await excludeMovement(id);
 };
+const openFormEntry = (): void => {
+  showFormEntry.value = true;
+};
+const closeFormEntry = (): void => {
+  showFormEntry.value = false;
+};
+const openFormOut = (): void => {
+  showFormOut.value = true;
+};
+const closeFormOut = (): void => {
+  showFormOut.value = false;
+};
+const handleEdit = (movement: Movement) => {
+  selectedDataEdit.value = movement;
+  if (selectedDataEdit.value.type === 'entrada') {
+    openFormEntry();
+  } else {
+    openFormOut();
+  }
+};
 
 watch(modeTable, async () => {
   if (modeTable.value === 'details') {
@@ -464,6 +490,7 @@ watch(
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="handleEdit(props.row)"
                   v-show="permissions?.allow_edit_movement"
                   size="sm"
                   flat
@@ -542,6 +569,22 @@ watch(
         message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
         @update:open="closeConfirmAction"
         @update:ok="closeConfirmActionOk"
+      />
+      <FormEntry
+        :open="showFormEntry"
+        :data-edit="selectedDataEdit"
+        type="counter"
+        title="Atualize uma entrada"
+        mode="movement"
+        @update:open="closeFormEntry"
+      />
+      <FormOut
+        :open="showFormOut"
+        type="counter"
+        :data-edit="selectedDataEdit"
+        title="Atualize uma saída"
+        mode="movement"
+        @update:open="closeFormOut"
       />
       <q-inner-loading
         :showing="loadingReport"

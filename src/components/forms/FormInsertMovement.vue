@@ -410,7 +410,7 @@ watch(
 watch(open, async () => {
   if (open.value) {
     clear();
-    await getMovementInformations(null);
+    await getMovementInformations(null, null);
   }
 });
 </script>

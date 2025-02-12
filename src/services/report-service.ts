@@ -68,3 +68,41 @@ export const reopenByCounterService = (
     message: string;
   };
 }> => api.delete(`${baseUrl}/reopen/${id}`);
+
+export const updateMovementByCounterService = (
+  id: string,
+  type: string,
+  value: string,
+  date: string,
+  description: string | null,
+  file: File | string | null,
+  category: string,
+  account: string
+): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+    permissions: SettingsCounter;
+    message: string;
+  };
+}> => {
+  const formData = new FormData();
+
+  formData.append('id', id);
+  formData.append('type', type);
+  formData.append('value', value);
+  formData.append('date', date);
+  if (description) formData.append('description', description);
+  formData.append('category', category);
+  formData.append('account', account);
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  return api.post(`${baseUrl}/movement/update`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};

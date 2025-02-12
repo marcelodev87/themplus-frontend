@@ -200,6 +200,7 @@ watch(
             size="md"
             unelevated
             no-caps
+            :loading="loadingUsersMembers"
           />
           <q-btn
             @click="read"
@@ -210,6 +211,7 @@ watch(
             size="md"
             unelevated
             no-caps
+            :loading="loadingUsersMembers"
           />
         </div>
       </q-card-actions>

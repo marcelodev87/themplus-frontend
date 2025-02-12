@@ -11,6 +11,7 @@ import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import { useReportStore } from 'src/stores/report-store';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -22,6 +23,7 @@ const props = defineProps<{
   title: string;
   mode: MovementOrSchedule;
   dataEdit: Movement | Scheduling | null;
+  type: 'client' | 'counter';
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -43,6 +45,8 @@ const {
   listCategory: listCategoryScheduling,
   listCategoryAll: listCategoryAllScheduling,
 } = storeToRefs(useSchedulingStore());
+const { updateMovementByCounter } = useReportStore();
+const { loadingReport } = storeToRefs(useReportStore());
 
 const dataEntry = reactive<DataEntry>({
   type: 'entrada',
@@ -259,6 +263,28 @@ const update = async () => {
     });
   }
 };
+const updateByCounter = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateMovementByCounter(
+      props.dataEdit?.id ?? '',
+      dataEntry.type,
+      dataEntry.value,
+      dataEntry.date.replace(/\//g, '-'),
+      dataEntry.description,
+      dataEntry.file,
+      dataEntry.category ? dataEntry.category.value : '',
+      dataEntry.account ? dataEntry.account.value : ''
+    );
+    clear();
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
 const mountEdit = (): void => {
   if (props.mode === 'schedule') {
     Object.assign(dataEntry, {
@@ -293,7 +319,10 @@ const fetchInformations = async () => {
   if (props.mode === 'schedule') {
     await getSchedulingsInformations(dataEntry.type);
   } else {
-    await getMovementInformations(dataEntry.type);
+    await getMovementInformations(
+      dataEntry.type,
+      props.type === 'counter' ? (props.dataEdit?.enterprise_id ?? null) : null
+    );
   }
 };
 const filterFnCategory = (
@@ -368,13 +397,15 @@ const checkAlert = async () => {
         : listCategoryAllScheduling.value.find(
             (item) => item.id === (dataEntry.category?.value ?? '')
           );
-    if (categorie && categorie?.alert !== null) {
+    if (categorie && categorie?.alert !== null && props.type !== 'counter') {
       textAlert.value = categorie.alert;
       openConfirmAction();
     } else if (props.dataEdit === null) {
       await save();
-    } else {
+    } else if (props.type === 'client') {
       await update();
+    } else {
+      await updateByCounter();
     }
   } else {
     Notify.create({
@@ -633,7 +664,7 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingMovement || loadingScheduling"
+            :loading="loadingMovement || loadingScheduling || loadingReport"
             unelevated
             no-caps
           />

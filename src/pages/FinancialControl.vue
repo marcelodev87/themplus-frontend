@@ -503,6 +503,7 @@ onMounted(async () => {
         />
         <FormEntry
           :open="showFormEntry"
+          type="client"
           :data-edit="selectedDataEdit"
           title="Atualize uma entrada"
           mode="movement"
@@ -510,6 +511,7 @@ onMounted(async () => {
         />
         <FormOut
           :open="showFormOut"
+          type="client"
           :data-edit="selectedDataEdit"
           title="Atualize uma saída"
           mode="movement"

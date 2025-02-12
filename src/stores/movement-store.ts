@@ -172,13 +172,19 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
-    async getMovementInformations(type: string | null) {
+    async getMovementInformations(
+      type: string | null,
+      enterpriseId: string | null
+    ) {
       this.setLoading(true);
       try {
         this.clearCategories();
         this.clearCategoriesAll();
         this.clearAccounts();
-        const response = await getMovementInformationsService(type);
+        const response = await getMovementInformationsService(
+          type,
+          enterpriseId
+        );
         if (response.status === 200) {
           this.setListAccount(response.data.accounts);
           this.setListCategory(response.data.categories);

@@ -652,6 +652,7 @@ onMounted(async () => {
         />
         <FormEntry
           :open="showFormEntry"
+          type="client"
           :data-edit="selectedDataEdit"
           title="Agende uma entrada"
           mode="schedule"
@@ -659,6 +660,7 @@ onMounted(async () => {
         />
         <FormOut
           :open="showFormOut"
+          type="client"
           :data-edit="selectedDataEdit"
           title="Agende uma saída"
           mode="schedule"

@@ -11,6 +11,7 @@ import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import { useReportStore } from 'src/stores/report-store';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -22,6 +23,7 @@ const props = defineProps<{
   title: string;
   mode: MovementOrSchedule;
   dataEdit: Movement | Scheduling | null;
+  type: 'client' | 'counter';
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -43,6 +45,8 @@ const {
   listCategory: listCategoryScheduling,
   listCategoryAll: listCategoryAllScheduling,
 } = storeToRefs(useSchedulingStore());
+const { updateMovementByCounter } = useReportStore();
+const { loadingReport } = storeToRefs(useReportStore());
 
 const dataOut = reactive<DataOut>({
   type: 'saída',
@@ -259,6 +263,28 @@ const update = async () => {
     });
   }
 };
+const updateByCounter = async () => {
+  const check = checkData();
+  if (check.status) {
+    await updateMovementByCounter(
+      props.dataEdit?.id ?? '',
+      dataOut.type,
+      dataOut.value,
+      dataOut.date.replace(/\//g, '-'),
+      dataOut.description,
+      dataOut.file,
+      dataOut.category ? dataOut.category.value : '',
+      dataOut.account ? dataOut.account.value : ''
+    );
+    clear();
+    emit('update:open');
+  } else {
+    Notify.create({
+      message: check.message,
+      type: 'negative',
+    });
+  }
+};
 const mountEdit = (): void => {
   if (props.mode === 'schedule') {
     Object.assign(dataOut, {
@@ -293,7 +319,10 @@ const fetchInformations = async () => {
   if (props.mode === 'schedule') {
     await getSchedulingsInformations(dataOut.type);
   } else {
-    await getMovementInformations(dataOut.type);
+    await getMovementInformations(
+      dataOut.type,
+      props.type === 'counter' ? (props.dataEdit?.enterprise_id ?? null) : null
+    );
   }
 };
 const filterFnCategory = (
@@ -368,13 +397,15 @@ const checkAlert = async () => {
         : listCategoryAllScheduling.value.find(
             (item) => item.id === (dataOut.category?.value ?? '')
           );
-    if (categorie && categorie?.alert !== null) {
+    if (categorie && categorie?.alert !== null && props.type !== 'counter') {
       textAlert.value = categorie.alert;
       openConfirmAction();
     } else if (props.dataEdit === null) {
       await save();
-    } else {
+    } else if (props.type === 'client') {
       await update();
+    } else {
+      await updateByCounter();
     }
   } else {
     Notify.create({
@@ -453,6 +484,7 @@ watch(open, async () => {
             "
             @filter="filterFnCategory"
             label="Categoria"
+            :readonly="props.type === 'counter'"
             filled
             clearable
             dense
@@ -493,6 +525,7 @@ watch(open, async () => {
                 : optionsAccountsMovement
             "
             @filter="filterFnAccount"
+            :readonly="props.type === 'counter'"
             label="Conta"
             filled
             clearable
@@ -517,6 +550,7 @@ watch(open, async () => {
             filled
             dense
             mask="##/##/####"
+            :readonly="props.type === 'counter'"
           >
             <template v-slot:prepend>
               <q-icon
@@ -530,7 +564,11 @@ watch(open, async () => {
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="dataOut.date" mask="DD/MM/YYYY">
+                  <q-date
+                    v-model="dataOut.date"
+                    mask="DD/MM/YYYY"
+                    :readonly="props.type === 'counter'"
+                  >
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -566,6 +604,7 @@ watch(open, async () => {
           </q-select>
           <q-file
             v-model="dataOut.file"
+            v-show="props.type !== 'counter'"
             filled
             bg-color="white"
             label-color="black"
@@ -627,7 +666,6 @@ watch(open, async () => {
             size="md"
             flat
             @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
@@ -647,7 +685,7 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingMovement || loadingScheduling"
+            :loading="loadingMovement || loadingScheduling || loadingReport"
             unelevated
             no-caps
           />

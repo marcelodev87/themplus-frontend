@@ -9,6 +9,7 @@ import {
   getReportsService,
   reopenByCounterService,
   undoReportCounterService,
+  updateMovementByCounterService,
 } from 'src/services/report-service';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
 import { Movement } from 'src/ts/interfaces/data/Movement';
@@ -165,6 +166,40 @@ export const useReportStore = defineStore('report', {
           this.clearListReport();
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateMovementByCounter(
+      id: string,
+      type: string,
+      value: string,
+      date: string,
+      description: string | null,
+      file: File | string | null,
+      category: string,
+      account: string
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await updateMovementByCounterService(
+          id,
+          type,
+          value,
+          date,
+          description,
+          file,
+          category,
+          account
+        );
+        if (response.status === 200) {
+          this.clearListMovement();
+          this.setListMovement(response.data.movements);
+          this.setPermissions(response.data.permissions);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

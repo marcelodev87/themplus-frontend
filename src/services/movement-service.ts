@@ -59,14 +59,20 @@ export const getMovementsWithParamsService = (
   );
 
 export const getMovementInformationsService = (
-  type: string | null
+  type: string | null,
+  enterpriseId: string | null
 ): Promise<{
   status: number;
   data: {
     categories: CategoryInformation[];
     accounts: AccountInformation[];
   };
-}> => api.get(`${baseUrl}/informations/${type ?? 'all'}`);
+}> => {
+  const url = `${baseUrl}/informations/${type ?? 'all'}`;
+  const finalUrl = enterpriseId ? `${url}?enterpriseId=${enterpriseId}` : url;
+
+  return api.get(finalUrl);
+};
 
 export const createMovementService = (
   type: string,

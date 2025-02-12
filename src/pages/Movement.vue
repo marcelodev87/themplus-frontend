@@ -640,6 +640,7 @@ onMounted(async () => {
         </q-table>
         <FormEntry
           :open="showFormEntry"
+          type="client"
           :data-edit="selectedDataEdit"
           :title="
             selectedDataEdit === null
@@ -651,6 +652,7 @@ onMounted(async () => {
         />
         <FormOut
           :open="showFormOut"
+          type="client"
           :data-edit="selectedDataEdit"
           :title="
             selectedDataEdit === null
