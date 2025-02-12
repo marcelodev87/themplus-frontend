@@ -3,7 +3,7 @@ import { api } from 'boot/axios';
 const baseUrl = 'feedback';
 
 export const createFeedbackService = (
-  message: string | null
+  message: string
 ): Promise<{
   status: number;
   data: {

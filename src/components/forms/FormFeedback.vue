@@ -43,9 +43,11 @@ const clear = (): void => {
 const save = async () => {
   const check = checkData();
   if (check.status) {
-    await createFeedback(dataFeedback.message);
-    clear();
-    emit('update:open');
+    const response = await createFeedback(dataFeedback.message);
+    if (response?.status === 201) {
+      clear();
+      emit('update:open');
+    }
   } else {
     Notify.create({
       message: check.message,

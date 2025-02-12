@@ -73,7 +73,7 @@ const closeInbox = (): void => {
             @click="emit('update:openEmailInfo')"
             flat
             color="black"
-            icon-right="chat"
+            icon-right="fa-solid fa-headset"
             rounded
           >
             <q-tooltip> Entrar em contato </q-tooltip>
@@ -83,7 +83,7 @@ const closeInbox = (): void => {
             @click="openFormFeedback"
             flat
             color="black"
-            icon-right="fa-solid fa-headset"
+            icon-right="chat"
             rounded
           >
             <q-tooltip> Enviar sugestão ou dúvida </q-tooltip>
