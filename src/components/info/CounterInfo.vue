@@ -63,42 +63,67 @@ watch(open, async () => {
         <TitlePage title="Dados da organização de contabilidade vinculada" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
-        <q-banner dense inline-actions class="text-black bg-grey-4" rounded>
-          Sua organização está vinculada a uma outra organização de
-          contabilidade nomeada como:
-          <span class="text-bold">{{
-            counterSearch?.name ?? 'Sem nome cadastrado'
-          }}</span
-          >. As formas de contato são através do e-mail:
-          <span class="text-bold">{{
-            counterSearch?.email ?? 'Sem e-mail cadastrado'
-          }}</span>
-          e através do número:
-          <span class="text-bold">{{
-            counterSearch?.phone ?? 'Sem número cadastrado'
-          }}</span
-          >. A organização de contabilidade porta do documento de
-          <span class="text-bold"
-            >{{
-              counterSearch && counterSearch.cpf
-                ? `CPF: ${counterSearch.cpf}`
-                : `CNPJ: ${counterSearch?.cnpj}`
-            }}.</span
-          >
-          O endereço do mesmo, consta que se localiza no estado
-          <span class="text-bold">{{ counterSearch?.state }}</span
-          >, cidade <span class="text-bold">{{ counterSearch?.city }}</span
-          >, bairro
-          <span class="text-bold">{{ counterSearch?.neighborhood }}</span
-          >, endereço
-          <span class="text-bold">{{ counterSearch?.address }}</span> com número
-          <span class="text-bold">{{ counterSearch?.number_address }}</span>
-          {{
-            counterSearch?.complement !== null
-              ? ` e complemento ${counterSearch?.complement}`
-              : ''
-          }}.
+        <q-banner dense inline-actions class="text-black bg-grey-3" rounded>
+          <div>
+            <p class="q-pa-sm text-bold">
+              Sua organização está vinculada a uma organização de contabilidade
+              com os seguintes dados:
+            </p>
+            <ul class="q-gutter-md">
+              <li>
+                <strong>Nome: </strong>
+                <span>{{ counterSearch?.name ?? 'Sem nome cadastrado' }}</span>
+              </li>
+              <li>
+                <strong>E-mail: </strong>
+                <span>{{
+                  counterSearch?.email ?? 'Sem e-mail cadastrado'
+                }}</span>
+              </li>
+              <li>
+                <strong>Número: </strong>
+                <span>{{
+                  counterSearch?.phone ?? 'Sem número cadastrado'
+                }}</span>
+              </li>
+              <li>
+                <strong>Documento: </strong>
+                <span>
+                  {{
+                    counterSearch && counterSearch.cpf
+                      ? `CPF: ${counterSearch.cpf}`
+                      : `CNPJ: ${counterSearch?.cnpj}`
+                  }}
+                </span>
+              </li>
+              <li>
+                <strong>Estado: </strong>
+                <span>{{ counterSearch?.state }}</span>
+              </li>
+              <li>
+                <strong>Cidade: </strong>
+                <span>{{ counterSearch?.city }}</span>
+              </li>
+              <li>
+                <strong>Bairro: </strong>
+                <span>{{ counterSearch?.neighborhood }}</span>
+              </li>
+              <li>
+                <strong>Endereço: </strong>
+                <span>{{ counterSearch?.address }}</span
+                >,
+                <span>número: </span>
+                <span>{{ counterSearch?.number_address }}</span>
+                {{
+                  counterSearch?.complement !== null
+                    ? ` e complemento ${counterSearch?.complement}`
+                    : ''
+                }}.
+              </li>
+            </ul>
+          </div>
         </q-banner>
+
         <q-inner-loading
           :showing="loadingEnterprise"
           label="Carregando os dados..."
