@@ -66,6 +66,7 @@ const optionsAccountsScheduling = ref(listAccountScheduling.value);
 const showConfirmAction = ref<boolean>(false);
 const textAlert = ref<string | null>(null);
 const textFile = ref<string | null>(null);
+const readObservation = ref<boolean>(false);
 const optionsProgrammed = reactive<QuasarSelect<number>[]>([
   {
     label: 'Apenas mês selecionado',
@@ -192,6 +193,7 @@ const clear = (): void => {
   });
   textAlert.value = '';
   textFile.value = null;
+  readObservation.value = false;
 };
 const save = async () => {
   const check = checkData();
@@ -457,24 +459,13 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
-          <q-input
-            v-show="dataOut.observation"
-            v-model="dataOut.observation"
-            style="height: 150px; max-height: 130px"
-            bg-color="red-2"
-            label-color="black"
-            filled
-            label="Observação da contabilidade"
-            dense
-            input-class="text-black no-resize "
-            type="textarea"
-            class="no-resize"
-            readonly
-          >
-            <template v-slot:prepend>
-              <q-icon name="info" color="black" size="20px" />
-            </template>
-          </q-input>
+          <div class="bg-red-1 q-py-sm">
+            <q-checkbox
+              v-show="dataOut.observation"
+              v-model="readObservation"
+              :label="dataOut.observation ?? ''"
+            />
+          </div>
           <q-select
             v-model="dataOut.category"
             :options="
@@ -688,6 +679,7 @@ watch(open, async () => {
             :loading="loadingMovement || loadingScheduling || loadingReport"
             unelevated
             no-caps
+            :disable="dataOut.observation ? !readObservation : false"
           />
         </div>
       </q-card-actions>

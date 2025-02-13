@@ -543,6 +543,7 @@ watch(
             size="md"
             unelevated
             no-caps
+            :disable="loadingReport || loadingMovement"
           />
           <q-btn
             v-show="modeTable === 'details'"
