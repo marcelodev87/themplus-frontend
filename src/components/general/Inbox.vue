@@ -8,9 +8,11 @@ defineOptions({
   name: 'Inbox',
 });
 
-const { getInbox, readNotification, deleteNotification } =
+const { getInbox, readNotification, readAllNotification, deleteNotification } =
   useUsersMembersStore();
-const { loadingUsersMembers, listInbox } = storeToRefs(useUsersMembersStore());
+const { loadingUsersMembers, listInbox, notifications } = storeToRefs(
+  useUsersMembersStore()
+);
 
 const props = defineProps<{
   open: boolean;
@@ -73,6 +75,9 @@ const formatDate = (dateString: string): string => {
 const read = async () => {
   const response = await readNotification(dataNotification.value?.id ?? '');
   if (response?.status === 200) {
+    notifications.value = response.data.inbox.filter((item) => {
+      return item.read === 0;
+    }).length;
     clear();
   }
 };
@@ -82,6 +87,18 @@ const isActive = (id: string) => {
 const exclude = async () => {
   const response = await deleteNotification(dataNotification.value?.id ?? '');
   if (response?.status === 200) {
+    clear();
+  }
+};
+const existAnyForRead = computed(() => {
+  return listInbox.value.some((item) => !item.read);
+});
+const readAll = async () => {
+  const response = await readAllNotification();
+  if (response?.status === 200) {
+    notifications.value = response.data.inbox.filter((item) => {
+      return item.read === 0;
+    }).length;
     clear();
   }
 };
@@ -207,6 +224,17 @@ watch(
             v-show="dataNotification?.text && dataNotification.read === 0"
             color="primary"
             label="Marcar como lido"
+            icon-right="done_all"
+            size="md"
+            unelevated
+            no-caps
+            :loading="loadingUsersMembers"
+          />
+          <q-btn
+            @click="readAll"
+            v-show="existAnyForRead"
+            color="secondary"
+            label="Marcar todas como lido"
             icon-right="done_all"
             size="md"
             unelevated

@@ -49,8 +49,17 @@ export const readNotificationService = (
   status: number;
   data: {
     inbox: Inbox[];
+    message: string;
   };
 }> => api.put(`${baseUrl}/inbox`, { id });
+
+export const readAllNotificationService = (): Promise<{
+  status: number;
+  data: {
+    inbox: Inbox[];
+    message: string;
+  };
+}> => api.put(`${baseUrl}/inbox-all`);
 
 export const findUserService = (
   userId: string
