@@ -21,6 +21,8 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const pageCurrent = ref<number>(1);
+const totalPerPage = ref<number>(12);
 const dataNotification = ref<{
   text: string | null;
   read: number;
@@ -52,6 +54,7 @@ const selectNotification = async (
 };
 const clear = (): void => {
   dataNotification.value = null;
+  pageCurrent.value = 1;
 };
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -90,9 +93,6 @@ const exclude = async () => {
     clear();
   }
 };
-const existAnyForRead = computed(() => {
-  return listInbox.value.some((item) => !item.read);
-});
 const readAll = async () => {
   const response = await readAllNotification();
   if (response?.status === 200) {
@@ -102,6 +102,15 @@ const readAll = async () => {
     clear();
   }
 };
+
+const existAnyForRead = computed(() => {
+  return listInbox.value.some((item) => !item.read);
+});
+const listInboxPage = computed(() => {
+  const start = (pageCurrent.value - 1) * totalPerPage.value;
+  const end = start + totalPerPage.value;
+  return listInbox.value.slice(start, end);
+});
 
 watch(
   open,
@@ -137,9 +146,9 @@ watch(
           :limits="[300, 300]"
         >
           <template v-slot:before>
-            <q-list dense separator>
+            <q-list dense separator class="column justify-around">
               <q-item
-                v-for="(item, index) in listInbox"
+                v-for="(item, index) in listInboxPage"
                 :key="index"
                 clickable
                 dense
@@ -158,15 +167,15 @@ watch(
                 </q-item-section>
                 <q-item-section>
                   <div class="column">
-                    <p :class="item.read ? 'text-bold' : ''">
+                    <span :class="item.read ? 'text-bold' : ''">
                       {{ item.title }}
-                    </p>
-                    <p
+                    </span>
+                    <span
                       class="text-caption"
                       :class="item.read ? 'text-bold' : ''"
                     >
                       {{ formatDate(item.created_at) }}
-                    </p>
+                    </span>
                   </div>
                 </q-item-section>
               </q-item>
@@ -197,7 +206,21 @@ watch(
           size="50px"
         />
       </q-card-section>
-      <q-card-actions align="right" class="border-top">
+      <q-card-actions class="border-top row justify-between items-center">
+        <div>
+          <q-pagination
+            v-show="listInbox.length / totalPerPage >= 2"
+            v-model="pageCurrent"
+            :max="listInbox.length / totalPerPage"
+            direction-links
+            flat
+            color="black"
+            active-color="primary"
+            unelevated
+            gutter="md"
+            :max-pages="5"
+          />
+        </div>
         <div class="row justify-end items-center q-gutter-x-sm">
           <q-btn
             color="red"
