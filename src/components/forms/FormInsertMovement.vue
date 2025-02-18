@@ -157,7 +157,7 @@ const mountPayload = (): void => {
     mountPayloadData.push({
       type: item.tipo.toLowerCase() === 'entrada' ? 'entrada' : 'saída',
       value: item.valor,
-      description: item.descricao,
+      description: item.descricao ?? null,
       receipt: item.receipt && item.receipt !== null ? item.receipt : null,
       category: item.category.value,
       account: item.account.value,
@@ -194,21 +194,20 @@ const excelSerialToDate = (serial: number): string => {
   const year = date.getUTCFullYear();
   return `${day}/${month}/${year}`;
 };
-const normalizeAndValidateValue = (valor: string): string | null => {
+const normalizeAndValidateValue = (valor: string): number | null => {
   if (typeof valor !== 'string') return null;
 
-  if (valor.includes('.') && valor.includes(',')) {
-    valor = valor.replace(/\./g, '').replace(',', '.');
-  } else if (valor.includes(',')) {
-    valor = valor.replace(',', '.');
-  }
+  valor = valor.trim();
 
-  if (/^\d+(\.\d{1,2})?$/.test(valor)) {
-    return valor;
+  const regex = /^[0-9]+(\.[0-9]{1,2})?$/;
+
+  if (regex.test(valor)) {
+    return parseFloat(valor);
   }
 
   return null;
 };
+
 const process = () => {
   const check = checkData();
   if (check.status) {
@@ -245,9 +244,9 @@ const process = () => {
 
       const headers: any = jsonData[0];
       const requiredHeaders = [
+        'DATA DE MOVIMENTAÇÃO',
         'TIPO',
         'VALOR',
-        'DATA DE MOVIMENTAÇÃO',
         'DESCRIÇÃO',
       ];
       const missingHeaders = requiredHeaders.filter(
@@ -273,54 +272,76 @@ const process = () => {
       };
 
       const validRows: any[] = [];
+      let errorIncomplete: number = 0;
 
       jsonData.slice(1).forEach((row: any) => {
-        const tipo = row[columnIndexes[0]];
-        const valor = row[columnIndexes[1]];
-        let dataMovimentacao = row[columnIndexes[2]];
-        const descricao = row[columnIndexes[3]];
-
-        let isValid = true;
-
-        dataMovimentacao = excelSerialToDate(dataMovimentacao);
-
-        if (!['entrada', 'saída'].includes(tipo?.toLowerCase())) {
-          columnErrors.TIPO++;
-          isValid = false;
+        if (
+          row.length > 0 &&
+          (!row[columnIndexes[0]] ||
+            !row[columnIndexes[1]] ||
+            !row[columnIndexes[2]])
+        ) {
+          errorIncomplete += 1;
+          return;
         }
 
-        const normalizedValue = normalizeAndValidateValue(valor);
-        if (!normalizedValue) {
-          columnErrors.VALOR++;
-          isValid = false;
-        }
+        if (row.length > 0) {
+          let dataMovimentacao = row[columnIndexes[0]];
+          const tipo = row[columnIndexes[1]];
+          const valor = row[columnIndexes[2]]?.toString() || '';
+          const descricao = row[columnIndexes[3]];
 
-        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMovimentacao)) {
-          columnErrors['DATA DE MOVIMENTAÇÃO']++;
-          isValid = false;
-        }
+          let isValid = true;
 
-        if (isValid) {
-          validRows.push({
-            tipo,
-            valor: normalizedValue,
-            dataMovimentacao,
-            descricao,
-          });
+          dataMovimentacao = excelSerialToDate(dataMovimentacao);
+
+          if (!['entrada', 'saída'].includes(tipo?.toLowerCase())) {
+            columnErrors.TIPO++;
+            isValid = false;
+          }
+
+          const normalizedValue = normalizeAndValidateValue(valor);
+          if (!normalizedValue) {
+            columnErrors.VALOR++;
+            isValid = false;
+          }
+
+          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMovimentacao)) {
+            columnErrors['DATA DE MOVIMENTAÇÃO']++;
+            isValid = false;
+          }
+
+          if (isValid) {
+            validRows.push({
+              tipo,
+              valor: normalizedValue,
+              dataMovimentacao,
+              descricao,
+            });
+          }
         }
       });
 
+      if (errorIncomplete > 0) {
+        Notify.create({
+          type: 'negative',
+          message:
+            'Alguns registros não foram processadas por estarem incompletas. Coluna Data de Movimentação, Tipo e Valor são obrigatórias.',
+          timeout: 10000,
+          progress: true,
+        });
+      }
       if (Object.values(columnErrors).some((count) => count > 0)) {
         const errorMessages = [];
 
         if (columnErrors.TIPO > 0) {
           errorMessages.push(
-            `A coluna "TIPO" contém ${columnErrors.TIPO} erros. Valores permitidos: "entrada" ou "saída".`
+            `A coluna "TIPO" contém ${columnErrors.TIPO} erros. Valores permitidos: "Entrada" ou "Saída".`
           );
         }
         if (columnErrors.VALOR > 0) {
           errorMessages.push(
-            `A coluna "VALOR" contém ${columnErrors.VALOR} erros. Formato esperado: numérico, ex: 5000.00 ou 650.00.`
+            `A coluna "VALOR" contém ${columnErrors.VALOR} erros. Formato esperado: numérico, ex: R$ 5.000,000 ou 650,00.`
           );
         }
         if (columnErrors['DATA DE MOVIMENTAÇÃO'] > 0) {
@@ -451,9 +472,9 @@ watch(open, async () => {
           dense
           row-key="name"
           no-data-label="Nenhuma movimentação para mostrar"
-          style="height: 500px"
+          style="height: 450px"
           virtual-scroll
-          :rows-per-page-options="[0]"
+          :rows-per-page-options="[10]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Planilha processada</span>
@@ -462,7 +483,7 @@ watch(open, async () => {
             <q-tr
               :props="props"
               style="height: 28px"
-              :class="props.row.tipo === 'entrada' ? 'text-green' : 'text-red'"
+              :class="props.row.tipo === 'Entrada' ? 'text-green' : 'text-red'"
             >
               <q-td key="dataMovimentacao" :props="props" class="text-left">
                 {{ props.row.dataMovimentacao }}
@@ -498,7 +519,7 @@ watch(open, async () => {
                 <q-select
                   v-model="props.row.category"
                   :options="
-                    (props.row.tipo === 'entrada'
+                    (props.row.tipo === 'Entrada'
                       ? optionsCategories.filter(
                           (item) => item.type === 'entrada'
                         )

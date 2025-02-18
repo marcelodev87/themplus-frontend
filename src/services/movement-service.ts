@@ -152,16 +152,46 @@ export const updateMovementService = (
 };
 
 export const insertMovementService = (
-  movements: InsertMovementData[]
+  listMovements: InsertMovementData[]
 ): Promise<{
   status: number;
   data: {
     movements: Movement[];
     months_years: string[];
     delivered: boolean;
+    categories: QuasarSelect<string>[];
+    notifications: number;
     message: string;
   };
-}> => api.post(`${baseUrl}/insert`, { movements });
+}> => {
+  const formData = new FormData();
+
+  listMovements.forEach((movement, index) => {
+    formData.append(`movements[${index}][type]`, movement.type);
+    formData.append(`movements[${index}][value]`, movement.value);
+    formData.append(`movements[${index}][date]`, movement.date);
+
+    if (movement.description) {
+      formData.append(`movements[${index}][description]`, movement.description);
+    }
+    formData.append(`movements[${index}][category]`, movement.category);
+    formData.append(`movements[${index}][account]`, movement.account);
+    formData.append(
+      `movements[${index}][programmed]`,
+      movement.programmed.toString()
+    );
+
+    if (movement.receipt) {
+      formData.append(`movements[${index}][receipt]`, movement.receipt);
+    }
+  });
+
+  return api.post(`${baseUrl}/insert`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
 
 export const saveObservationsService = (
   movements: { id: string; observation: string | null }[]
@@ -203,6 +233,7 @@ export const exportMovementExcelService = async (
     createError(error);
   }
 };
+
 export const exportMovementPDFService = async (
   entry: boolean,
   out: boolean,
@@ -234,6 +265,7 @@ export const exportMovementPDFService = async (
     createError(error);
   }
 };
+
 export const exportMovementInsertExampleService = async () => {
   try {
     const response = await api.post(`${baseUrl}/insert-example/`, null, {
@@ -259,6 +291,7 @@ export const exportMovementInsertExampleService = async () => {
     createError(error);
   }
 };
+
 export const downloadFileService = async (url: string) => {
   if (url) {
     try {

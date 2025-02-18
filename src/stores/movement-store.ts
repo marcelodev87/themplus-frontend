@@ -125,11 +125,11 @@ export const useMovementStore = defineStore('movement', {
     async getMovements(date: string) {
       try {
         this.setLoading(true);
-        this.clearListMovement();
-        this.clearListMonthYear();
-        this.clearListCategoryFilters();
         const response = await getMovementsService(date);
         if (response.status === 200) {
+          this.clearListMovement();
+          this.clearListMonthYear();
+          this.clearListCategoryFilters();
           this.setListMovement(response.data.movements);
           this.setListMonthYear(response.data.months_years);
           this.setFilledData(response.data.filled_data);
@@ -287,9 +287,12 @@ export const useMovementStore = defineStore('movement', {
         const response = await insertMovementService(movements);
         if (response.status === 201) {
           this.clearListMovement();
+          this.clearListCategoryFilters();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
           this.setDelivered(response.data.delivered);
+          this.setListCategoryFilters(response.data.categories);
+          updateNotifications(response.data.notifications);
           this.createSuccess(response.data.message);
         }
 
