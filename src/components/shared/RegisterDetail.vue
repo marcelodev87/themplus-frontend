@@ -42,14 +42,6 @@ watch(open, async () => {
         <div class="text-body2">
           {{ registerDetail }}
         </div>
-        <q-inner-loading
-          :showing="loadingRegisterDetail"
-          label="Carregando os dados..."
-          label-class="black"
-          label-style="font-size: 1.1em"
-          color="primary"
-          size="50px"
-        />
       </q-card-section>
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
@@ -64,6 +56,14 @@ watch(open, async () => {
           />
         </div>
       </q-card-actions>
+      <q-inner-loading
+        :showing="loadingRegisterDetail"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
     </q-card>
   </q-dialog>
 </template>

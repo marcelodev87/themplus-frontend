@@ -23,4 +23,4 @@ export const getRegisterDetailService = (
     register: string;
     message: string;
   };
-}> => api.get(`${baseUrl}/${id}`);
+}> => api.get(`${baseUrl}/details/${id}`);
