@@ -61,9 +61,9 @@ export const useAlertStore = defineStore('alert', {
     ) {
       this.setLoading(true);
       try {
-        this.clearCategory();
         const response = await updateAlertService(data, enterpriseId);
         if (response.status === 200) {
+          this.clearCategory();
           this.setListCategories(response.data.categories);
           this.createSuccess(response.data.message);
         }

@@ -459,9 +459,8 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
-          <div class="bg-red-1 q-py-sm">
+          <div class="bg-red-1 q-py-sm" v-show="dataOut.observation">
             <q-checkbox
-              v-show="dataOut.observation"
               v-model="readObservation"
               :label="dataOut.observation ?? ''"
             />
