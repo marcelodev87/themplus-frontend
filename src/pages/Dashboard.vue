@@ -402,51 +402,6 @@ onMounted(async () => {
               : 'column justify-center items-center'
           "
         >
-          <q-card flat bordered class="q-mt-sm full-width">
-            <q-card-section class="row items-center">
-              <q-icon name="work" size="20px" class="q-mr-sm" color="black" />
-              <div class="text-h6">Geral da organização</div>
-            </q-card-section>
-
-            <q-card-section class="q-pt-none row justify-between">
-              <span>Total de entrada: </span>
-              <span class="text-green">{{
-                `${formatCurrencyBRL(Number(totalEnterprise?.entry))}`
-              }}</span>
-            </q-card-section>
-            <q-card-section class="q-pt-none row justify-between">
-              <span> Total de saída:</span>
-              <span class="text-red"
-                >{{ `${formatCurrencyBRL(Number(totalEnterprise?.out))}` }}
-              </span>
-            </q-card-section>
-            <q-separator inset />
-
-            <q-card-section
-              class="row justify-between"
-              :class="
-                Number(totalEnterprise?.entry) - Number(totalEnterprise?.out) <
-                0
-                  ? 'bg-red-2'
-                  : 'bg-green-2'
-              "
-            >
-              <span>Saldo:</span>
-              <span>{{
-                `${formatCurrencyBRL(
-                  Number(totalEnterprise?.entry) - Number(totalEnterprise?.out)
-                )}`
-              }}</span>
-            </q-card-section>
-          </q-card>
-        </div>
-        <div
-          :class="
-            !$q.screen.lt.sm
-              ? 'row justify-between q-mt-sm'
-              : 'column justify-center items-center'
-          "
-        >
           <q-card
             flat
             bordered
@@ -618,6 +573,7 @@ onMounted(async () => {
             </q-card-section>
           </q-card>
         </div>
+
         <div class="row justify-between q-mt-sm q-mb-lg">
           <q-table
             :rows="loadingDashboard ? [] : (categoriesMovementsEntry ?? [])"
@@ -810,6 +766,64 @@ onMounted(async () => {
               </q-tr>
             </template>
           </q-table>
+        </div>
+        <div
+          :class="
+            !$q.screen.lt.sm
+              ? 'row justify-between q-mt-sm'
+              : 'column justify-center items-center'
+          "
+        >
+          <q-list
+            bordered
+            class="rounded-borders full-width q-mt-sm q-mb-md bg-grey-3 text-bold text-subtitle1"
+          >
+            <q-expansion-item
+              expand-separator
+              icon="work"
+              label="Dados gerais da organização"
+            >
+              <q-card flat class="q-pt-sm full-width text-body2">
+                <!-- <q-card-section class="row items-center">
+              <q-icon name="work" size="20px" class="q-mr-sm" color="black" />
+              <div class="text-h6">Geral da organização</div>
+            </q-card-section> -->
+
+                <q-card-section class="q-pt-none row justify-between">
+                  <span>Total de entrada: </span>
+                  <span class="text-green">{{
+                    `${formatCurrencyBRL(Number(totalEnterprise?.entry))}`
+                  }}</span>
+                </q-card-section>
+                <q-card-section class="q-pt-none row justify-between">
+                  <span> Total de saída:</span>
+                  <span class="text-red"
+                    >{{ `${formatCurrencyBRL(Number(totalEnterprise?.out))}` }}
+                  </span>
+                </q-card-section>
+                <q-separator inset />
+
+                <q-card-section
+                  class="row justify-between"
+                  :class="
+                    Number(totalEnterprise?.entry) -
+                      Number(totalEnterprise?.out) <
+                    0
+                      ? 'bg-red-2'
+                      : 'bg-green-2'
+                  "
+                >
+                  <span>Saldo:</span>
+                  <span>{{
+                    `${formatCurrencyBRL(
+                      Number(totalEnterprise?.entry) -
+                        Number(totalEnterprise?.out)
+                    )}`
+                  }}</span>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </q-list>
         </div>
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
