@@ -232,8 +232,8 @@ const closeFormOut = async () => {
   showFormOut.value = false;
   await getMovementsWithObservations(dateSelected.value!.replace(/\//g, '-'));
 };
-const download = async (file: string) => {
-  await downloadFile(file.split('receipts/')[1]);
+const download = async (url: string) => {
+  await downloadFile(url);
 };
 const handleEdit = (movement: Movement) => {
   selectedDataEdit.value = movement;
@@ -450,12 +450,13 @@ onMounted(async () => {
                 key="receipt"
                 :props="props"
                 class="text-left"
-                :class="props.row.receipt ? 'cursor-pointer' : ''"
+                :class="props.row.receipt ? 'cursor-pointer hover' : ''"
               >
-                <q-tooltip v-if="props.row.receipt">
-                  {{ props.row.receipt }}
-                </q-tooltip>
-                {{ props.row.receipt }}
+                <q-icon
+                  v-if="props.row.receipt"
+                  name="picture_as_pdf"
+                  size="20px"
+                />
               </q-td>
               <q-td key="observation" :props="props" class="text-left">
                 {{ props.row.observation }}

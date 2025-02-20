@@ -20,12 +20,12 @@ const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
 const selectedDataView = ref<string | null>(null);
 const selectedPeriod = ref<QuasarSelect<string>>({
-  label: 'Todo o período',
+  label: 'Últimos 60 dias',
   value: 'all',
 });
 const optionsFiltersPeriod = reactive<QuasarSelect<string>[]>([
   {
-    label: 'Todo o período',
+    label: 'Últimos 60 dias',
     value: 'all',
   },
   {

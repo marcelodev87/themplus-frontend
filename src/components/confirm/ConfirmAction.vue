@@ -53,7 +53,7 @@ watch(open, () => {
             v-model="check"
             v-show="
               props.title === 'Confirmação de agendamento' ||
-              'Confirmação de movimentação'
+              props.title === 'Confirmação de movimentação'
             "
             size="sm"
             label="Eu li e concordo com a descrição de alerta para esta categoria"
@@ -80,7 +80,7 @@ watch(open, () => {
             no-caps
             :disable="
               props.title === 'Confirmação de agendamento' ||
-              'Confirmação de movimentação'
+              props.title === 'Confirmação de movimentação'
                 ? !check
                 : false
             "
