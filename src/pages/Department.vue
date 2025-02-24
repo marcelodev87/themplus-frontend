@@ -174,7 +174,7 @@ onMounted(async () => {
           </q-tree>
           <div
             v-show="treeDepartment.length == 0 && !loadingDepartment"
-            class="q-pa-md"
+            class="q-pa-md full-width"
           >
             <q-banner dense inline-actions class="text-white bg-red" rounded>
               Não há departamentos registrados. Por favor, adicione um novo
