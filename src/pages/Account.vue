@@ -230,7 +230,11 @@ onMounted(async () => {
             </q-input>
           </template>
           <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
+            <q-tr
+              :props="props"
+              style="height: 28px"
+              :class="props.row.balance < 0 ? 'text-red' : ''"
+            >
               <q-td
                 key="name"
                 :props="props"
