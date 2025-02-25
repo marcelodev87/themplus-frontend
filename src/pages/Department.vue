@@ -154,7 +154,6 @@ onMounted(async () => {
                     size="sm"
                     rounded
                     flat
-                    color="primary"
                     icon="add"
                     unelevated
                   />

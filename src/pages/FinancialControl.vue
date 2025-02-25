@@ -494,7 +494,7 @@ onMounted(async () => {
           :open="showConfirmAction"
           label-action="Continuar"
           title="Confirmação de entrega de movimentações"
-          message="Caso entregue as movimentações, não será possível realizar qualquer ação sobre movimentações do mês do relatório que está sendo entregue. Se responsabilizará e declara que as informações das movimentações são verdadeiras. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+          message="Caso entregue as movimentações, não será possível realizar qualquer ação sobre movimentações do mês do relatório que está sendo entregue. Se responsabiliza e declara que as informações das movimentações são verdadeiras. Caso tenha certeza, clique em 'Continuar' para prosseguir."
           @update:open="closeConfirmAction"
           @update:ok="closeConfirmActionOk"
         />

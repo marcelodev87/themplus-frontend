@@ -111,6 +111,9 @@ const buildAction = (action: string): string => {
   if (action === 'created') {
     return 'Criação';
   }
+  if (action === 'insert') {
+    return 'Inserção';
+  }
   if (action === 'updated') {
     return 'Atualização';
   }
