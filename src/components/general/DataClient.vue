@@ -30,6 +30,7 @@ const {
   listMovement,
   entepriseInspected,
   permissions,
+  finalizedReport,
 } = storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
 const { downloadFile, saveObservations } = useMovementStore();
@@ -468,11 +469,12 @@ watch(
                 />
               </q-td>
               <q-td key="observation" :props="props">
-                <q-icon name="edit" color="black" />
+                <q-icon name="edit" color="black" v-show="!finalizedReport" />
                 {{ props.row.observation }}
                 <q-popup-edit
                   v-model="props.row.observation"
                   title="Escreva uma observação"
+                  v-if="!finalizedReport"
                   auto-save
                   v-slot="scope"
                 >
@@ -491,7 +493,7 @@ watch(
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="permissions?.allow_edit_movement"
+                  v-show="permissions?.allow_edit_movement && !finalizedReport"
                   size="sm"
                   flat
                   round
@@ -501,7 +503,9 @@ watch(
                 />
                 <q-btn
                   @click="exclude(props.row.id)"
-                  v-show="permissions?.allow_delete_movement"
+                  v-show="
+                    permissions?.allow_delete_movement && !finalizedReport
+                  "
                   size="sm"
                   flat
                   round
@@ -548,7 +552,7 @@ watch(
           <q-btn
             v-show="modeTable === 'details'"
             @click="updateObservations"
-            :disable="loadingReport || loadingMovement"
+            :loading="loadingReport || loadingMovement"
             color="primary"
             label="Salvar"
             size="md"

@@ -24,6 +24,7 @@ export const detailsReportService = (
   data: {
     movements: Movement[];
     permissions: SettingsCounter;
+    finalized: boolean;
   };
 }> => api.get(`${baseUrl}/details/${id}`);
 export const excludeMovementService = (

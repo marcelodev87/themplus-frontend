@@ -114,13 +114,13 @@ const buildAction = (action: string): string => {
   if (action === 'insert') {
     return 'Inserção';
   }
-  if (action === 'updated') {
+  if (action === 'updated' || action === 'observations') {
     return 'Atualização';
   }
   if (action === 'deleted') {
     return 'Exclusão';
   }
-  if (action === 'finalize') {
+  if (action === 'finalize' || action === 'finalized') {
     return 'Finalização';
   }
   if (action === 'transfer') {
@@ -140,6 +140,12 @@ const buildAction = (action: string): string => {
   }
   if (action === 'unlink') {
     return 'Desvínculo';
+  }
+  if (action === 'undone') {
+    return 'Reverção';
+  }
+  if (action === 'reopen') {
+    return 'Reabertura';
   }
 
   return '';

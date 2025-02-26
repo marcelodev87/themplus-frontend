@@ -155,21 +155,6 @@ const closeDrawer = (): void => {
             <q-item-section> Contabilidade </q-item-section>
           </q-item>
           <q-item
-            v-show="
-              enterprisePosition === 'client' && user?.position === 'admin'
-            "
-            clickable
-            :to="{ name: 'admin-records' }"
-            :active="isActive('admin-records')"
-            active-class=" active-option-menu text-bold"
-            @click="closeDrawer"
-          >
-            <q-item-section avatar>
-              <q-icon name="content_paste_search" />
-            </q-item-section>
-            <q-item-section> Atividades </q-item-section>
-          </q-item>
-          <q-item
             v-show="enterprisePosition === 'counter'"
             clickable
             :to="{ name: 'admin-order' }"
@@ -207,6 +192,19 @@ const closeDrawer = (): void => {
               <q-icon name="work" />
             </q-item-section>
             <q-item-section> Organização </q-item-section>
+          </q-item>
+          <q-item
+            v-show="user?.position === 'admin'"
+            clickable
+            :to="{ name: 'admin-records' }"
+            :active="isActive('admin-records')"
+            active-class=" active-option-menu text-bold"
+            @click="closeDrawer"
+          >
+            <q-item-section avatar>
+              <q-icon name="content_paste_search" />
+            </q-item-section>
+            <q-item-section> Atividades </q-item-section>
           </q-item>
           <q-expansion-item
             expand-separator

@@ -24,6 +24,7 @@ export const useReportStore = defineStore('report', {
     listMovement: [] as Movement[],
     entepriseInspected: null as Enterprise | null,
     permissions: null as SettingsCounter | null,
+    finalizedReport: false as boolean,
   }),
   actions: {
     clearListReport() {
@@ -34,6 +35,9 @@ export const useReportStore = defineStore('report', {
     },
     setLoading(loading: boolean) {
       this.loadingReport = loading;
+    },
+    setFinalizedReport(finalized: boolean) {
+      this.finalizedReport = finalized;
     },
     setPermissions(permissions: SettingsCounter | null) {
       this.permissions = permissions;
@@ -99,6 +103,7 @@ export const useReportStore = defineStore('report', {
           this.clearListMovement();
           this.setListMovement(response.data.movements);
           this.setPermissions(response.data.permissions);
+          this.setFinalizedReport(response.data.finalized);
         }
       } catch (error) {
         this.createError(error);
