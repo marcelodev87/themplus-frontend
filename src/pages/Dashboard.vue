@@ -285,7 +285,7 @@ onMounted(async () => {
     >
       <span class="text-h6">{{ getCurrentMonthYear() }}</span>
       <q-separator />
-      <div class="row q-gutter-x-md">
+      <div v-if="!$q.screen.lt.sm" class="row q-gutter-x-md">
         <q-select
           v-model="selectedFilter"
           :options="optionsFilters"
@@ -308,7 +308,7 @@ onMounted(async () => {
           v-if="selectedFilter.value === 'month'"
           v-model="filterMonthYear"
           :options="listMonthYear"
-          :readonly="listMonthYear.length === 0"
+          :readonly="listMonthYear.length === 0 || loadingDashboard"
           :label="listMonthYear.length === 0 ? 'Sem dados' : 'Filtrar mês'"
           filled
           dense
@@ -325,6 +325,7 @@ onMounted(async () => {
         <q-input
           v-else
           v-model="formattedDate"
+          :readonly="loadingDashboard"
           filled
           dense
           bg-color="grey-1"
@@ -393,6 +394,116 @@ onMounted(async () => {
           :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
         />
       </div>
+      <q-expansion-item
+        v-else
+        expand-separator
+        icon="settings"
+        label="Ações"
+        class="full-width border-form"
+      >
+        <q-select
+          v-model="selectedFilter"
+          :options="optionsFilters"
+          :readonly="loadingDashboard"
+          label="Tipo de filtro"
+          map-options
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          class="q-mt-sm"
+        >
+          <template v-slot:prepend>
+            <q-icon name="filter_alt" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-select
+          v-if="selectedFilter.value === 'month'"
+          v-model="filterMonthYear"
+          :options="listMonthYear"
+          :readonly="listMonthYear.length === 0"
+          :label="listMonthYear.length === 0 ? 'Sem dados' : 'Filtrar mês'"
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          class="q-mt-sm"
+        >
+          <template v-slot:prepend>
+            <q-icon name="calendar_today" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-input
+          v-else
+          v-model="formattedDate"
+          filled
+          dense
+          bg-color="grey-1"
+          label-color="black"
+          class="q-mt-sm"
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+                @show="showDatePeriod = true"
+                @hide="showDatePeriod = false"
+              >
+                <q-date v-model="selectedDatePeriod" range>
+                  <div class="row items-center justify-end q-gutter-x-sm">
+                    <q-btn
+                      v-close-popup
+                      label="Fechar"
+                      color="red"
+                      flat
+                      unelevated
+                      no-caps
+                    />
+                    <q-btn
+                      @click="clearDatePeriod"
+                      label="Limpar"
+                      color="primary"
+                      unelevated
+                      no-caps
+                    />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+        <q-select
+          v-model="selectedCategory"
+          :options="optionsCategoriesFilter"
+          :readonly="loadingDashboard"
+          label="Filtre categoria"
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          class="q-mt-sm"
+        >
+          <template v-slot:prepend>
+            <q-icon name="category" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-btn
+          @click="download"
+          :loading="loadingDashboard"
+          :disable="allowDownload"
+          flat
+          icon-right="download"
+          label="Exportar PDF"
+          unelevated
+          no-caps
+          class="full-width q-mt-sm"
+        />
+      </q-expansion-item>
     </header>
     <q-scroll-area
       :class="!$q.screen.lt.sm ? 'main-scroll' : 'dashboard-scroll'"
@@ -849,6 +960,6 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .dashboard-scroll {
-  height: calc(100vh - 300px);
+  height: calc(100vh - 180px);
 }
 </style>
