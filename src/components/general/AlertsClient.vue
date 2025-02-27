@@ -107,7 +107,7 @@ watch(open, async () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2" style="min-width: 98vw">
+    <q-card class="bg-grey-2" style="min-width: 99vw">
       <q-card-section class="q-pa-none">
         <TitlePage title="Gerenciamento de alertas x categoria" />
       </q-card-section>
@@ -134,29 +134,61 @@ watch(open, async () => {
             style="min-height: 400px"
           >
             <template v-slot:top>
-              <span class="text-subtitle2">Lista de categorias</span>
-              <q-space />
-              <q-select
-                v-model="filterAllCategories"
-                :options="['Todos', 'Entradas', 'Saídas']"
-                dense
-                options-dense
-                filled
-                label="Filtrar categorias"
-                :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
-                class="q-mr-sm"
-              />
-              <q-input
-                filled
-                v-model="filterCategory"
-                dense
-                label="Pesquisar"
-                :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
+              <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
+                <span class="text-subtitle2">Lista de categorias</span>
+                <q-space />
+                <div v-if="!$q.screen.lt.md" class="row">
+                  <q-select
+                    v-model="filterAllCategories"
+                    :options="['Todos', 'Entradas', 'Saídas']"
+                    dense
+                    options-dense
+                    filled
+                    label="Filtrar categorias"
+                    :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                    class="q-mr-sm"
+                  />
+                  <q-input
+                    filled
+                    v-model="filterCategory"
+                    dense
+                    label="Pesquisar"
+                    :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="search" />
+                    </template>
+                  </q-input>
+                </div>
+                <q-expansion-item
+                  v-else
+                  expand-separator
+                  icon="filter_alt"
+                  label="Filtros"
+                  class="border-form"
+                >
+                  <q-select
+                    v-model="filterAllCategories"
+                    :options="['Todos', 'Entradas', 'Saídas']"
+                    dense
+                    options-dense
+                    filled
+                    label="Filtrar categorias"
+                    class="q-mt-sm"
+                  />
+                  <q-input
+                    filled
+                    v-model="filterCategory"
+                    dense
+                    label="Pesquisar"
+                    class="q-mt-sm"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="search" />
+                    </template>
+                  </q-input>
+                </q-expansion-item>
+              </div>
             </template>
             <template v-slot:body="props">
               <q-tr :props="props" style="height: 28px">

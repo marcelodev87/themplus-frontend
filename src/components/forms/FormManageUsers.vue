@@ -243,29 +243,34 @@ watch(open, async () => {
           :rows-per-page-options="[10]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de usuários</span>
-            <q-space />
-            <q-btn
-              @click="changeMode('form', null)"
-              v-show="settingsCounter?.allow_add_user"
-              label="Adicionar usuário"
-              icon-right="group_add"
-              unelevated
-              flat
-              no-caps
-              class="q-mr-md"
-            />
-            <q-input
-              v-show="listUserMemberByEnterprise.length > 0"
-              v-model="filterUser"
-              filled
-              dense
-              label="Pesquisar"
-            >
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
+            <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
+              <span class="text-subtitle2">Lista de usuários</span>
+              <q-space />
+              <div :class="!$q.screen.lt.md ? '' : 'column q-mt-sm '">
+                <q-btn
+                  @click="changeMode('form', null)"
+                  v-show="settingsCounter?.allow_add_user"
+                  label="Adicionar usuário"
+                  icon-right="group_add"
+                  unelevated
+                  flat
+                  no-caps
+                  :class="!$q.screen.lt.md ? 'q-mr-md' : 'q-mt-sm '"
+                />
+                <q-input
+                  v-show="listUserMemberByEnterprise.length > 0"
+                  v-model="filterUser"
+                  filled
+                  dense
+                  label="Pesquisar"
+                  :class="!$q.screen.lt.md ? '' : 'q-mt-sm'"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
+            </div>
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
