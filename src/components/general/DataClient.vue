@@ -299,306 +299,302 @@ watch(
 );
 </script>
 <template>
-  <section v-show="open">
-    <div class="bg-grey-2 q-pa-md">
-      <div v-if="entepriseInspected">
-        <DataEnterprise :enterprise="entepriseInspected" />
-      </div>
-      <div class="q-py-sm q-gutter-y-sm">
-        <q-table
-          v-if="modeTable === 'reports'"
-          :rows="loadingReport ? [] : listReport"
-          :columns="columnsDataClient"
-          :loading="loadingReport"
-          flat
-          dense
-          row-key="name"
-          no-data-label="Nenhum período para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[12]"
-          bordered
-        >
-          <template v-slot:top>
-            <span v-if="modeTable === 'reports'" class="text-subtitle2"
-              >Períodos de movimentações</span
-            >
-            <span v-else class="text-subtitle2"></span>
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="month_year" :props="props" class="text-left">
-                {{ convertMonthYear(props.row.month_year) }}
-              </q-td>
-              <q-td key="total_movements" :props="props" class="text-left">
-                {{ props.row.total_movements }}
-              </q-td>
-              <q-td key="date_delivery" :props="props" class="text-left">
-                {{ formatDate(props.row.date_delivery) }}
-              </q-td>
-              <q-td key="check_counter" :props="props" class="text-left">
-                <q-icon
-                  v-show="props.row.check_counter === user?.enterprise_id"
-                  name="verified"
-                  color="green"
-                  size="20px"
-                >
-                  <q-tooltip> Verificado pela sua organização </q-tooltip>
-                </q-icon>
-                <q-icon
-                  v-show="
-                    props.row.check_counter !== user?.enterprise_id &&
-                    props.row.check_counter !== null
-                  "
-                  name="verified"
-                  color="red"
-                  size="20px"
-                >
-                  <q-tooltip> Verificado por outra organização </q-tooltip>
-                </q-icon>
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  v-show="
-                    props.row.check_counter === null ||
-                    props.row.check_counter === user?.enterprise_id
-                  "
-                  @click="searchDetails(props.row.id)"
-                  :disable="loadingReport"
-                  icon="search"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                >
-                  <q-tooltip> Analisar </q-tooltip>
-                </q-btn>
-                <q-btn
-                  v-show="props.row.check_counter === null"
-                  @click="openConfirmAction('reopen', props.row.id)"
-                  icon="replay"
-                  size="sm"
-                  flat
-                  round
-                  color="orange"
-                  :disable="loadingReport"
-                >
-                  <q-tooltip> Reabrir </q-tooltip>
-                </q-btn>
-                <q-btn
-                  v-show="props.row.check_counter === null"
-                  @click="openConfirmAction('finalize', props.row.id)"
-                  icon="task_alt"
-                  size="sm"
-                  flat
-                  round
-                  color="green"
-                  :disable="loadingReport"
-                >
-                  <q-tooltip> Finalizar </q-tooltip>
-                </q-btn>
-                <q-btn
-                  v-show="props.row.check_counter === user?.enterprise_id"
-                  @click="openConfirmAction('undo', props.row.id)"
-                  icon="cancel"
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  :disable="loadingReport"
-                >
-                  <q-tooltip> Desafazer verificação </q-tooltip>
-                </q-btn>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-        <q-table
-          v-else
-          :rows="loadingReport ? [] : listMovement"
-          :columns="columnsMovement"
-          :loading="loadingReport"
-          flat
-          bordered
-          dense
-          row-key="index"
-          no-data-label="Nenhuma movimentação para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[12]"
-        >
-          <template v-slot:top>
-            <span class="text-subtitle2">Lista de movimentações</span>
-          </template>
-          <template v-slot:body="props">
-            <q-tr
-              :props="props"
-              style="height: 28px"
-              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
-            >
-              <q-td key="name" :props="props" class="text-left">
-                {{ props.row.account.name }}
-              </q-td>
-              <q-td key="account_number" :props="props" class="text-left">
-                {{ props.row.account.account_number }}
-              </q-td>
-              <q-td key="agency_number" :props="props" class="text-left">
-                {{ props.row.account.agency_number }}
-              </q-td>
-              <q-td key="category" :props="props" class="text-left">
-                {{ props.row.category.name }}
-              </q-td>
-              <q-td key="value" :props="props" class="text-left">
-                {{ `${formatCurrencyBRL(props.row.value)}` }}
-              </q-td>
-              <q-td key="date_movement" :props="props" class="text-left">
-                {{ formatDate(props.row.date_movement) }}
-              </q-td>
-              <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
-              </q-td>
-              <q-td
-                @click="download(props.row.receipt)"
-                key="receipt"
-                :props="props"
-                class="text-left"
-                :class="props.row.receipt ? 'cursor-pointer' : ''"
-              >
-                <q-icon
-                  v-if="props.row.receipt"
-                  name="picture_as_pdf"
-                  size="20px"
-                />
-              </q-td>
-              <q-td key="observation" :props="props">
-                <q-icon name="edit" color="black" v-show="!finalizedReport" />
-                {{ props.row.observation }}
-                <q-popup-edit
-                  v-model="props.row.observation"
-                  title="Escreva uma observação"
-                  v-if="!finalizedReport"
-                  auto-save
-                  v-slot="scope"
-                >
-                  <q-input
-                    v-model="scope.value"
-                    dense
-                    autofocus
-                    counter
-                    style="min-width: 600px; max-width: 98vw"
-                    @keyup.enter="scope.set"
-                    maxlength="400"
-                  >
-                  </q-input>
-                </q-popup-edit>
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  @click="handleEdit(props.row)"
-                  v-show="permissions?.allow_edit_movement && !finalizedReport"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                  :disable="loadingReport || loadingMovement"
-                />
-                <q-btn
-                  @click="exclude(props.row.id)"
-                  v-show="
-                    permissions?.allow_delete_movement && !finalizedReport
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                  :disable="loadingReport || loadingMovement"
-                />
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-      </div>
-      <div>
-        <div class="row justify-end items-center q-gutter-x-sm">
-          <q-btn
-            v-show="modeTable === 'reports'"
-            @click="open = false"
-            color="red"
-            label="Fechar"
-            size="md"
-            unelevated
-            no-caps
-          />
-          <q-btn
-            v-show="modeTable === 'details'"
-            @click="modeTable = 'reports'"
-            color="red"
-            label="Voltar"
-            size="md"
-            flat
-            unelevated
-            no-caps
-          />
-          <q-btn
-            v-show="modeTable === 'details'"
-            @click="clearObservations"
-            color="red"
-            label="Limpar observações"
-            size="md"
-            unelevated
-            no-caps
-            :disable="loadingReport || loadingMovement"
-          />
-          <q-btn
-            v-show="modeTable === 'details'"
-            @click="updateObservations"
-            :loading="loadingReport || loadingMovement"
-            color="primary"
-            label="Salvar"
-            size="md"
-            unelevated
-            no-caps
-          />
-        </div>
-      </div>
-      <ConfirmAction
-        :open="showConfirmAction"
-        label-action="Continuar"
-        :title="
-          actionSelected === 'finalize'
-            ? 'Confirmação de verificação de relatório'
-            : actionSelected === 'reopen'
-              ? 'Confirmação de reabertura de relatório'
-              : 'Confirmação de reversão verificação de entrega'
-        "
-        message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
-        @update:open="closeConfirmAction"
-        @update:ok="closeConfirmActionOk"
-      />
-      <FormEntry
-        :open="showFormEntry"
-        :data-edit="selectedDataEdit"
-        type="counter"
-        title="Atualize uma entrada"
-        mode="movement"
-        @update:open="closeFormEntry"
-      />
-      <FormOut
-        :open="showFormOut"
-        type="counter"
-        :data-edit="selectedDataEdit"
-        title="Atualize uma saída"
-        mode="movement"
-        @update:open="closeFormOut"
-      />
-      <q-inner-loading
-        :showing="loadingReport"
-        label="Carregando os dados..."
-        label-class="black"
-        label-style="font-size: 1.1em"
-        color="primary"
-        size="50px"
-      />
+  <section v-show="open" class="q-pa-sm">
+    <div v-if="entepriseInspected">
+      <DataEnterprise :enterprise="entepriseInspected" />
     </div>
+    <div class="q-py-sm q-gutter-y-sm">
+      <q-table
+        v-if="modeTable === 'reports'"
+        :rows="loadingReport ? [] : listReport"
+        :columns="columnsDataClient"
+        :loading="loadingReport"
+        flat
+        dense
+        row-key="index"
+        no-data-label="Nenhum período para mostrar"
+        virtual-scroll
+        :rows-per-page-options="[12]"
+        bordered
+      >
+        <template v-slot:top>
+          <span v-if="modeTable === 'reports'" class="text-subtitle2"
+            >Períodos de movimentações</span
+          >
+          <span v-else class="text-subtitle2"></span>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props" style="height: 28px">
+            <q-td key="month_year" :props="props" class="text-left">
+              {{ convertMonthYear(props.row.month_year) }}
+            </q-td>
+            <q-td key="total_movements" :props="props" class="text-left">
+              {{ props.row.total_movements }}
+            </q-td>
+            <q-td key="date_delivery" :props="props" class="text-left">
+              {{ formatDate(props.row.date_delivery) }}
+            </q-td>
+            <q-td key="check_counter" :props="props" class="text-left">
+              <q-icon
+                v-show="props.row.check_counter === user?.enterprise_id"
+                name="verified"
+                color="green"
+                size="20px"
+              >
+                <q-tooltip> Verificado pela sua organização </q-tooltip>
+              </q-icon>
+              <q-icon
+                v-show="
+                  props.row.check_counter !== user?.enterprise_id &&
+                  props.row.check_counter !== null
+                "
+                name="verified"
+                color="red"
+                size="20px"
+              >
+                <q-tooltip> Verificado por outra organização </q-tooltip>
+              </q-icon>
+            </q-td>
+            <q-td key="action" :props="props">
+              <q-btn
+                v-show="
+                  props.row.check_counter === null ||
+                  props.row.check_counter === user?.enterprise_id
+                "
+                @click="searchDetails(props.row.id)"
+                :disable="loadingReport"
+                icon="search"
+                size="sm"
+                flat
+                round
+                color="black"
+              >
+                <q-tooltip> Analisar </q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="props.row.check_counter === null"
+                @click="openConfirmAction('reopen', props.row.id)"
+                icon="replay"
+                size="sm"
+                flat
+                round
+                color="orange"
+                :disable="loadingReport"
+              >
+                <q-tooltip> Reabrir </q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="props.row.check_counter === null"
+                @click="openConfirmAction('finalize', props.row.id)"
+                icon="task_alt"
+                size="sm"
+                flat
+                round
+                color="green"
+                :disable="loadingReport"
+              >
+                <q-tooltip> Finalizar </q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="props.row.check_counter === user?.enterprise_id"
+                @click="openConfirmAction('undo', props.row.id)"
+                icon="cancel"
+                size="sm"
+                flat
+                round
+                color="red"
+                :disable="loadingReport"
+              >
+                <q-tooltip> Desafazer verificação </q-tooltip>
+              </q-btn>
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+      <q-table
+        v-else
+        :rows="loadingReport ? [] : listMovement"
+        :columns="columnsMovement"
+        :loading="loadingReport"
+        flat
+        bordered
+        dense
+        row-key="index"
+        no-data-label="Nenhuma movimentação para mostrar"
+        virtual-scroll
+        :rows-per-page-options="[12]"
+      >
+        <template v-slot:top>
+          <span class="text-subtitle2">Lista de movimentações</span>
+        </template>
+        <template v-slot:body="props">
+          <q-tr
+            :props="props"
+            style="height: 28px"
+            :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+          >
+            <q-td key="name" :props="props" class="text-left">
+              {{ props.row.account.name }}
+            </q-td>
+            <q-td key="account_number" :props="props" class="text-left">
+              {{ props.row.account.account_number }}
+            </q-td>
+            <q-td key="agency_number" :props="props" class="text-left">
+              {{ props.row.account.agency_number }}
+            </q-td>
+            <q-td key="category" :props="props" class="text-left">
+              {{ props.row.category.name }}
+            </q-td>
+            <q-td key="value" :props="props" class="text-left">
+              {{ `${formatCurrencyBRL(props.row.value)}` }}
+            </q-td>
+            <q-td key="date_movement" :props="props" class="text-left">
+              {{ formatDate(props.row.date_movement) }}
+            </q-td>
+            <q-td key="description" :props="props" class="text-left">
+              {{ props.row.description }}
+            </q-td>
+            <q-td
+              @click="download(props.row.receipt)"
+              key="receipt"
+              :props="props"
+              class="text-left"
+              :class="props.row.receipt ? 'cursor-pointer' : ''"
+            >
+              <q-icon
+                v-if="props.row.receipt"
+                name="picture_as_pdf"
+                size="20px"
+              />
+            </q-td>
+            <q-td key="observation" :props="props">
+              <q-icon name="edit" color="black" v-show="!finalizedReport" />
+              {{ props.row.observation }}
+              <q-popup-edit
+                v-model="props.row.observation"
+                title="Escreva uma observação"
+                v-if="!finalizedReport"
+                auto-save
+                v-slot="scope"
+              >
+                <q-input
+                  v-model="scope.value"
+                  dense
+                  autofocus
+                  counter
+                  style="min-width: 600px; max-width: 98vw"
+                  @keyup.enter="scope.set"
+                  maxlength="400"
+                >
+                </q-input>
+              </q-popup-edit>
+            </q-td>
+            <q-td key="action" :props="props">
+              <q-btn
+                @click="handleEdit(props.row)"
+                v-show="permissions?.allow_edit_movement && !finalizedReport"
+                size="sm"
+                flat
+                round
+                color="black"
+                icon="edit"
+                :disable="loadingReport || loadingMovement"
+              />
+              <q-btn
+                @click="exclude(props.row.id)"
+                v-show="permissions?.allow_delete_movement && !finalizedReport"
+                size="sm"
+                flat
+                round
+                color="red"
+                icon="delete"
+                :disable="loadingReport || loadingMovement"
+              />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+    </div>
+    <div>
+      <div class="row justify-end items-center q-gutter-x-sm">
+        <q-btn
+          v-show="modeTable === 'reports'"
+          @click="open = false"
+          color="red"
+          label="Fechar"
+          size="md"
+          unelevated
+          no-caps
+        />
+        <q-btn
+          v-show="modeTable === 'details'"
+          @click="modeTable = 'reports'"
+          color="red"
+          label="Voltar"
+          size="md"
+          flat
+          unelevated
+          no-caps
+        />
+        <q-btn
+          v-show="modeTable === 'details'"
+          @click="clearObservations"
+          color="red"
+          label="Limpar observações"
+          size="md"
+          unelevated
+          no-caps
+          :disable="loadingReport || loadingMovement"
+        />
+        <q-btn
+          v-show="modeTable === 'details'"
+          @click="updateObservations"
+          :loading="loadingReport || loadingMovement"
+          color="primary"
+          label="Salvar"
+          size="md"
+          unelevated
+          no-caps
+        />
+      </div>
+    </div>
+    <ConfirmAction
+      :open="showConfirmAction"
+      label-action="Continuar"
+      :title="
+        actionSelected === 'finalize'
+          ? 'Confirmação de verificação de relatório'
+          : actionSelected === 'reopen'
+            ? 'Confirmação de reabertura de relatório'
+            : 'Confirmação de reversão verificação de entrega'
+      "
+      message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+      @update:open="closeConfirmAction"
+      @update:ok="closeConfirmActionOk"
+    />
+    <FormEntry
+      :open="showFormEntry"
+      :data-edit="selectedDataEdit"
+      type="counter"
+      title="Atualize uma entrada"
+      mode="movement"
+      @update:open="closeFormEntry"
+    />
+    <FormOut
+      :open="showFormOut"
+      type="counter"
+      :data-edit="selectedDataEdit"
+      title="Atualize uma saída"
+      mode="movement"
+      @update:open="closeFormOut"
+    />
+    <q-inner-loading
+      :showing="loadingReport"
+      label="Carregando os dados..."
+      label-class="black"
+      label-style="font-size: 1.1em"
+      color="primary"
+      size="50px"
+    />
   </section>
 </template>

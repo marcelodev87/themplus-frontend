@@ -583,7 +583,7 @@ onMounted(async () => {
             flat
             bordered
             dense
-            row-key="id"
+            row-key="index"
             no-data-label="Nenhuma categoria de entrada para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
@@ -634,7 +634,7 @@ onMounted(async () => {
             flat
             bordered
             dense
-            row-key="id"
+            row-key="index"
             no-data-label="Nenhuma categoria de saída para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
@@ -682,7 +682,7 @@ onMounted(async () => {
             flat
             bordered
             dense
-            row-key="id"
+            row-key="index"
             no-data-label="Nenhuma categoria de entrada para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
@@ -728,7 +728,7 @@ onMounted(async () => {
             flat
             bordered
             dense
-            row-key="id"
+            row-key="index"
             no-data-label="Nenhuma categoria de saída para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"

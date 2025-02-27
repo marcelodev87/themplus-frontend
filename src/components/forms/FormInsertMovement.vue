@@ -470,7 +470,7 @@ watch(open, async () => {
           flat
           bordered
           dense
-          row-key="name"
+          row-key="index"
           no-data-label="Nenhuma movimentação para mostrar"
           style="height: 450px"
           virtual-scroll

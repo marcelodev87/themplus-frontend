@@ -191,7 +191,7 @@ onMounted(async () => {
           flat
           bordered
           dense
-          row-key="name"
+          row-key="index"
           no-data-label="Nenhum usuário para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"

@@ -344,7 +344,7 @@ onMounted(async () => {
           flat
           bordered
           dense
-          row-key="name"
+          row-key="index"
           no-data-label="Nenhuma entrega para mostrar"
           virtual-scroll
           :rows-per-page-options="[12]"
@@ -410,7 +410,7 @@ onMounted(async () => {
           flat
           bordered
           dense
-          row-key="name"
+          row-key="index"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
