@@ -435,6 +435,7 @@ onMounted(async () => {
               clickable
               v-ripple
               @click="openFormEntry"
+              class="text-green"
             >
               <q-item-section avatar>
                 <q-avatar>
@@ -448,6 +449,7 @@ onMounted(async () => {
               clickable
               v-ripple
               @click="openFormOut"
+              class="text-red"
             >
               <q-item-section avatar>
                 <q-avatar>

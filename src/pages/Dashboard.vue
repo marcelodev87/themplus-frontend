@@ -390,10 +390,13 @@ onMounted(async () => {
           label="Exportar PDF"
           unelevated
           no-caps
+          :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
         />
       </div>
     </header>
-    <q-scroll-area class="main-scroll">
+    <q-scroll-area
+      :class="!$q.screen.lt.sm ? 'main-scroll' : 'dashboard-scroll'"
+    >
       <main class="q-pa-sm q-gutter-y-md">
         <div
           :class="
@@ -573,13 +576,19 @@ onMounted(async () => {
             </q-card-section>
           </q-card>
         </div>
-
-        <div class="row justify-between q-mt-sm q-mb-lg">
+        <div
+          :class="
+            !$q.screen.lt.sm
+              ? 'row justify-between q-mt-sm'
+              : 'column justify-center items-center q-gutter-y-sm'
+          "
+        >
           <q-table
             :rows="loadingDashboard ? [] : (categoriesMovementsEntry ?? [])"
             :columns="columnsCategoriesDashboard"
             :loading="loadingDashboard"
-            style="max-height: 400px; width: 49.3%"
+            style="max-height: 400px"
+            :style="!$q.screen.lt.sm ? 'width: 49.3%' : 'width: 100%'"
             flat
             bordered
             dense
@@ -630,7 +639,8 @@ onMounted(async () => {
             :rows="loadingDashboard ? [] : (categoriesMovementsOut ?? [])"
             :columns="columnsCategoriesDashboard"
             :loading="loadingDashboard"
-            style="max-height: 400px; width: 49.3%"
+            style="max-height: 400px"
+            :style="!$q.screen.lt.sm ? 'width: 49.3%' : 'width: 100%'"
             flat
             bordered
             dense
@@ -673,12 +683,19 @@ onMounted(async () => {
             </template>
           </q-table>
         </div>
-        <div class="row justify-between q-mt-sm q-mb-lg">
+        <div
+          :class="
+            !$q.screen.lt.sm
+              ? 'row justify-between q-mt-sm'
+              : 'column justify-center items-center q-gutter-y-sm'
+          "
+        >
           <q-table
             :rows="loadingDashboard ? [] : (categoriesSchedulesEntry ?? [])"
             :columns="columnsCategoriesDashboard"
             :loading="loadingDashboard"
-            style="max-height: 400px; width: 49.3%"
+            style="max-height: 400px"
+            :style="!$q.screen.lt.sm ? 'width: 49.3%' : 'width: 100%'"
             flat
             bordered
             dense
@@ -724,7 +741,8 @@ onMounted(async () => {
             :rows="loadingDashboard ? [] : (categoriesSchedulesOut ?? [])"
             :columns="columnsCategoriesDashboard"
             :loading="loadingDashboard"
-            style="max-height: 400px; width: 49.3%"
+            style="max-height: 400px"
+            :style="!$q.screen.lt.sm ? 'width: 49.3%' : 'width: 100%'"
             flat
             bordered
             dense
@@ -776,7 +794,7 @@ onMounted(async () => {
         >
           <q-list
             bordered
-            class="rounded-borders full-width q-mt-sm q-mb-md bg-grey-3 text-bold text-subtitle1"
+            class="rounded-borders full-width q-mb-md bg-grey-3 text-bold text-subtitle1"
           >
             <q-expansion-item
               expand-separator
@@ -784,11 +802,6 @@ onMounted(async () => {
               label="Dados gerais da organização"
             >
               <q-card flat class="q-pt-sm full-width text-body2">
-                <!-- <q-card-section class="row items-center">
-              <q-icon name="work" size="20px" class="q-mr-sm" color="black" />
-              <div class="text-h6">Geral da organização</div>
-            </q-card-section> -->
-
                 <q-card-section class="q-pt-none row justify-between">
                   <span>Total de entrada: </span>
                   <span class="text-green">{{
@@ -833,3 +846,9 @@ onMounted(async () => {
     </q-scroll-area>
   </section>
 </template>
+
+<style scoped lang="scss">
+.dashboard-scroll {
+  height: calc(100vh - 300px);
+}
+</style>
