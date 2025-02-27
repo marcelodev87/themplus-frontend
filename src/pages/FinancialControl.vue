@@ -280,12 +280,13 @@ onMounted(async () => {
           : 'column justify-between no-wrap bg-grey-1'
       "
     >
-      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
+      <div :class="!$q.screen.lt.sm ? 'col-4' : 'col-12'">
         <TitlePage title="Controle contábil" />
       </div>
       <div
-        class="col-6 row items-center justify-end q-gutter-x-sm"
-        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+        class="row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm column'"
+        v-if="!$q.screen.lt.sm"
       >
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
@@ -327,11 +328,66 @@ onMounted(async () => {
           @click="openCounterInfo"
           icon-right="visibility"
           label="Dados do contador"
-          class="q-mr-sm bg-contabilidade"
+          class="q-mr-sm"
           unelevated
           no-caps
+          flat
         />
       </div>
+      <q-expansion-item
+        v-else
+        expand-separator
+        icon="settings"
+        label="Ações"
+        class="border-form"
+      >
+        <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          @click="openFormSettingsCounter"
+          icon-right="settings"
+          label="Configurações"
+          unelevated
+          no-caps
+          flat
+          class="q-mt-sm full-width"
+        />
+        <q-btn
+          v-show="
+            enterpriseHeadquarters &&
+            !loadingDelivery &&
+            user?.enterprise_id === user?.view_enterprise_id
+          "
+          @click="openInviteCounter"
+          color="black"
+          icon-right="person_add"
+          label="Solicitações"
+          unelevated
+          no-caps
+          flat
+          class="q-mt-sm full-width"
+        >
+          <q-badge
+            v-show="orderCount > 0"
+            color="red"
+            rounded
+            floating
+            :label="orderCount"
+          />
+        </q-btn>
+        <q-btn
+          v-show="
+            hasCounter !== null &&
+            user?.enterprise_id === user?.view_enterprise_id
+          "
+          @click="openCounterInfo"
+          icon-right="visibility"
+          label="Dados do contador"
+          unelevated
+          no-caps
+          flat
+          class="q-mt-sm full-width"
+        />
+      </q-expansion-item>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
