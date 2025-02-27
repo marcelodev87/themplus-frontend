@@ -482,7 +482,7 @@ watch(
                   dense
                   autofocus
                   counter
-                  style="min-width: 600px; max-width: 98vw"
+                  style="min-width: 500px"
                   @keyup.enter="scope.set"
                   maxlength="400"
                 >
