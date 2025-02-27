@@ -8,6 +8,7 @@ import { Department } from 'src/ts/interfaces/data/Department';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores/auth-store';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'Department',
@@ -25,12 +26,15 @@ const searchDepartment = ref<string>('');
 const clickRootCreate = ref<string | null>(null);
 const departmentEdit = ref<Department | null>(null);
 const showAlertDataEnterprise = ref<boolean>(false);
+const showConfirmAction = ref<boolean>(false);
+const dataExcludeId = ref<string | null>(null);
 
 const clear = () => {
   clickRootCreate.value = '';
   selectedObject.value = '';
   departmentEdit.value = null;
   searchDepartment.value = '';
+  dataExcludeId.value = null;
 };
 const openFormDepartment = (key = null): void => {
   if (key) {
@@ -48,25 +52,21 @@ const handleEdit = (department: Department) => {
     openFormDepartment();
   }
 };
-const exclude = (id: string) => {
-  $q.dialog({
-    title: 'Confirmação',
-    message:
-      'Tem certeza de que deseja excluir o departamento? Caso haja subdepartamentos vinculados, eles também serão excluídos.',
-    cancel: { label: 'Não', dense: true, align: 'center' },
-    ok: {
-      label: 'Sim',
-      color: 'negative',
-      dense: true,
-      align: 'center',
-    },
-    persistent: false,
-  }).onOk(async () => {
-    await deleteDepartment(id);
-  });
-};
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const closeConfirmActionOk = async () => {
+  showConfirmAction.value = false;
+  await deleteDepartment(dataExcludeId.value ?? '');
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  clear();
+};
+const openConfirmAction = (id: string): void => {
+  dataExcludeId.value = id;
+  showConfirmAction.value = true;
 };
 
 watch(
@@ -159,7 +159,7 @@ onMounted(async () => {
                   />
                   <q-btn
                     v-show="user?.enterprise_id === user?.view_enterprise_id"
-                    @click="exclude(prop.node.id)"
+                    @click="openConfirmAction(prop.node.id)"
                     :disable="loadingDepartment"
                     size="sm"
                     flat
@@ -198,6 +198,14 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <ConfirmAction
+          :open="showConfirmAction"
+          label-action="Continuar"
+          title="Confirmação de exclusão de departamento"
+          message="Caso haja subdepartamentos vinculados, eles também serão excluídos. Caso tenha certeza de que deseja excluir o departamento, clique em 'Continuar'."
+          @update:open="closeConfirmAction"
+          @update:ok="closeConfirmActionOk"
         />
       </main>
     </q-scroll-area>
