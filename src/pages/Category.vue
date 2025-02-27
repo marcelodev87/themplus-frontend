@@ -202,8 +202,13 @@ onMounted(async () => {
         />
       </div>
     </header>
-    <q-scroll-area class="main-scroll">
-      <main class="q-pa-sm q-mb-md">
+    <q-scroll-area
+      :class="!$q.screen.lt.sm ? 'main-scroll' : 'category-scroll'"
+    >
+      <main
+        class="q-pa-sm q-mb-md"
+        :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
+      >
         <q-table
           :rows="
             loadingCategory
@@ -224,41 +229,88 @@ onMounted(async () => {
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de categorias</span>
-            <q-space />
-            <q-toggle
-              v-model="onlyDefault"
-              color="primary"
-              label="Padrão"
-              left-label
-            />
-            <q-toggle
-              v-model="onlyCreatedByMe"
-              color="primary"
-              label="Criados"
-              left-label
-            />
-            <q-select
-              v-model="filterAllCategories"
-              :options="['Todos', 'Entradas', 'Saídas']"
-              dense
-              options-dense
-              filled
-              label="Filtrar categorias"
-              :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
-              class="q-mr-sm"
-            />
-            <q-input
-              filled
-              v-model="filterCategory"
-              dense
-              label="Pesquisar"
-              :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+            <div
+              :class="!$q.screen.lt.md ? 'row full-width' : 'column full-width'"
             >
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
+              <span class="text-subtitle2">Lista de categorias</span>
+              <q-space />
+              <div v-if="!$q.screen.lt.sm" class="row">
+                <q-toggle
+                  v-model="onlyDefault"
+                  color="primary"
+                  label="Padrão"
+                  left-label
+                />
+                <q-toggle
+                  v-model="onlyCreatedByMe"
+                  color="primary"
+                  label="Criados"
+                  left-label
+                />
+                <q-select
+                  v-model="filterAllCategories"
+                  :options="['Todos', 'Entradas', 'Saídas']"
+                  dense
+                  options-dense
+                  filled
+                  label="Filtrar categorias"
+                  :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                  class="q-mr-sm"
+                />
+                <q-input
+                  filled
+                  v-model="filterCategory"
+                  dense
+                  label="Pesquisar"
+                  :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
+              <q-expansion-item
+                v-else
+                expand-separator
+                icon="filter_alt"
+                label="Filtros"
+                class="border-form"
+              >
+                <q-toggle
+                  v-model="onlyDefault"
+                  color="primary"
+                  label="Padrão"
+                  left-label
+                  class="q-ml-sm"
+                />
+                <q-toggle
+                  v-model="onlyCreatedByMe"
+                  color="primary"
+                  label="Criados"
+                  left-label
+                />
+                <q-select
+                  v-model="filterAllCategories"
+                  :options="['Todos', 'Entradas', 'Saídas']"
+                  dense
+                  options-dense
+                  filled
+                  label="Filtrar categorias"
+                  class="full-width q-mt-sm"
+                />
+                <q-input
+                  filled
+                  v-model="filterCategory"
+                  dense
+                  label="Pesquisar"
+                  class="full-width q-mt-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </q-expansion-item>
+            </div>
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
@@ -354,3 +406,9 @@ onMounted(async () => {
     </q-scroll-area>
   </section>
 </template>
+
+<style scoped lang="scss">
+.category-scroll {
+  height: calc(100vh - 180px);
+}
+</style>
