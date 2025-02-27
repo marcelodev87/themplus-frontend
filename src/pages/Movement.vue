@@ -586,7 +586,7 @@ onMounted(async () => {
               <q-expansion-item
                 v-else
                 expand-separator
-                icon="settings"
+                icon="filter_alt"
                 label="Filtros"
                 class="border-form"
               >

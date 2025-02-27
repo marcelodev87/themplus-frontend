@@ -421,6 +421,7 @@ onMounted(async () => {
               clickable
               v-ripple
               @click="openFormEntry"
+              :class="!$q.screen.lt.sm ? '' : 'text-green'"
             >
               <q-item-section avatar>
                 <q-avatar>
@@ -434,6 +435,7 @@ onMounted(async () => {
               clickable
               v-ripple
               @click="openFormOut"
+              :class="!$q.screen.lt.sm ? '' : 'text-red'"
             >
               <q-item-section avatar>
                 <q-avatar>
@@ -454,8 +456,13 @@ onMounted(async () => {
         </q-btn-dropdown>
       </div>
     </header>
-    <q-scroll-area class="main-scroll">
-      <main class="q-pa-sm q-mb-md">
+    <q-scroll-area
+      :class="!$q.screen.lt.sm ? 'main-scroll' : 'scheduling-scroll'"
+    >
+      <main
+        class="q-pa-sm q-mb-md"
+        :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
+      >
         <q-card flat bordered class="q-my-sm">
           <q-card-section class="row items-center">
             <q-icon name="sync_alt" size="20px" class="q-mr-sm" color="black" />
@@ -496,67 +503,150 @@ onMounted(async () => {
           :rows-per-page-options="[20]"
         >
           <template v-slot:top>
-            <span class="text-subtitle2">Lista de agendamentos</span>
-            <q-space />
-            <q-toggle
-              v-model="onlyExpired"
-              color="primary"
-              label="Expirados"
-              left-label
-            />
-            <q-toggle
-              v-model="onlyEntry"
-              color="primary"
-              label="Entradas"
-              left-label
-            />
-            <q-toggle
-              v-model="onlyOut"
-              color="primary"
-              label="Saídas"
-              left-label
-            />
-            <q-select
-              v-model="filterMonthYear"
-              :options="listMonthYear"
-              :readonly="listMonthYear.length === 0"
-              label="Filtrar momento"
-              filled
-              dense
-              options-dense
-              bg-color="grey-1"
-              label-color="black"
-              style="min-width: 200px"
-              :class="!$q.screen.lt.md ? '' : 'full-width'"
-              class="q-mr-sm"
-            >
-              <template v-slot:prepend>
-                <q-icon name="calendar_today" color="black" size="20px" />
-              </template>
-            </q-select>
-            <q-select
-              v-model="selectedCategory"
-              :options="optionsCategoriesFilter"
-              :readonly="loadingScheduling || loadingExport"
-              label="Filtre categoria"
-              filled
-              dense
-              options-dense
-              bg-color="grey-1"
-              label-color="black"
-              style="min-width: 200px"
-              :class="!$q.screen.lt.md ? '' : 'full-width'"
-              class="q-mr-sm"
-            >
-              <template v-slot:prepend>
-                <q-icon name="category" color="black" size="20px" />
-              </template>
-            </q-select>
-            <q-input filled v-model="filterScheduling" dense label="Pesquisar">
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
+            <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
+              <span class="text-subtitle2">Lista de agendamentos</span>
+              <q-space />
+              <div v-if="!$q.screen.lt.md" class="row">
+                <q-toggle
+                  v-model="onlyExpired"
+                  color="primary"
+                  label="Expirados"
+                  left-label
+                />
+                <q-toggle
+                  v-model="onlyEntry"
+                  color="primary"
+                  label="Entradas"
+                  left-label
+                />
+                <q-toggle
+                  v-model="onlyOut"
+                  color="primary"
+                  label="Saídas"
+                  left-label
+                />
+                <q-select
+                  v-model="filterMonthYear"
+                  :options="listMonthYear"
+                  :readonly="listMonthYear.length === 0"
+                  label="Filtrar momento"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mr-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="calendar_today" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-select
+                  v-model="selectedCategory"
+                  :options="optionsCategoriesFilter"
+                  :readonly="loadingScheduling || loadingExport"
+                  label="Filtre categoria"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mr-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="category" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-input
+                  filled
+                  v-model="filterScheduling"
+                  dense
+                  label="Pesquisar"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
+              <q-expansion-item
+                v-else
+                expand-separator
+                icon="filter_alt"
+                label="Filtros"
+                class="border-form"
+              >
+                <q-toggle
+                  v-model="onlyExpired"
+                  color="primary"
+                  label="Expirados"
+                  left-label
+                  class="q-ml-sm"
+                />
+                <q-toggle
+                  v-model="onlyEntry"
+                  color="primary"
+                  label="Entradas"
+                  left-label
+                />
+                <q-toggle
+                  v-model="onlyOut"
+                  color="primary"
+                  label="Saídas"
+                  left-label
+                />
+                <q-select
+                  v-model="filterMonthYear"
+                  :options="listMonthYear"
+                  :readonly="listMonthYear.length === 0"
+                  label="Filtrar momento"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mt-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="calendar_today" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-select
+                  v-model="selectedCategory"
+                  :options="optionsCategoriesFilter"
+                  :readonly="loadingScheduling || loadingExport"
+                  label="Filtre categoria"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mt-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="category" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-input
+                  filled
+                  v-model="filterScheduling"
+                  dense
+                  label="Pesquisar"
+                  class="q-mt-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </q-expansion-item>
+            </div>
           </template>
           <template v-slot:body="props">
             <q-tr
@@ -631,15 +721,17 @@ onMounted(async () => {
                   color="red"
                   icon="delete"
                 />
-                <q-icon
+                <q-btn
                   v-show="user?.enterprise_id === user?.view_enterprise_id"
                   @click="finalize(props.row.id)"
-                  name="task_alt"
-                  size="16px"
-                  class="cursor-pointer"
+                  size="sm"
+                  flat
+                  round
+                  color="green"
+                  icon="task_alt"
                 >
                   <q-tooltip> Finalizar </q-tooltip>
-                </q-icon>
+                </q-btn>
               </q-td>
             </q-tr>
           </template>
@@ -674,3 +766,9 @@ onMounted(async () => {
     </q-scroll-area>
   </section>
 </template>
+
+<style scoped lang="scss">
+.scheduling-scroll {
+  height: calc(100vh - 180px);
+}
+</style>
