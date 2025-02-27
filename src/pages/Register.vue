@@ -187,7 +187,10 @@ onMounted(async () => {
       ></div>
     </header>
     <q-scroll-area class="main-scroll">
-      <main class="q-pa-sm q-mb-md">
+      <main
+        class="q-pa-sm q-mb-md"
+        :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
+      >
         <q-table
           :rows="loadingRegister ? [] : listRegister"
           :columns="columnsRegister"
@@ -216,13 +219,19 @@ onMounted(async () => {
               bg-color="grey-1"
               label-color="black"
               style="min-width: 200px"
-              :class="!$q.screen.lt.md ? '' : 'full-width'"
+              :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
             >
               <template v-slot:prepend>
                 <q-icon name="calendar_month" color="black" size="20px" />
               </template>
             </q-select>
-            <q-input filled v-model="filterRegister" dense label="Pesquisar">
+            <q-input
+              filled
+              v-model="filterRegister"
+              dense
+              label="Pesquisar"
+              :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
+            >
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
