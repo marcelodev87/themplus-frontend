@@ -4,7 +4,7 @@ import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import EmailInfo from 'src/components/info/EmailInfo.vue';
 import FormViewEnterprise from 'src/components/forms/FormViewEnterprise.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
@@ -63,6 +63,15 @@ const closeDrawer = (): void => {
     leftDrawerOpen.value = false;
   }
 };
+watch(
+  () => route.name,
+  (name) => {
+    if (name === 'admin-help') {
+      leftDrawerOpen.value = false;
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <q-layout view="hHh lpR fFf">

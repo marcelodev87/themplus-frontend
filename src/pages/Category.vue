@@ -28,7 +28,7 @@ const showAlertDataEnterprise = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
 const filterCategory = ref<string>('');
-const filterAllCategories = ref<string>('Todos');
+const filterAllCategories = ref<string>('Todas');
 const selectedDataEdit = ref<Category | null>(null);
 const filteredCategories = reactive<Category[]>([]);
 const columnsCategory = reactive<QuasarTable[]>([
@@ -71,7 +71,7 @@ const columnsCategory = reactive<QuasarTable[]>([
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterCategory.value = '';
-  filterAllCategories.value = 'Todos';
+  filterAllCategories.value = ' Todas';
   filteredCategories.splice(0, filteredCategories.length);
   onlyCreatedByMe.value = false;
   onlyDefault.value = false;
@@ -249,11 +249,11 @@ onMounted(async () => {
                 />
                 <q-select
                   v-model="filterAllCategories"
-                  :options="['Todos', 'Entradas', 'Saídas']"
+                  :options="['Todas', 'Entradas', 'Saídas']"
                   dense
                   options-dense
                   filled
-                  label="Filtrar categorias"
+                  label="Filtrar tipo"
                   :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
                   class="q-mr-sm"
                 />
