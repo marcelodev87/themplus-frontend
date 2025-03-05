@@ -22,6 +22,7 @@ defineOptions({
   name: 'Help',
 });
 
+const openOptions = ref<boolean>(false);
 const splitterModel = ref<number>(300);
 const optionSelected = ref<string>('Introdução');
 const optionsHelp = reactive<string[]>([
@@ -57,7 +58,7 @@ const selectOption = (option: string): void => {
       v-model="splitterModel"
       style="height: 85vh"
       unit="px"
-      :limits="!$q.screen.lt.sm ? [200, 200] : [0, 200]"
+      :limits="openOptions ? [200, 200] : [0, 0]"
     >
       <template v-slot:before>
         <q-list class="column justify-around">
@@ -81,7 +82,7 @@ const selectOption = (option: string): void => {
       </template>
 
       <template v-slot:after>
-        <div class="q-pa-sm">
+        <div class="q-pa-sm" @click="openOptions = !openOptions">
           <IntroDocument v-if="optionSelected === 'Introdução'" />
           <StartDocument v-else-if="optionSelected === 'Começando'" />
           <ViewUserDocument v-else-if="optionSelected === 'Visão usuário'" />
