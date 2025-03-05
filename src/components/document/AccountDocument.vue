@@ -5,13 +5,14 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Contas</p>
+    <p class="text-h5 text-bold"># Gerenciamento de Contas</p>
     <p class="text-body1">
-      Na página de Contas, contamos com todas as contas criadas e a "Caixinha"
-      que já é pré-definidas no Themplus. Ela pode ser encontrada clicando em
-      "configurações" no menu lateral esquerdo e em seguida, você poderá
-      visualizar a opção de contas. As contas aparecerão em formulários de
-      movimentações e agendamentos.
+      A página de Contas centraliza o controle de suas contas bancárias,
+      incluindo a "Caixinha" pré-definida pelo Themplus. Acesse esta seção
+      navegando até "Configurações" no menu lateral esquerdo e selecionando a
+      opção "Contas". As contas definidas estarão disponíveis para seleção nos
+      formulários de movimentações e agendamentos, facilitando o rastreamento e
+      a organização de suas finanças.
     </p>
     <div style="position: relative; padding-bottom: 42.5%; height: 0">
       <iframe
@@ -24,39 +25,42 @@ defineOptions({
       ></iframe>
     </div>
 
-    <p class="text-h6 q-mt-md"># Criando uma conta:</p>
+    <p class="text-h6 q-mt-md"># Adicionando uma Nova Conta Bancária:</p>
     <p class="text-body1">
       Para cadastrar uma nova conta bancária, clique no botão "Contas +". Você
-      poderá selecionar um banco já existente na nossa lista, ou, caso ele não
-      esteja disponível, digitar o nome do banco desejado. Após isso, insira o
-      número da conta e da agência (este último é opcional). Você também pode
-      adicionar uma descrição para ajudar a identificar a conta.
+      pode selecionar um banco já existente em nossa lista ou, caso não encontre
+      o banco desejado, digitar o nome do banco. Em seguida, insira o número da
+      conta e, opcionalmente, o número da agência. Adicione uma descrição para
+      facilitar a identificação da conta.
     </p>
     <q-img src="/images/document/form-account.png" width="600px" />
 
-    <p class="text-h6 q-mt-md"># Brincando com os filtros:</p>
-    <ul class="text-body1 column q-gutter-y-md">
-      <li>
-        <p><strong>Pesquisar:</strong> Pesquise por uma conta.</p>
-      </li>
-    </ul>
-    <p class="text-h6 q-mt-md"># Observações:</p>
+    <p class="text-h6 q-mt-md"># Opções de Busca:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          Para <strong>excluir uma conta</strong>, deve apertar no botão com um
-          ícone de "lápis" na coluna de Ação. Ao abrir o formulário onde pode
-          editar a conta, você visualizará um botaão na parte inferior para
-          deletar.
+          <strong>Localizar Conta:</strong> Utilize a função de pesquisa para
+          encontrar rapidamente uma conta específica.
+        </p>
+      </li>
+    </ul>
+    <p class="text-h6 q-mt-md"># Informações Importantes:</p>
+    <ul class="text-body1 column q-gutter-y-md">
+      <li>
+        <p>
+          Para <strong>excluir uma conta</strong>, clique no ícone de "lápis" na
+          coluna Ação para editar as informações da conta. Dentro do formulário
+          de edição, você encontrará o botão para deletar a conta.
         </p>
       </li>
       <li>
         <p>
-          Ao tentar <strong>excluir uma conta</strong> que foi utilizada em
-          algum registro de Movimentação ou Agendamento, a mesma será
-          <strong>inativada</strong> e <strong>não deletada</strong>. Portanto,
-          a conta terá um novo botão para reativá-la e poder utilizar ela
-          novamente nos formulários de Movimentações e Agendamentos.
+          Ao tentar <strong>excluir uma conta</strong> que tenha sido utilizada
+          em registros de Movimentação ou Agendamento, a conta será
+          automaticamente <strong>inativada</strong> para preservar a
+          integridade dos dados. Em vez da exclusão permanente, a conta exibirá
+          um botão de reativação, permitindo seu uso futuro em formulários de
+          Movimentação e Agendamento.
         </p>
       </li>
     </ul>

@@ -5,10 +5,11 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Contabilidade</p>
+    <p class="text-h5 text-bold"># Visão Geral da Contabilidade</p>
     <p class="text-body1">
-      Na página de Contabilidade, contamos com todas as movimentações criadas
-      separadas por mês, mostrando o status de 'Entregue' ou 'Não entregue'.
+      A página de Contabilidade oferece uma visão abrangente das movimentações
+      financeiras, organizadas mensalmente, com indicação clara do status:
+      'Entregue' ou 'Não entregue'.
     </p>
     <div
       style="position: relative; padding-bottom: 52.7086383601757%; height: 0"
@@ -23,52 +24,54 @@ defineOptions({
       ></iframe>
     </div>
 
-    <p class="text-h6 q-mt-md"># Para que serve essa seção?</p>
+    <p class="text-h6 q-mt-md"># Propósito da Seção</p>
     <p class="text-body1">
-      As movimentações criadas são mostradas nessa seção separadas pelo mês de
-      movimentação, onde você poderá entregar essa lista, consequentemente, se
-      tornando visivel para uma organização de contabilidade poder fazer suas
-      análises.
+      Esta seção exibe as movimentações financeiras agrupadas por mês,
+      permitindo o envio organizado dessas informações. Ao submeter a lista, ela
+      se torna acessível a uma organização contábil parceira para análise e
+      processamento.
     </p>
 
-    <p class="text-h6 q-mt-md"># Entendendo as funcionalidades:</p>
+    <p class="text-h6 q-mt-md"># Compreendendo as Funcionalidades:</p>
     <q-img src="/images/document/financial.png" width="1000px" />
     <ol class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Configurações:</strong> Poderá gerenciar permissões em que um
-          escritório de contabilidade tem póder sobre sua organização.
+          <strong>Configurações de Acesso:</strong> Gerencie as permissões
+          concedidas a escritórios de contabilidade para acessar e interagir com
+          os dados da sua organização.
         </p>
       </li>
       <li>
         <p>
-          <strong>Solicitações:</strong> Aqui visualizará todos os convites de
-          vínculo feito por organizações de contabilidade.
+          <strong>Solicitações de Vinculação:</strong> Visualize e gerencie
+          convites de conexão enviados por organizações contábeis.
         </p>
       </li>
       <li>
         <p>
-          <strong>Dados do contador:</strong> Esse botão só aparece quando sua
-          organização está vinculada a uma organização de contabilidade. Aqui
-          você poderá ver os dados da organização de contabilidade em que está
-          vinculado.
+          <strong>Informações do Contador:</strong> Exibido após a vinculação
+          com uma organização contábil, este botão permite acessar os detalhes
+          de contato e informações relevantes do seu parceiro contábil.
         </p>
       </li>
     </ol>
-    <p class="text-h6 q-mt-md"># Observações:</p>
+    <p class="text-h6 q-mt-md"># Considerações Importantes:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          Ao <strong>entregar</strong> uma lista de movimentações, não poderá
-          lançar movimentações nesse período, a menos que solicite ao escritório
-          de contabilidade para reabrir o mês, permitindo novas alterações.
+          Após <strong>entregar</strong> uma lista de movimentações, o
+          lançamento de novas transações para o período correspondente será
+          bloqueado, a menos que o mês seja reaberto pela organização contábil,
+          permitindo modificações adicionais.
         </p>
       </li>
       <li>
         <p>
-          O <strong>gerenciamento de permissões</strong> em "configurações", faz
-          com que a organização tenha algumas ações sobre sua organização.
-          Preste atenção ao manuseio dessas informações.
+          O <strong>gerenciamento de permissões</strong> na seção "Configurações
+          de Acesso" concede à organização contábil parceira a capacidade de
+          realizar determinadas ações em nome da sua organização. Avalie
+          cuidadosamente o impacto dessas permissões antes de concedê-las.
         </p>
       </li>
     </ul>

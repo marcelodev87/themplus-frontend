@@ -5,92 +5,98 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Visão Usuário</p>
+    <p class="text-h5 text-bold"># Explorando o Themplus: Visão Cliente</p>
     <p class="text-body1">
-      No Themplus, você pode está cadastrado como um "Cliente" ou como
-      "Contador". Nesta seção você verá quais opções existem para uma
-      organização do tipo "Cliente"
+      O Themplus oferece experiências distintas, adaptadas ao seu perfil:
+      "Cliente" ou "Contador". Esta seção detalha as funcionalidades e recursos
+      disponíveis para organizações cadastradas como "Cliente".
     </p>
     <q-img src="/images/document/view-user.png" width="1000px" />
 
-    <p class="text-h6 q-mt-md"># Entendendo as opções:</p>
+    <p class="text-h6 q-mt-md"># Desvendando as Funcionalidades:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Feed:</strong> Seção onde mostra alguns banners informativo.
+          <strong>Feed:</strong> Um espaço dinâmico com banners informativos e
+          atualizações relevantes para sua organização.
         </p>
       </li>
       <li>
         <p>
-          <strong>Dashboard:</strong> Seção onde mostra vários gráficos com os
-          dados de sua organização.
+          <strong>Dashboard:</strong> Visualize o desempenho da sua organização
+          através de painéis interativos com gráficos e indicadores-chave.
         </p>
       </li>
       <li>
         <p>
-          <strong>Movimentações:</strong> Seção onde pode visualizar seus
-          lançamentos já registrados, criar um novo, editar ou até mesmo
-          excluir.
+          <strong>Movimentações:</strong> Gerencie suas transações financeiras
+          com facilidade. Visualize, crie, edite ou exclua lançamentos de forma
+          intuitiva.
         </p>
       </li>
       <li>
         <p>
-          <strong>Agendamentos:</strong> Seção onde pode visualizar seus
-          agendamentos já registrados, criar um novo, editar ou até mesmo
-          excluir.
+          <strong>Agendamentos:</strong> Organize suas atividades e
+          compromissos. Crie, visualize, edite ou exclua agendamentos para
+          otimizar sua rotina.
         </p>
       </li>
       <li>
         <p>
-          <strong>Contabilidade:</strong> Seção onde sua organização se
-          "comunica" com uma organização de contabilidade.
+          <strong>Contabilidade:</strong> Centralize a comunicação com sua
+          organização contábil, facilitando a troca de informações e documentos.
         </p>
       </li>
       <li>
         <p>
-          <strong>Atividades:</strong> Seção onde é possível ver as ações de
-          seus usuários dentro de sua organização.
+          <strong>Atividades:</strong> Monitore as ações dos usuários dentro da
+          sua organização, garantindo transparência e controle.
         </p>
       </li>
       <li>
-        <p><strong>Configurações:</strong></p>
+        <p>
+          <strong>Configurações:</strong> Personalize o Themplus para atender às
+          necessidades específicas da sua organização:
+        </p>
         <ul>
           <li>
             <p>
-              <strong>Categorias:</strong> Seção onde é possível ver suas
-              categorias registradas,criar um novo, editar ou até mesmo excluir.
+              <strong>Categorias:</strong> Defina e gerencie as categorias para
+              classificar suas transações financeiras, facilitando a análise e o
+              controle.
             </p>
           </li>
           <li>
             <p>
-              <strong>Contas:</strong> Seção onde é possível ver suas contas
-              registradas,criar um novo, editar ou até mesmo excluir.
+              <strong>Contas:</strong> Gerencie suas contas bancárias e
+              financeiras, mantendo o controle sobre seus recursos.
             </p>
           </li>
           <li>
             <p>
-              <strong>Departamentoa:</strong> Seção onde é possível ver seus
-              departamentos, criar um novo, editar ou até mesmo excluir.
+              <strong>Departamentos:</strong> Organize sua estrutura interna,
+              definindo e gerenciando os departamentos da sua organização.
             </p>
           </li>
           <li>
             <p>
-              <strong>Filiais:</strong> Seção onde é possível ver suas filiais,
-              criar um novo, editar ou até mesmo excluir.
+              <strong>Filiais:</strong> Gerencie as diferentes filiais da sua
+              organização, centralizando as informações e o controle.
             </p>
           </li>
           <li>
             <p>
-              <strong>Usuários:</strong> Seção onde é possível ver seus
-              usuários, criar um novo, editar ou até mesmo excluir.
+              <strong>Usuários:</strong> Adicione, gerencie e controle o acesso
+              dos usuários ao Themplus, garantindo a segurança e a integridade
+              dos dados.
             </p>
           </li>
         </ul>
       </li>
       <li>
         <p>
-          <strong>Ajuda:</strong> Seção onde é possível ver a documentação do
-          Themplus.
+          <strong>Ajuda:</strong> Acesse a documentação completa do Themplus,
+          com guias e informações detalhadas para otimizar sua experiência.
         </p>
       </li>
     </ul>

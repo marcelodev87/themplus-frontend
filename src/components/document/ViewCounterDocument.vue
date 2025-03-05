@@ -5,66 +5,74 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Visão Contador</p>
+    <p class="text-h5 text-bold"># Explorando o Themplus: Visão Contador</p>
     <p class="text-body1">
-      No Themplus, você pode está cadastrado como um "Cliente" ou como
-      "Contador". Nesta seção você verá quais opções existem para uma
-      organização do tipo "Contador"
+      Themplus oferece uma experiência personalizada para cada perfil de
+      usuário: "Cliente" ou "Contador". Esta seção explora as funcionalidades e
+      recursos exclusivos para organizações contábeis.
     </p>
     <q-img src="/images/document/view-counter.png" width="1000px" />
 
-    <p class="text-h6 q-mt-md"># Entendendo as opções:</p>
+    <p class="text-h6 q-mt-md"># Descobrindo as Ferramentas Essenciais:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Feed:</strong> Seção onde mostra alguns banners informativo.
+          <strong>Feed:</strong> Receba atualizações relevantes e informações
+          importantes através de banners informativos personalizados.
         </p>
       </li>
       <li>
         <p>
-          <strong>Solicitações:</strong> Seção onde mostra suas solicitações
-          pendentes para vínculo com organizações do tipo "cliente".
+          <strong>Solicitações:</strong> Gerencie facilmente suas solicitações
+          pendentes de vinculação com organizações "Cliente".
         </p>
       </li>
       <li>
         <p>
-          <strong>Vínculos:</strong> Seção onde mostras as organizações do tipo
-          "cliente" que sua organização está vinculada.
+          <strong>Vínculos:</strong> Visualize e gerencie as organizações
+          "Cliente" às quais sua organização contábil está conectada.
         </p>
       </li>
       <li>
         <p>
-          <strong>Organização:</strong> Seção onde você pode registrar uma
-          organização do tipo "cliente" e automaticamente se vincular a ela.
+          <strong>Organização:</strong> Simplifique o processo de integração ao
+          registrar uma organização "Cliente" e vincular-se automaticamente a
+          ela.
         </p>
       </li>
       <li>
         <p>
-          <strong>Atividades:</strong> Seção onde é possível ver as ações de
-          seus usuários dentro de sua organização.
+          <strong>Atividades:</strong> Monitore as ações dos usuários dentro da
+          sua organização, garantindo transparência e controle sobre as
+          atividades internas.
         </p>
       </li>
       <li>
-        <p><strong>Configurações:</strong></p>
+        <p>
+          <strong>Configurações:</strong> Personalize o Themplus para otimizar o
+          fluxo de trabalho da sua organização:
+        </p>
         <ul>
           <li>
             <p>
-              <strong>Departamentoa:</strong> Seção onde é possível ver seus
-              departamentos, criar um novo, editar ou até mesmo excluir.
+              <strong>Departamentos:</strong> Organize sua estrutura interna,
+              definindo e gerenciando os departamentos da sua organização
+              contábil.
             </p>
           </li>
           <li>
             <p>
-              <strong>Usuários:</strong> Seção onde é possível ver seus
-              usuários, criar um novo, editar ou até mesmo excluir.
+              <strong>Usuários:</strong> Gerencie os usuários da sua
+              organização, controlando o acesso e as permissões para garantir a
+              segurança dos dados.
             </p>
           </li>
         </ul>
       </li>
       <li>
         <p>
-          <strong>Ajuda:</strong> Seção onde é possível ver a documentação do
-          Themplus.
+          <strong>Ajuda:</strong> Acesse a documentação completa do Themplus,
+          com guias e informações detalhadas para maximizar a sua experiência.
         </p>
       </li>
     </ul>

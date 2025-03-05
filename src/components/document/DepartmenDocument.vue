@@ -5,14 +5,14 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Departamentos</p>
+    <p class="text-h5 text-bold"># Gerenciamento de Departamentos</p>
     <p class="text-body1">
-      Na página de Departamentos, contamos com todos os departamentos criados
-      pela sua organização. A medida que sua organização é preenchida com novos
-      usuários, é bem importante categorizá-los para uma melhor organização de
-      sua equipe.Ela pode ser encontrada clicando em "configurações" no menu
-      lateral esquerdo e em seguida, você poderá visualizar a opção de
-      departamentos.
+      A página de Departamentos oferece uma visão geral de todos os
+      departamentos criados para sua organização. À medida que sua equipe
+      cresce, é fundamental categorizar os usuários em departamentos para
+      otimizar a organização e a estrutura interna. Acesse esta funcionalidade
+      navegando até "Configurações" no menu lateral esquerdo e selecionando a
+      opção "Departamentos".
     </p>
     <div style="position: relative; padding-bottom: 42.5%; height: 0">
       <iframe
@@ -25,13 +25,14 @@ defineOptions({
       ></iframe>
     </div>
 
-    <p class="text-h6 q-mt-md"># Criando um departamento:</p>
+    <p class="text-h6 q-mt-md"># Criando um Novo Departamento:</p>
     <p class="text-body1">
-      Para cadastrar uma novo departamento, clique no botão "Departamentos +".
-      Você poderá selecionar o nível hierarquico que deseja criar o
-      departamento. Por exemplo, posso criar uma departamento chamado
-      Supervisão, e em seguida criar um sub-departamento chamado Supervisão
-      Setor Infantil.
+      Para cadastrar um novo departamento, clique no botão "Departamentos +".
+      Você pode definir o nível hierárquico do departamento que está criando.
+      Por exemplo, você pode criar um departamento principal chamado
+      "Supervisão" e, em seguida, criar um sub-departamento subordinado a ele,
+      como "Supervisão Setor Infantil". Essa estrutura hierárquica permite uma
+      organização refinada dos departamentos.
     </p>
     <div class="column">
       <q-img src="/images/document/department.png" width="600px" />
@@ -42,12 +43,12 @@ defineOptions({
       />
     </div>
 
-    <p class="text-h6 q-mt-md"># Utilizando os departamentos:</p>
+    <p class="text-h6 q-mt-md"># Utilização dos Departamentos:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          Agora você poderá utilizar os departamentos existentes nos usuários,
-          seja criando novos ou editando os existentes.
+          Agora, você pode associar os departamentos existentes aos usuários,
+          seja ao criar novos usuários ou ao editar os existentes.
           <q-img
             src="/images/document/use-department.png"
             width="600px"
@@ -57,9 +58,9 @@ defineOptions({
       </li>
       <li>
         <p>
-          Caso <strong>você seja administrador</strong>, poderá
-          <strong>trocar seu departamento</strong> clicando no avatar do perfil
-          no canto superior direito.
+          Caso <strong>você possua privilégios de administrador</strong>, você
+          pode <strong>alterar seu departamento</strong> clicando no avatar do
+          seu perfil, localizado no canto superior direito.
         </p>
       </li>
     </ul>

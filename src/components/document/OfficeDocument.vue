@@ -5,11 +5,12 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Filiais</p>
+    <p class="text-h5 text-bold"># Gerenciamento de Filiais</p>
     <p class="text-body1">
-      Caso sua organização tenha filiais, você poderá criar filiais nessa
-      página, onde poderá observar todas as suas atividades com certas
-      limitações.
+      Se sua organização opera com múltiplas filiais, esta seção permite a
+      criação e o gerenciamento de cada unidade, proporcionando uma visão
+      abrangente das atividades de cada filial, com determinadas restrições de
+      acesso, conforme necessário.
     </p>
     <div style="position: relative; padding-bottom: 42.5%; height: 0">
       <iframe
@@ -22,49 +23,50 @@ defineOptions({
       ></iframe>
     </div>
 
-    <p class="text-h6 q-mt-md"># Criando uma filial:</p>
+    <p class="text-h6 q-mt-md"># Criando uma Nova Filial:</p>
     <p class="text-body1">
-      Basta clicar no botão de " Filiais + " e preencher o formulário
-      solicitado. Vale ressaltar que
-      <strong>nome e endereço são obrigatórios</strong>, caso a filial deseje
-      ter o mesmo e-mail e cpf/cnpj da matriz, deve-se deixar em branco.
+      Para adicionar uma nova filial, clique no botão "Filiais +" e preencha o
+      formulário correspondente. É importante observar que o
+      <strong>Nome e Endereço são campos obrigatórios</strong>. Caso a filial
+      deva utilizar o mesmo endereço de e-mail e CPF/CNPJ da matriz, deixe estes
+      campos em branco para herdar as informações da matriz.
     </p>
     <q-img src="/images/document/form-office.png" width="600px" />
 
-    <p class="text-h6 q-mt-md"># Funcionalidades e Regras:</p>
+    <p class="text-h6 q-mt-md"># Funcionalidades e Diretrizes:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Criação:</strong> Após a filial ser criada, deve notar que
-          aparecerá um botão com icone de usuario, onde você deve criar esse
-          primeiro usuário na filial.Este usuário inserido, será responsável por
-          incluir os demais usuários e ajustar as demais configurações.
+          <strong>Primeiro Usuário:</strong> Após a criação da filial, um botão
+          com um ícone de usuário será exibido. É necessário criar o primeiro
+          usuário para esta filial. Este usuário será responsável por adicionar
+          os demais usuários e personalizar as configurações da filial.
         </p>
       </li>
       <li>
         <p>
-          <strong>Exclusão:</strong> Ao tentar excluir uma filial, todos os
-          dados vinculados a essa filial serão
-          <strong>excluídos permanetemente</strong> e não será possível
-          reverter.
+          <strong>Exclusão Definitiva:</strong> A exclusão de uma filial
+          resultará na <strong>exclusão permanente</strong> de todos os dados
+          associados a essa filial, sem possibilidade de recuperação. Por favor,
+          proceda com cautela.
         </p>
       </li>
       <li>
         <p>
-          <strong>Observar:</strong> Para usuários administradores da matriz, no
-          avatar do perfil, existe uma opção "Mudar visão". Clicando nessa
-          opção, você poderá selecionar uma filial e a partir desse momento os
-          dados que visualizará como Dashboard, Movimentações, etc serão
-          referentes a filial selecionada.
+          <strong>Visão da Filial (Administradores da Matriz):</strong> Para
+          administradores da matriz, a opção "Mudar visão" está disponível no
+          menu do avatar do perfil. Ao selecionar uma filial através desta
+          opção, o Dashboard, Movimentações e demais dados exibidos serão
+          referentes à filial selecionada.
         </p>
         <q-img src="/images/document/office-view.png" width="600px" />
         <p class="q-mt-md">
-          Note que a filial selecionada, fica marcada na barra superior como
-          <strong> "modo espectador"</strong> .
+          Note que a filial selecionada é identificada na barra superior como
+          <strong>"Modo Espectador"</strong>.
         </p>
         <p class="q-mt-md">
-          O <strong>modo espectador</strong> não permite realizar ações como
-          adição, edição e exclusão, deixando somente como observação.
+          O <strong>Modo Espectador</strong> restringe ações como adição, edição
+          e exclusão, permitindo apenas a visualização dos dados.
         </p>
       </li>
     </ul>

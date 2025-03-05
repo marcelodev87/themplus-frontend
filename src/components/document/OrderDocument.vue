@@ -5,18 +5,27 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Solicitações</p>
+    <p class="text-h5 text-bold">
+      # Gerenciamento Centralizado de Solicitações de Cliente
+    </p>
     <p class="text-body1">
-      Na página de Solicitações, visualizamos todas as solicitações de vínculo
-      com organizações do tipo "cliente".
+      A página de Solicitações oferece uma visão completa e organizada de todos
+      os pedidos de vínculo de organizações do tipo "cliente", permitindo um
+      gerenciamento eficiente do seu pipeline de novos relacionamentos.
     </p>
     <q-img src="/images/document/order.png" width="1000px" />
-    <p class="text-h6 q-mt-md"># Criando uma solicitação:</p>
+    <p class="text-h6 q-mt-md">
+      # Iniciando uma Solicitação de Cliente com Simplicidade:
+    </p>
     <p class="text-body1">
-      Basta clicar no botão "Solicitações +" e após isso, vai surgir um modal
-      com um formulário, onde você pesquisa o cliente, seleciona, informa uma
-      descrição e envia a solicitação.
-      <strong>Clique na lupa para pesquisar a organização</strong>.
+      Para iniciar uma solicitação de vínculo, clique no botão "Solicitações +".
+      Um modal intuitivo será exibido, contendo um formulário de fácil
+      preenchimento. Localize o cliente desejado, selecione-o, adicione uma
+      descrição concisa e envie sua solicitação.
+      <strong
+        >Utilize o ícone de lupa para uma pesquisa rápida e precisa da
+        organização desejada.</strong
+      >
     </p>
     <q-img src="/images/document/form-order.png" width="1000px" />
   </main>

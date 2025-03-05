@@ -5,50 +5,59 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Cadastro</p>
+    <p class="text-h5 text-bold">
+      # Boas-vindas ao Themplus: Seu Cadastro Facilitado
+    </p>
     <ol class="text-body1 column q-gutter-y-md">
       <li>
-        <p>Primeiramente, vamos fazer o cadastro na nossa tela de login</p>
+        <p>
+          Para iniciarmos sua jornada no Themplus, o primeiro passo é realizar o
+          cadastro através da nossa intuitiva tela de login:
+        </p>
         <q-img src="/images/document/login.png" width="600px" />
       </li>
       <li>
-        <p>Ao apertar em cadastrar, aparecerá uma tela como essa abaixo:</p>
+        <p>
+          Ao selecionar a opção "Cadastrar", você será direcionado a uma tela
+          dedicada, como demonstrado abaixo:
+        </p>
         <q-img src="/images/document/register-user.png" width="600px" />
       </li>
       <li>
         <p>
-          Note que para <strong>começar como cliente</strong>, a opção "cliente"
-          deve está selecionado ou para se
-          <strong>registrar com organização de contabilidade</strong>, selecione
-          a opção "contador", além de preencher todo o restante dos dados.
-          Importante ressaltar que o
-          <strong><i>"nome de sua organização"</i></strong
-          >, é referente como sua organização/igreja vai ser nomeada.
+          É fundamental que você defina seu perfil no Themplus. Para
+          <strong>acessar as funcionalidades como cliente</strong>,
+          certifique-se de selecionar a opção "Cliente". Caso represente uma
+          <strong>organização contábil</strong>, opte por "Contador". Preencha
+          cuidadosamente todos os campos solicitados. Lembre-se que o campo
+          <strong><i>"Nome de sua organização"</i></strong> deve refletir a
+          denominação oficial da sua instituição/igreja.
         </p>
       </li>
       <li>
         <p>
-          Após o cadastro ter sido realizado, consequentemente os dados
-          validados, posteriormente
-          <strong>surgirá esse novo modal abaixo:</strong>
+          Após a validação bem-sucedida dos seus dados, uma janela modal
+          surgirá, confirmando o cadastro:
         </p>
         <q-img src="/images/document/register-success-user.png" width="600px" />
       </li>
       <li>
         <p>
-          Com isso será <strong>obrigatório apertar em continar</strong> para
-          preeencher o restantes dos dados necessários para suas informações
-          ficarem completas. Caso, volte para a tela de login e volte a fazer o
-          login com a mesma conta,
-          <strong>ainda sim continuará aparecendo este modal</strong>.
+          Neste momento, é
+          <strong>imprescindível clicar em "Continuar"</strong> para completar o
+          seu perfil com informações adicionais. Este passo garante a
+          personalização completa da sua experiência no Themplus. Mesmo que
+          retorne à tela de login, o modal persistirá até que o preenchimento
+          seja finalizado.
         </p>
         <q-img src="/images/document/form-register.png" width="600px" />
       </li>
       <li>
         <p>
-          Após concluir este passo, estará livre para
-          <strong>aproveitar o máximo do Themplus</strong>. Abordaremos com mais
-          detalhes nas outras seções.
+          Parabéns! Ao concluir o cadastro, você estará pronto para
+          <strong>explorar todo o potencial do Themplus</strong>. As seções
+          subsequentes deste guia detalharão as funcionalidades e recursos
+          disponíveis em cada perfil.
         </p>
         <q-img src="/images/document/themplus.png" width="600px">
           <div class="absolute-bottom text-subtitle1 text-center">

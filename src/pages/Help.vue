@@ -100,8 +100,8 @@ const selectOption = (option: string): void => {
           <CategoryDocument v-else-if="optionSelected === 'Categorias'" />
           <AccountDocument v-else-if="optionSelected === 'Contas'" />
           <DepartmenDocument v-else-if="optionSelected === 'Departamentos'" />
-          <UsersDocument v-else-if="optionSelected === 'Usuários'" />
           <OfficeDocument v-else-if="optionSelected === 'Filiais'" />
+          <UsersDocument v-else-if="optionSelected === 'Usuários'" />
         </div>
       </template>
     </q-splitter>

@@ -5,43 +5,52 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Vínculos</p>
+    <p class="text-h5 text-bold"># Gerenciamento de Vínculos Organizacionais</p>
     <p class="text-body1">
-      Na página de Vínculos, visualizamos todas as organizações que estão
-      vinculadas a sua organização, isso inclui as filiais.
+      A página de Vínculos proporciona uma visão abrangente das organizações
+      atualmente vinculadas à sua, incluindo todas as filiais. Essa
+      centralização facilita o acompanhamento e a gestão de seus
+      relacionamentos.
     </p>
     <q-img src="/images/document/bond.png" width="1000px" />
-    <p class="text-h6 q-mt-md"># Entendendo as funcionalidades:</p>
+    <p class="text-h6 q-mt-md">
+      # Explorando as Funcionalidades de Gerenciamento:
+    </p>
     <p class="q-mt-md">
-      Para cada organização na tabela, poderá aparecer as seguintes
-      funcionalidades:
+      Para cada organização listada, as seguintes funcionalidades de
+      gerenciamento poderão esta disponível:
     </p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Alertas:</strong> Poderá cadastrar alertas para as categorias
-          da organização cliente, consequentemente, o cliente ao lançar uma
-          movimentação com uma categoria que contém o alerta, o mesmo terá que
-          marcar a opção de lido, para poder lançar a movimentação.
+          <strong>Alertas Personalizados:</strong> Configure alertas específicos
+          para as categorias de movimentação de cada organização cliente. Quando
+          o cliente registrar uma movimentação utilizando uma categoria com um
+          alerta configurado, será necessário confirmar a leitura do alerta
+          antes de concluir o lançamento da movimentação, garantindo a devida
+          atenção às informações relevantes.
         </p>
       </li>
       <li>
         <p>
-          <strong>Usuários:</strong> Aqui você poderá gerenciar usuários da
-          organização cliente ( adicionar, editar ou excluir ), mediante
-          permissão dada da organização cliente.
+          <strong>Gestão de Usuários Delegada:</strong> Gerencie os usuários da
+          organização cliente (adicione, edite ou exclua), respeitando as
+          permissões concedidas pela própria organização cliente. Este recurso
+          promove a colaboração e a autonomia.
         </p>
       </li>
       <li>
         <p>
-          <strong>Analisar:</strong> Aqui poderá ver os relatórios entregue pela
-          organização cliente.
+          <strong>Análise Detalhada de Relatórios:</strong> Acesse e analise os
+          relatórios compartilhados pela organização cliente, obtendo insights
+          valiosos e facilitando a tomada de decisões estratégicas.
         </p>
       </li>
       <li>
         <p>
-          <strong>Excluir:</strong> Pode excluir o vínculo com a organização
-          cliente.
+          <strong>Dissolução de Vínculo Controlada:</strong> Remova o vínculo
+          com a organização cliente de forma controlada e segura, caso seja
+          necessário.
         </p>
       </li>
     </ul>

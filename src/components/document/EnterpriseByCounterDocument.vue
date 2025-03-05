@@ -5,10 +5,11 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Organização</p>
+    <p class="text-h5 text-bold"># Cadastro e Vinculação de Organizações</p>
     <p class="text-body1">
-      Na página de Organização, poderá registrar uma nova organização e
-      automaticamente se vinculá a ela.
+      A página de Cadastro de Organizações permite registrar novas entidades e,
+      simultaneamente, estabelecer um vínculo direto com elas, agilizando o
+      processo de configuração inicial.
     </p>
 
     <q-img src="/images/document/form-enterprise-counter.png" width="1000px" />

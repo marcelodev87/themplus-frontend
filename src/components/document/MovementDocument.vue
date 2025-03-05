@@ -5,10 +5,13 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Movimentações</p>
+    <p class="text-h5 text-bold">
+      # Gerenciamento de Movimentações Financeiras
+    </p>
     <p class="text-body1">
-      Na página de movimentações, contamos com todas as movimentações lançadas
-      pela sua organização, onde conta com diversos filtros.
+      A página de Movimentações oferece um controle centralizado de todas as
+      transações financeiras da sua organização, proporcionando visibilidade e
+      flexibilidade através de recursos de filtragem avançados.
     </p>
     <div
       style="position: relative; padding-bottom: 56.22254758418741%; height: 0"
@@ -23,53 +26,59 @@ defineOptions({
       ></iframe>
     </div>
 
-    <p class="text-h6 q-mt-md"># Criando uma movimentação:</p>
+    <p class="text-h6 q-mt-md"># Registro Simplificado de Movimentações:</p>
     <p class="text-body1">
-      Basta clicar no botão "Entrada +" caso queira lançar uma movimentação do
-      tipo 'Entrada' ou clique no botão "Saída - " caso queira lançar uma
-      movimentação do tipo 'Saída'.
+      Para registrar uma nova transação, clique no botão "Entrada +" para
+      lançamentos de entrada (receitas) ou no botão "Saída -" para lançamentos
+      de saída (despesas). O sistema guiará você através do processo.
     </p>
     <q-img src="/images/document/form-movement.png" width="600px" />
 
-    <p class="text-h6 q-mt-md"># Brincando com os filtros:</p>
+    <p class="text-h6 q-mt-md"># Refinando sua Análise com Filtros:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Entradas:</strong> Ao ativar, visualizará apenas as
-          movimentações do tipo "Entrada" daquele período.
+          <strong>Visualização de Entradas:</strong> Isole as transações de
+          entrada para uma análise focada nas receitas da sua organização.
         </p>
       </li>
       <li>
         <p>
-          <strong>Saídas:</strong> Ao ativar, visualizará apenas as
-          movimentações do tipo "Saída" daquele período.
+          <strong>Visualização de Saídas:</strong> Concentre-se nas transações
+          de saída para um controle preciso das despesas.
         </p>
       </li>
       <li>
         <p>
-          <strong>Filtrar momento:</strong> Aparecerá apenas a listagem de
-          períodos onde contém movimentações criadas.
+          <strong>Filtro por Período:</strong> Selecione um período específico
+          para analisar as movimentações financeiras relevantes para aquele
+          intervalo de tempo. Somente períodos com movimentações registradas
+          serão exibidos.
         </p>
       </li>
       <li>
         <p>
-          <strong>Filtrar categoria:</strong> Poderá filtrar as movimentações
-          pela categoria.
+          <strong>Filtro por Categoria:</strong> Refine sua análise
+          categorizando as movimentações para obter insights sobre áreas
+          específicas do seu negócio.
         </p>
       </li>
       <li>
-        <p><strong>Pesquisar:</strong> Pesquise por uma movimentação.</p>
+        <p>
+          <strong>Pesquisa Inteligente:</strong> Encontre rapidamente
+          movimentações específicas através da função de pesquisa.
+        </p>
       </li>
     </ul>
-    <p class="text-h6 q-mt-md"># Observações:</p>
+    <p class="text-h6 q-mt-md"># Considerações Importantes:</p>
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
-          <strong>Não poderá</strong> lançar movimentação em um determinado
-          período em que ja foi entregue na contabilidade. Caso, crie uma
-          movimentação com lançamentos futuros e contenha algum mês que já foi
-          entregue, será ignorado o lançamento para o mês que está entregue. O
-          mês ja entregue não poderá criar, nem editar e nem excluir nada.
+          <strong>Integridade Contábil:</strong> Para garantir a integridade dos
+          seus dados financeiros, o sistema restringe a criação, edição ou
+          exclusão de movimentações em períodos que já foram enviados à
+          contabilidade. Lançamentos futuros que incluam meses já entregues à
+          contabilidade serão automaticamente ignorados para esses meses.
         </p>
       </li>
     </ul>
