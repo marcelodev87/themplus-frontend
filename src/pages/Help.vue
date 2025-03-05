@@ -57,7 +57,7 @@ const selectOption = (option: string): void => {
       v-model="splitterModel"
       style="height: 85vh"
       unit="px"
-      :limits="[200, 200]"
+      :limits="!$q.screen.lt.sm ? [200, 200] : [0, 200]"
     >
       <template v-slot:before>
         <q-list class="column justify-around">
