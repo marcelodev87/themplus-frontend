@@ -244,8 +244,6 @@ watch(open, async () => {
         >
           <template v-slot:top>
             <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
-              <span class="text-subtitle2">Lista de usuários</span>
-              <q-space />
               <div :class="!$q.screen.lt.md ? '' : 'column q-mt-sm '">
                 <q-btn
                   @click="changeMode('form', null)"

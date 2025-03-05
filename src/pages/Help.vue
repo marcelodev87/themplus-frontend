@@ -12,6 +12,11 @@ import OfficeDocument from 'src/components/document/OfficeDocument.vue';
 import FinancialDocument from 'src/components/document/FinancialDocument.vue';
 import MovementDocument from 'src/components/document/MovementDocument.vue';
 import SchedulingDocument from 'src/components/document/SchedulingDocument.vue';
+import ViewUserDocument from 'src/components/document/ViewUserDocument.vue';
+import ViewCounterDocument from 'src/components/document/ViewCounterDocument.vue';
+import OrderDocument from 'src/components/document/OrderDocument.vue';
+import BondDocument from 'src/components/document/BondDocument.vue';
+import EnterpriseByCounterDocument from 'src/components/document/EnterpriseByCounterDocument.vue';
 
 defineOptions({
   name: 'Help',
@@ -27,6 +32,9 @@ const optionsHelp = reactive<string[]>([
   'Dashboard',
   'Movimentações',
   'Agendamentos',
+  'Solicitações',
+  'Vínculos',
+  'Organização',
   'Contabilidade',
   'Categorias',
   'Contas',
@@ -76,9 +84,18 @@ const selectOption = (option: string): void => {
         <div class="q-pa-sm">
           <IntroDocument v-if="optionSelected === 'Introdução'" />
           <StartDocument v-else-if="optionSelected === 'Começando'" />
+          <ViewUserDocument v-else-if="optionSelected === 'Visão usuário'" />
+          <ViewCounterDocument
+            v-else-if="optionSelected === 'Visão contador'"
+          />
           <DashboardDocument v-else-if="optionSelected === 'Dashboard'" />
           <MovementDocument v-else-if="optionSelected === 'Movimentações'" />
           <SchedulingDocument v-else-if="optionSelected === 'Agendamentos'" />
+          <OrderDocument v-else-if="optionSelected === 'Solicitações'" />
+          <BondDocument v-else-if="optionSelected === 'Vínculos'" />
+          <EnterpriseByCounterDocument
+            v-else-if="optionSelected === 'Organização'"
+          />
           <FinancialDocument v-else-if="optionSelected === 'Contabilidade'" />
           <CategoryDocument v-else-if="optionSelected === 'Categorias'" />
           <AccountDocument v-else-if="optionSelected === 'Contas'" />
