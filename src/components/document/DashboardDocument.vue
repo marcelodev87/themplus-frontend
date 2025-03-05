@@ -11,7 +11,10 @@ defineOptions({
       informações mais relevantes, permitindo uma análise rápida e eficiente do
       panorama financeiro da sua organização.
     </p>
-    <q-img src="/images/document/dashboard.png" width="600px" />
+    <q-img
+      src="/images/document/dashboard.png"
+      style="width: 1000px; max-width: 95vw"
+    />
     <p class="text-body1 q-mt-md">
       Aproveite os diversos recursos de filtragem e visualização para obter
       insights valiosos:

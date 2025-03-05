@@ -13,7 +13,10 @@ defineOptions({
       os pedidos de vínculo de organizações do tipo "cliente", permitindo um
       gerenciamento eficiente do seu pipeline de novos relacionamentos.
     </p>
-    <q-img src="/images/document/order.png" width="1000px" />
+    <q-img
+      src="/images/document/order.png"
+      style="width: 1000px; max-width: 95vw"
+    />
     <p class="text-h6 q-mt-md">
       # Iniciando uma Solicitação de Cliente com Simplicidade:
     </p>
@@ -27,6 +30,9 @@ defineOptions({
         organização desejada.</strong
       >
     </p>
-    <q-img src="/images/document/form-order.png" width="1000px" />
+    <q-img
+      src="/images/document/form-order.png"
+      style="width: 1000px; max-width: 95vw"
+    />
   </main>
 </template>

@@ -32,10 +32,13 @@ defineOptions({
       um nome descritivo e selecione o tipo apropriado: "Entrada" ou "Saída".
     </p>
     <div class="text-body1 column q-gutter-y-md">
-      <q-img src="/images/document/category1.png" width="600px" />
+      <q-img
+        src="/images/document/category1.png"
+        style="width: 1000px; max-width: 95vw"
+      />
       <q-img
         src="/images/document/form-category.png"
-        width="600px"
+        style="width: 1000px; max-width: 95vw"
         class="q-mt-md"
       />
     </div>

@@ -12,6 +12,9 @@ defineOptions({
       processo de configuração inicial.
     </p>
 
-    <q-img src="/images/document/form-enterprise-counter.png" width="1000px" />
+    <q-img
+      src="/images/document/form-enterprise-counter.png"
+      style="width: 1000px; max-width: 95vw"
+    />
   </main>
 </template>

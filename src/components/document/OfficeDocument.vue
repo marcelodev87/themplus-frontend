@@ -31,7 +31,10 @@ defineOptions({
       deva utilizar o mesmo endereço de e-mail e CPF/CNPJ da matriz, deixe estes
       campos em branco para herdar as informações da matriz.
     </p>
-    <q-img src="/images/document/form-office.png" width="600px" />
+    <q-img
+      src="/images/document/form-office.png"
+      style="width: 600px; max-width: 85vw"
+    />
 
     <p class="text-h6 q-mt-md"># Funcionalidades e Diretrizes:</p>
     <ul class="text-body1 column q-gutter-y-md">
@@ -59,7 +62,10 @@ defineOptions({
           opção, o Dashboard, Movimentações e demais dados exibidos serão
           referentes à filial selecionada.
         </p>
-        <q-img src="/images/document/office-view.png" width="600px" />
+        <q-img
+          src="/images/document/office-view.png"
+          style="width: 900px; max-width: 85vw"
+        />
         <p class="q-mt-md">
           Note que a filial selecionada é identificada na barra superior como
           <strong>"Modo Espectador"</strong>.

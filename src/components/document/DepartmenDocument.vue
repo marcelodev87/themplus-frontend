@@ -35,10 +35,13 @@ defineOptions({
       organização refinada dos departamentos.
     </p>
     <div class="column">
-      <q-img src="/images/document/department.png" width="600px" />
+      <q-img
+        src="/images/document/department.png"
+        style="width: 600px; max-width: 95vw"
+      />
       <q-img
         src="/images/document/form-department.png"
-        width="600px"
+        style="width: 600px; max-width: 95vw"
         class="q-mt-md"
       />
     </div>
@@ -51,7 +54,7 @@ defineOptions({
           seja ao criar novos usuários ou ao editar os existentes.
           <q-img
             src="/images/document/use-department.png"
-            width="600px"
+            style="width: 600px; max-width: 85vw"
             class="q-mt-md"
           />
         </p>

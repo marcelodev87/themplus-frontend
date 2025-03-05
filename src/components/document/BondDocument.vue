@@ -12,7 +12,10 @@ defineOptions({
       centralização facilita o acompanhamento e a gestão de seus
       relacionamentos.
     </p>
-    <q-img src="/images/document/bond.png" width="1000px" />
+    <q-img
+      src="/images/document/bond.png"
+      style="width: 1000px; max-width: 95vw"
+    />
     <p class="text-h6 q-mt-md">
       # Explorando as Funcionalidades de Gerenciamento:
     </p>

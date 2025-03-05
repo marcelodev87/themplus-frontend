@@ -33,7 +33,10 @@ defineOptions({
     </p>
 
     <p class="text-h6 q-mt-md"># Compreendendo as Funcionalidades:</p>
-    <q-img src="/images/document/financial.png" width="1000px" />
+    <q-img
+      src="/images/document/financial.png"
+      style="width: 1000px; max-width: 95vw"
+    />
     <ol class="text-body1 column q-gutter-y-md">
       <li>
         <p>

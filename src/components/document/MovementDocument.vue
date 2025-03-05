@@ -32,7 +32,10 @@ defineOptions({
       lançamentos de entrada (receitas) ou no botão "Saída -" para lançamentos
       de saída (despesas). O sistema guiará você através do processo.
     </p>
-    <q-img src="/images/document/form-movement.png" width="600px" />
+    <q-img
+      src="/images/document/form-movement.png"
+      style="width: 600px; max-width: 95vw"
+    />
 
     <p class="text-h6 q-mt-md"># Refinando sua Análise com Filtros:</p>
     <ul class="text-body1 column q-gutter-y-md">

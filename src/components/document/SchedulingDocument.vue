@@ -30,7 +30,10 @@ defineOptions({
       para agendar um recebimento ou no botão "Saída -" para agendar um
       pagamento.
     </p>
-    <q-img src="/images/document/form-scheduling.png" width="600px" />
+    <q-img
+      src="/images/document/form-scheduling.png"
+      style="width: 600px; max-width: 95vw"
+    />
 
     <p class="text-h6 q-mt-md">
       # Aprimorando sua Programação com Filtros Avançados:

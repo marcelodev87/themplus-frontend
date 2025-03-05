@@ -11,7 +11,10 @@ defineOptions({
       "Cliente" ou "Contador". Esta seção detalha as funcionalidades e recursos
       disponíveis para organizações cadastradas como "Cliente".
     </p>
-    <q-img src="/images/document/view-user.png" width="1000px" />
+    <q-img
+      src="/images/document/view-user.png"
+      style="width: 1000px; max-width: 95vw"
+    />
 
     <p class="text-h6 q-mt-md"># Desvendando as Funcionalidades:</p>
     <ul class="text-body1 column q-gutter-y-md">

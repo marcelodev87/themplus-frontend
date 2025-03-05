@@ -33,7 +33,10 @@ defineOptions({
       conta e, opcionalmente, o número da agência. Adicione uma descrição para
       facilitar a identificação da conta.
     </p>
-    <q-img src="/images/document/form-account.png" width="600px" />
+    <q-img
+      src="/images/document/form-account.png"
+      style="width: 600px; max-width: 95vw"
+    />
 
     <p class="text-h6 q-mt-md"># Opções de Busca:</p>
     <ul class="text-body1 column q-gutter-y-md">

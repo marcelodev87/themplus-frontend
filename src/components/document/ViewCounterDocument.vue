@@ -11,7 +11,10 @@ defineOptions({
       usuário: "Cliente" ou "Contador". Esta seção explora as funcionalidades e
       recursos exclusivos para organizações contábeis.
     </p>
-    <q-img src="/images/document/view-counter.png" width="1000px" />
+    <q-img
+      src="/images/document/view-counter.png"
+      style="width: 1000px; max-width: 95vw"
+    />
 
     <p class="text-h6 q-mt-md"># Descobrindo as Ferramentas Essenciais:</p>
     <ul class="text-body1 column q-gutter-y-md">

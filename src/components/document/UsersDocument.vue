@@ -28,7 +28,10 @@ defineOptions({
       Para adicionar um novo usuário, clique no botão "Usuários +" e preencha o
       formulário apresentado.
     </p>
-    <q-img src="/images/document/form-user.png" width="600px" />
+    <q-img
+      src="/images/document/form-user.png"
+      style="width: 900px; max-width: 95vw"
+    />
 
     <p class="text-h6 q-mt-md"># Funcionalidades e Diretrizes:</p>
     <ul class="text-body1 column q-gutter-y-md">
