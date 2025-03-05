@@ -22,7 +22,7 @@ defineOptions({
   name: 'Help',
 });
 
-const openOptions = ref<boolean>(false);
+const openOptions = ref<boolean>(true);
 const splitterModel = ref<number>(300);
 const optionSelected = ref<string>('Introdução');
 const optionsHelp = reactive<string[]>([
