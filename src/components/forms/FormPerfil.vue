@@ -248,10 +248,9 @@ watch(open, async () => {
               filled
               type="text"
               label="Escolher departamento"
-              readonly
               clearable
               dense
-              disable
+              :disable="user?.position === 'common_user'"
             >
               <template v-slot:prepend>
                 <q-icon name="groups" color="black" size="20px" />

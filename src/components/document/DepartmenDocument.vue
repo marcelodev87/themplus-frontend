@@ -43,14 +43,25 @@ defineOptions({
     </div>
 
     <p class="text-h6 q-mt-md"># Utilizando os departamentos:</p>
-    <p>
-      Agora você poderá utilizar os departamentos existentes nos usuários, seja
-      criando novos ou editando os existentes.
-      <q-img
-        src="/images/document/use-department.png"
-        width="600px"
-        class="q-mt-md"
-      />
-    </p>
+    <ul class="text-body1 column q-gutter-y-md">
+      <li>
+        <p>
+          Agora você poderá utilizar os departamentos existentes nos usuários,
+          seja criando novos ou editando os existentes.
+          <q-img
+            src="/images/document/use-department.png"
+            width="600px"
+            class="q-mt-md"
+          />
+        </p>
+      </li>
+      <li>
+        <p>
+          Caso <strong>você seja administrador</strong>, poderá
+          <strong>trocar seu departamento</strong> clicando no avatar do perfil
+          no canto superior direito.
+        </p>
+      </li>
+    </ul>
   </main>
 </template>

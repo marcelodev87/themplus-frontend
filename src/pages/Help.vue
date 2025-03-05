@@ -7,6 +7,8 @@ import DashboardDocument from 'src/components/document/DashboardDocument.vue';
 import CategoryDocument from 'src/components/document/CategoryDocument.vue';
 import AccountDocument from 'src/components/document/AccountDocument.vue';
 import DepartmenDocument from 'src/components/document/DepartmenDocument.vue';
+import UsersDocument from 'src/components/document/UsersDocument.vue';
+import OfficeDocument from 'src/components/document/OfficeDocument.vue';
 
 defineOptions({
   name: 'Help',
@@ -75,6 +77,8 @@ const selectOption = (option: string): void => {
           <CategoryDocument v-else-if="optionSelected === 'Categorias'" />
           <AccountDocument v-else-if="optionSelected === 'Contas'" />
           <DepartmenDocument v-else-if="optionSelected === 'Departamentos'" />
+          <UsersDocument v-else-if="optionSelected === 'Usuários'" />
+          <OfficeDocument v-else-if="optionSelected === 'Filiais'" />
         </div>
       </template>
     </q-splitter>
