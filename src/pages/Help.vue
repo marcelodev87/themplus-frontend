@@ -9,6 +9,9 @@ import AccountDocument from 'src/components/document/AccountDocument.vue';
 import DepartmenDocument from 'src/components/document/DepartmenDocument.vue';
 import UsersDocument from 'src/components/document/UsersDocument.vue';
 import OfficeDocument from 'src/components/document/OfficeDocument.vue';
+import FinancialDocument from 'src/components/document/FinancialDocument.vue';
+import MovementDocument from 'src/components/document/MovementDocument.vue';
+import SchedulingDocument from 'src/components/document/SchedulingDocument.vue';
 
 defineOptions({
   name: 'Help',
@@ -74,6 +77,9 @@ const selectOption = (option: string): void => {
           <IntroDocument v-if="optionSelected === 'Introdução'" />
           <StartDocument v-else-if="optionSelected === 'Começando'" />
           <DashboardDocument v-else-if="optionSelected === 'Dashboard'" />
+          <MovementDocument v-else-if="optionSelected === 'Movimentações'" />
+          <SchedulingDocument v-else-if="optionSelected === 'Agendamentos'" />
+          <FinancialDocument v-else-if="optionSelected === 'Contabilidade'" />
           <CategoryDocument v-else-if="optionSelected === 'Categorias'" />
           <AccountDocument v-else-if="optionSelected === 'Contas'" />
           <DepartmenDocument v-else-if="optionSelected === 'Departamentos'" />

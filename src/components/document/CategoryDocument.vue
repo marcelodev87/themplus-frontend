@@ -5,7 +5,7 @@ defineOptions({
 </script>
 <template>
   <main>
-    <p class="text-h5 text-bold"># Categoria</p>
+    <p class="text-h5 text-bold"># Categorias</p>
     <p class="text-body1">
       Na página de Categorias, contamos com todas as categorias pré-definidas
       que já vem no próprio Themplus + aquelas que você pode criar mediante sua
