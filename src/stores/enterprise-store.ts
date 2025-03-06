@@ -11,6 +11,7 @@ import {
   searchEnterpriseService,
   showEnterpriseService,
   unlinkCounterService,
+  updateCodeFinancialService,
   updateEnterpriseService,
 } from 'src/services/enterprise-service';
 import {
@@ -22,6 +23,7 @@ import { useOrderStore } from './order-store';
 import { useAuthStore } from './auth-store';
 
 const { hasCounter } = storeToRefs(useOrderStore());
+const { setListBond, clearListBond } = useOrderStore();
 const { setUser } = useAuthStore();
 
 export const useEnterpriseStore = defineStore('enterprise', {
@@ -248,6 +250,24 @@ export const useEnterpriseStore = defineStore('enterprise', {
         const response = await updateEnterpriseService(payload);
         if (response.status === 200) {
           this.setEnterprise(response.data.enterprise);
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateCodeFinancial(id: string, code: number | null) {
+      this.setLoading(true);
+      try {
+        const response = await updateCodeFinancialService(id, code);
+        if (response.status === 200) {
+          clearListBond();
+          setListBond(response.data.bonds);
           this.createSuccess(response.data.message);
         }
 

@@ -32,6 +32,7 @@ export interface Enterprise {
   phone: string | null;
   subscription_id?: string;
   created_by: string | null;
+  code_financial: number | null;
 }
 
 export interface ResultEnterprise {

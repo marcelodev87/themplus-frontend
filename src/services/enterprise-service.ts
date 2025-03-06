@@ -1,4 +1,5 @@
 import { api } from 'boot/axios';
+import { Bond } from 'src/ts/interfaces/data/Bond';
 import {
   Enterprise,
   ResultEnterprise,
@@ -33,17 +34,6 @@ export const saveEnterpriseViewService = (
     message: string;
   };
 }> => api.post(`${baseUrl}/view`, { viewEnterprise: value });
-
-// export const createCategoryService = (
-//   name: string,
-//   type: string
-// ): Promise<{
-//   status: number;
-//   data: {
-//     categories: Category[];
-//     message: string;
-//   };
-// }> => api.post(`${baseUrl}/`, { name, type });
 
 export const searchEnterpriseService = (
   text: string
@@ -93,6 +83,17 @@ export const updateEnterpriseService = (payload: {
     message: string;
   };
 }> => api.put(`${baseUrl}/`, payload);
+
+export const updateCodeFinancialService = (
+  id: string,
+  code: number | null
+): Promise<{
+  status: number;
+  data: {
+    bonds: Bond[];
+    message: string;
+  };
+}> => api.put(`${baseUrl}/code-financial`, { id, code });
 
 export const createEnterpriseByCounterService = (payload: {
   name: string;

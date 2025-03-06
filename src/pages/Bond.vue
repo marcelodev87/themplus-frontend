@@ -11,6 +11,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import DataClient from 'src/components/general/DataClient.vue';
 import AlertsClient from 'src/components/general/AlertsClient.vue';
 import FormManageUsers from 'src/components/forms/FormManageUsers.vue';
+import FormCodeFinancial from 'src/components/forms/FormCodeFinancial.vue';
 import { useRouter, useRoute } from 'vue-router';
 
 defineOptions({
@@ -23,6 +24,7 @@ const { getBonds, deleteBond } = useOrderStore();
 const router = useRouter();
 const route = useRoute();
 const showAlertDataEnterprise = ref<boolean>(false);
+const showFormCodeFinancial = ref<boolean>(false);
 const showFormManageUsers = ref<boolean>(false);
 const showAlertsClient = ref<boolean>(false);
 const filterOrder = ref<string>('');
@@ -32,6 +34,9 @@ const showDataClient = ref<boolean>(false);
 const dataClient = ref<string | null>(null);
 const dataManage = ref<string | null>(null);
 const dataBond = ref<string | null>(null);
+const dataEnterpriseId = ref<string | null>(null);
+const dataEnterpriseName = ref<string | null>(null);
+const dataEnterpriseCode = ref<number | null>(null);
 const columnsBond = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -60,6 +65,12 @@ const columnsBond = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
+    name: 'code_financial',
+    label: 'Código Interno',
+    field: 'code_financial',
+    align: 'left',
+  },
+  {
     name: 'phone',
     label: 'Telefone',
     field: 'phone',
@@ -84,6 +95,9 @@ const clear = (): void => {
   filterOrder.value = '';
   dataBond.value = null;
   dataClient.value = null;
+  dataEnterpriseId.value = null;
+  dataEnterpriseName.value = null;
+  dataEnterpriseCode.value = null;
 };
 const fetchBonds = async () => {
   await getBonds();
@@ -123,6 +137,22 @@ const openFormManageUsers = (enterpriseId: string): void => {
 const closeFormManageUsers = (): void => {
   showFormManageUsers.value = false;
   dataManage.value = null;
+};
+const openFormCodeFinancial = (
+  enterpriseId: string,
+  enterpriseName: string,
+  enterpriseCode: number | null
+): void => {
+  dataEnterpriseId.value = enterpriseId;
+  dataEnterpriseName.value = enterpriseName;
+  dataEnterpriseCode.value = enterpriseCode;
+  showFormCodeFinancial.value = true;
+};
+const closeFormCodeFinancial = (): void => {
+  showFormCodeFinancial.value = false;
+  dataEnterpriseId.value = null;
+  dataEnterpriseName.value = null;
+  dataEnterpriseCode.value = null;
 };
 const openAlertsClient = (enterpriseId: string): void => {
   dataManage.value = enterpriseId;
@@ -214,6 +244,9 @@ onMounted(async () => {
               <q-td key="cpf" :props="props" class="text-left">
                 {{ props.row.cpf }}
               </q-td>
+              <q-td key="code_financial" :props="props" class="text-left">
+                {{ props.row.code_financial }}
+              </q-td>
               <q-td key="phone" :props="props" class="text-left">
                 {{ props.row.phone }}
               </q-td>
@@ -225,6 +258,22 @@ onMounted(async () => {
                 />
               </q-td>
               <q-td key="action" :props="props">
+                <q-btn
+                  @click="
+                    openFormCodeFinancial(
+                      props.row.id,
+                      props.row.name,
+                      props.row.code_financial
+                    )
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="key"
+                >
+                  <q-tooltip> Código interno </q-tooltip>
+                </q-btn>
                 <q-btn
                   @click="openAlertsClient(props.row.id)"
                   size="sm"
@@ -273,6 +322,13 @@ onMounted(async () => {
           :id-client="dataClient"
           :open="showDataClient"
           @update:open="closeDataClient"
+        />
+        <FormCodeFinancial
+          :enterprise-id="dataEnterpriseId"
+          :enterprise-name="dataEnterpriseName"
+          :enterprise-code="dataEnterpriseCode"
+          :open="showFormCodeFinancial"
+          @update:open="closeFormCodeFinancial"
         />
         <FormManageUsers
           :open="showFormManageUsers"
