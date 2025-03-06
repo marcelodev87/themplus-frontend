@@ -26,6 +26,12 @@ defineOptions({
     <ul class="text-body1 column q-gutter-y-md">
       <li>
         <p>
+          <strong>Código Interno:</strong> Configure um código interno para cada
+          organização, de acordo com as regras de sua organização.
+        </p>
+      </li>
+      <li>
+        <p>
           <strong>Alertas Personalizados:</strong> Configure alertas específicos
           para as categorias de movimentação de cada organização cliente. Quando
           o cliente registrar uma movimentação utilizando uma categoria com um
@@ -51,8 +57,8 @@ defineOptions({
       </li>
       <li>
         <p>
-          <strong>Dissolução de Vínculo Controlada:</strong> Remova o vínculo
-          com a organização cliente de forma controlada e segura, caso seja
+          <strong>Exclusão de Vínculo:</strong> Remova o vínculo com a
+          organização cliente de forma controlada e segura, caso seja
           necessário.
         </p>
       </li>
