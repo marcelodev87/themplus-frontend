@@ -21,6 +21,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const openOptions = ref<boolean>(true);
 const pageCurrent = ref<number>(1);
 const totalPerPage = ref<number>(12);
 const dataNotification = ref<{
@@ -39,7 +40,7 @@ const open = computed({
 const fetchInbox = async () => {
   await getInbox();
 };
-const selectNotification = async (
+const selectNotification = (
   text: string,
   title: string,
   read: number,
@@ -51,6 +52,7 @@ const selectNotification = async (
     read,
     id,
   };
+  openOptions.value = !openOptions.value;
 };
 const clear = (): void => {
   dataNotification.value = null;
@@ -143,7 +145,7 @@ watch(
           v-model="splitterModel"
           style="height: 430px"
           unit="px"
-          :limits="[300, 300]"
+          :limits="openOptions ? [300, 300] : [0, 0]"
         >
           <template v-slot:before>
             <q-list dense separator class="column justify-around">
@@ -183,7 +185,7 @@ watch(
           </template>
 
           <template v-slot:after>
-            <div>
+            <div @click="openOptions = !openOptions" class="full-height">
               <p v-if="dataNotification" class="border-bottom text-h6 q-pa-sm">
                 {{ dataNotification?.title }}
               </p>
@@ -209,7 +211,7 @@ watch(
       <q-card-actions class="border-top row justify-between items-center">
         <div>
           <q-pagination
-            v-show="listInbox.length / totalPerPage >= 2"
+            v-show="listInbox.length / totalPerPage >= 2 && openOptions"
             v-model="pageCurrent"
             :max="listInbox.length / totalPerPage"
             direction-links
