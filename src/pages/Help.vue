@@ -17,6 +17,7 @@ import ViewCounterDocument from 'src/components/document/ViewCounterDocument.vue
 import OrderDocument from 'src/components/document/OrderDocument.vue';
 import BondDocument from 'src/components/document/BondDocument.vue';
 import EnterpriseByCounterDocument from 'src/components/document/EnterpriseByCounterDocument.vue';
+import RegisterDocument from 'src/components/document/RegisterDocument.vue';
 
 defineOptions({
   name: 'Help',
@@ -37,6 +38,7 @@ const optionsHelp = reactive<string[]>([
   'Vínculos',
   'Organização',
   'Contabilidade',
+  'Atividades',
   'Categorias',
   'Contas',
   'Departamentos',
@@ -98,6 +100,7 @@ const selectOption = (option: string): void => {
             v-else-if="optionSelected === 'Organização'"
           />
           <FinancialDocument v-else-if="optionSelected === 'Contabilidade'" />
+          <RegisterDocument v-else-if="optionSelected === 'Atividades'" />
           <CategoryDocument v-else-if="optionSelected === 'Categorias'" />
           <AccountDocument v-else-if="optionSelected === 'Contas'" />
           <DepartmenDocument v-else-if="optionSelected === 'Departamentos'" />
