@@ -4,6 +4,11 @@ import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
+  deleteMovementsAnalyzeService,
+  finalizeMovementAnalyzeService,
+  getMovementsAnalyzeService,
+} from 'src/services/movement-analyze-service';
+import {
   createMovementService,
   deleteMovementService,
   downloadFileService,
@@ -21,7 +26,11 @@ import {
   AccountInformation,
   CategoryInformation,
 } from 'src/ts/interfaces/data/InformationsForms';
-import { InsertMovementData, Movement } from 'src/ts/interfaces/data/Movement';
+import {
+  InsertMovementData,
+  Movement,
+  MovementAnalyze,
+} from 'src/ts/interfaces/data/Movement';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useMovementStore = defineStore('movement', {
@@ -30,9 +39,11 @@ export const useMovementStore = defineStore('movement', {
     loadingMovement: false as boolean,
     listMonthYear: [] as string[],
     listMovement: [] as Movement[],
+    listMovementAnalyze: [] as MovementAnalyze[],
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
     listCategoryAll: [] as CategoryInformation[],
+    movementsAnalyze: 0 as number,
     delivered: false as boolean,
     listCategoryFilters: [] as QuasarSelect<string>[],
   }),
@@ -54,6 +65,9 @@ export const useMovementStore = defineStore('movement', {
     clearListMovement() {
       this.listMovement.splice(0, this.listMovement.length);
     },
+    clearListMovementAnalyze() {
+      this.listMovementAnalyze.splice(0, this.listMovementAnalyze.length);
+    },
     clearCategories() {
       this.listCategory.splice(0, this.listCategory.length);
     },
@@ -74,6 +88,12 @@ export const useMovementStore = defineStore('movement', {
     },
     setDelivered(data: boolean) {
       this.delivered = data;
+    },
+    setMovementsAnalyze(data: number) {
+      this.movementsAnalyze = data;
+    },
+    setListMovementsAnalyze(movements: MovementAnalyze[]) {
+      movements.map((item) => this.listMovementAnalyze.push(item));
     },
     setListCategoryFilters(data: QuasarSelect<string>[]) {
       this.listCategoryFilters = data;
@@ -135,7 +155,24 @@ export const useMovementStore = defineStore('movement', {
           this.setFilledData(response.data.filled_data);
           this.setDelivered(response.data.delivered);
           this.setListCategoryFilters(response.data.categories);
+          this.setMovementsAnalyze(response.data.movements_analyze);
           updateNotifications(response.data.notifications);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getMovementsAnalyze() {
+      try {
+        this.setLoading(true);
+        const response = await getMovementsAnalyzeService();
+        if (response.status === 200) {
+          this.clearListMovementAnalyze();
+          this.setListMovementsAnalyze(response.data.movements_analyze);
+          this.setListAccount(response.data.accounts);
+          this.setListCategoryAll(response.data.categories);
         }
       } catch (error) {
         this.createError(error);
@@ -281,6 +318,47 @@ export const useMovementStore = defineStore('movement', {
         this.setLoading(false);
       }
     },
+    async finalizeMovementAnalyze(
+      id: string,
+      account: string,
+      category: string,
+      dateMovement: string,
+      description: string | null,
+      enterpriseId: string,
+      receipt: File | null,
+      type: string,
+      value: string
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await finalizeMovementAnalyzeService(
+          id,
+          account,
+          category,
+          dateMovement,
+          description,
+          enterpriseId,
+          receipt,
+          type,
+          value
+        );
+        if (response.status === 201) {
+          this.clearListMovementAnalyze();
+          this.setListMovementsAnalyze(response.data.movements_analyze);
+          this.setListAccount(response.data.accounts);
+          this.setListCategoryAll(response.data.categories);
+          this.setMovementsAnalyze(response.data.movements_analyze.length);
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async insertMovement(movements: InsertMovementData[]) {
       this.setLoading(true);
       try {
@@ -363,6 +441,23 @@ export const useMovementStore = defineStore('movement', {
           this.listMovement = this.listMovement.filter(
             (item) => item.id !== movementId
           );
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteMovementsAnalyze(id: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteMovementsAnalyzeService(id);
+        if (response.status === 200) {
+          this.listMovementAnalyze = this.listMovementAnalyze.filter(
+            (item) => item.id !== id
+          );
+          this.setMovementsAnalyze(this.listMovementAnalyze.length);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -34,6 +34,7 @@ export const getMovementsService = (
     filled_data: boolean;
     delivered: boolean;
     categories: QuasarSelect<string>[];
+    movements_analyze: number;
     notifications: number;
     message: string;
   };

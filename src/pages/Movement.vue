@@ -13,6 +13,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
+import MovementsAnalyze from 'src/components/general/MovementsAnalyze.vue';
 import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
@@ -34,6 +35,7 @@ const {
   listMonthYear,
   delivered,
   listCategoryFilters,
+  movementsAnalyze,
 } = storeToRefs(useMovementStore());
 const { user } = storeToRefs(useAuthStore());
 
@@ -41,6 +43,7 @@ const showConfirmDownloadFile = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormInsertMovement = ref<boolean>(false);
+const showMovementsAnalyze = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
@@ -201,6 +204,13 @@ const openFormInsertMovement = (): void => {
 };
 const closeFormInsertMovement = (): void => {
   showFormInsertMovement.value = false;
+  clear();
+};
+const openMovementsAnalyze = (): void => {
+  showMovementsAnalyze.value = true;
+};
+const closeMovementsAnalyze = (): void => {
+  showMovementsAnalyze.value = false;
   clear();
 };
 const handleEdit = (movement: Movement) => {
@@ -380,6 +390,22 @@ onMounted(async () => {
         class="col-7 row items-center justify-end q-gutter-x-sm"
       >
         <q-btn
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            movementsAnalyze > 0
+          "
+          @click="openMovementsAnalyze"
+          :loading="loadingMovement"
+          flat
+          color="black"
+          icon-right="task_alt"
+          label="Pré-Movimentações"
+          unelevated
+          no-caps
+        >
+          <q-badge color="red" rounded floating :label="movementsAnalyze"
+        /></q-btn>
+        <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormInsertMovement"
           :loading="loadingExport"
@@ -443,6 +469,21 @@ onMounted(async () => {
                 </q-avatar>
               </q-item-section>
               <q-item-section>Formulário de entrada</q-item-section>
+            </q-item>
+            <q-item
+              v-show="
+                user?.enterprise_id === user?.view_enterprise_id &&
+                movementsAnalyze > 0
+              "
+              clickable
+              v-ripple
+            >
+              <q-item-section avatar>
+                <q-avatar>
+                  <q-icon name="task_alt" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>Pré-Movimentações</q-item-section>
             </q-item>
             <q-item
               v-show="user?.enterprise_id === user?.view_enterprise_id"
@@ -759,6 +800,10 @@ onMounted(async () => {
         <FormInsertMovement
           :open="showFormInsertMovement"
           @update:open="closeFormInsertMovement"
+        />
+        <MovementsAnalyze
+          :open="showMovementsAnalyze"
+          @update:open="closeMovementsAnalyze"
         />
         <ConfirmAction
           :open="showConfirmAction"

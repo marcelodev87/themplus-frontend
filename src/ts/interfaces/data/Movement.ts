@@ -17,6 +17,17 @@ export interface Movement {
   enterprise_id: string | null;
 }
 
+export interface MovementAnalyze {
+  id: string;
+  date_movement: string;
+  type: string;
+  value: number;
+  receipt: string | null;
+  description: string;
+  enterprise_id: string;
+  created: string;
+}
+
 export interface InsertMovement {
   tipo: string;
   dataMovimentacao: string;
@@ -35,4 +46,16 @@ export interface InsertMovementData {
   category: string;
   receipt?: File | null;
   programmed: number;
+}
+
+export interface DataMovementAnalyze {
+  id: string;
+  enterprise_id: string;
+  type: string;
+  value: string;
+  date_movement: string;
+  receipt: File | null;
+  account: QuasarSelect<string>;
+  category: QuasarSelect<string>;
+  description: string | null;
 }
