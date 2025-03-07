@@ -84,6 +84,15 @@ defineOptions({
           contabilidade serão automaticamente ignorados para esses meses.
         </p>
       </li>
+      <li>
+        <p>
+          <strong>Pré-Movimentações:</strong> O botão "Pré-Movimentações" é
+          exibido quando existem lançamentos de movimentações prévias realizados
+          através do WhatsApp pelo assistente. Nesse momento, você pode optar
+          por excluir a pré-movimentação ou preencher a informação restante para
+          concluir e lançar a movimentação no período selecionado.
+        </p>
+      </li>
     </ul>
   </main>
 </template>
