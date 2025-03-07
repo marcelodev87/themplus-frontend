@@ -27,7 +27,7 @@ defineOptions({
       <li>
         <p>
           <strong>Código Interno:</strong> Configure um código interno para cada
-          organização, de acordo com as regras de sua organização.
+          organização, de acordo com a numeração do seu sistema contábil.
         </p>
       </li>
       <li>

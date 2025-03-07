@@ -27,13 +27,10 @@ const open = computed({
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-banner dense inline-actions class="text-black bg-grey-4" rounded>
-          Por favor, entre em contato conosco através do
-          <span class="text-bold">email@teste.com</span> ou nos mande mensagem
-          através do whatsapp de número
-          <span class="text-bold">(85)98175-9726</span>. Envie suas dúvidas,
-          capturas de tela e qualquer outra informação que possa nos ajudar a
-          fornecer a melhor resposta possível. Estamos aqui para ajudar e
-          garantimos um retorno rápido e eficiente.
+          Teve algum problema? Nosso WhatsApp está pronto para te ajudar! Envie
+          suas dúvidas, prints e informações para
+          <strong>(21) 97920-0654</strong> e receba um atendimento rápido e
+          eficiente.
         </q-banner>
       </q-card-section>
       <q-card-actions align="right">
