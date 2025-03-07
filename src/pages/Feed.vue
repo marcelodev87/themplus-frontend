@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import Banner from 'src/components/shared/Banner.vue';
 import CardsNews from 'src/components/general/CardsNews.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { onMounted, ref, watch } from 'vue';
@@ -47,7 +46,6 @@ onMounted(async () => {
     </header>
     <main>
       <q-scroll-area class="main-scroll column items-center">
-        <Banner />
         <CardsNews />
       </q-scroll-area>
       <AlertDataEnterprise

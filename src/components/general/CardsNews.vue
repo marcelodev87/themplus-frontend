@@ -10,14 +10,14 @@ const openURL = (url: string) => {
 <template>
   <div class="q-px-sm row justify-between q-gutter-md">
     <div
-      :class="!$q.screen.lt.md ? 'row justify-between' : 'column items-center'"
+      :class="
+        !$q.screen.lt.md
+          ? 'row justify-around full-width'
+          : 'column items-center full-width'
+      "
     >
-      <q-card
-        :style="
-          !$q.screen.lt.md ? 'width: 48%;' : 'width: 98%; margin-bottom: 20px'
-        "
-      >
-        <img
+      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+        <q-img
           src="/images/banner/1.png"
           class="hover cursor-pointer"
           @click="
@@ -38,7 +38,7 @@ const openURL = (url: string) => {
           segurança financeira para continuar crescendo!
         </q-card-section>
       </q-card>
-      <q-card :style="!$q.screen.lt.md ? 'width: 48%;' : 'width: 98%;'">
+      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
         <q-img
           src="/images/banner/2.png"
           class="hover cursor-pointer"
@@ -62,15 +62,19 @@ const openURL = (url: string) => {
       </q-card>
     </div>
     <div
-      :class="!$q.screen.lt.md ? 'row justify-between' : 'column items-center'"
+      :class="
+        !$q.screen.lt.md
+          ? 'row justify-around full-width'
+          : 'column items-center full-width'
+      "
     >
-      <q-card :style="!$q.screen.lt.md ? 'width: 48%;' : 'width: 98%;'">
-        <img
+      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+        <q-img
           src="/images/banner/3.png"
           class="hover cursor-pointer"
           @click="
             openURL(
-              'https://wa.me/5521999109966?text=Ol%C3%A1.+Quero+informa%C3%A7%C3%B5es+sobre+como+ter+um+site+para+minha+igreja'
+              'https://wa.me/5521985566260?text=Ol%C3%A1.%20Preciso%20melhorar%20a%20gest%C3%A3o%20financeira%20da%20minha%20Igreja%20e%20preciso%20de%20informa%C3%A7%C3%B5es%20sobre%20o%20Tesoureiro%20Expert'
             )
           "
         />
@@ -85,13 +89,13 @@ const openURL = (url: string) => {
           levar sua mensagem ainda mais longe!
         </q-card-section>
       </q-card>
-      <q-card :style="!$q.screen.lt.md ? 'width: 48%;' : 'width: 98%;'">
-        <img
+      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+        <q-img
           src="/images/banner/4.png"
           class="hover cursor-pointer"
           @click="
             openURL(
-              'https://wa.me/5521985566260?text=Ol%C3%A1.%20Preciso%20de%20informa%C3%A7%C3%B5es%20sobre%20o%20Registro%20de%20Marca%20da%20minha%20Igreja'
+              'https://wa.me/5521999109966?text=Ol%C3%A1.%20Quero%20fazer%20a%20Identidade%20Visual%20da%20minha%20Igreja.%20Poderia%20me%20passar%20informa%C3%A7%C3%B5es%3F'
             )
           "
         />
