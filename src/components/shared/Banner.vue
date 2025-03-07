@@ -8,10 +8,8 @@ defineOptions({
 const slideBanner = ref<number>(1);
 </script>
 <template>
-  <div class="full-width bg-blue-grey-1">
-    <q-responsive
-      style="width: 100%; height: 300px; max-height: 300px; overflow: hidden"
-    >
+  <div class="full-width" v-show="!$q.screen.lt.md">
+    <q-responsive style="width: 100%; height: 300px; overflow: hidden">
       <q-carousel
         animated
         v-model="slideBanner"
@@ -25,15 +23,17 @@ const slideBanner = ref<number>(1);
         <q-carousel-slide :name="1" class="q-pa-none">
           <q-img
             src="/images/banner/frame-1.png"
-            fit="contain"
+            fit="cover"
             class="img-banner"
+            height="280px"
           />
         </q-carousel-slide>
         <q-carousel-slide :name="2" class="q-pa-none">
           <q-img
             src="/images/banner/frame-2.png"
-            fit="contain"
+            fit="cover"
             class="img-banner"
+            height="280px"
           />
         </q-carousel-slide>
       </q-carousel>
