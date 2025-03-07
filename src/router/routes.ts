@@ -113,7 +113,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/FinancialControl.vue'),
         beforeEnter: [isAdminGuard, isClientGuard],
       },
-
+      {
+        path: 'assinaturas',
+        name: 'admin-subscription',
+        component: () => import('src/pages/Subscriptions.vue'),
+      },
       {
         path: 'ajuda',
         name: 'admin-help',

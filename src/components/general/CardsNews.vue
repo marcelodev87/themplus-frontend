@@ -8,7 +8,7 @@ const openURL = (url: string) => {
 };
 </script>
 <template>
-  <div class="q-px-sm row justify-between q-gutter-md">
+  <div class="q-px-sm row justify-between">
     <div
       :class="
         !$q.screen.lt.md
@@ -16,7 +16,10 @@ const openURL = (url: string) => {
           : 'column items-center full-width'
       "
     >
-      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+      <q-card
+        class="q-pa-sm column items-center q-mt-md"
+        :style="!$q.screen.lt.md ? 'width: 40%' : 'width: 95%'"
+      >
         <q-img
           src="/images/banner/1.png"
           class="hover cursor-pointer"
@@ -27,7 +30,7 @@ const openURL = (url: string) => {
           "
         />
 
-        <q-card-section class="text-subtitle2">
+        <q-card-section class="text-body1">
           O Tesoureiro Expert é um serviço de gestão financeira terceirizada
           voltado para igrejas que enfrentam desafios na administração da
           tesouraria. Com uma abordagem profissional, ajuda pastores e líderes a
@@ -38,7 +41,10 @@ const openURL = (url: string) => {
           segurança financeira para continuar crescendo!
         </q-card-section>
       </q-card>
-      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+      <q-card
+        class="q-pa-sm column items-center q-mt-md"
+        :style="!$q.screen.lt.md ? 'width: 40%' : 'width: 95%'"
+      >
         <q-img
           src="/images/banner/2.png"
           class="hover cursor-pointer"
@@ -49,7 +55,7 @@ const openURL = (url: string) => {
           "
         />
 
-        <q-card-section class="text-subtitle2">
+        <q-card-section class="text-body1">
           A identidade visual para igrejas é fundamental para transmitir a
           essência, os valores e a missão do seu Ministério. Um design bem
           planejado — incluindo logotipo, cores, tipografia e materiais gráficos
@@ -68,7 +74,10 @@ const openURL = (url: string) => {
           : 'column items-center full-width'
       "
     >
-      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+      <q-card
+        class="q-pa-sm column items-center q-my-md"
+        :style="!$q.screen.lt.md ? 'width: 40%' : 'width: 95%'"
+      >
         <q-img
           src="/images/banner/3.png"
           class="hover cursor-pointer"
@@ -79,7 +88,7 @@ const openURL = (url: string) => {
           "
         />
 
-        <q-card-section class="text-subtitle2">
+        <q-card-section class="text-body1">
           Um site para igrejas é uma ferramenta essencial para fortalecer a
           comunicação, expandir o alcance e engajar membros e visitantes. Com um
           site bem estruturado, sua igreja pode compartilhar eventos, mensagens
@@ -89,7 +98,10 @@ const openURL = (url: string) => {
           levar sua mensagem ainda mais longe!
         </q-card-section>
       </q-card>
-      <q-card class="q-pa-md column items-center q-mt-md" style="width: 40%">
+      <q-card
+        class="q-pa-sm column items-center q-my-md"
+        :style="!$q.screen.lt.md ? 'width: 40%' : 'width: 95%'"
+      >
         <q-img
           src="/images/banner/4.png"
           class="hover cursor-pointer"
@@ -100,7 +112,7 @@ const openURL = (url: string) => {
           "
         />
 
-        <q-card-section class="text-subtitle2">
+        <q-card-section class="text-body1">
           O Registro de Marca é essencial para garantir a proteção legal e a
           identidade exclusiva da sua igreja. Sem o registro, qualquer pessoa ou
           instituição pode reivindicar o nome, impedindo sua utilização e até

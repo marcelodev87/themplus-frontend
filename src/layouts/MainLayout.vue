@@ -294,6 +294,19 @@ watch(
           </q-expansion-item>
 
           <q-item
+            v-show="enterprisePosition === 'client'"
+            clickable
+            :to="{ name: 'admin-subscription' }"
+            :active="isActive('admin-subscription')"
+            active-class=" active-option-menu text-bold"
+            @click="closeDrawer"
+          >
+            <q-item-section avatar>
+              <q-icon name="sell" />
+            </q-item-section>
+            <q-item-section> Assinaturas </q-item-section>
+          </q-item>
+          <q-item
             clickable
             :to="{ name: 'admin-help' }"
             :active="isActive('admin-help')"
