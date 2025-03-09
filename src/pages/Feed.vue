@@ -60,14 +60,6 @@ onMounted(async () => {
         :open="showAlertDataEnterprise"
         @update:open="closeAlertDataEnterprise"
       />
-      <!-- <q-inner-loading
-        :showing="loadingFeed"
-        label="Carregando os dados..."
-        label-class="black"
-        label-style="font-size: 1.1em"
-        color="primary"
-        size="50px"
-      /> -->
     </main>
   </section>
 </template>
