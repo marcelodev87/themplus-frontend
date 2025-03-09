@@ -44,6 +44,14 @@ onMounted(async () => {
         <TitlePage title="Painel de notícias" />
       </div>
     </header>
+    <div style="height: 2px">
+      <q-linear-progress
+        v-show="loadingFeed"
+        indeterminate
+        size="2px"
+        color="black"
+      />
+    </div>
     <main>
       <q-scroll-area class="main-scroll column items-center">
         <CardsNews />
@@ -52,14 +60,14 @@ onMounted(async () => {
         :open="showAlertDataEnterprise"
         @update:open="closeAlertDataEnterprise"
       />
-      <q-inner-loading
+      <!-- <q-inner-loading
         :showing="loadingFeed"
         label="Carregando os dados..."
         label-class="black"
         label-style="font-size: 1.1em"
         color="primary"
         size="50px"
-      />
+      /> -->
     </main>
   </section>
 </template>
