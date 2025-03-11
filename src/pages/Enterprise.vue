@@ -252,7 +252,7 @@ onMounted(() => {
             label="Telefone da organização"
             dense
             input-class="text-black"
-            maxlength="15"
+            mask="(##)#####-####"
           >
             <template v-slot:prepend>
               <q-icon name="call" color="black" size="20px" />

@@ -476,7 +476,7 @@ watch(step, () => {
               dense
               input-class="text-black"
               class="input-divider"
-              maxlength="15"
+              mask="(##)#####-####"
             >
               <template v-slot:prepend>
                 <q-icon name="numbers" color="black" size="20px" />
