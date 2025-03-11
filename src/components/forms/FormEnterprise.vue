@@ -379,7 +379,7 @@ watch(open, () => {
             label="Telefone da organização"
             dense
             input-class="text-black"
-            maxlength="15"
+            mask="(##)#####-####"
             :readonly="user?.position !== 'admin'"
           >
             <template v-slot:prepend>

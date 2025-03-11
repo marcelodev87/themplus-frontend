@@ -39,16 +39,16 @@ const dataEnterpriseName = ref<string | null>(null);
 const dataEnterpriseCode = ref<number | null>(null);
 const columnsBond = reactive<QuasarTable[]>([
   {
-    name: 'name',
-    label: 'Nome',
-    field: 'name',
+    name: 'code_financial',
+    label: 'Código Interno',
+    field: 'code_financial',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'email',
-    label: 'E-mail',
-    field: 'email',
+    name: 'name',
+    label: 'Nome',
+    field: 'name',
     align: 'left',
     sortable: true,
   },
@@ -62,18 +62,6 @@ const columnsBond = reactive<QuasarTable[]>([
     name: 'cpf',
     label: 'CPF',
     field: 'cpf',
-    align: 'left',
-  },
-  {
-    name: 'code_financial',
-    label: 'Código Interno',
-    field: 'code_financial',
-    align: 'left',
-  },
-  {
-    name: 'phone',
-    label: 'Telefone',
-    field: 'phone',
     align: 'left',
   },
   {
@@ -232,23 +220,17 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
+              <q-td key="code_financial" :props="props" class="text-left">
+                {{ props.row.code_financial }}
+              </q-td>
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
-              </q-td>
-              <q-td key="email" :props="props" class="text-left">
-                {{ props.row.email }}
               </q-td>
               <q-td key="cnpj" :props="props" class="text-left">
                 {{ props.row.cnpj }}
               </q-td>
               <q-td key="cpf" :props="props" class="text-left">
                 {{ props.row.cpf }}
-              </q-td>
-              <q-td key="code_financial" :props="props" class="text-left">
-                {{ props.row.code_financial }}
-              </q-td>
-              <q-td key="phone" :props="props" class="text-left">
-                {{ props.row.phone }}
               </q-td>
               <q-td key="no_verified" :props="props" class="text-left">
                 <q-badge

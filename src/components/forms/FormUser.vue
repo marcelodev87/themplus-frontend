@@ -310,6 +310,7 @@ watch(open, async () => {
             label-color="black"
             filled
             label="Digite o telefone do usuário"
+            mask="(##)#####-####"
             dense
             input-class="text-black"
           >

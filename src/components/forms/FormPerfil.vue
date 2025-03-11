@@ -235,6 +235,7 @@ watch(open, async () => {
               filled
               label="Telefone do usuário"
               dense
+              mask="(##)#####-####"
               input-class="text-black"
             >
               <template v-slot:prepend>
