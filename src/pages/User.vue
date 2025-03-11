@@ -246,9 +246,7 @@ onMounted(async () => {
                     user.id !== props.row.id &&
                     (user?.enterprise_id === user?.view_enterprise_id
                       ? true
-                      : props.row.created_by !== null
-                        ? true
-                        : false)
+                      : false)
                   "
                   @click="
                     setActive(props.row.active === 1 ? 0 : 1, props.row.id)
@@ -264,11 +262,7 @@ onMounted(async () => {
                   </q-tooltip>
                 </q-btn>
                 <q-btn
-                  v-show="
-                    user &&
-                    user.id !== props.row.id &&
-                    props.row.created_by !== null
-                  "
+                  v-show="user && user.id !== props.row.id"
                   @click="handleEdit(props.row)"
                   size="sm"
                   flat
@@ -282,9 +276,7 @@ onMounted(async () => {
                     user.id !== props.row.id &&
                     (user?.enterprise_id === user?.view_enterprise_id
                       ? true
-                      : props.row.created_by !== null
-                        ? true
-                        : false)
+                      : false)
                   "
                   @click="exclude(props.row.id)"
                   size="sm"
