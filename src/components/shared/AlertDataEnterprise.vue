@@ -297,7 +297,7 @@ watch(step, () => {
 
       <q-step
         :name="2"
-        title="Prencher dados de sua organização"
+        title="Preencher dados de sua organização"
         icon="church"
         :done="step > 2"
       >
@@ -336,7 +336,7 @@ watch(step, () => {
             label="Telefone da organização"
             dense
             input-class="text-black"
-            maxlength="15"
+            mask="(##)#####-####"
           >
             <template v-slot:prepend>
               <q-icon name="call" color="black" size="20px" />
@@ -476,7 +476,7 @@ watch(step, () => {
               dense
               input-class="text-black"
               class="input-divider"
-              mask="(##)#####-####"
+              maxlength="15"
             >
               <template v-slot:prepend>
                 <q-icon name="numbers" color="black" size="20px" />
