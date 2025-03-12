@@ -80,6 +80,11 @@ const checkData = (): { status: boolean; message?: string } => {
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
+  if (dataEnterprise.phone.trim() !== '') {
+    if (!/^\+?[1-9]\d{1,14}$/.test(dataEnterprise.phone.trim())) {
+      return { status: false, message: 'Digite um telefone válido' };
+    }
+  }
   if (
     props.mode === 'actual' &&
     selectedIdentifier.value === 'CPF' &&
@@ -270,6 +275,27 @@ const exclude = async () => {
     router.push({ name: 'auth' });
   }
 };
+const formattedPhone = computed({
+  get() {
+    const phone = dataEnterprise.phone.replace(/\D/g, '');
+    if (phone.length === 10) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
+    }
+    if (phone.length === 11) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
+    }
+    return phone;
+  },
+  set(value) {
+    console.log('value ', value);
+    const digits = value.replace(/\D/g, '');
+    console.log('digits ', digits);
+    if (digits.length > 11) {
+      return;
+    }
+    dataEnterprise.phone = digits;
+  },
+});
 
 watch(
   () => dataEnterprise.cep,
@@ -297,13 +323,11 @@ watch(
   [
     () => dataEnterprise.cpf,
     () => dataEnterprise.cnpj,
-    () => dataEnterprise.phone,
     () => dataEnterprise.numberAddress,
   ],
-  ([cpf, cnpj, phone, numberAdress]) => {
+  ([cpf, cnpj, numberAdress]) => {
     dataEnterprise.cpf = cpf.replace(/\D/g, '');
     dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
-    dataEnterprise.phone = phone.replace(/\D/g, '');
     dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
   }
 );
@@ -372,14 +396,13 @@ watch(open, () => {
             </template>
           </q-input>
           <q-input
-            v-model="dataEnterprise.phone"
+            v-model="formattedPhone"
             bg-color="white"
             label-color="black"
             filled
             label="Telefone da organização"
             dense
             input-class="text-black"
-            mask="(##)#####-####"
             :readonly="user?.position !== 'admin'"
           >
             <template v-slot:prepend>

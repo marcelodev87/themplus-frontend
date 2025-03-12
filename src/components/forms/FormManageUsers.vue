@@ -193,6 +193,29 @@ const update = async () => {
   }
 };
 
+const formattedPhone = computed({
+  get() {
+    const phone = (dataUser.phone || '').replace(/\D/g, '');
+
+    if (phone.length === 10) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
+    }
+    if (phone.length === 11) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
+    }
+    return phone;
+  },
+  set(value) {
+    const digits = (value || '').replace(/\D/g, '');
+
+    if (digits.length > 11) {
+      return;
+    }
+
+    dataUser.phone = digits;
+  },
+});
+
 watch(dataEditId, async () => {
   if (dataEditId.value) {
     const response = await findUser(dataEditId.value);
@@ -346,7 +369,7 @@ watch(open, async () => {
             </template>
           </q-input>
           <q-input
-            v-model="dataUser.phone"
+            v-model="formattedPhone"
             bg-color="white"
             label-color="black"
             filled

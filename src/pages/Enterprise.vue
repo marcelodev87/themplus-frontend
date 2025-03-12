@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { DataEnterprise } from 'src/ts/interfaces/data/Enterprise';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
@@ -53,6 +53,11 @@ const checkData = (): { status: boolean; message?: string } => {
     )
   ) {
     return { status: false, message: 'Informe um e-mail válido' };
+  }
+  if (dataEnterprise.phone.trim() !== '') {
+    if (!/^\+?[1-9]\d{1,14}$/.test(dataEnterprise.phone.trim())) {
+      return { status: false, message: 'Digite um telefone válido' };
+    }
   }
   if (
     selectedIdentifier.value === 'CPF' &&
@@ -149,6 +154,29 @@ const save = async () => {
   }
 };
 
+const formattedPhone = computed({
+  get() {
+    const phone = (dataEnterprise.phone || '').replace(/\D/g, '');
+
+    if (phone.length === 10) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
+    }
+    if (phone.length === 11) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
+    }
+    return phone;
+  },
+  set(value) {
+    const digits = (value || '').replace(/\D/g, '');
+
+    if (digits.length > 11) {
+      return;
+    }
+
+    dataEnterprise.phone = digits;
+  },
+});
+
 watch(
   () => dataEnterprise.cep,
   async (cep: string) => {
@@ -175,13 +203,11 @@ watch(
   [
     () => dataEnterprise.cpf,
     () => dataEnterprise.cnpj,
-    () => dataEnterprise.phone,
     () => dataEnterprise.numberAddress,
   ],
-  ([cpf, cnpj, phone, numberAdress]) => {
+  ([cpf, cnpj, numberAdress]) => {
     dataEnterprise.cpf = cpf.replace(/\D/g, '');
     dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
-    dataEnterprise.phone = phone.replace(/\D/g, '');
     dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
   }
 );
@@ -245,14 +271,13 @@ onMounted(() => {
             </template>
           </q-input>
           <q-input
-            v-model="dataEnterprise.phone"
+            v-model="formattedPhone"
             bg-color="grey-1"
             label-color="black"
             filled
             label="Telefone da organização"
             dense
             input-class="text-black"
-            mask="(##)#####-####"
           >
             <template v-slot:prepend>
               <q-icon name="call" color="black" size="20px" />

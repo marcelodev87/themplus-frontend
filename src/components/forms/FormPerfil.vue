@@ -176,6 +176,29 @@ const fetchDepartments = async () => {
   await getDepartments();
 };
 
+const formattedPhone = computed({
+  get() {
+    const phone = (dataPerfil.phone || '').replace(/\D/g, '');
+
+    if (phone.length === 10) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
+    }
+    if (phone.length === 11) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
+    }
+    return phone;
+  },
+  set(value) {
+    const digits = (value || '').replace(/\D/g, '');
+
+    if (digits.length > 11) {
+      return;
+    }
+
+    dataPerfil.phone = digits;
+  },
+});
+
 watch(
   () => dataPerfil.passwordActual,
   (password) => {
@@ -229,13 +252,12 @@ watch(open, async () => {
               </template>
             </q-input>
             <q-input
-              v-model="dataPerfil.phone"
+              v-model="formattedPhone"
               bg-color="white"
               label-color="black"
               filled
               label="Telefone do usuário"
               dense
-              mask="(##)#####-####"
               input-class="text-black"
             >
               <template v-slot:prepend>

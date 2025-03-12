@@ -243,6 +243,25 @@ const handleChooseDepartment = (
 const fetchDepartments = async () => {
   await getDepartments();
 };
+const formattedPhone = computed({
+  get() {
+    const phone = dataUser.phone.replace(/\D/g, '');
+    if (phone.length === 10) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
+    }
+    if (phone.length === 11) {
+      return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
+    }
+    return phone;
+  },
+  set(value) {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length > 11) {
+      return;
+    }
+    dataUser.phone = digits;
+  },
+});
 
 watch(open, async () => {
   if (open.value) {
@@ -304,13 +323,12 @@ watch(open, async () => {
             </template>
           </q-input>
           <q-input
-            v-model="dataUser.phone"
+            v-model="formattedPhone"
             v-show="props.mode !== 'office'"
             bg-color="white"
             label-color="black"
             filled
             label="Digite o telefone do usuário"
-            mask="(##)#####-####"
             dense
             input-class="text-black"
           >
