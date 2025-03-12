@@ -200,7 +200,7 @@ watch(
             <q-item-section avatar>
               <q-icon name="work" />
             </q-item-section>
-            <q-item-section> Organização </q-item-section>
+            <q-item-section> Cliente </q-item-section>
           </q-item>
           <q-item
             v-show="user?.position === 'admin'"
