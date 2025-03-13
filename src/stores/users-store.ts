@@ -415,8 +415,11 @@ export const useUsersMembersStore = defineStore('members', {
             );
           this.createSuccess(response.data.message);
         }
+
+        return response;
       } catch (error) {
         this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

@@ -7,6 +7,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { DataUserByCounter } from 'src/ts/interfaces/data/User';
 import { Notify } from 'quasar';
+import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'FormManageUsers',
@@ -39,8 +40,12 @@ const dataUser = reactive<DataUserByCounter>({
   confirmPassword: '',
 });
 
+const showConfirmAction = ref<boolean>(false);
+const isPwd = ref<boolean>(true);
+const isPwd2 = ref<boolean>(true);
 const mode = ref<'list' | 'form'>('list');
 const dataEditId = ref<string | null>(null);
+const selectedData = ref<string | null>(null);
 const filterUser = ref<string>('');
 const columnsUser = reactive<QuasarTable[]>([
   {
@@ -133,6 +138,10 @@ const clear = (): void => {
   mode.value = 'list';
   filterUser.value = '';
   dataEditId.value = null;
+  isPwd.value = true;
+  isPwd2.value = true;
+  showConfirmAction.value = false;
+  selectedData.value = null;
   Object.assign(dataUser, {
     name: '',
     position: 'admin',
@@ -146,7 +155,10 @@ const fetchUsers = async () => {
   await getUsersMembersByEnterprise(props.id ?? '');
 };
 const exclude = async (userId: string) => {
-  await deleteUserMemberByEnterprise(userId);
+  const response = await deleteUserMemberByEnterprise(userId);
+  if (response?.status === 200) {
+    emit('update:open');
+  }
 };
 const changeMode = (view: 'list' | 'form', data: string | null) => {
   dataEditId.value = data;
@@ -191,6 +203,18 @@ const update = async () => {
       type: 'negative',
     });
   }
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await exclude(selectedData.value ?? '');
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  selectedData.value = null;
+};
+const openConfirmAction = async (id: string): Promise<void> => {
+  selectedData.value = id;
+  showConfirmAction.value = true;
 };
 
 const formattedPhone = computed({
@@ -253,7 +277,7 @@ watch(open, async () => {
       <q-card-section class="q-pa-sm">
         <q-table
           v-if="mode === 'list'"
-          :rows="loadingUsersMembers ? [] : listUserMemberByEnterprise"
+          :rows="listUserMemberByEnterprise"
           :columns="columnsUser"
           :filter="filterUser"
           :loading="loadingUsersMembers"
@@ -315,6 +339,7 @@ watch(open, async () => {
                 <q-btn
                   @click="changeMode('form', props.row.id)"
                   v-show="settingsCounter?.allow_edit_user"
+                  :disable="loadingUsersMembers"
                   size="sm"
                   flat
                   round
@@ -322,11 +347,12 @@ watch(open, async () => {
                   icon="edit"
                 />
                 <q-btn
-                  @click="exclude(props.row.id)"
+                  @click="openConfirmAction(props.row.id)"
                   v-show="
                     settingsCounter?.allow_delete_user &&
                     listUserMemberByEnterprise.length > 1
                   "
+                  :disable="loadingUsersMembers"
                   size="sm"
                   flat
                   round
@@ -390,7 +416,16 @@ watch(open, async () => {
             label="Digite a senha do usuário"
             dense
             input-class="text-black"
+            :type="isPwd ? 'password' : 'text'"
           >
+            <template v-slot:append>
+              <q-icon
+                @click="isPwd = !isPwd"
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                size="20px"
+              />
+            </template>
             <template v-slot:prepend>
               <q-icon name="lock" color="black" size="20px" />
             </template>
@@ -404,7 +439,16 @@ watch(open, async () => {
             label="Confirme a senha do usuário"
             dense
             input-class="text-black"
+            :type="isPwd ? 'password' : 'text'"
           >
+            <template v-slot:append>
+              <q-icon
+                @click="isPwd2 = !isPwd2"
+                :name="isPwd2 ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                size="20px"
+              />
+            </template>
             <template v-slot:prepend>
               <q-icon name="lock" color="black" size="20px" />
             </template>
@@ -453,6 +497,14 @@ watch(open, async () => {
           />
         </div>
       </q-card-actions>
+      <ConfirmAction
+        :open="showConfirmAction"
+        label-action="Continuar"
+        title="Confirmação de exclusão"
+        message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+        @update:open="closeConfirmAction"
+        @update:ok="closeConfirmActionOk"
+      />
       <q-inner-loading
         :showing="loadingUsersMembers"
         label="Carregando os dados..."
