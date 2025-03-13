@@ -59,6 +59,8 @@ const selectedUserPosition = ref<QuasarSelect<string>>({
   label: 'Usuário comum',
   value: 'common_user',
 });
+const isPwd = ref<boolean>(true);
+const isPwd2 = ref<boolean>(true);
 
 const open = computed({
   get: () => props.open,
@@ -123,6 +125,8 @@ const clear = (): void => {
     departmentName: null,
     phone: '',
   });
+  isPwd.value = true;
+  isPwd2.value = true;
 };
 const save = async () => {
   const check = checkData();
@@ -394,7 +398,16 @@ watch(open, async () => {
             label="Digite a senha do usuário"
             dense
             input-class="text-black"
+            :type="isPwd ? 'password' : 'text'"
           >
+            <template v-slot:append>
+              <q-icon
+                @click="isPwd = !isPwd"
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                size="20px"
+              />
+            </template>
             <template v-slot:prepend>
               <q-icon name="lock" color="black" size="20px" />
             </template>
@@ -408,7 +421,16 @@ watch(open, async () => {
             label="Confirme a senha do usuário"
             dense
             input-class="text-black"
+            :type="isPwd ? 'password' : 'text'"
           >
+            <template v-slot:append>
+              <q-icon
+                @click="isPwd2 = !isPwd2"
+                :name="isPwd2 ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                size="20px"
+              />
+            </template>
             <template v-slot:prepend>
               <q-icon name="lock" color="black" size="20px" />
             </template>
