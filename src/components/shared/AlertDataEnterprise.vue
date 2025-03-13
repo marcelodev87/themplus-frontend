@@ -103,6 +103,30 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Informe um CEP válido',
     };
   }
+  if (dataEnterprise.state.trim() === '') {
+    return {
+      status: false,
+      message: 'Informe um UF válido',
+    };
+  }
+  if (dataEnterprise.city.trim() === '') {
+    return {
+      status: false,
+      message: 'Informe uma cidade válido',
+    };
+  }
+  if (dataEnterprise.neighborhood.trim() === '') {
+    return {
+      status: false,
+      message: 'Informe um bairro válido',
+    };
+  }
+  if (dataEnterprise.address.trim() === '') {
+    return {
+      status: false,
+      message: 'Informe um logradouro válido',
+    };
+  }
   if (dataEnterprise.numberAddress.trim() === '') {
     return {
       status: false,
@@ -441,7 +465,6 @@ watch(step, () => {
               dense
               input-class="text-black"
               class="input-divider"
-              readonly
             >
               <template v-slot:prepend>
                 <q-icon name="map" color="black" size="20px" />
@@ -456,7 +479,6 @@ watch(step, () => {
               dense
               input-class="text-black"
               class="input-divider"
-              readonly
             >
               <template v-slot:prepend>
                 <q-icon name="pin_drop" color="black" size="20px" />
@@ -471,7 +493,6 @@ watch(step, () => {
             label="Bairro"
             dense
             input-class="text-black"
-            readonly
           >
             <template v-slot:prepend>
               <q-icon name="pin_drop" color="black" size="20px" />
@@ -485,7 +506,6 @@ watch(step, () => {
             label="Logradouro"
             dense
             input-class="text-black"
-            readonly
           >
             <template v-slot:prepend>
               <q-icon name="pin_drop" color="black" size="20px" />
