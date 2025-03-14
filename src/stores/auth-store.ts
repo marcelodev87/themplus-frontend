@@ -88,7 +88,14 @@ export const useAuthStore = defineStore('auth', {
         this.setLoading(true);
         const response = await doVerifyService(code, email);
         if (response.status === 200) {
-          this.createSuccess(response.data.message);
+          if (response.data.valid) {
+            this.createSuccess(response.data.message);
+          } else {
+            Notify.create({
+              message: 'Código inválido',
+              type: 'negative',
+            });
+          }
         }
 
         return response;

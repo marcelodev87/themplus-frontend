@@ -82,7 +82,7 @@ const sendEmailReset = async () => {
 };
 const verifyCode = async () => {
   const response = await doVerify(dataReset.code, dataReset.email);
-  if (response?.status === 200) {
+  if (response?.status === 200 && response.data.valid) {
     modeView.value = 'setPassword';
   }
 };

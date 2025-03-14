@@ -31,6 +31,7 @@ export const doVerifyService = (
   status: number;
   data: {
     message: string;
+    valid: false;
   };
 }> => api.post('/verify', { code, email });
 export const setNewPasswordService = (
