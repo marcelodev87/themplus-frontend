@@ -135,6 +135,7 @@ onMounted(() => {
         label="Digite seu e-mail"
         dense
         input-class="text-black"
+        autocomplete="new-email"
       >
         <template v-slot:prepend>
           <q-icon name="email" color="black" size="20px" />
