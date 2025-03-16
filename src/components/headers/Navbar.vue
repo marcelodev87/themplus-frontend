@@ -52,7 +52,7 @@ const closeInbox = (): void => {
         <img
           v-show="!$q.screen.lt.md"
           @click="$router.push({ name: 'admin-feed' })"
-          class="cursor-pointer hidden-md"
+          class="cursor-pointer hover hidden-md"
           src="/images/logo.png"
           width="120px"
         />
