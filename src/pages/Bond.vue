@@ -12,7 +12,10 @@ import DataClient from 'src/components/general/DataClient.vue';
 import AlertsClient from 'src/components/general/AlertsClient.vue';
 import FormManageUsers from 'src/components/forms/FormManageUsers.vue';
 import FormCodeFinancial from 'src/components/forms/FormCodeFinancial.vue';
+import { useAuthStore } from 'src/stores/auth-store';
 import { useRouter, useRoute } from 'vue-router';
+import { deleteEnterpriseService } from 'src/services/enterprise-service';
+import { Dialog } from 'quasar';
 
 defineOptions({
   name: 'Bond',
@@ -20,6 +23,7 @@ defineOptions({
 
 const { loadingOrder, listBond, filledData } = storeToRefs(useOrderStore());
 const { getBonds, deleteBond } = useOrderStore();
+const { user } = useAuthStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -150,6 +154,26 @@ const closeAlertsClient = (): void => {
   showAlertsClient.value = false;
   dataManage.value = null;
 };
+const deleteEnterpriseSystem = (id: string) => {
+  Dialog.create({
+    title: 'Confirmação',
+    message: 'Você tem certeza que deseja apagar a organização do sistema?',
+    persistent: true,
+    ok: { label: 'Sim' },
+    cancel: { label: 'Não', color: 'red' },
+  })
+    .onOk(async () => {
+      loadingOrder.value = true;
+      const response = await deleteEnterpriseService(id);
+      if (response.status === 200) {
+        listBond.value = listBond.value.filter((item) => item.id !== id);
+      }
+      loadingOrder.value = false;
+    })
+    .onCancel(() => {
+      console.log('Operação cancelada pelo usuário.');
+    });
+};
 
 watch(
   filledData,
@@ -197,7 +221,7 @@ onMounted(async () => {
       >
         <q-table
           v-show="!showDataClient"
-          :rows="listBond"
+          :rows="loadingOrder ? [] : listBond"
           :columns="columnsBond"
           :filter="filterOrder"
           :loading="loadingOrder"
@@ -296,6 +320,17 @@ onMounted(async () => {
                   color="red"
                   icon="delete"
                 />
+                <q-btn
+                  v-show="user?.email === 'marcelo.dias@etikasolucoes.com.br'"
+                  @click="deleteEnterpriseSystem(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="cancel"
+                >
+                  <q-tooltip>Excluir do sistema</q-tooltip>
+                </q-btn>
               </q-td>
             </q-tr>
           </template>
