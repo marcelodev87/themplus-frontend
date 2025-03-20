@@ -197,7 +197,7 @@ onMounted(async () => {
       >
         <q-table
           v-show="!showDataClient"
-          :rows="loadingOrder ? [] : listBond"
+          :rows="listBond"
           :columns="columnsBond"
           :filter="filterOrder"
           :loading="loadingOrder"

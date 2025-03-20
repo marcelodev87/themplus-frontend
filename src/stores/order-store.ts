@@ -198,8 +198,7 @@ export const useOrderStore = defineStore('order', {
       try {
         const response = await deleteBondService(id);
         if (response.status === 200) {
-          this.clearListBond();
-          this.setListBond(response.data.bonds);
+          this.listBond = this.listBond.filter((item) => item.id !== id);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
