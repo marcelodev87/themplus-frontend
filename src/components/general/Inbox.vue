@@ -257,7 +257,7 @@ watch(
           />
           <q-btn
             @click="readAll"
-            v-show="existAnyForRead"
+            v-show="existAnyForRead && openOptions"
             color="secondary"
             label="Marcar todas como lido"
             icon-right="done_all"
