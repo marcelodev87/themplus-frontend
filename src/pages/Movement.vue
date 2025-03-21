@@ -368,6 +368,11 @@ watch(
 watch(filterMonthYear, async () => {
   await getMovements(filterMonthYear.value.replace('/', '-'));
 });
+watch(showMovementsAnalyze, async (analyze) => {
+  if (!analyze) {
+    await getMovements(dateActual.value.replace('/', '-'));
+  }
+});
 
 onMounted(async () => {
   await getMovements(dateActual.value.replace('/', '-'));
