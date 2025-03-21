@@ -421,7 +421,7 @@ watch(open, async () => {
             label="Confirme a senha do usuário"
             dense
             input-class="text-black"
-            :type="isPwd ? 'password' : 'text'"
+            :type="isPwd2 ? 'password' : 'text'"
           >
             <template v-slot:append>
               <q-icon
