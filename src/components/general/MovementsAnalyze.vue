@@ -155,7 +155,7 @@ const save = async (movement: DataMovementAnalyze) => {
       movement.type,
       movement.value
     );
-
+    await fetchMovementsAnalyze();
     if (response?.status === 201 && listMovementAnalyze.value.length === 0) {
       emit('update:open');
     }
