@@ -155,7 +155,7 @@ const save = async (movement: DataMovementAnalyze) => {
       movement.type,
       movement.value
     );
-
+    await fetchMovementsAnalyze();
     if (response?.status === 201 && listMovementAnalyze.value.length === 0) {
       emit('update:open');
     }
@@ -231,6 +231,7 @@ watch(open, async () => {
                   use-input
                   input-debounce="0"
                   behavior="menu"
+                  :disable="loadingMovement"
                 >
                   <template v-slot:prepend>
                     <q-icon name="account_balance" color="black" size="16px" />
@@ -261,6 +262,7 @@ watch(open, async () => {
                   use-input
                   input-debounce="0"
                   behavior="menu"
+                  :disable="loadingMovement"
                 >
                   <template v-slot:prepend>
                     <q-icon name="category" color="black" size="16px" />
@@ -275,6 +277,7 @@ watch(open, async () => {
                   auto-save
                   v-slot="scope"
                   style="width: 300px; max-width: 90%"
+                  :disable="loadingMovement"
                 >
                   <q-input
                     v-model="scope.value"
@@ -282,6 +285,7 @@ watch(open, async () => {
                     autofocus
                     counter
                     @keyup.enter="scope.set"
+                    :disable="loadingMovement"
                   />
                 </q-popup-edit>
               </q-td>
@@ -302,6 +306,7 @@ watch(open, async () => {
                   clearable
                   accept=".pdf"
                   :max-file-size="2 * 1024 * 1024"
+                  :disable="loadingMovement"
                 >
                   <template v-slot:prepend>
                     <q-icon name="attach_file" color="black" size="20px" />
@@ -346,7 +351,6 @@ watch(open, async () => {
             size="md"
             flat
             @click="open = false"
-            :disable="false"
             unelevated
             no-caps
           />
