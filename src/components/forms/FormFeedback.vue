@@ -66,7 +66,7 @@ watch(open, () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Envie uma sugestão ou uma dúvida" />
+        <TitlePage title="Envie uma sugestão" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <q-form>

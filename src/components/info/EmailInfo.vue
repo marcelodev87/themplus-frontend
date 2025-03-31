@@ -17,6 +17,10 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
+
+const openURL = (url: string) => {
+  window.open(url, '_blank');
+};
 </script>
 
 <template>
@@ -39,8 +43,17 @@ const open = computed({
             color="red"
             label="Fechar"
             size="md"
+            flat
             @click="open = false"
             :disable="false"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            color="primary"
+            label="Redirecionar"
+            size="md"
+            @click="openURL('https://wa.me/5521979200654')"
             unelevated
             no-caps
           />
