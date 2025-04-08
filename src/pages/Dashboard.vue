@@ -738,6 +738,16 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueEntryCategoryMovements) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
+                        color="white"
+                        text-color="black"
                         :label="`${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
@@ -783,6 +793,16 @@ onMounted(async () => {
                   >
                     <div class="absolute-full flex flex-center">
                       <q-badge
+                        color="white"
+                        text-color="black"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueOutCategoryMovements) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
                         color="white"
                         text-color="black"
                         :label="`${formatCurrencyBRL(props.row.value)}`"
@@ -840,6 +860,16 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueEntryCategorySchedules) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
+                        color="white"
+                        text-color="black"
                         :label="`${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
@@ -887,7 +917,17 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
-                        :label="`R$ ${formatCurrencyBRL(props.row.value)}`"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueOutCategorySchedules) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
+                        color="white"
+                        text-color="black"
+                        :label="`${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
                   </q-linear-progress>
