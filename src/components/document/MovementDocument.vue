@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import ImageView from '../shared/ImageView.vue';
+
 defineOptions({
   name: 'MovementDocument',
 });
+
+const showImage = ref<boolean>(false);
+const urlImage = ref<string | null>(null);
+
+const openShowImage = (url: string) => {
+  showImage.value = true;
+  urlImage.value = url;
+};
+const closeShowImage = () => {
+  showImage.value = false;
+  urlImage.value = null;
+};
 </script>
 <template>
   <main>
@@ -33,6 +48,7 @@ defineOptions({
       de saída (despesas). O sistema guiará você através do processo.
     </p>
     <q-img
+      @click="openShowImage('/images/document/form-movement.png')"
       src="/images/document/form-movement.png"
       style="width: 600px; max-width: 95vw"
     />
@@ -94,5 +110,10 @@ defineOptions({
         </p>
       </li>
     </ul>
+    <ImageView
+      :open="showImage"
+      :url="urlImage"
+      @update:open="closeShowImage"
+    />
   </main>
 </template>

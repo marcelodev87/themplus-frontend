@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import ImageView from '../shared/ImageView.vue';
+
 defineOptions({
   name: 'DepartmentDocument',
 });
+
+const showImage = ref<boolean>(false);
+const urlImage = ref<string | null>(null);
+
+const openShowImage = (url: string) => {
+  showImage.value = true;
+  urlImage.value = url;
+};
+const closeShowImage = () => {
+  showImage.value = false;
+  urlImage.value = null;
+};
 </script>
 <template>
   <main>
@@ -36,10 +51,12 @@ defineOptions({
     </p>
     <div class="column">
       <q-img
+        @click="openShowImage('/images/document/department.png')"
         src="/images/document/department.png"
         style="width: 600px; max-width: 95vw"
       />
       <q-img
+        @click="openShowImage('/images/document/form-department.png')"
         src="/images/document/form-department.png"
         style="width: 600px; max-width: 95vw"
         class="q-mt-md"
@@ -53,6 +70,7 @@ defineOptions({
           Agora, você pode associar os departamentos existentes aos usuários,
           seja ao criar novos usuários ou ao editar os existentes.
           <q-img
+            @click="openShowImage('/images/document/use-department.png')"
             src="/images/document/use-department.png"
             style="width: 600px; max-width: 85vw"
             class="q-mt-md"
@@ -67,5 +85,10 @@ defineOptions({
         </p>
       </li>
     </ul>
+    <ImageView
+      :open="showImage"
+      :url="urlImage"
+      @update:open="closeShowImage"
+    />
   </main>
 </template>

@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import ImageView from '../shared/ImageView.vue';
+
 defineOptions({
   name: 'OrderDocument',
 });
+
+const showImage = ref<boolean>(false);
+const urlImage = ref<string | null>(null);
+
+const openShowImage = (url: string) => {
+  showImage.value = true;
+  urlImage.value = url;
+};
+const closeShowImage = () => {
+  showImage.value = false;
+  urlImage.value = null;
+};
 </script>
 <template>
   <main>
@@ -14,6 +29,7 @@ defineOptions({
       gerenciamento eficiente do seu pipeline de novos relacionamentos.
     </p>
     <q-img
+      @click="openShowImage('/images/document/order.png')"
       src="/images/document/order.png"
       style="width: 1000px; max-width: 95vw"
     />
@@ -31,8 +47,14 @@ defineOptions({
       >
     </p>
     <q-img
+      @click="openShowImage('/images/document/form-order.png')"
       src="/images/document/form-order.png"
       style="width: 1000px; max-width: 95vw"
+    />
+    <ImageView
+      :open="showImage"
+      :url="urlImage"
+      @update:open="closeShowImage"
     />
   </main>
 </template>
