@@ -44,21 +44,12 @@ const columnsCategory = reactive<QuasarTable[]>([
     label: 'Padrão',
     field: 'default',
     align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'type',
-    label: 'Tipo',
-    field: 'type',
-    align: 'left',
-    sortable: true,
   },
   {
     name: 'alert',
     label: 'Alerta',
     field: 'alert.description',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'action',
@@ -313,14 +304,18 @@ onMounted(async () => {
             </div>
           </template>
           <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
+            <q-tr
+              :props="props"
+              style="height: 28px"
+              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+            >
               <q-td
                 key="name"
                 :props="props"
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.name }}
+                <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
               <q-td
                 key="default"
@@ -328,15 +323,9 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.enterprise_id === null ? 'Sim' : 'Não' }}
-              </q-td>
-              <q-td
-                key="type"
-                :props="props"
-                class="text-left capitalize"
-                :class="props.row.active === 0 ? 'text-grey-5' : ''"
-              >
-                {{ props.row.type }}
+                <span class="text-subtitle2">{{
+                  props.row.enterprise_id === null ? 'Sim' : 'Não'
+                }}</span>
               </q-td>
               <q-td
                 key="alert"
@@ -344,7 +333,7 @@ onMounted(async () => {
                 class="text-left text-column"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.alert }}
+                <span class="text-subtitle2"> {{ props.row.alert }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

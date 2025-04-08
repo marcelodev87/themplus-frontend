@@ -240,19 +240,21 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="user_name" :props="props" class="text-left">
-                {{ props.row.user_name }}
+                <span class="text-subtitle2">{{ props.row.user_name }}</span>
               </q-td>
               <q-td key="user_email" :props="props" class="text-left">
-                {{ props.row.user_email }}
+                <span class="text-subtitle2">{{ props.row.user_email }}</span>
               </q-td>
               <q-td key="date" :props="props" class="text-left">
-                {{ props.row.date }}
+                <span class="text-subtitle2">{{ props.row.date }}</span>
               </q-td>
               <q-td key="type" :props="props" class="text-left">
-                {{ buildAction(props.row.action) }}
+                <span class="text-subtitle2">{{
+                  buildAction(props.row.action)
+                }}</span>
               </q-td>
               <q-td key="text" :props="props" class="text-left">
-                {{ props.row.text }}
+                <span class="text-subtitle2">{{ props.row.text }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

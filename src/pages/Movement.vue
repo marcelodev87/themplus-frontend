@@ -529,11 +529,11 @@ onMounted(async () => {
             <div class="text-h6">Movimentações</div>
           </q-card-section>
           <q-card-section class="q-pt-none row justify-between">
-            <span>Total de entrada: </span>
+            <span class="text-subtitle1">Total de entrada: </span>
             <span class="text-green">{{ dataMovement.valueEntry }}</span>
           </q-card-section>
           <q-card-section class="q-pt-none row justify-between">
-            <span> Total de saída:</span>
+            <span class="text-subtitle1"> Total de saída:</span>
             <span class="text-red">{{ dataMovement.valueOut }} </span>
           </q-card-section>
           <q-separator inset />
@@ -541,7 +541,7 @@ onMounted(async () => {
             class="row justify-between"
             :class="getClassTotal(dataMovement.total)"
           >
-            <span>Saldo:</span>
+            <span class="text-subtitle1">Saldo:</span>
             <span>{{ dataMovement.total }}</span>
           </q-card-section>
         </q-card>
@@ -712,25 +712,35 @@ onMounted(async () => {
               :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
             >
               <q-td key="name" :props="props" class="text-left">
-                {{ props.row.account.name }}
+                <span class="text-subtitle2">{{ props.row.account.name }}</span>
               </q-td>
               <q-td key="account_number" :props="props" class="text-left">
-                {{ props.row.account.account_number }}
+                <span class="text-subtitle2">{{
+                  props.row.account.account_number
+                }}</span>
               </q-td>
               <q-td key="agency_number" :props="props" class="text-left">
-                {{ props.row.account.agency_number }}
+                <span class="text-subtitle2">{{
+                  props.row.account.agency_number
+                }}</span>
               </q-td>
               <q-td key="category" :props="props" class="text-left">
-                {{ props.row.category.name }}
+                <span class="text-subtitle2">{{
+                  props.row.category.name
+                }}</span>
               </q-td>
               <q-td key="value" :props="props" class="text-left">
-                {{ `${formatCurrencyBRL(props.row.value)}` }}
+                <span class="text-subtitle2">{{
+                  `${formatCurrencyBRL(props.row.value)}`
+                }}</span>
               </q-td>
               <q-td key="date_movement" :props="props" class="text-left">
-                {{ formatDate(props.row.date_movement) }}
+                <span class="text-subtitle2">{{
+                  formatDate(props.row.date_movement)
+                }}</span>
               </q-td>
               <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
+                <span class="text-subtitle2">{{ props.row.description }}</span>
               </q-td>
               <q-td
                 @click="download(props.row.receipt)"
