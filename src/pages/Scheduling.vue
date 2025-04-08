@@ -684,9 +684,9 @@ onMounted(async () => {
                 :props="props"
                 class="text-left q-gutter-x-sm"
               >
-                <span class="text-subtitle2"
-                  >{{ formatDate(props.row.date_movement) }}}</span
-                >
+                <span class="text-subtitle2">{{
+                  formatDate(props.row.date_movement)
+                }}</span>
                 <q-icon
                   v-show="isPastDate(props.row.date_movement)"
                   name="dangerous"

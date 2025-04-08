@@ -245,16 +245,18 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="code_financial" :props="props" class="text-left">
-                {{ props.row.code_financial }}
+                <span class="text-subtitle2">{{
+                  props.row.code_financial
+                }}</span>
               </q-td>
               <q-td key="name" :props="props" class="text-left">
-                {{ props.row.name }}
+                <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
               <q-td key="cnpj" :props="props" class="text-left">
-                {{ props.row.cnpj }}
+                <span class="text-subtitle2">{{ props.row.cnpj }}</span>
               </q-td>
               <q-td key="cpf" :props="props" class="text-left">
-                {{ props.row.cpf }}
+                <span class="text-subtitle2">{{ props.row.cpf }}</span>
               </q-td>
               <q-td key="no_verified" :props="props" class="text-left">
                 <q-badge

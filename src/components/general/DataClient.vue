@@ -326,14 +326,19 @@ watch(
         <template v-slot:body="props">
           <q-tr :props="props" style="height: 28px">
             <q-td key="month_year" :props="props" class="text-left">
-              {{ convertMonthYear(props.row.month_year) }}
+              <span class="text-subtitle2">{{
+                convertMonthYear(props.row.month_year)
+              }}</span>
             </q-td>
-            <q-td key="total_movements" :props="props" class="text-left">
+            <!-- <q-td key="total_movements" :props="props" class="text-left">
               {{ props.row.total_movements }}
-            </q-td>
+            </q-td> -->
             <q-td key="date_delivery" :props="props" class="text-left">
-              {{ formatDate(props.row.date_delivery) }}
+              <span class="text-subtitle2">{{
+                formatDate(props.row.date_delivery)
+              }}</span>
             </q-td>
+
             <q-td key="check_counter" :props="props" class="text-left">
               <q-icon
                 v-show="props.row.check_counter === user?.enterprise_id"
@@ -434,25 +439,33 @@ watch(
             :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
           >
             <q-td key="name" :props="props" class="text-left">
-              {{ props.row.account.name }}
+              <span class="text-subtitle2">{{ props.row.account.name }}</span>
             </q-td>
             <q-td key="account_number" :props="props" class="text-left">
-              {{ props.row.account.account_number }}
+              <span class="text-subtitle2">{{
+                props.row.account.account_number
+              }}</span>
             </q-td>
             <q-td key="agency_number" :props="props" class="text-left">
-              {{ props.row.account.agency_number }}
+              <span class="text-subtitle2">{{
+                props.row.account.agency_number
+              }}</span>
             </q-td>
             <q-td key="category" :props="props" class="text-left">
-              {{ props.row.category.name }}
+              <span class="text-subtitle2">{{ props.row.category.name }}</span>
             </q-td>
             <q-td key="value" :props="props" class="text-left">
-              {{ `${formatCurrencyBRL(props.row.value)}` }}
+              <span class="text-subtitle2">{{
+                `${formatCurrencyBRL(props.row.value)}`
+              }}</span>
             </q-td>
             <q-td key="date_movement" :props="props" class="text-left">
-              {{ formatDate(props.row.date_movement) }}
+              <span class="text-subtitle2">{{
+                formatDate(props.row.date_movement)
+              }}</span>
             </q-td>
             <q-td key="description" :props="props" class="text-left">
-              {{ props.row.description }}
+              <span class="text-subtitle2">{{ props.row.description }}</span>
             </q-td>
             <q-td
               @click="download(props.row.receipt)"
@@ -469,7 +482,7 @@ watch(
             </q-td>
             <q-td key="observation" :props="props">
               <q-icon name="edit" color="black" v-show="!finalizedReport" />
-              {{ props.row.observation }}
+              <span class="text-subtitle2">{{ props.row.observation }}</span>
               <q-popup-edit
                 v-model="props.row.observation"
                 title="Escreva uma observação"

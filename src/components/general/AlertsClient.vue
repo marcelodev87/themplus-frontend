@@ -33,12 +33,6 @@ const columnsCategory = reactive<QuasarTable[]>([
     sortable: true,
   },
   {
-    name: 'type',
-    label: 'Tipo',
-    field: 'type',
-    align: 'left',
-  },
-  {
     name: 'alert',
     label: 'Alerta',
     field: 'alert.description',
@@ -191,26 +185,22 @@ watch(open, async () => {
               </div>
             </template>
             <template v-slot:body="props">
-              <q-tr :props="props" style="height: 28px">
+              <q-tr
+                :props="props"
+                style="height: 28px"
+                :class="props.row.type == 'entrada' ? 'text-green' : 'text-red'"
+              >
                 <q-td
                   key="name"
                   :props="props"
                   class="text-left"
                   :class="props.row.active === 0 ? 'text-grey-5' : ''"
                 >
-                  {{ props.row.name }}
-                </q-td>
-                <q-td
-                  key="type"
-                  :props="props"
-                  class="text-left capitalize"
-                  :class="props.row.active === 0 ? 'text-grey-5' : ''"
-                >
-                  {{ props.row.type }}
+                  <span class="text-subtitle2">{{ props.row.name }}</span>
                 </q-td>
                 <q-td key="alert" :props="props">
                   <span v-if="props.row.alert">{{ props.row.alert }}</span>
-                  <span v-else class="text-red">
+                  <span v-else class="text-subtitle2">
                     <q-icon name="edit" /> Adicione uma alerta
                   </span>
                   <q-popup-edit
