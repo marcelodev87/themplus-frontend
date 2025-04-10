@@ -122,7 +122,6 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
-
 const checkData = (): { status: boolean; message?: string } => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -172,14 +171,26 @@ const checkData = (): { status: boolean; message?: string } => {
       return { status: false, message: 'O arquivo deve ter no máximo 2MB' };
     }
 
+    const validFileTypes = [
+      'application/pdf',
+      'image/png',
+      'image/jpeg',
+      'image/jpg',
+    ];
     const fileType = dataEntry.file.type;
-    if (fileType !== 'application/pdf') {
-      return { status: false, message: 'O arquivo deve ser um PDF.' };
+
+    if (!validFileTypes.includes(fileType)) {
+      return {
+        status: false,
+        message:
+          'O arquivo deve ser um PDF ou uma imagem (PNG, JPG, JPEG, GIF).',
+      };
     }
   }
 
   return { status: true };
 };
+
 const clear = (): void => {
   Object.assign(dataEntry, {
     category: null,

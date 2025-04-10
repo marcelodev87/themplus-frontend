@@ -474,11 +474,7 @@ watch(
               class="text-left"
               :class="props.row.receipt ? 'cursor-pointer' : ''"
             >
-              <q-icon
-                v-if="props.row.receipt"
-                name="picture_as_pdf"
-                size="20px"
-              />
+              <q-icon v-if="props.row.receipt" name="attach_file" size="20px" />
             </q-td>
             <q-td key="observation" :props="props">
               <q-icon name="edit" color="black" v-show="!finalizedReport" />

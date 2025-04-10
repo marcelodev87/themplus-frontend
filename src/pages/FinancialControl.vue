@@ -514,7 +514,7 @@ onMounted(async () => {
               >
                 <q-icon
                   v-if="props.row.receipt"
-                  name="picture_as_pdf"
+                  name="attach_file"
                   size="20px"
                 />
               </q-td>
