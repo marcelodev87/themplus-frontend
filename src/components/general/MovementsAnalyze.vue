@@ -304,7 +304,7 @@ watch(open, async () => {
                   label="Arquivo"
                   dense
                   clearable
-                  accept=".pdf"
+                  accept=".pdf, .jpeg, .jpg, .png"
                   :max-file-size="2 * 1024 * 1024"
                   :disable="loadingMovement"
                 >
