@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import ImageView from '../shared/ImageView.vue';
+
 defineOptions({
   name: 'CategoryDocument',
 });
+
+const showImage = ref<boolean>(false);
+const urlImage = ref<string | null>(null);
+
+const openShowImage = (url: string) => {
+  showImage.value = true;
+  urlImage.value = url;
+};
+const closeShowImage = () => {
+  showImage.value = false;
+  urlImage.value = null;
+};
 </script>
 <template>
   <main>
@@ -33,10 +48,12 @@ defineOptions({
     </p>
     <div class="text-body1 column q-gutter-y-md">
       <q-img
+        @click="openShowImage('/images/document/category1.png')"
         src="/images/document/category1.png"
         style="width: 1000px; max-width: 95vw"
       />
       <q-img
+        @click="openShowImage('/images/document/form-category.png')"
         src="/images/document/form-category.png"
         style="width: 1000px; max-width: 95vw"
         class="q-mt-md"
@@ -93,5 +110,10 @@ defineOptions({
         </p>
       </li>
     </ul>
+    <ImageView
+      :open="showImage"
+      :url="urlImage"
+      @update:open="closeShowImage"
+    />
   </main>
 </template>

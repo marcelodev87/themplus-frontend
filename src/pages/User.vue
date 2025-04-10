@@ -211,27 +211,31 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="name" :props="props" class="text-left">
-                {{ props.row.name }}
+                <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
               <q-td key="email" :props="props" class="text-left">
-                {{ props.row.email }}
+                <span class="text-subtitle2">{{ props.row.email }}</span>
               </q-td>
               <q-td key="phone" :props="props" class="text-left">
-                {{ props.row.phone ?? 'Não definido' }}
+                <span class="text-subtitle2">{{
+                  props.row.phone ?? 'Não definido'
+                }}</span>
               </q-td>
               <q-td key="position" :props="props" class="text-left">
-                {{
+                <span class="text-subtitle2">{{
                   props.row.position === 'admin'
                     ? 'Administrador'
                     : 'Usuário comum'
-                }}
+                }}</span>
               </q-td>
               <q-td key="department" :props="props" class="text-left">
-                {{
-                  props.row.department_id
-                    ? props.row.department.name
-                    : `Não definido`
-                }}
+                <span class="text-subtitle2">
+                  {{
+                    props.row.department_id
+                      ? props.row.department.name
+                      : `Não definido`
+                  }}
+                </span>
               </q-td>
               <q-td key="active" :props="props" class="text-left">
                 <q-icon

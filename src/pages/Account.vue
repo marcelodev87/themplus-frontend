@@ -241,7 +241,7 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.name }}
+                <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
               <q-td
                 key="account_number"
@@ -249,7 +249,9 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.account_number }}
+                <span class="text-subtitle2">{{
+                  props.row.account_number
+                }}</span>
               </q-td>
               <q-td
                 key="agency_number"
@@ -257,7 +259,9 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.agency_number }}
+                <span class="text-subtitle2">{{
+                  props.row.agency_number
+                }}</span>
               </q-td>
               <q-td
                 key="balance"
@@ -265,7 +269,9 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ `${formatCurrencyBRL(props.row.balance)}` }}
+                <span class="text-subtitle2">{{
+                  `${formatCurrencyBRL(props.row.balance)}`
+                }}</span>
               </q-td>
               <q-td
                 key="description"
@@ -273,7 +279,7 @@ onMounted(async () => {
                 class="text-left"
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
-                {{ props.row.description }}
+                <span class="text-subtitle2">{{ props.row.description }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

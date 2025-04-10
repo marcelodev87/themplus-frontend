@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import IntroDocument from 'src/components/document/IntroDocument.vue';
 import StartDocument from 'src/components/document/StartDocument.vue';
 import DashboardDocument from 'src/components/document/DashboardDocument.vue';
@@ -26,25 +26,6 @@ defineOptions({
 const openOptions = ref<boolean>(true);
 const splitterModel = ref<number>(300);
 const optionSelected = ref<string>('Introdução');
-const optionsHelp = reactive<string[]>([
-  'Introdução',
-  'Começando',
-  'Visão usuário',
-  'Visão contador',
-  'Dashboard',
-  'Movimentações',
-  'Agendamentos',
-  'Solicitações',
-  'Vínculos',
-  'Organização',
-  'Contabilidade',
-  'Atividades',
-  'Categorias',
-  'Contas',
-  'Departamentos',
-  'Filiais',
-  'Usuários',
-]);
 
 const isActive = (option: string): boolean => {
   return optionSelected.value === option;
@@ -65,21 +46,222 @@ const selectOption = (option: string): void => {
       <template v-slot:before>
         <q-list class="column justify-around">
           <q-item
-            v-for="(item, index) in optionsHelp"
-            @click="selectOption(item)"
-            :key="index"
-            :active="isActive(item)"
+            @click="selectOption('Introdução')"
+            :active="isActive('Introdução')"
             active-class="text-bold"
             clickable
           >
             <q-item-section>
               <div class="column">
-                <span class="">
-                  {{ item }}
-                </span>
+                <span> Introdução </span>
               </div>
             </q-item-section>
           </q-item>
+          <q-item
+            @click="selectOption('Começando')"
+            :active="isActive('Começando')"
+            active-class="text-bold"
+            clickable
+          >
+            <q-item-section>
+              <div class="column">
+                <span> Começando </span>
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item
+            @click="selectOption('Visão usuário')"
+            :active="isActive('Visão usuário')"
+            active-class="text-bold"
+            clickable
+          >
+            <q-item-section>
+              <div class="column">
+                <span> Visão usuário </span>
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item
+            @click="selectOption('Visão contador')"
+            :active="isActive('Visão contador')"
+            active-class="text-bold"
+            clickable
+          >
+            <q-item-section>
+              <div class="column">
+                <span> Visão contador </span>
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item
+            @click="selectOption('Atividades')"
+            :active="isActive('Atividades')"
+            active-class="text-bold"
+            clickable
+          >
+            <q-item-section>
+              <div class="column">
+                <span> Atividades </span>
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item
+            @click="selectOption('Departamentos')"
+            :active="isActive('Departamentos')"
+            active-class="text-bold"
+            clickable
+          >
+            <q-item-section>
+              <div class="column">
+                <span> Departamentos </span>
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item
+            @click="selectOption('Usuários')"
+            :active="isActive('Usuários')"
+            active-class="text-bold"
+            clickable
+          >
+            <q-item-section>
+              <div class="column">
+                <span> Usuários </span>
+              </div>
+            </q-item-section>
+          </q-item>
+
+          <q-expansion-item
+            expand-separator
+            label="Funcionalidades para cliente"
+            dense-toggle
+          >
+            <q-item
+              @click="selectOption('Dashboard')"
+              :active="isActive('Dashboard')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Dashboard </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Movimentações')"
+              :active="isActive('Movimentações')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Movimentações </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Agendamentos')"
+              :active="isActive('Agendamentos')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Agendamentos </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Contabilidade')"
+              :active="isActive('Contabilidade')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Contabilidade </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Categorias')"
+              :active="isActive('Categorias')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Categorias </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Contas')"
+              :active="isActive('Contas')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Contas </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Filiais')"
+              :active="isActive('Filiais')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Filiais </span>
+                </div>
+              </q-item-section>
+            </q-item>
+          </q-expansion-item>
+          <q-expansion-item
+            expand-separator
+            label="Funcionalidades para contador"
+            dense-toggle
+          >
+            <q-item
+              @click="selectOption('Solicitações')"
+              :active="isActive('Solicitações')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Solicitações </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Vínculos')"
+              :active="isActive('Vínculos')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Vínculos </span>
+                </div>
+              </q-item-section>
+            </q-item>
+            <q-item
+              @click="selectOption('Organização')"
+              :active="isActive('Organização')"
+              active-class="text-bold"
+              clickable
+            >
+              <q-item-section>
+                <div class="column">
+                  <span> Organização </span>
+                </div>
+              </q-item-section>
+            </q-item>
+          </q-expansion-item>
         </q-list>
       </template>
 

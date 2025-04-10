@@ -88,12 +88,12 @@ watch(
     <q-drawer
       v-model="leftDrawerOpen"
       :show-if-above="!$q.screen.lt.md"
-      :width="220"
+      :width="250"
       :breakpoint="700"
       side="left"
       behavior="desktop"
       bordered
-      class="text-black"
+      class="text-black text-subtitle1"
     >
       <q-scroll-area class="fit">
         <q-list>

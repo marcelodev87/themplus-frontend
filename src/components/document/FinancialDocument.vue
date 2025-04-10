@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import ImageView from '../shared/ImageView.vue';
+
 defineOptions({
   name: 'FinancialDocument',
 });
+
+const showImage = ref<boolean>(false);
+const urlImage = ref<string | null>(null);
+
+const openShowImage = (url: string) => {
+  showImage.value = true;
+  urlImage.value = url;
+};
+const closeShowImage = () => {
+  showImage.value = false;
+  urlImage.value = null;
+};
 </script>
 <template>
   <main>
@@ -34,6 +49,7 @@ defineOptions({
 
     <p class="text-h6 q-mt-md"># Compreendendo as Funcionalidades:</p>
     <q-img
+      @click="openShowImage('/images/document/financial.png')"
       src="/images/document/financial.png"
       style="width: 1000px; max-width: 95vw"
     />
@@ -78,5 +94,10 @@ defineOptions({
         </p>
       </li>
     </ul>
+    <ImageView
+      :open="showImage"
+      :url="urlImage"
+      @update:open="closeShowImage"
+    />
   </main>
 </template>

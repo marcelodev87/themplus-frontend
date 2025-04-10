@@ -533,13 +533,13 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Total de entrada: </span>
+              <span class="text-subtitle1">Total de entrada: </span>
               <span class="text-green">{{
                 `${formatCurrencyBRL(Number(movementsDashboard?.entry_value))}`
               }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
-              <span> Total de saída:</span>
+              <span class="text-subtitle1"> Total de saída:</span>
               <span class="text-red"
                 >{{
                   `${formatCurrencyBRL(Number(movementsDashboard?.out_value))}`
@@ -559,7 +559,7 @@ onMounted(async () => {
                   : 'bg-green-2'
               "
             >
-              <span>Saldo:</span>
+              <span class="text-subtitle1">Saldo:</span>
               <span>{{
                 `${formatCurrencyBRL(
                   Number(movementsDashboard?.entry_value) -
@@ -580,7 +580,7 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Total de entrada:</span>
+              <span class="text-subtitle1">Total de entrada:</span>
               <span class="text-green">{{
                 schedulingsDashboard?.entry_value
                   ? `${formatCurrencyBRL(Number(schedulingsDashboard.entry_value))}`
@@ -588,7 +588,7 @@ onMounted(async () => {
               }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
-              <span>Total de saída:</span>
+              <span class="text-subtitle1">Total de saída:</span>
               <span class="text-red">{{
                 schedulingsDashboard?.out_value
                   ? `${formatCurrencyBRL(Number(schedulingsDashboard.out_value))}`
@@ -611,7 +611,7 @@ onMounted(async () => {
                   : ''
               "
             >
-              <span>Saldo:</span>
+              <span class="text-subtitle1">Saldo:</span>
               <span>{{
                 schedulingsDashboard?.out_value &&
                 schedulingsDashboard?.entry_value
@@ -635,18 +635,18 @@ onMounted(async () => {
             </q-card-section>
 
             <q-card-section class="q-pt-none row justify-between">
-              <span>Administradores:</span>
+              <span class="text-subtitle1">Administradores:</span>
               <span>{{ usersDashboard?.amount_admins ?? '' }}</span>
             </q-card-section>
             <q-card-section class="q-pt-none row justify-between">
-              <span>Usuários comuns:</span>
+              <span class="text-subtitle1">Usuários comuns:</span>
               <span>{{ usersDashboard?.amount_common_users ?? '' }}</span>
             </q-card-section>
 
             <q-separator inset />
 
             <q-card-section class="row justify-between">
-              <span>Total de usuários:</span>
+              <span class="text-subtitle1">Total de usuários:</span>
               <span>{{ usersDashboard?.amount_users ?? '' }}</span>
             </q-card-section>
           </q-card>
@@ -682,7 +682,7 @@ onMounted(async () => {
               class="q-pt-none row justify-between"
               :key="index"
             >
-              <span>{{ item.name }}:</span>
+              <span class="text-subtitle1">{{ item.name }}:</span>
               <span>{{ `${formatCurrencyBRL(item.balance)}` }}</span>
             </q-card-section>
           </q-card>
@@ -722,7 +722,7 @@ onMounted(async () => {
             <template v-slot:body="props">
               <q-tr :props="props" style="height: 28px">
                 <q-td key="name" :props="props" class="text-left">
-                  {{ props.row.name }}
+                  <span class="text-subtitle1"> {{ props.row.name }}</span>
                 </q-td>
                 <q-td key="value" :props="props" class="text-left">
                   <q-linear-progress
@@ -736,6 +736,16 @@ onMounted(async () => {
                   >
                     <div class="absolute-full flex flex-center">
                       <q-badge
+                        color="white"
+                        text-color="black"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueEntryCategoryMovements) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
                         color="white"
                         text-color="black"
                         :label="`${formatCurrencyBRL(props.row.value)}`"
@@ -769,7 +779,7 @@ onMounted(async () => {
             <template v-slot:body="props">
               <q-tr :props="props" style="height: 28px">
                 <q-td key="name" :props="props" class="text-left">
-                  {{ props.row.name }}
+                  <span class="text-subtitle1"> {{ props.row.name }}</span>
                 </q-td>
                 <q-td key="value" :props="props" class="text-left">
                   <q-linear-progress
@@ -783,6 +793,16 @@ onMounted(async () => {
                   >
                     <div class="absolute-full flex flex-center">
                       <q-badge
+                        color="white"
+                        text-color="black"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueOutCategoryMovements) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
                         color="white"
                         text-color="black"
                         :label="`${formatCurrencyBRL(props.row.value)}`"
@@ -824,7 +844,7 @@ onMounted(async () => {
             <template v-slot:body="props">
               <q-tr :props="props" style="height: 28px">
                 <q-td key="name" :props="props" class="text-left">
-                  {{ props.row.name }}
+                  <span class="text-subtitle1"> {{ props.row.name }}</span>
                 </q-td>
                 <q-td key="value" :props="props" class="text-left">
                   <q-linear-progress
@@ -838,6 +858,16 @@ onMounted(async () => {
                   >
                     <div class="absolute-full flex flex-center">
                       <q-badge
+                        color="white"
+                        text-color="black"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueEntryCategorySchedules) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
                         color="white"
                         text-color="black"
                         :label="`${formatCurrencyBRL(props.row.value)}`"
@@ -871,7 +901,7 @@ onMounted(async () => {
             <template v-slot:body="props">
               <q-tr :props="props" style="height: 28px">
                 <q-td key="name" :props="props" class="text-left">
-                  {{ props.row.name }}
+                  <span class="text-subtitle1"> {{ props.row.name }}</span>
                 </q-td>
                 <q-td key="value" :props="props" class="text-left">
                   <q-linear-progress
@@ -887,7 +917,17 @@ onMounted(async () => {
                       <q-badge
                         color="white"
                         text-color="black"
-                        :label="`R$ ${formatCurrencyBRL(props.row.value)}`"
+                        :label="`${(
+                          ((Number(props.row.value) || 0) /
+                            (Number(totalValueOutCategorySchedules) || 1)) *
+                          100
+                        ).toFixed(1)} %`"
+                      />
+                      <q-badge
+                        class="q-ml-sm"
+                        color="white"
+                        text-color="black"
+                        :label="`${formatCurrencyBRL(props.row.value)}`"
                       />
                     </div>
                   </q-linear-progress>
@@ -914,13 +954,13 @@ onMounted(async () => {
             >
               <q-card flat class="q-pt-sm full-width text-body2">
                 <q-card-section class="q-pt-none row justify-between">
-                  <span>Total de entrada: </span>
+                  <span class="text-subtitle1">Total de entrada: </span>
                   <span class="text-green">{{
                     `${formatCurrencyBRL(Number(totalEnterprise?.entry))}`
                   }}</span>
                 </q-card-section>
                 <q-card-section class="q-pt-none row justify-between">
-                  <span> Total de saída:</span>
+                  <span class="text-subtitle1"> Total de saída:</span>
                   <span class="text-red"
                     >{{ `${formatCurrencyBRL(Number(totalEnterprise?.out))}` }}
                   </span>
@@ -937,7 +977,7 @@ onMounted(async () => {
                       : 'bg-green-2'
                   "
                 >
-                  <span>Saldo:</span>
+                  <span class="text-subtitle1">Saldo:</span>
                   <span>{{
                     `${formatCurrencyBRL(
                       Number(totalEnterprise?.entry) -

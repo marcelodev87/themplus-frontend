@@ -120,7 +120,7 @@ onMounted(async () => {
             :nodes="treeDepartment"
             :filter="searchDepartment"
             node-key="id"
-            class="full-width text-subtitle1"
+            class="full-width"
           >
             <template v-slot:default-header="prop">
               <div class="row full-width wrap justify-between content-start">
@@ -139,7 +139,7 @@ onMounted(async () => {
                     :disable="loadingDepartment"
                     @click="handleEdit(prop.node)"
                   >
-                    {{ prop.node.label }}
+                    <span class="text-subtitle2">{{ prop.node.label }}</span>
                   </q-btn>
                 </div>
                 <q-separator />

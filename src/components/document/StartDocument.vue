@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import ImageView from '../shared/ImageView.vue';
+
 defineOptions({
   name: 'StartDocument',
 });
+
+const showImage = ref<boolean>(false);
+const urlImage = ref<string | null>(null);
+
+const openShowImage = (url: string) => {
+  showImage.value = true;
+  urlImage.value = url;
+};
+const closeShowImage = () => {
+  showImage.value = false;
+  urlImage.value = null;
+};
 </script>
 <template>
   <main>
@@ -15,6 +30,7 @@ defineOptions({
           cadastro através da nossa intuitiva tela de login:
         </p>
         <q-img
+          @click="openShowImage('/images/document/login.png')"
           src="/images/document/login.png"
           style="width: 600px; max-width: 80vw"
         />
@@ -25,6 +41,7 @@ defineOptions({
           dedicada, como demonstrado abaixo:
         </p>
         <q-img
+          @click="openShowImage('/images/document/register-user.png')"
           src="/images/document/register-user.png"
           style="width: 600px; max-width: 80vw"
         />
@@ -46,6 +63,7 @@ defineOptions({
           surgirá, confirmando o cadastro:
         </p>
         <q-img
+          @click="openShowImage('/images/document/register-success-user.png')"
           src="/images/document/register-success-user.png"
           style="width: 600px; max-width: 80vw"
         />
@@ -60,6 +78,7 @@ defineOptions({
           seja finalizado.
         </p>
         <q-img
+          @click="openShowImage('/images/document/form-register.png')"
           src="/images/document/form-register.png"
           style="width: 600px; max-width: 80vw"
         />
@@ -73,6 +92,7 @@ defineOptions({
         </p>
         <div class="column">
           <q-img
+            @click="openShowImage('/images/document/themplus.png')"
             src="/images/document/themplus.png"
             style="width: 600px; max-width: 80vw"
           >
@@ -81,6 +101,7 @@ defineOptions({
             </div>
           </q-img>
           <q-img
+            @click="openShowImage('/images/document/themplus-counter.png')"
             src="/images/document/themplus-counter.png"
             style="width: 600px; max-width: 80vw"
             class="q-mt-md"
@@ -92,5 +113,10 @@ defineOptions({
         </div>
       </li>
     </ol>
+    <ImageView
+      :open="showImage"
+      :url="urlImage"
+      @update:open="closeShowImage"
+    />
   </main>
 </template>

@@ -412,7 +412,9 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="month_year" :props="props" class="text-left">
-                {{ convertMonthYear(props.row.month_year) }}
+                <span class="text-subtitle2">{{
+                  convertMonthYear(props.row.month_year)
+                }}</span>
               </q-td>
               <q-td key="status" :props="props" class="text-left">
                 <q-badge
@@ -422,7 +424,9 @@ onMounted(async () => {
                 />
               </q-td>
               <q-td key="date_delivery" :props="props" class="text-left">
-                {{ formatDateToBrazilian(props.row.date_delivery) }}
+                <span class="text-subtitle2">{{
+                  formatDateToBrazilian(props.row.date_delivery)
+                }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
@@ -510,7 +514,7 @@ onMounted(async () => {
               >
                 <q-icon
                   v-if="props.row.receipt"
-                  name="picture_as_pdf"
+                  name="attach_file"
                   size="20px"
                 />
               </q-td>

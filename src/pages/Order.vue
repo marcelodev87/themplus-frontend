@@ -196,22 +196,32 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="name" :props="props" class="text-left">
-                {{ props.row.enterprise.name }}
+                <span class="text-subtitle2">{{
+                  props.row.enterprise.name
+                }}</span>
               </q-td>
               <q-td key="email" :props="props" class="text-left">
-                {{ props.row.enterprise.email }}
+                <span class="text-subtitle2">{{
+                  props.row.enterprise.email
+                }}</span>
               </q-td>
               <q-td key="cnpj" :props="props" class="text-left">
-                {{ props.row.enterprise.cnpj }}
+                <span class="text-subtitle2">{{
+                  props.row.enterprise.cnpj
+                }}</span>
               </q-td>
               <q-td key="cpf" :props="props" class="text-left">
-                {{ props.row.enterprise.cpf }}
+                <span class="text-subtitle2">{{
+                  props.row.enterprise.cpf
+                }}</span>
               </q-td>
               <q-td key="created" :props="props" class="text-left">
-                {{ formatDate(props.row.created_at) }}
+                <span class="text-subtitle2">{{
+                  formatDate(props.row.created_at)
+                }}</span>
               </q-td>
               <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
+                <span class="text-subtitle2">{{ props.row.description }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
