@@ -234,7 +234,7 @@ const searchDetails = async (id: string) => {
   modeTable.value = 'details';
 };
 const download = async (file: string) => {
-  await downloadFile(file.split('receipts/')[1]);
+  await downloadFile(file);
 };
 const clearObservations = (): void => {
   listMovement.value = listMovement.value.map((item) => {
