@@ -14,8 +14,10 @@ import {
   updateCodeFinancialService,
   updateEnterpriseService,
 } from 'src/services/enterprise-service';
+import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
 import {
   Enterprise,
+  HistoryEnterprise,
   ResultEnterprise,
   ViewEnterprise,
 } from '../ts/interfaces/data/Enterprise';
@@ -34,6 +36,8 @@ export const useEnterpriseStore = defineStore('enterprise', {
     counterSearch: null as Enterprise | null,
     enterpriseHeadquarters: false as boolean,
     listViewEnterprise: [] as ViewEnterprise[],
+    listCouponEnterprise: [] as CouponEnterprise[],
+    listHistory: [] as HistoryEnterprise[],
   }),
   getters: {
     resultEnterpriseSelect: (state) => {
@@ -58,8 +62,20 @@ export const useEnterpriseStore = defineStore('enterprise', {
     setListViewEnterprise(enterprises: ViewEnterprise[]) {
       enterprises.map((item) => this.listViewEnterprise.push(item));
     },
+    setListCouponEnterprise(coupons: CouponEnterprise[]) {
+      coupons.map((item) => this.listCouponEnterprise.push(item));
+    },
+    setListHistory(history: HistoryEnterprise[]) {
+      history.map((item) => this.listHistory.push(item));
+    },
     clearListViewEnterprise() {
       this.listViewEnterprise.splice(0, this.listViewEnterprise.length);
+    },
+    clearListCouponEnterprise() {
+      this.listCouponEnterprise.splice(0, this.listCouponEnterprise.length);
+    },
+    clearListHistory() {
+      this.listHistory.splice(0, this.listHistory.length);
     },
     createError(error: any) {
       let message = 'Error';

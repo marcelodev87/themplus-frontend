@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useFeedStore } from 'src/stores/feed-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { subscriptions } from 'src/utils/subscriptions';
+import ManageSubscription from 'src/components/general/ManageSubscription.vue';
 
 defineOptions({
   name: 'Subscriptions',
@@ -14,6 +15,7 @@ defineOptions({
 const { filledData } = storeToRefs(useFeedStore());
 const { getFeed } = useFeedStore();
 
+const showManageSubscription = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const columnsSubscriptions = reactive<QuasarTable[]>([
   {
@@ -55,6 +57,12 @@ const closeAlertDataEnterprise = async (): Promise<void> => {
   showAlertDataEnterprise.value = false;
   await fetchFeed();
 };
+const closeManageSubscription = (): void => {
+  showManageSubscription.value = false;
+};
+const openManageSubscription = (): void => {
+  showManageSubscription.value = true;
+};
 
 watch(
   filledData,
@@ -75,6 +83,19 @@ onMounted(async () => {
     <header class="row justify-between no-wrap bg-grey-1">
       <div>
         <TitlePage title="Painel de assinaturas" />
+      </div>
+      <div
+        class="col-6 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
+        <q-btn
+          @click="openManageSubscription"
+          icon-right="payments"
+          label="Painel de Assinatura"
+          class="q-mr-sm bg-contabilidade"
+          unelevated
+          no-caps
+        />
       </div>
     </header>
     <main>
@@ -145,6 +166,10 @@ onMounted(async () => {
       <AlertDataEnterprise
         :open="showAlertDataEnterprise"
         @update:open="closeAlertDataEnterprise"
+      />
+      <ManageSubscription
+        :open="showManageSubscription"
+        @update:open="closeManageSubscription"
       />
     </main>
   </section>

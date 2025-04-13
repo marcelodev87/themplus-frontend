@@ -59,3 +59,9 @@ export interface TotalEnterprise {
   entry: number;
   out: number;
 }
+
+export interface HistoryEnterprise {
+  id: string;
+  description: string;
+  date_action: string;
+}
