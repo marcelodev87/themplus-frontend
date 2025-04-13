@@ -11,6 +11,7 @@ defineOptions({
 
 const { loadingEnterprise, listCouponEnterprise } =
   storeToRefs(useEnterpriseStore());
+const { checkCoupon } = useEnterpriseStore();
 
 const nameCoupon = ref<string>('');
 const columnsCoupon = reactive<QuasarTable[]>([
@@ -51,6 +52,14 @@ const columnsCoupon = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+
+const clear = (): void => {
+  nameCoupon.value = '';
+};
+const check = async (): Promise<void> => {
+  await checkCoupon(nameCoupon.value);
+  clear();
+};
 </script>
 
 <template>
@@ -83,7 +92,14 @@ const columnsCoupon = reactive<QuasarTable[]>([
                 label="Adicione um cupom"
                 :class="!$q.screen.lt.md ? '' : 'q-mt-sm'"
               />
-              <q-btn color="green" size="sm" round icon="search" unelevated>
+              <q-btn
+                @click="check"
+                color="green"
+                size="sm"
+                round
+                icon="search"
+                unelevated
+              >
                 <q-tooltip>Validar cupom</q-tooltip>
               </q-btn>
             </div>

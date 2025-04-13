@@ -1,5 +1,6 @@
 import { api } from 'boot/axios';
 import { Bond } from 'src/ts/interfaces/data/Bond';
+import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
 import {
   Enterprise,
   ResultEnterprise,
@@ -121,6 +122,16 @@ export const unlinkCounterService = (): Promise<{
     message: string;
   };
 }> => api.put(`${baseUrl}/unlink`);
+
+export const checkCouponService = (
+  name: string
+): Promise<{
+  status: number;
+  data: {
+    coupons: CouponEnterprise[];
+    message: string;
+  };
+}> => api.post(`${baseUrl}/coupon?name=${name}`);
 
 export const deleteEnterpriseService = (
   id: string

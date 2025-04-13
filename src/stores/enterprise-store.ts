@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
+  checkCouponService,
   createEnterpriseByCounterService,
   deleteEnterpriseService,
   getEnterpriseService,
@@ -155,6 +156,21 @@ export const useEnterpriseStore = defineStore('enterprise', {
         const response = await showEnterpriseService(id);
         if (response.status === 200) {
           this.setCounterSearch(response.data.counter);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async checkCoupon(name: string) {
+      this.setLoading(true);
+      try {
+        const response = await checkCouponService(name);
+        if (response.status === 200) {
+          this.clearListCouponEnterprise();
+          this.setListCouponEnterprise(response.data.coupons);
+          this.createSuccess(response.data.message);
         }
       } catch (error) {
         this.createError(error);
