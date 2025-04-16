@@ -108,7 +108,9 @@ export const useOrderStore = defineStore('order', {
         const response = await getBondsService();
         if (response.status === 200) {
           this.clearListBond();
-          this.setListBond(response.data.bonds);
+          this.setListBond(
+            response.data.bonds.sort((a, b) => b.no_verified - a.no_verified)
+          );
           this.setFilledData(response.data.filled_data);
           updateNotifications(response.data.notifications);
         }
