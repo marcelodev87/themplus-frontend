@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import TableCouponEnterprise from '../tables/TableCouponEnterprise.vue';
-import TableHistorySubscription from '../tables/TableHistorySubscription.vue';
 import DashboardCapacity from './DashboardCapacity.vue';
 import SubscriptionInfo from './SubscriptionInfo.vue';
 
@@ -16,9 +15,7 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const tab = ref<'subscription' | 'coupon' | 'history' | 'capacity'>(
-  'subscription'
-);
+const tab = ref<'subscription' | 'coupon' | 'capacity'>('subscription');
 
 const open = computed({
   get: () => props.open,
@@ -30,8 +27,6 @@ const requestInformations = async () => {
     console.log('subscription');
   } else if (tab.value === 'coupon') {
     console.log('coupon');
-  } else if (tab.value === 'history') {
-    console.log('history');
   } else {
     console.log('capacity');
   }
@@ -69,7 +64,6 @@ watch(
         >
           <q-tab name="subscription" no-caps icon="paid" label="Assinatura" />
           <q-tab name="coupon" no-caps icon="percent" label="Cupons" />
-          <q-tab name="history" no-caps icon="history" label="Histórico" />
           <q-tab
             name="capacity"
             no-caps
@@ -86,9 +80,6 @@ watch(
           </q-tab-panel>
           <q-tab-panel name="coupon" class="q-pa-none">
             <TableCouponEnterprise />
-          </q-tab-panel>
-          <q-tab-panel name="history" class="q-pa-none">
-            <TableHistorySubscription />
           </q-tab-panel>
           <q-tab-panel name="capacity" class="q-pa-none">
             <DashboardCapacity />
