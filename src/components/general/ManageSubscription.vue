@@ -4,7 +4,7 @@ import type { ISubscriptionInfo } from 'src/ts/interfaces/data/SubscriptionInfo'
 import { useManageResourceStore } from 'src/stores/manage-resource-store';
 import { storeToRefs } from 'pinia';
 import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
-import TableCouponEnterprise from '../tables/TableCouponEnterprise.vue';
+// import TableCouponEnterprise from '../tables/TableCouponEnterprise.vue';
 // import DashboardCapacity from './DashboardCapacity.vue';
 import SubscriptionInfo from './SubscriptionInfo.vue';
 
@@ -92,7 +92,7 @@ watch(
           inline-label
         >
           <q-tab name="subscription" no-caps icon="paid" label="Assinatura" />
-          <q-tab name="coupon" no-caps icon="percent" label="Cupons" />
+          <!-- <q-tab name="coupon" no-caps icon="percent" label="Cupons" /> -->
           <!-- <q-tab
             name="capacity"
             no-caps
@@ -110,12 +110,12 @@ watch(
               :loading="loadingResource"
             />
           </q-tab-panel>
-          <q-tab-panel name="coupon" class="q-pa-none">
+          <!-- <q-tab-panel name="coupon" class="q-pa-none">
             <TableCouponEnterprise
               :data="listCouponsEnterprise"
               :loading="loadingResource"
             />
-          </q-tab-panel>
+          </q-tab-panel> -->
           <!-- <q-tab-panel name="capacity" class="q-pa-none">
             <DashboardCapacity />
           </q-tab-panel> -->
