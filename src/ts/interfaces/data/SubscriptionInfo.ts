@@ -1,4 +1,4 @@
 export interface ISubscriptionInfo {
-  subscription: 'free' | 'basic' | 'advanced' | 'custom';
-  value: number;
+  name: 'free' | 'basic' | 'advanced' | 'custom';
+  price: number;
 }

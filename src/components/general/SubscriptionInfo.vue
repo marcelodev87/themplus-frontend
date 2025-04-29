@@ -13,13 +13,13 @@ const props = defineProps<{
 }>();
 
 const subscription = computed(() => {
-  if (props.data?.subscription === 'free') {
+  if (props.data?.name === 'free') {
     return 'gratuíta';
   }
-  if (props.data?.subscription === 'basic') {
+  if (props.data?.name === 'basic') {
     return 'básica';
   }
-  if (props.data?.subscription === 'advanced') {
+  if (props.data?.name === 'advanced') {
     return 'avançada';
   }
   return 'personalizada';
@@ -44,7 +44,7 @@ const subscription = computed(() => {
         <span class="text-primary text-bold">
           R$
           {{
-            (props.data?.value ?? 0).toLocaleString('pt-BR', {
+            (props.data?.price ?? 0).toLocaleString('pt-BR', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })

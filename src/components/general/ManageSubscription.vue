@@ -35,7 +35,8 @@ const clear = (): void => {
 const fetchSubscription = async () => {
   const response = await getSubscriptionInfo();
   if (response?.status === 200) {
-    dataSubscription.value = response.data.info;
+    dataSubscription.value = response.data.subscription;
+    console.log('dataSubscription.value', dataSubscription.value);
   }
 };
 const fetchCoupons = async () => {
@@ -68,6 +69,7 @@ watch(
   async () => {
     if (open.value) {
       clear();
+      await fetchSubscription();
     }
   },
   { immediate: true }

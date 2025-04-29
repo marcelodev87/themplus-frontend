@@ -7,7 +7,7 @@ const baseUrl = 'resource';
 export const getSubscriptionInfoService = (): Promise<{
   status: number;
   data: {
-    info: ISubscriptionInfo;
+    subscription: ISubscriptionInfo;
   };
 }> => api.get(`${baseUrl}/subscription`);
 
