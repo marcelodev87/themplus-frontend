@@ -3,14 +3,19 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { reactive, ref } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
+import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
 import TitlePage from '../shared/TitlePage.vue';
 
 defineOptions({
   name: 'CounterInfo',
 });
 
-const { loadingEnterprise, listCouponEnterprise } =
-  storeToRefs(useEnterpriseStore());
+const props = defineProps<{
+  data: CouponEnterprise[];
+  loading: boolean;
+}>();
+
+const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 const { checkCoupon } = useEnterpriseStore();
 
 const nameCoupon = ref<string>('');
@@ -23,14 +28,8 @@ const columnsCoupon = reactive<QuasarTable[]>([
   },
   {
     name: 'type',
-    label: 'Tipo de cupom', // SUBSCRIPTION - SERVICE
+    label: 'Tipo de cupom',
     field: 'type',
-    align: 'left',
-  },
-  {
-    name: 'description',
-    label: 'Descrição', // BASIC , MV100
-    field: 'description',
     align: 'left',
   },
   {
@@ -69,9 +68,9 @@ const check = async (): Promise<void> => {
     </q-card-section>
     <q-card-section class="q-pa-sm q-gutter-y-sm">
       <q-table
-        :rows="listCouponEnterprise"
+        :rows="props.data"
         :columns="columnsCoupon"
-        :loading="loadingEnterprise"
+        :loading="props.loading"
         flat
         bordered
         dense
@@ -84,7 +83,7 @@ const check = async (): Promise<void> => {
           <div class="row items-center justify-between full-width">
             <span class="text-subtitle2">Lista de cupons</span>
             <q-separator />
-            <div class="row items-center justify-end q-gutter-x-sm">
+            <!-- <div class="row items-center justify-end q-gutter-x-sm">
               <q-input
                 v-model="nameCoupon"
                 outlined
@@ -102,7 +101,7 @@ const check = async (): Promise<void> => {
               >
                 <q-tooltip>Validar cupom</q-tooltip>
               </q-btn>
-            </div>
+            </div> -->
           </div>
         </template>
         <template v-slot:body="props">
@@ -112,9 +111,6 @@ const check = async (): Promise<void> => {
             </q-td>
             <q-td key="type" :props="props" class="text-left">
               <span class="text-subtitle2">{{ props.row.type }}</span>
-            </q-td>
-            <q-td key="description" :props="props" class="text-left">
-              <span class="text-subtitle2">{{ props.row.description }}</span>
             </q-td>
             <q-td key="discount" :props="props" class="text-left">
               <span class="text-subtitle2">{{ props.row.discount }}</span>
@@ -138,5 +134,13 @@ const check = async (): Promise<void> => {
         </template>
       </q-table>
     </q-card-section>
+    <q-inner-loading
+      :showing="props.loading"
+      label="Carregando os dados..."
+      label-class="black"
+      label-style="font-size: 1.1em"
+      color="primary"
+      size="50px"
+    />
   </q-card>
 </template>

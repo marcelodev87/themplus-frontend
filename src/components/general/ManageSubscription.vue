@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
+import type { ISubscriptionInfo } from 'src/ts/interfaces/data/SubscriptionInfo';
+import { useManageResourceStore } from 'src/stores/manage-resource-store';
+import { storeToRefs } from 'pinia';
+import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
 import TableCouponEnterprise from '../tables/TableCouponEnterprise.vue';
-import DashboardCapacity from './DashboardCapacity.vue';
+// import DashboardCapacity from './DashboardCapacity.vue';
 import SubscriptionInfo from './SubscriptionInfo.vue';
 
 defineOptions({
@@ -15,32 +19,55 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const { getSubscriptionInfo, getCouponsInEnterprise } =
+  useManageResourceStore();
+const { loadingResource } = storeToRefs(useManageResourceStore());
+
 const tab = ref<'subscription' | 'coupon' | 'capacity'>('subscription');
+const dataSubscription = ref<ISubscriptionInfo | null>(null);
+const listCouponsEnterprise = reactive<CouponEnterprise[]>([]);
+
+const clear = (): void => {
+  tab.value = 'subscription';
+  dataSubscription.value = null;
+  listCouponsEnterprise.splice(0, listCouponsEnterprise.length);
+};
+const fetchSubscription = async () => {
+  const response = await getSubscriptionInfo();
+  if (response?.status === 200) {
+    dataSubscription.value = response.data.info;
+  }
+};
+const fetchCoupons = async () => {
+  const response = await getCouponsInEnterprise();
+  if (response?.status === 200) {
+    listCouponsEnterprise.splice(
+      0,
+      listCouponsEnterprise.length,
+      ...response.data.coupons
+    );
+  }
+};
 
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
 
-const requestInformations = async () => {
+watch(tab, async () => {
   if (tab.value === 'subscription') {
-    console.log('subscription');
+    await fetchSubscription();
   } else if (tab.value === 'coupon') {
-    console.log('coupon');
+    await fetchCoupons();
   } else {
     console.log('capacity');
   }
-};
-const clear = (): void => {
-  tab.value = 'subscription';
-};
-
+});
 watch(
   open,
   async () => {
     if (open.value) {
       clear();
-      await requestInformations();
     }
   },
   { immediate: true }
@@ -64,26 +91,32 @@ watch(
         >
           <q-tab name="subscription" no-caps icon="paid" label="Assinatura" />
           <q-tab name="coupon" no-caps icon="percent" label="Cupons" />
-          <q-tab
+          <!-- <q-tab
             name="capacity"
             no-caps
             icon="donut_large"
             label="Capacidade"
-          />
+          /> -->
         </q-tabs>
 
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="subscription" class="q-pa-none">
-            <SubscriptionInfo />
+            <SubscriptionInfo
+              :data="dataSubscription"
+              :loading="loadingResource"
+            />
           </q-tab-panel>
           <q-tab-panel name="coupon" class="q-pa-none">
-            <TableCouponEnterprise />
+            <TableCouponEnterprise
+              :data="listCouponsEnterprise"
+              :loading="loadingResource"
+            />
           </q-tab-panel>
-          <q-tab-panel name="capacity" class="q-pa-none">
+          <!-- <q-tab-panel name="capacity" class="q-pa-none">
             <DashboardCapacity />
-          </q-tab-panel>
+          </q-tab-panel> -->
         </q-tab-panels>
       </q-card-section>
       <q-card-actions align="right">
