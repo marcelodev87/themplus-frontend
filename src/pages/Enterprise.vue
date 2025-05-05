@@ -31,6 +31,7 @@ const dataEnterprise = reactive<DataEnterprise>({
   numberAddress: '',
   complement: '',
   phone: '',
+  code: '',
 });
 
 const checkData = (): { status: boolean; message?: string } => {
@@ -134,6 +135,7 @@ const clear = (): void => {
     complement: '',
     neighborhood: '',
     cep: '',
+    code: '',
   });
 };
 const save = async () => {
@@ -165,6 +167,8 @@ const save = async () => {
       number_address: dataEnterprise.numberAddress,
       email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
+      code:
+        dataEnterprise.phone.trim() === '' ? null : Number(dataEnterprise.code),
     });
 
     if (response?.status === 201) {
@@ -294,19 +298,37 @@ onMounted(() => {
               <q-icon name="mail" color="black" size="20px" />
             </template>
           </q-input>
-          <q-input
-            v-model="formattedPhone"
-            bg-color="grey-1"
-            label-color="black"
-            filled
-            label="Telefone da organização"
-            dense
-            input-class="text-black"
-          >
-            <template v-slot:prepend>
-              <q-icon name="call" color="black" size="20px" />
-            </template>
-          </q-input>
+          <div class="row justify-between">
+            <q-input
+              v-model="formattedPhone"
+              bg-color="grey-1"
+              label-color="black"
+              filled
+              label="Telefone da organização"
+              dense
+              input-class="text-black"
+              class="input-divider"
+            >
+              <template v-slot:prepend>
+                <q-icon name="call" color="black" size="20px" />
+              </template>
+            </q-input>
+            <q-input
+              v-model="dataEnterprise.code"
+              bg-color="white"
+              label-color="black"
+              filled
+              label="Código interno"
+              dense
+              input-class="text-black"
+              mask="##########"
+              class="input-divider"
+            >
+              <template v-slot:prepend>
+                <q-icon name="key" color="black" size="20px" />
+              </template>
+            </q-input>
+          </div>
           <div class="row justify-between">
             <q-select
               v-model="selectedIdentifier"

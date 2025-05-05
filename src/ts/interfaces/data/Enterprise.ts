@@ -14,6 +14,7 @@ export interface DataEnterprise {
   numberAddress: string;
   complement: string;
   neighborhood: string;
+  code?: string;
 }
 
 export interface Enterprise {

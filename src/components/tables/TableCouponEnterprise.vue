@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
@@ -16,9 +16,9 @@ const props = defineProps<{
 }>();
 
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
-const { checkCoupon } = useEnterpriseStore();
+// const { checkCoupon } = useEnterpriseStore();
 
-const nameCoupon = ref<string>('');
+// const nameCoupon = ref<string>('');
 const columnsCoupon = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -52,13 +52,13 @@ const columnsCoupon = reactive<QuasarTable[]>([
   },
 ]);
 
-const clear = (): void => {
-  nameCoupon.value = '';
-};
-const check = async (): Promise<void> => {
-  await checkCoupon(nameCoupon.value);
-  clear();
-};
+// const clear = (): void => {
+//   nameCoupon.value = '';
+// };
+// const check = async (): Promise<void> => {
+//   await checkCoupon(nameCoupon.value);
+//   clear();
+// };
 </script>
 
 <template>

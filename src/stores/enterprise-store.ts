@@ -246,6 +246,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
       number_address: string | null;
       email: string | null;
       phone: string | null;
+      code: number | null;
     }) {
       this.setLoading(true);
       try {

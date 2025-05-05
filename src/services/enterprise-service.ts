@@ -109,6 +109,7 @@ export const createEnterpriseByCounterService = (payload: {
   number_address: string | null;
   email: string | null;
   phone: string | null;
+  code: number | null;
 }): Promise<{
   status: number;
   data: {
