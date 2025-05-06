@@ -23,6 +23,7 @@ const {
   undoReportCounter,
   detailsReport,
   excludeMovement,
+  downloadReport,
 } = useReportStore();
 const {
   loadingReport,
@@ -361,6 +362,21 @@ watch(
               </q-icon>
             </q-td>
             <q-td key="action" :props="props">
+              <q-btn
+                v-show="
+                  props.row.check_counter === null ||
+                  props.row.check_counter === user?.enterprise_id
+                "
+                @click="downloadReport(props.row.id)"
+                :disable="loadingReport"
+                icon="download"
+                size="sm"
+                flat
+                round
+                color="primary"
+              >
+                <q-tooltip> Exportar </q-tooltip>
+              </q-btn>
               <q-btn
                 v-show="
                   props.row.check_counter === null ||

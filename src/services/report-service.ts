@@ -1,10 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { api } from 'boot/axios';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
+import { AxiosError } from 'axios';
+import { Notify } from 'quasar';
 import { Enterprise } from '../ts/interfaces/data/Enterprise';
 
 const baseUrl = 'report';
+
+const createError = (error: any) => {
+  let message = 'Error';
+  if (error instanceof AxiosError) {
+    message = error.response?.data?.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  Notify.create({
+    message,
+    type: 'negative',
+  });
+};
 
 export const getReportsService = (
   id: string
@@ -106,4 +122,27 @@ export const updateMovementByCounterService = (
       'Content-Type': 'multipart/form-data',
     },
   });
+};
+
+export const downloadReportService = async (reportId: string) => {
+  try {
+    const response = await api.post(`${baseUrl}/export/${reportId}`, null, {
+      responseType: 'blob',
+    });
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `report_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
 };

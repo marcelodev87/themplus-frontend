@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
   detailsReportService,
+  downloadReportService,
   excludeMovementService,
   finalizeReportCounterService,
   getReportsService,
@@ -207,6 +208,16 @@ export const useReportStore = defineStore('report', {
           this.setPermissions(response.data.permissions);
           this.createSuccess(response.data.message);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async downloadReport(reportId: string) {
+      this.setLoading(true);
+      try {
+        await downloadReportService(reportId);
       } catch (error) {
         this.createError(error);
       } finally {
