@@ -35,6 +35,7 @@ const {
   listMonthYear,
   delivered,
   listCategoryFilters,
+  listAccountFilters,
   movementsAnalyze,
 } = storeToRefs(useMovementStore());
 const { user } = storeToRefs(useAuthStore());
@@ -120,6 +121,10 @@ const selectedCategory = ref<QuasarSelect<string | null>>({
   label: 'Todas categorias',
   value: null,
 });
+const selectedAccount = ref<QuasarSelect<string | null>>({
+  label: 'Todas contas',
+  value: null,
+});
 
 const dateActual = computed(() => {
   const currentDate = new Date();
@@ -144,6 +149,22 @@ const optionsCategoriesFilter = computed(() => {
     });
 
   return [...baseCategories, ...additionalCategories];
+});
+const optionsAccountsFilter = computed(() => {
+  const baseAccounts = [
+    {
+      label: 'Todas contas',
+      value: null,
+    },
+  ];
+
+  const additionalAccounts = (listAccountFilters.value || [])
+    .slice()
+    .sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    });
+
+  return [...baseAccounts, ...additionalAccounts];
 });
 
 const dataMovement = computed(() => {
@@ -313,8 +334,11 @@ const getClassTotal = (total: string) => {
 };
 
 watch(
-  [onlyEntry, onlyOut, selectedCategory],
-  async ([newEntry, newOut, newCategory], [oldEntry, oldOut, oldCategory]) => {
+  [onlyEntry, onlyOut, selectedCategory, selectedAccount],
+  async (
+    [newEntry, newOut, newCategory, newAccount],
+    [oldEntry, oldOut, oldCategory, oldAccount]
+  ) => {
     let lastChanged = null;
 
     if (newEntry !== oldEntry) {
@@ -325,6 +349,7 @@ watch(
     }
 
     const selectedCategoryChanged = newCategory !== oldCategory;
+    const selectedAccountChanged = newAccount !== oldAccount;
 
     if (lastChanged === 'onlyEntry') {
       if (newEntry) {
@@ -337,7 +362,8 @@ watch(
       }
     }
 
-    const shouldCallWithParams = newEntry || newOut || selectedCategoryChanged;
+    const shouldCallWithParams =
+      newEntry || newOut || selectedCategoryChanged || selectedAccountChanged;
 
     if (newEntry && newOut) {
       return;
@@ -348,7 +374,8 @@ watch(
         newEntry,
         newOut,
         filterMonthYear.value.replace('/', '-'),
-        selectedCategory.value.value
+        selectedCategory.value.value,
+        selectedAccount.value.value
       );
     } else {
       await getMovements(filterMonthYear.value.replace('/', '-'));
@@ -616,6 +643,24 @@ onMounted(async () => {
                 >
                   <template v-slot:prepend>
                     <q-icon name="category" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-select
+                  v-model="selectedAccount"
+                  :options="optionsAccountsFilter"
+                  :readonly="loadingMovement || loadingExport"
+                  label="Filtre conta"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mr-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="account_balance" color="black" size="20px" />
                   </template>
                 </q-select>
                 <q-input

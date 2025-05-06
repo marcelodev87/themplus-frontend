@@ -34,6 +34,7 @@ export const getMovementsService = (
     filled_data: boolean;
     delivered: boolean;
     categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
     movements_analyze: number;
     notifications: number;
     message: string;
@@ -44,7 +45,8 @@ export const getMovementsWithParamsService = (
   entry: boolean,
   out: boolean,
   date: string,
-  category: string | null
+  category: string | null,
+  account: string | null
 ): Promise<{
   status: number;
   data: {
@@ -52,11 +54,12 @@ export const getMovementsWithParamsService = (
     months_years: string[];
     delivered: boolean;
     categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
     message: string;
   };
 }> =>
   api.get(
-    `${baseUrl}/filter/${date}?entry=${entry}&out=${out}&category=${category}`
+    `${baseUrl}/filter/${date}?entry=${entry}&out=${out}&category=${category}&account=${account}`
   );
 
 export const getMovementInformationsService = (
@@ -90,6 +93,8 @@ export const createMovementService = (
     movements: Movement[];
     months_years: string[];
     delivered: boolean;
+    categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
     message: string;
   };
 }> => {
@@ -129,6 +134,8 @@ export const updateMovementService = (
     months_years: string[];
     delivered: boolean;
     message: string;
+    accounts: QuasarSelect<string>[];
+    categories: QuasarSelect<string>[];
   };
 }> => {
   const formData = new FormData();
@@ -160,6 +167,7 @@ export const insertMovementService = (
     movements: Movement[];
     months_years: string[];
     delivered: boolean;
+    accounts: QuasarSelect<string>[];
     categories: QuasarSelect<string>[];
     notifications: number;
     message: string;

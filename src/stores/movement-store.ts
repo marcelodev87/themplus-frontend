@@ -46,6 +46,7 @@ export const useMovementStore = defineStore('movement', {
     movementsAnalyze: 0 as number,
     delivered: false as boolean,
     listCategoryFilters: [] as QuasarSelect<string>[],
+    listAccountFilters: [] as QuasarSelect<string>[],
   }),
   actions: {
     clearListMonthYear() {
@@ -97,6 +98,9 @@ export const useMovementStore = defineStore('movement', {
     },
     setListCategoryFilters(data: QuasarSelect<string>[]) {
       this.listCategoryFilters = data;
+    },
+    setListAccountFilters(data: QuasarSelect<string>[]) {
+      this.listAccountFilters = data;
     },
     setListMovement(movements: Movement[]) {
       this.listMovement = movements.sort((a, b) => {
@@ -155,6 +159,7 @@ export const useMovementStore = defineStore('movement', {
           this.setFilledData(response.data.filled_data);
           this.setDelivered(response.data.delivered);
           this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.setMovementsAnalyze(response.data.movements_analyze);
           updateNotifications(response.data.notifications);
         }
@@ -184,7 +189,8 @@ export const useMovementStore = defineStore('movement', {
       entry: boolean,
       out: boolean,
       date: string,
-      category: string | null
+      category: string | null,
+      account: string | null
     ) {
       try {
         this.setLoading(true);
@@ -195,13 +201,15 @@ export const useMovementStore = defineStore('movement', {
           entry,
           out,
           date,
-          category
+          category,
+          account
         );
         if (response.status === 200) {
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
           this.setDelivered(response.data.delivered);
           this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
         }
       } catch (error) {
         this.createError(error);
@@ -309,6 +317,8 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.setDelivered(response.data.delivered);
           this.createSuccess(response.data.message);
         }
@@ -370,6 +380,7 @@ export const useMovementStore = defineStore('movement', {
           this.setListMovement(response.data.movements);
           this.setDelivered(response.data.delivered);
           this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           updateNotifications(response.data.notifications);
           this.createSuccess(response.data.message);
         }
@@ -408,6 +419,8 @@ export const useMovementStore = defineStore('movement', {
           this.clearListMovement();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
+          this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.setDelivered(response.data.delivered);
           this.createSuccess(response.data.message);
         }
