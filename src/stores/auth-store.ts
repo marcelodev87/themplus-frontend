@@ -21,6 +21,7 @@ export const useAuthStore = defineStore('auth', {
     token: useStorage('themplus_token', null as string | null),
     enterpriseCreated: useStorage('enterprise_created', null as string | null),
     enterprisePosition: useStorage('enterprise_position', 'client' as string),
+    enterpriseName: useStorage('enterprise_name', null as string | null),
   }),
   actions: {
     setUser(user: User | null) {
@@ -59,6 +60,7 @@ export const useAuthStore = defineStore('auth', {
           this.setToken(response.data.token);
           this.enterpriseCreated = response.data.enterprise_created;
           this.enterprisePosition = response.data.enterprise_position;
+          this.enterpriseName = response.data.enterprise_name;
           this.router.push({ name: 'admin-feed' });
         }
       } catch (error) {

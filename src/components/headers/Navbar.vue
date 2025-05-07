@@ -11,7 +11,7 @@ defineOptions({
   name: 'Navbar',
 });
 
-const { user } = storeToRefs(useAuthStore());
+const { user, enterpriseName } = storeToRefs(useAuthStore());
 const { notifications } = storeToRefs(useUsersMembersStore());
 
 const emit = defineEmits<{
@@ -59,6 +59,11 @@ const closeInbox = (): void => {
       </div>
       <div class="row justify-end">
         <div v-if="!$q.screen.lt.md">
+          <q-btn flat color="orange" icon-right="info" rounded>
+            <q-tooltip class="text-subtitle2">
+              Sua organização: {{ enterpriseName ?? 'Não definido' }}
+            </q-tooltip>
+          </q-btn>
           <q-btn
             v-show="user?.enterprise_id !== user?.view_enterprise_id"
             :label="user?.view_enterprise_name"
