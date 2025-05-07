@@ -24,6 +24,7 @@ const {
   filledData,
   listMonthYear,
   listCategoryFilters,
+  listAccountFilters,
 } = storeToRefs(useSchedulingStore());
 const {
   getSchedulings,
@@ -47,6 +48,10 @@ const showAlertDataEnterprise = ref<boolean>(false);
 const filterScheduling = ref<string>('');
 const selectedCategory = ref<QuasarSelect<string | null>>({
   label: 'Todas categorias',
+  value: null,
+});
+const selectedAccount = ref<QuasarSelect<string | null>>({
+  label: 'Todas contas',
   value: null,
 });
 const columnsScheduling = reactive<QuasarTable[]>([
@@ -293,11 +298,28 @@ const getClassTotal = (total: string) => {
   return 'bg-green-2';
 };
 
+const optionsAccountsFilter = computed(() => {
+  const baseAccounts = [
+    {
+      label: 'Todas contas',
+      value: null,
+    },
+  ];
+
+  const additionalAccounts = (listAccountFilters.value || [])
+    .slice()
+    .sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    });
+
+  return [...baseAccounts, ...additionalAccounts];
+});
+
 watch(
-  [onlyExpired, onlyEntry, onlyOut, selectedCategory],
+  [onlyExpired, onlyEntry, onlyOut, selectedCategory, selectedAccount],
   async (
-    [newExpired, newEntry, newOut, newCategory],
-    [oldExpired, oldEntry, oldOut, oldCategory]
+    [newExpired, newEntry, newOut, newCategory, newAccount],
+    [oldExpired, oldEntry, oldOut, oldCategory, oldAccount]
   ) => {
     let lastChanged = null;
 
@@ -310,6 +332,7 @@ watch(
     }
 
     const selectedCategoryChanged = newCategory !== oldCategory;
+    const selectedAccountChanged = newAccount !== oldAccount;
 
     if (lastChanged === 'onlyEntry') {
       if (newEntry) {
@@ -323,7 +346,11 @@ watch(
     }
 
     const shouldCallWithParams =
-      newEntry || newOut || newExpired || selectedCategoryChanged;
+      newEntry ||
+      newOut ||
+      newExpired ||
+      selectedCategoryChanged ||
+      selectedAccountChanged;
 
     if (newEntry && newOut) {
       return;
@@ -335,7 +362,8 @@ watch(
         newEntry,
         newOut,
         filterMonthYear.value.replace('/', '-'),
-        selectedCategory.value.value
+        selectedCategory.value.value,
+        selectedAccount.value.value
       );
     } else {
       await getSchedulings(filterMonthYear.value.replace('/', '-'));
@@ -561,6 +589,24 @@ onMounted(async () => {
                     <q-icon name="category" color="black" size="20px" />
                   </template>
                 </q-select>
+                <q-select
+                  v-model="selectedAccount"
+                  :options="optionsAccountsFilter"
+                  :readonly="loadingScheduling || loadingExport"
+                  label="Filtre conta"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mr-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="account_balance" color="black" size="20px" />
+                  </template>
+                </q-select>
                 <q-input
                   filled
                   v-model="filterScheduling"
@@ -632,6 +678,24 @@ onMounted(async () => {
                 >
                   <template v-slot:prepend>
                     <q-icon name="category" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-select
+                  v-model="selectedAccount"
+                  :options="optionsAccountsFilter"
+                  :readonly="loadingScheduling || loadingExport"
+                  label="Filtre conta"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="grey-1"
+                  label-color="black"
+                  style="min-width: 200px"
+                  :class="!$q.screen.lt.md ? '' : 'full-width'"
+                  class="q-mr-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="account_balance" color="black" size="20px" />
                   </template>
                 </q-select>
                 <q-input

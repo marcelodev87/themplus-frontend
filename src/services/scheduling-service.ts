@@ -33,6 +33,7 @@ export const getSchedulingsService = (
     categories: QuasarSelect<string>[];
     notifications: number;
     filled_data: boolean;
+    accounts: QuasarSelect<string>[];
   };
 }> => api.get(`${baseUrl}/${date}`);
 
@@ -74,18 +75,20 @@ export const getSchedulingsWithParamsService = (
   entry: boolean,
   out: boolean,
   date: string,
-  categoryId: string | null
+  categoryId: string | null,
+  accountId: string | null
 ): Promise<{
   status: number;
   data: {
     schedulings: Scheduling[];
     months_years: string[];
     categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
     message: string;
   };
 }> =>
   api.get(
-    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}&category=${categoryId}`
+    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}&category=${categoryId}&account=${accountId}`
   );
 
 export const getSchedulingInformationsService = (
@@ -177,6 +180,8 @@ export const createSchedulingService = (
   data: {
     schedulings: Scheduling[];
     months_years: string[];
+    categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
     message: string;
   };
 }> => {
@@ -215,6 +220,8 @@ export const updateSchedulingService = (
   data: {
     schedulings: Scheduling[];
     months_years: string[];
+    categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
     message: string;
   };
 }> => {

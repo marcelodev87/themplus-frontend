@@ -32,6 +32,7 @@ export const useSchedulingStore = defineStore('scheduling', {
     listCategory: [] as QuasarSelect<string>[],
     listAccount: [] as QuasarSelect<string>[],
     listCategoryFilters: [] as QuasarSelect<string>[],
+    listAccountFilters: [] as QuasarSelect<string>[],
     listCategoryAll: [] as CategoryInformation[],
   }),
   actions: {
@@ -54,6 +55,9 @@ export const useSchedulingStore = defineStore('scheduling', {
     },
     clearListCategoryFilters() {
       this.listCategoryFilters.splice(0, this.listCategoryFilters.length);
+    },
+    clearListAccountFilters() {
+      this.listAccountFilters.splice(0, this.listAccountFilters.length);
     },
     clearCategories() {
       this.listCategory.splice(0, this.listCategory.length);
@@ -84,6 +88,9 @@ export const useSchedulingStore = defineStore('scheduling', {
     },
     setListCategoryFilters(data: QuasarSelect<string>[]) {
       this.listCategoryFilters = data;
+    },
+    setListAccountFilters(data: QuasarSelect<string>[]) {
+      this.listAccountFilters = data;
     },
     setListCategory(categories: CategoryInformation[]) {
       this.listCategory = categories
@@ -132,12 +139,14 @@ export const useSchedulingStore = defineStore('scheduling', {
         this.setLoading(true);
         this.clearListScheduling();
         this.clearListCategoryFilters();
+        this.clearListAccountFilters();
         this.clearListMonthYear();
         const response = await getSchedulingsService(date);
         if (response.status === 200) {
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
           this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
         }
@@ -152,21 +161,25 @@ export const useSchedulingStore = defineStore('scheduling', {
       entry: boolean,
       out: boolean,
       date: string,
-      category: string | null
+      category: string | null,
+      account: string | null
     ) {
       try {
         this.setLoading(true);
         this.clearListScheduling();
         this.clearListCategoryFilters();
+        this.clearListAccountFilters();
         const response = await getSchedulingsWithParamsService(
           expired,
           entry,
           out,
           date,
-          category
+          category,
+          account
         );
         if (response.status === 200) {
           this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
         }
@@ -244,6 +257,8 @@ export const useSchedulingStore = defineStore('scheduling', {
     ) {
       try {
         this.setLoading(true);
+        this.clearListCategoryFilters();
+        this.clearListAccountFilters();
         const response = await createSchedulingService(
           type,
           value,
@@ -258,6 +273,8 @@ export const useSchedulingStore = defineStore('scheduling', {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
+          this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
@@ -278,6 +295,8 @@ export const useSchedulingStore = defineStore('scheduling', {
     ) {
       try {
         this.setLoading(true);
+        this.clearListCategoryFilters();
+        this.clearListAccountFilters();
         const response = await updateSchedulingService(
           id,
           type,
@@ -292,6 +311,8 @@ export const useSchedulingStore = defineStore('scheduling', {
           this.clearListScheduling();
           this.setListScheduling(response.data.schedulings);
           this.setListMonthYear(response.data.months_years);
+          this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
