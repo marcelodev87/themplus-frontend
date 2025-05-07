@@ -18,6 +18,7 @@ import {
   SchedulingDashboard,
   UsersDashboard,
 } from 'src/ts/interfaces/data/Graphics';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
@@ -32,6 +33,7 @@ export const useDashboardStore = defineStore('dashboard', {
     schedulingsDashboard: null as SchedulingDashboard | null,
     accountsDashboard: null as AccountDashboard | null,
     totalEnterprise: null as TotalEnterprise | null,
+    listAccountFilters: [] as QuasarSelect<string>[],
   }),
   actions: {
     clearListMonthYear() {
@@ -59,6 +61,9 @@ export const useDashboardStore = defineStore('dashboard', {
     },
     setListCategoryFilters(data: Category[]) {
       this.listCategoryFilters = data;
+    },
+    setListAccountFilters(data: QuasarSelect<string>[]) {
+      this.listAccountFilters = data;
     },
     setUsersDashboard(data: UsersDashboard | null) {
       this.usersDashboard = data;
@@ -99,11 +104,17 @@ export const useDashboardStore = defineStore('dashboard', {
     async getDashboard(
       mode: string,
       date: DatePeriod | string,
-      category: string | null
+      category: string | null,
+      account: string | null
     ) {
       this.setLoading(true);
       try {
-        const response = await getDashboardService(mode, date, category);
+        const response = await getDashboardService(
+          mode,
+          date,
+          category,
+          account
+        );
         this.setListCategoryMovementsDashboard(null);
         this.setListCategorySchedulesDashboard(null);
         this.setListMonthYear([]);
@@ -125,6 +136,7 @@ export const useDashboardStore = defineStore('dashboard', {
           this.setUsersDashboard(response.data.users_dashboard);
           this.setAccountsDashboard(response.data.accounts_dashboard);
           this.setListCategoryFilters(response.data.categories);
+          this.setListAccountFilters(response.data.accounts);
           this.setTotalEnterprise(response.data.general);
           updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);

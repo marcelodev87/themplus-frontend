@@ -13,6 +13,7 @@ import {
   SchedulingDashboard,
   UsersDashboard,
 } from 'src/ts/interfaces/data/Graphics';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 
 const baseUrl = 'dashboard';
 
@@ -32,7 +33,8 @@ const createError = (error: any) => {
 export const getDashboardService = (
   mode: string,
   date: string | DatePeriod,
-  category: string | null
+  category: string | null,
+  account: string | null
 ): Promise<{
   status: number;
   data: {
@@ -44,11 +46,12 @@ export const getDashboardService = (
     users_dashboard: UsersDashboard | null;
     schedulings_dashboard: SchedulingDashboard | null;
     accounts_dashboard: AccountDashboard | null;
+    accounts: QuasarSelect<string>[];
     notifications: number;
     general: TotalEnterprise;
     filled_data: boolean;
   };
-}> => api.post(`${baseUrl}/`, { mode, date, category });
+}> => api.post(`${baseUrl}/`, { mode, date, category, account });
 
 export const downloadDashboardService = async (
   mode: string,

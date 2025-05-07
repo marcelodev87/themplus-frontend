@@ -24,6 +24,7 @@ const {
   filledData,
   listCategoryFilters,
   totalEnterprise,
+  listAccountFilters,
 } = storeToRefs(useDashboardStore());
 
 const selectedFilter = ref<QuasarSelect<string>>({
@@ -32,6 +33,10 @@ const selectedFilter = ref<QuasarSelect<string>>({
 });
 const selectedCategory = ref<QuasarSelect<string | null>>({
   label: 'Todas categorias',
+  value: null,
+});
+const selectedAccount = ref<QuasarSelect<string | null>>({
+  label: 'Todas contas',
   value: null,
 });
 const showDatePeriod = ref<boolean>(false);
@@ -185,7 +190,8 @@ const fetchInformationsDashboard = async (date: string | DatePeriod) => {
   await getDashboard(
     selectedFilter.value.value,
     date,
-    selectedCategory.value.value
+    selectedCategory.value.value,
+    selectedAccount.value.value
   );
 };
 const getCurrentMonthYear = () => {
@@ -234,6 +240,23 @@ const download = async () => {
   );
 };
 
+const optionsAccountsFilter = computed(() => {
+  const baseAccounts = [
+    {
+      label: 'Todas contas',
+      value: null,
+    },
+  ];
+
+  const additionalAccounts = (listAccountFilters.value || [])
+    .slice()
+    .sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    });
+
+  return [...baseAccounts, ...additionalAccounts];
+});
+
 watch(
   filledData,
   () => {
@@ -249,6 +272,7 @@ watch(
     selectedFilter,
     selectedDatePeriod,
     selectedCategory,
+    selectedAccount,
     showDatePeriod,
   ],
   async () => {
@@ -380,6 +404,24 @@ onMounted(async () => {
         >
           <template v-slot:prepend>
             <q-icon name="category" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-select
+          v-model="selectedAccount"
+          :options="optionsAccountsFilter"
+          :readonly="loadingDashboard"
+          label="Filtre conta"
+          filled
+          dense
+          options-dense
+          bg-color="grey-1"
+          label-color="black"
+          style="min-width: 200px"
+          :class="!$q.screen.lt.md ? '' : 'full-width'"
+          class="q-mr-sm"
+        >
+          <template v-slot:prepend>
+            <q-icon name="account_balance" color="black" size="20px" />
           </template>
         </q-select>
         <q-btn
