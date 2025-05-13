@@ -215,6 +215,7 @@ watch(
   { immediate: true, deep: true }
 );
 watch(selectedVerified, async () => {
+  clear();
   await fetchBonds();
 });
 
