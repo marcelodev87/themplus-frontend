@@ -3,7 +3,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { onMounted, reactive, ref, watch } from 'vue';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
 import { useOrderStore } from 'src/stores/order-store';
@@ -81,6 +81,24 @@ const columnsBond = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const selectedVerified = ref<QuasarSelect<string>>({
+  label: 'Todas as organizações',
+  value: 'all',
+});
+const optionsVerified = reactive<QuasarSelect<string>[]>([
+  {
+    label: 'Todas as organizações',
+    value: 'all',
+  },
+  {
+    label: 'Com entrega',
+    value: 'true',
+  },
+  {
+    label: 'Sem entrega',
+    value: 'false',
+  },
+]);
 
 const clear = (): void => {
   selectedDataEdit.value = null;
@@ -92,7 +110,7 @@ const clear = (): void => {
   dataEnterpriseCode.value = null;
 };
 const fetchBonds = async () => {
-  await getBonds();
+  await getBonds(selectedVerified.value.value);
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
@@ -196,6 +214,9 @@ watch(
   },
   { immediate: true, deep: true }
 );
+watch(selectedVerified, async () => {
+  await fetchBonds();
+});
 
 onMounted(async () => {
   await fetchBonds();
@@ -236,6 +257,23 @@ onMounted(async () => {
           <template v-slot:top>
             <span class="text-subtitle2">Lista de vínculos</span>
             <q-space />
+            <q-select
+              v-model="selectedVerified"
+              :options="optionsVerified"
+              label="Filtrar por entrega"
+              class="q-mr-sm"
+              filled
+              dense
+              options-dense
+              bg-color="grey-1"
+              label-color="black"
+              style="min-width: 200px"
+              :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
+            >
+              <template v-slot:prepend>
+                <q-icon name="calendar_month" color="black" size="20px" />
+              </template>
+            </q-select>
             <q-input filled v-model="filterOrder" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />

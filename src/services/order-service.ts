@@ -23,7 +23,9 @@ export const getOrdersViewCounterService = (): Promise<{
   };
 }> => api.get(`${baseUrl}/counter`);
 
-export const getBondsService = (): Promise<{
+export const getBondsService = (
+  verified: string
+): Promise<{
   status: number;
   data: {
     bonds: Bond[];
@@ -31,7 +33,7 @@ export const getBondsService = (): Promise<{
     message: string;
     notifications: number;
   };
-}> => api.get(`${baseUrl}/bonds`);
+}> => api.get(`${baseUrl}/bonds?verified=${verified}`);
 
 export const sendRequestEnterpriseService = (
   enterpriseId: string,
