@@ -102,10 +102,10 @@ export const useOrderStore = defineStore('order', {
         this.setLoading(false);
       }
     },
-    async getBonds() {
+    async getBonds(verified: string) {
       try {
         this.setLoading(true);
-        const response = await getBondsService();
+        const response = await getBondsService(verified);
         if (response.status === 200) {
           this.clearListBond();
           this.setListBond(
