@@ -17,6 +17,7 @@ import { Movement } from 'src/ts/interfaces/data/Movement';
 import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
 import FormSettingsCounter from 'src/components/forms/FormSettingsCounter.vue';
+import FormFileFinancial from 'src/components/forms/FormFileFinancial.vue';
 
 defineOptions({
   name: 'FinancialControl',
@@ -41,8 +42,10 @@ const filterDelivery = ref<string>('');
 const showCounterInfo = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const selectedDataEdit = ref<Movement | null>(null);
+const selectedFinancialMonthYear = ref<string | null>(null);
 const showInviteCounter = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
+const showFormFileFinancial = ref<boolean>(false);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const showFormSettingsCounter = ref<boolean>(false);
@@ -231,6 +234,13 @@ const openFormOut = (): void => {
 const closeFormOut = async () => {
   showFormOut.value = false;
   await getMovementsWithObservations(dateSelected.value!.replace(/\//g, '-'));
+};
+const openFormFileFinancial = (monthYear: string): void => {
+  selectedFinancialMonthYear.value = monthYear;
+  showFormFileFinancial.value = true;
+};
+const closeFormFileFinancial = async () => {
+  showFormFileFinancial.value = false;
 };
 const download = async (url: string) => {
   await downloadFile(url);
@@ -445,6 +455,20 @@ onMounted(async () => {
                   <q-tooltip> Anotações </q-tooltip>
                 </q-btn>
                 <q-btn
+                  @click="openFormFileFinancial(props.row.month_year)"
+                  v-show="
+                    props.row.status &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="primary"
+                  icon="add_photo_alternate"
+                >
+                  <q-tooltip> Arquivos </q-tooltip>
+                </q-btn>
+                <q-btn
                   v-show="
                     props.row.status === false &&
                     user?.enterprise_id === user?.view_enterprise_id
@@ -581,6 +605,11 @@ onMounted(async () => {
         <FormSettingsCounter
           :open="showFormSettingsCounter"
           @update:open="closeFormSettingsCounter"
+        />
+        <FormFileFinancial
+          :open="showFormFileFinancial"
+          :month-year="selectedFinancialMonthYear"
+          @update:open="closeFormFileFinancial"
         />
       </main>
     </q-scroll-area>
