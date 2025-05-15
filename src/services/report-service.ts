@@ -30,6 +30,7 @@ export const getReportsService = (
     client_name: string;
     enterprise_inspected: Enterprise | null;
     reports: Report[];
+    permissions: SettingsCounter;
   };
 }> => api.get(`${baseUrl}/${id}`);
 

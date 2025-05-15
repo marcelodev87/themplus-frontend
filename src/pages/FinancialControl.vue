@@ -609,6 +609,7 @@ onMounted(async () => {
         <FormFileFinancial
           :open="showFormFileFinancial"
           :month-year="selectedFinancialMonthYear"
+          mode="client"
           @update:open="closeFormFileFinancial"
         />
       </main>

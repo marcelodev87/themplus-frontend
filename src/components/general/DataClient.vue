@@ -7,6 +7,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
 import { Movement } from 'src/ts/interfaces/data/Movement';
+import FormFileFinancial from 'src/components/forms/FormFileFinancial.vue';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import DataEnterprise from '../info/DataEnterprise.vue';
 import FormEntry from '../forms/FormEntry.vue';
@@ -45,11 +46,13 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const showFormFileFinancial = ref<boolean>(false);
 const selectedDataEdit = ref<Movement | null>(null);
 const showFormEntry = ref<boolean>(false);
 const showFormOut = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const modeTable = ref<'reports' | 'details'>('reports');
+const selectedFinancialMonthYear = ref<string | null>(null);
 const dataReopenId = ref<string | null>(null);
 const dataFinalizeId = ref<string | null>(null);
 const dataUndoId = ref<string | null>(null);
@@ -163,6 +166,7 @@ const clear = (): void => {
   dataUndoId.value = null;
   dataDetailsReport.value = null;
   modeTable.value = 'reports';
+  selectedFinancialMonthYear.value = null;
 };
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -282,6 +286,13 @@ const handleEdit = (movement: Movement) => {
     openFormOut();
   }
 };
+const openFormFileFinancial = (monthYear: string): void => {
+  selectedFinancialMonthYear.value = monthYear;
+  showFormFileFinancial.value = true;
+};
+const closeFormFileFinancial = async () => {
+  showFormFileFinancial.value = false;
+};
 
 watch(modeTable, async () => {
   if (modeTable.value === 'details') {
@@ -376,6 +387,22 @@ watch(
                 color="primary"
               >
                 <q-tooltip> Exportar </q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="
+                  (props.row.check_counter === null ||
+                    props.row.check_counter === user?.enterprise_id) &&
+                  props.row.receipts > 0
+                "
+                @click="openFormFileFinancial(props.row.month_year)"
+                :disable="loadingReport"
+                icon="image"
+                size="sm"
+                flat
+                round
+                color="red"
+              >
+                <q-tooltip> Anexos </q-tooltip>
               </q-btn>
               <q-btn
                 v-show="
@@ -612,6 +639,13 @@ watch(
       title="Atualize uma saída"
       mode="movement"
       @update:open="closeFormOut"
+    />
+    <FormFileFinancial
+      :open="showFormFileFinancial"
+      :month-year="selectedFinancialMonthYear"
+      :id-client="props.idClient"
+      mode="counter"
+      @update:open="closeFormFileFinancial"
     />
     <q-inner-loading
       :showing="loadingReport"

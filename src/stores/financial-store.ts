@@ -106,11 +106,11 @@ export const useFinancialStore = defineStore('financial', {
         this.setLoading(false);
       }
     },
-    async getFileFinancial(monthYear: string) {
+    async getFileFinancial(monthYear: string, client: string | null) {
       this.setLoading(true);
       try {
         this.clearListFileFinancial();
-        const response = await getFileFinancialService(monthYear);
+        const response = await getFileFinancialService(monthYear, client);
         if (response.status === 200) {
           this.setListFileFinancial(response.data.files_financial);
         }

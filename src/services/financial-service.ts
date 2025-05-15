@@ -71,13 +71,20 @@ export const updateSettingsCounterService = (
   });
 
 export const getFileFinancialService = (
-  monthYear: string
+  monthYear: string,
+  client: string | null
 ): Promise<{
   status: number;
   data: {
     files_financial: FileFinancial[];
   };
-}> => api.get(`${baseUrl}/file-financial/${monthYear}`);
+}> => {
+  const url = client
+    ? `${baseUrl}/file-financial/${monthYear}?client=${client}`
+    : `${baseUrl}/file-financial/${monthYear}`;
+
+  return api.get(url);
+};
 
 export const createFileFinancialService = (
   name: string,

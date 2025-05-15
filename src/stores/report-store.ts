@@ -83,10 +83,12 @@ export const useReportStore = defineStore('report', {
         const response = await getReportsService(id);
         this.setClientName(null);
         this.setEnterpriseInspected(null);
+        this.setPermissions(null);
         if (response.status === 200) {
           this.clearListReport();
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
+          this.setPermissions(response.data.permissions);
           this.setEnterpriseInspected(response.data.enterprise_inspected);
         }
       } catch (error) {

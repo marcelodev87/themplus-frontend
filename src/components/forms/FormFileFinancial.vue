@@ -13,6 +13,8 @@ defineOptions({
 const props = defineProps<{
   open: boolean;
   monthYear: string | null;
+  idClient?: string | null;
+  mode: 'client' | 'counter';
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -31,7 +33,7 @@ const dataFile = reactive({
   name: '' as string,
   file: null as File | null,
 });
-const columnsFile = reactive<QuasarTable[]>([
+const columnsFileClient = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Nome do arquivo',
@@ -49,6 +51,20 @@ const columnsFile = reactive<QuasarTable[]>([
     label: 'Ação',
     field: 'action',
     align: 'right',
+  },
+]);
+const columnsFileCounter = reactive<QuasarTable[]>([
+  {
+    name: 'name',
+    label: 'Nome do arquivo',
+    field: 'name',
+    align: 'left',
+  },
+  {
+    name: 'receipt',
+    label: 'Arquivo',
+    field: 'receipt',
+    align: 'left',
   },
 ]);
 
@@ -113,7 +129,10 @@ const save = async () => {
 };
 const fetchFileFinancial = async () => {
   if (props.monthYear) {
-    await getFileFinancial(props.monthYear.replace(/\//g, '-'));
+    await getFileFinancial(
+      props.monthYear.replace(/\//g, '-'),
+      props.idClient ?? null
+    );
   }
 };
 const download = async (url: string) => {
@@ -142,12 +161,18 @@ watch(open, async () => {
         <TitlePage title="Painel de arquivos" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
-        <q-banner dense inline-actions class="text-white bg-red" rounded>
+        <q-banner
+          dense
+          inline-actions
+          class="text-white bg-red"
+          rounded
+          v-show="mode == 'client'"
+        >
           Reabrir o relatório resultará na perda de todos os arquivos anexados
           separadamente. Verifique e finalize o relatório com atenção para
           evitar a necessidade de reabertura.
         </q-banner>
-        <q-form class="q-gutter-y-sm">
+        <q-form class="q-gutter-y-sm" v-show="props.mode == 'client'">
           <div class="q-gutter-y-sm">
             <q-input
               v-model="dataFile.name"
@@ -206,7 +231,9 @@ watch(open, async () => {
         <q-separator />
         <q-table
           :rows="listFileFinancial"
-          :columns="columnsFile"
+          :columns="
+            props.mode == 'client' ? columnsFileClient : columnsFileCounter
+          "
           :loading="false"
           flat
           bordered
@@ -244,6 +271,7 @@ watch(open, async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  v-show="mode == 'client'"
                   @click="deleteFileFinancial(props.row.id)"
                   size="sm"
                   flat
