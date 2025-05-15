@@ -166,7 +166,6 @@ const optionsAccountsFilter = computed(() => {
 
   return [...baseAccounts, ...additionalAccounts];
 });
-
 const dataMovement = computed(() => {
   let valueEntry = 0;
   let valueOut = 0;

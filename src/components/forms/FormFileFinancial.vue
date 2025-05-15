@@ -3,7 +3,8 @@ import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import ConfirmAction from '../confirm/ConfirmAction.vue';
+import { useFinancialStore } from 'src/stores/financial-store';
+import { storeToRefs } from 'pinia';
 
 defineOptions({
   name: 'FormFileFinancial',
@@ -17,8 +18,14 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const selectedData = ref<string | null>(null);
-const showConfirmAction = ref<boolean>(false);
+const {
+  getFileFinancial,
+  createFileFinancial,
+  deleteFileFinancial,
+  downloadFile,
+} = useFinancialStore();
+const { loadingDelivery, listFileFinancial } = storeToRefs(useFinancialStore());
+
 const textFile = ref<string | null>(null);
 const dataFile = reactive({
   name: '' as string,
@@ -91,6 +98,11 @@ const clearFile = () => {
 const save = async () => {
   const check = checkData();
   if (check.status) {
+    await createFileFinancial(
+      dataFile.name,
+      dataFile.file,
+      props.monthYear?.replace(/\//g, '-') ?? ''
+    );
     clear();
   } else {
     Notify.create({
@@ -99,16 +111,13 @@ const save = async () => {
     });
   }
 };
-const closeConfirmActionOk = async (): Promise<void> => {
-  showConfirmAction.value = false;
+const fetchFileFinancial = async () => {
+  if (props.monthYear) {
+    await getFileFinancial(props.monthYear.replace(/\//g, '-'));
+  }
 };
-const closeConfirmAction = (): void => {
-  showConfirmAction.value = false;
-  selectedData.value = null;
-};
-const openConfirmAction = async (id: string): Promise<void> => {
-  selectedData.value = id;
-  showConfirmAction.value = true;
+const download = async (url: string) => {
+  await downloadFile(url);
 };
 
 const open = computed({
@@ -122,6 +131,7 @@ const allowSave = computed((): boolean => {
 watch(open, async () => {
   if (open.value) {
     clear();
+    await fetchFileFinancial();
   }
 });
 </script>
@@ -132,6 +142,11 @@ watch(open, async () => {
         <TitlePage title="Painel de arquivos" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
+        <q-banner dense inline-actions class="text-white bg-red" rounded>
+          Reabrir o relatório resultará na perda de todos os arquivos anexados
+          separadamente. Verifique e finalize o relatório com atenção para
+          evitar a necessidade de reabertura.
+        </q-banner>
         <q-form class="q-gutter-y-sm">
           <div class="q-gutter-y-sm">
             <q-input
@@ -178,7 +193,7 @@ watch(open, async () => {
           <div class="row justify-end items-center">
             <q-btn
               @click="save"
-              :disable="allowSave"
+              :disable="!allowSave"
               color="primary"
               label="Salvar"
               size="md"
@@ -190,7 +205,7 @@ watch(open, async () => {
         </q-form>
         <q-separator />
         <q-table
-          :rows="[]"
+          :rows="listFileFinancial"
           :columns="columnsFile"
           :loading="false"
           flat
@@ -215,6 +230,7 @@ watch(open, async () => {
                 <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
               <q-td
+                @click="download(props.row.receipt)"
                 key="receipt"
                 :props="props"
                 class="text-left"
@@ -228,7 +244,7 @@ watch(open, async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  @click="openConfirmAction(props.row.id)"
+                  @click="deleteFileFinancial(props.row.id)"
                   size="sm"
                   flat
                   round
@@ -253,16 +269,8 @@ watch(open, async () => {
           />
         </div>
       </q-card-actions>
-      <ConfirmAction
-        :open="showConfirmAction"
-        label-action="Continuar"
-        title="Confirmação de exclusão"
-        message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
-        @update:open="closeConfirmAction"
-        @update:ok="closeConfirmActionOk"
-      />
       <q-inner-loading
-        :showing="false"
+        :showing="loadingDelivery"
         label="Carregando os dados..."
         label-class="black"
         label-style="font-size: 1.1em"

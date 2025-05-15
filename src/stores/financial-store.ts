@@ -3,7 +3,11 @@ import { AxiosError } from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import {
+  createFileFinancialService,
+  deleteFileFinancialService,
+  downloadFileService,
   getDeliveriesService,
+  getFileFinancialService,
   getMovementsWithObservationsService,
   getSettingsCounterService,
   updateDeliveryService,
@@ -13,6 +17,7 @@ import { Delivery } from 'src/ts/interfaces/data/Delivery';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { updateNotifications } from 'src/composables/NotificationsManage';
+import { FileFinancial } from 'src/ts/interfaces/data/Financial';
 import { useOrderStore } from './order-store';
 import { useEnterpriseStore } from './enterprise-store';
 
@@ -23,6 +28,7 @@ export const useFinancialStore = defineStore('financial', {
   state: () => ({
     filledData: true as boolean,
     loadingDelivery: false as boolean,
+    listFileFinancial: [] as FileFinancial[],
     listDelivery: [] as Delivery[],
     orderCount: 0 as number,
     listMovementFinancial: [] as Movement[],
@@ -31,6 +37,9 @@ export const useFinancialStore = defineStore('financial', {
   actions: {
     clearListFinancial() {
       this.listDelivery.splice(0, this.listDelivery.length);
+    },
+    clearListFileFinancial() {
+      this.listFileFinancial.splice(0, this.listFileFinancial.length);
     },
     clearListMovementFinancial() {
       this.listMovementFinancial.splice(0, this.listMovementFinancial.length);
@@ -49,6 +58,9 @@ export const useFinancialStore = defineStore('financial', {
     },
     setListDelivery(deliveries: Delivery[]) {
       deliveries.map((item) => this.listDelivery.push(item));
+    },
+    setListFileFinancial(files: FileFinancial[]) {
+      files.map((item) => this.listFileFinancial.push(item));
     },
     setListMovementFinancial(movements: Movement[]) {
       this.listMovementFinancial = movements.sort((a, b) => {
@@ -87,6 +99,20 @@ export const useFinancialStore = defineStore('financial', {
           updateNotifications(response.data.notifications);
           hasCounter.value = response.data.counter;
           enterpriseHeadquarters.value = response.data.is_headquarters;
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getFileFinancial(monthYear: string) {
+      this.setLoading(true);
+      try {
+        this.clearListFileFinancial();
+        const response = await getFileFinancialService(monthYear);
+        if (response.status === 200) {
+          this.setListFileFinancial(response.data.files_financial);
         }
       } catch (error) {
         this.createError(error);
@@ -167,6 +193,55 @@ export const useFinancialStore = defineStore('financial', {
       } catch (error) {
         this.createError(error);
         return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async createFileFinancial(
+      name: string,
+      file: File | null,
+      monthYear: string
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await createFileFinancialService(
+          name,
+          file,
+          monthYear
+        );
+        if (response.status === 201) {
+          this.clearListFileFinancial();
+          this.setListFileFinancial(response.data.files_financial);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async downloadFile(file: string) {
+      try {
+        this.setLoading(true);
+        await downloadFileService(file);
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteFileFinancial(Id: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteFileFinancialService(Id);
+        if (response.status === 200) {
+          this.listFileFinancial = this.listFileFinancial.filter(
+            (item) => item.id !== Id
+          );
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
       } finally {
         this.setLoading(false);
       }
