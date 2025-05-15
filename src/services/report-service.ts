@@ -5,6 +5,10 @@ import { Report } from 'src/ts/interfaces/data/Report';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { AxiosError } from 'axios';
 import { Notify } from 'quasar';
+import {
+  AmountRegister,
+  QuantityRegister,
+} from 'src/ts/interfaces/data/Dashboard';
 import { Enterprise } from '../ts/interfaces/data/Enterprise';
 
 const baseUrl = 'report';
@@ -27,6 +31,10 @@ export const getReportsService = (
 ): Promise<{
   status: number;
   data: {
+    dashboard: {
+      amount_registers: AmountRegister[];
+      quantity_registers: QuantityRegister[];
+    };
     client_name: string;
     enterprise_inspected: Enterprise | null;
     reports: Report[];

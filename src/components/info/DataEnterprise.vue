@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import bb, { bar } from 'billboard.js';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
+import 'billboard.js/dist/billboard.css';
+import { storeToRefs } from 'pinia';
+import { useReportStore } from 'src/stores/report-store';
 
 defineOptions({
   name: 'DataEnterprise',
@@ -9,6 +13,105 @@ defineOptions({
 const props = defineProps<{
   enterprise: Enterprise;
 }>();
+
+const { listAmountRegister, listQuantityRegister } =
+  storeToRefs(useReportStore());
+
+onMounted(() => {
+  bb.generate({
+    title: {
+      text: 'Valores R$ x Mês',
+    },
+    data: {
+      x: 'x',
+      columns: [
+        ['x', ...listAmountRegister.value.map((item) => item.period)],
+        [
+          'entrada',
+          ...listAmountRegister.value.map((item) => item.entry_value),
+        ],
+        ['saida', ...listAmountRegister.value.map((item) => item.out_value)],
+      ],
+      type: bar(),
+      labels: {
+        format(value) {
+          return value.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          });
+        },
+      },
+      colors: {
+        entrada: 'green',
+        saida: 'red',
+      },
+    },
+    axis: {
+      x: {
+        type: 'timeseries',
+        tick: {
+          format: '%m/%Y',
+          multiline: false,
+        },
+      },
+      y: {
+        show: false,
+      },
+    },
+    bar: {
+      padding: 8,
+      width: {
+        ratio: 0.9,
+      },
+    },
+    bindto: '#allRegister',
+  });
+
+  bb.generate({
+    title: {
+      text: 'Registro x Mês',
+    },
+    data: {
+      x: 'x',
+      columns: [
+        ['x', ...listQuantityRegister.value.map((item) => item.period)],
+        [
+          'entrada',
+          ...listQuantityRegister.value.map((item) => item.entry_quantity),
+        ],
+        [
+          'saida',
+          ...listQuantityRegister.value.map((item) => item.out_quantity),
+        ],
+      ],
+      type: bar(),
+      labels: true,
+      colors: {
+        entrada: 'green',
+        saida: 'red',
+      },
+    },
+    axis: {
+      x: {
+        type: 'timeseries',
+        tick: {
+          format: '%m/%Y',
+          rotate: 0,
+          multiline: false,
+        },
+      },
+      y: {
+        show: false,
+      },
+    },
+    bar: {
+      width: {
+        ratio: 0.5,
+      },
+    },
+    bindto: '#amountMovement',
+  });
+});
 
 const dataEnterprise = computed(() => props.enterprise);
 </script>
@@ -207,5 +310,15 @@ const dataEnterprise = computed(() => props.enterprise);
         </div>
       </q-form>
     </q-expansion-item>
+    <q-card flat bordered class="q-my-sm">
+      <q-card-section>
+        <div id="allRegister"></div>
+      </q-card-section>
+    </q-card>
+    <q-card flat bordered class="q-my-sm">
+      <q-card-section>
+        <div id="amountMovement"></div>
+      </q-card-section>
+    </q-card>
   </section>
 </template>

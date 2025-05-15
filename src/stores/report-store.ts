@@ -12,6 +12,10 @@ import {
   undoReportCounterService,
   updateMovementByCounterService,
 } from 'src/services/report-service';
+import {
+  AmountRegister,
+  QuantityRegister,
+} from 'src/ts/interfaces/data/Dashboard';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
@@ -23,6 +27,8 @@ export const useReportStore = defineStore('report', {
     listReport: [] as Report[],
     clientName: null as string | null,
     listMovement: [] as Movement[],
+    listAmountRegister: [] as AmountRegister[],
+    listQuantityRegister: [] as QuantityRegister[],
     entepriseInspected: null as Enterprise | null,
     permissions: null as SettingsCounter | null,
     finalizedReport: false as boolean,
@@ -33,6 +39,18 @@ export const useReportStore = defineStore('report', {
     },
     clearListMovement() {
       this.listMovement.splice(0, this.listMovement.length);
+    },
+    clearListAmountRegister() {
+      this.listAmountRegister.splice(0, this.listAmountRegister.length);
+    },
+    clearListQuantityRegister() {
+      this.listQuantityRegister.splice(0, this.listQuantityRegister.length);
+    },
+    setListAmountRegister(amounts: AmountRegister[]) {
+      amounts.map((item) => this.listAmountRegister.push(item));
+    },
+    setListQuantityRegister(quantities: QuantityRegister[]) {
+      quantities.map((item) => this.listQuantityRegister.push(item));
     },
     setLoading(loading: boolean) {
       this.loadingReport = loading;
@@ -88,6 +106,12 @@ export const useReportStore = defineStore('report', {
           this.setListReport(response.data.reports);
           this.setClientName(response.data.client_name);
           this.setEnterpriseInspected(response.data.enterprise_inspected);
+          this.clearListAmountRegister();
+          this.clearListQuantityRegister();
+          this.setListAmountRegister(response.data.dashboard.amount_registers);
+          this.setListQuantityRegister(
+            response.data.dashboard.quantity_registers
+          );
         }
       } catch (error) {
         this.createError(error);
