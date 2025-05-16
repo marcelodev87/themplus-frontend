@@ -18,6 +18,18 @@ const { listAmountRegister, listQuantityRegister } =
   storeToRefs(useReportStore());
 
 onMounted(() => {
+  const maxQuantityEntry = Math.max(
+    ...listQuantityRegister.value.map((item) => item.entry_quantity)
+  );
+  const maxQuantityOut = Math.max(
+    ...listQuantityRegister.value.map((item) => item.out_quantity)
+  );
+  const maxQuantityValue = Math.max(maxQuantityEntry, maxQuantityOut);
+  const yQuantityTicks = Array.from(
+    { length: maxQuantityValue + 1 },
+    (_, i) => i
+  );
+
   bb.generate({
     title: {
       text: 'Valores R$ x Mês',
@@ -33,14 +45,6 @@ onMounted(() => {
         ['saida', ...listAmountRegister.value.map((item) => item.out_value)],
       ],
       type: bar(),
-      labels: {
-        format(value) {
-          return value.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          });
-        },
-      },
       colors: {
         entrada: 'green',
         saida: 'red',
@@ -50,12 +54,25 @@ onMounted(() => {
       x: {
         type: 'timeseries',
         tick: {
+          values: listAmountRegister.value.map((item) =>
+            new Date(item.period).getTime()
+          ),
           format: '%m/%Y',
+          rotate: 0,
           multiline: false,
+          culling: false,
         },
       },
       y: {
-        show: false,
+        show: true,
+        tick: {
+          count: 10,
+          format: (d: number) => Math.floor(d),
+        },
+        padding: {
+          top: 0,
+          bottom: 0,
+        },
       },
     },
     bar: {
@@ -65,6 +82,8 @@ onMounted(() => {
       },
     },
     bindto: '#allRegister',
+  }).resize({
+    height: 200,
   });
 
   bb.generate({
@@ -85,7 +104,6 @@ onMounted(() => {
         ],
       ],
       type: bar(),
-      labels: true,
       colors: {
         entrada: 'green',
         saida: 'red',
@@ -95,13 +113,26 @@ onMounted(() => {
       x: {
         type: 'timeseries',
         tick: {
+          values: listQuantityRegister.value.map((item) =>
+            new Date(item.period).getTime()
+          ),
           format: '%m/%Y',
           rotate: 0,
           multiline: false,
+          culling: false,
         },
       },
       y: {
-        show: false,
+        show: true,
+        tick: {
+          values: yQuantityTicks,
+          format: (d: number) => Math.floor(d),
+        },
+        min: 0,
+        padding: {
+          top: 0,
+          bottom: 0,
+        },
       },
     },
     bar: {
@@ -110,6 +141,8 @@ onMounted(() => {
       },
     },
     bindto: '#amountMovement',
+  }).resize({
+    height: 200,
   });
 });
 
