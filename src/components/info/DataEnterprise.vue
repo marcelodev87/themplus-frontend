@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import bb, { bar } from 'billboard.js';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import 'billboard.js/dist/billboard.css';
 import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
+import { getReportsService } from 'src/services/report-service';
 
 defineOptions({
   name: 'DataEnterprise',
@@ -14,8 +15,21 @@ const props = defineProps<{
   enterprise: Enterprise;
 }>();
 
-const { listAmountRegister, listQuantityRegister } =
+const { listAmountRegister, listQuantityRegister, listYear, loadingReport } =
   storeToRefs(useReportStore());
+
+const dataEnterprise = computed(() => props.enterprise);
+const yearActual = computed(() => {
+  const currentDate = new Date();
+
+  return `${currentDate.getFullYear()}`;
+});
+
+const selectedYear = ref<string>(yearActual.value);
+
+watch(listYear, async () => {
+  await getReportsService(String(selectedYear));
+});
 
 onMounted(() => {
   const maxQuantityEntry = Math.max(
@@ -144,8 +158,6 @@ onMounted(() => {
     height: 200,
   });
 });
-
-const dataEnterprise = computed(() => props.enterprise);
 </script>
 <template>
   <section>
@@ -342,12 +354,32 @@ const dataEnterprise = computed(() => props.enterprise);
         </div>
       </q-form>
     </q-expansion-item>
+
     <q-card flat bordered class="q-my-sm">
+      <q-card-section>
+        <div class="row item-center justify-end">
+          <q-select
+            v-model="selectedYear"
+            :options="listYear"
+            :readonly="loadingReport"
+            label="Filtrar por ano"
+            outlined
+            dense
+            options-dense
+            bg-color="grey-1"
+            label-color="black"
+            style="min-width: 200px"
+            :class="!$q.screen.lt.md ? '' : 'full-width'"
+          >
+            <template v-slot:prepend>
+              <q-icon name="calendar_today" color="black" size="20px" />
+            </template>
+          </q-select>
+        </div>
+      </q-card-section>
       <q-card-section>
         <div id="allRegister"></div>
       </q-card-section>
-    </q-card>
-    <q-card flat bordered class="q-my-sm">
       <q-card-section>
         <div id="amountMovement"></div>
       </q-card-section>

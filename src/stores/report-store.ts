@@ -29,11 +29,18 @@ export const useReportStore = defineStore('report', {
     listMovement: [] as Movement[],
     listAmountRegister: [] as AmountRegister[],
     listQuantityRegister: [] as QuantityRegister[],
+    listYear: [] as string[],
     entepriseInspected: null as Enterprise | null,
     permissions: null as SettingsCounter | null,
     finalizedReport: false as boolean,
   }),
   actions: {
+    clearListYear() {
+      this.listYear.splice(0, this.listYear.length);
+    },
+    setListYear(years: string[]) {
+      years.map((item) => this.listYear.push(item));
+    },
     clearListReport() {
       this.listReport.splice(0, this.listReport.length);
     },
@@ -112,6 +119,8 @@ export const useReportStore = defineStore('report', {
           this.setListQuantityRegister(
             response.data.dashboard.quantity_registers
           );
+          this.clearListYear();
+          this.setListYear(response.data.dashboard.list_years);
         }
       } catch (error) {
         this.createError(error);

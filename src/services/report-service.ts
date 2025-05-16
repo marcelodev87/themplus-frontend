@@ -34,6 +34,7 @@ export const getReportsService = (
     dashboard: {
       amount_registers: AmountRegister[];
       quantity_registers: QuantityRegister[];
+      list_years: string[];
     };
     client_name: string;
     enterprise_inspected: Enterprise | null;
