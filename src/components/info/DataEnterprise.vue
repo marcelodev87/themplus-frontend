@@ -76,9 +76,8 @@ onMounted(() => {
       },
     },
     bar: {
-      padding: 8,
       width: {
-        ratio: 0.9,
+        ratio: 0.7,
       },
     },
     bindto: '#allRegister',
@@ -137,7 +136,7 @@ onMounted(() => {
     },
     bar: {
       width: {
-        ratio: 0.5,
+        ratio: 0.7,
       },
     },
     bindto: '#amountMovement',
