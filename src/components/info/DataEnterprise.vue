@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import bb, { bar } from 'billboard.js';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
-import { computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import 'billboard.js/dist/billboard.css';
+import { storeToRefs } from 'pinia';
+import { useReportStore } from 'src/stores/report-store';
 
 defineOptions({
   name: 'DataEnterprise',
@@ -10,7 +14,154 @@ const props = defineProps<{
   enterprise: Enterprise;
 }>();
 
+const { listAmountRegister, listQuantityRegister, listYear, loadingReport } =
+  storeToRefs(useReportStore());
+const { getReports } = useReportStore();
+
 const dataEnterprise = computed(() => props.enterprise);
+const yearActual = computed(() => {
+  const currentDate = new Date();
+
+  return `${currentDate.getFullYear()}`;
+});
+const mountDashboard = () => {
+  const maxQuantityEntry = Math.max(
+    ...listQuantityRegister.value.map((item) => item.entry_quantity)
+  );
+  const maxQuantityOut = Math.max(
+    ...listQuantityRegister.value.map((item) => item.out_quantity)
+  );
+  const maxQuantityValue = Math.max(maxQuantityEntry, maxQuantityOut);
+  const yQuantityTicks = Array.from(
+    { length: maxQuantityValue + 1 },
+    (_, i) => i
+  );
+
+  bb.generate({
+    title: {
+      text: 'Valores R$ x Mês',
+    },
+    data: {
+      x: 'x',
+      columns: [
+        ['x', ...listAmountRegister.value.map((item) => item.period)],
+        [
+          'entrada',
+          ...listAmountRegister.value.map((item) => item.entry_value),
+        ],
+        ['saida', ...listAmountRegister.value.map((item) => item.out_value)],
+      ],
+      type: bar(),
+      colors: {
+        entrada: 'green',
+        saida: 'red',
+      },
+    },
+    axis: {
+      x: {
+        type: 'timeseries',
+        tick: {
+          values: listAmountRegister.value.map((item) =>
+            new Date(item.period).getTime()
+          ),
+          format: '%m/%Y',
+          rotate: 0,
+          multiline: false,
+          culling: false,
+        },
+      },
+      y: {
+        show: true,
+        tick: {
+          count: 10,
+          format: (d: number) => Math.floor(d),
+        },
+        padding: {
+          top: 0,
+          bottom: 0,
+        },
+      },
+    },
+    bar: {
+      width: {
+        ratio: 0.7,
+      },
+    },
+    bindto: '#allRegister',
+  }).resize({
+    height: 200,
+  });
+
+  bb.generate({
+    title: {
+      text: 'Registro x Mês',
+    },
+    data: {
+      x: 'x',
+      columns: [
+        ['x', ...listQuantityRegister.value.map((item) => item.period)],
+        [
+          'entrada',
+          ...listQuantityRegister.value.map((item) => item.entry_quantity),
+        ],
+        [
+          'saida',
+          ...listQuantityRegister.value.map((item) => item.out_quantity),
+        ],
+      ],
+      type: bar(),
+      colors: {
+        entrada: 'green',
+        saida: 'red',
+      },
+    },
+    axis: {
+      x: {
+        type: 'timeseries',
+        tick: {
+          values: listQuantityRegister.value.map((item) =>
+            new Date(item.period).getTime()
+          ),
+          format: '%m/%Y',
+          rotate: 0,
+          multiline: false,
+          culling: false,
+        },
+      },
+      y: {
+        show: true,
+        tick: {
+          values: yQuantityTicks,
+          format: (d: number) => Math.floor(d),
+        },
+        min: 0,
+        padding: {
+          top: 0,
+          bottom: 0,
+        },
+      },
+    },
+    bar: {
+      width: {
+        ratio: 0.7,
+      },
+    },
+    bindto: '#amountMovement',
+  }).resize({
+    height: 200,
+  });
+};
+
+const selectedYear = ref<string>(yearActual.value);
+
+watch(selectedYear, async () => {
+  await getReports(props.enterprise.id, String(selectedYear.value));
+  mountDashboard();
+});
+
+onMounted(() => {
+  mountDashboard();
+});
 </script>
 <template>
   <section>
@@ -207,5 +358,35 @@ const dataEnterprise = computed(() => props.enterprise);
         </div>
       </q-form>
     </q-expansion-item>
+
+    <q-card flat bordered class="q-my-sm">
+      <q-card-section>
+        <div class="row item-center justify-end">
+          <q-select
+            v-model="selectedYear"
+            :options="listYear"
+            :readonly="loadingReport"
+            label="Filtrar por ano"
+            outlined
+            dense
+            options-dense
+            bg-color="grey-1"
+            label-color="black"
+            style="min-width: 200px"
+            :class="!$q.screen.lt.md ? '' : 'full-width'"
+          >
+            <template v-slot:prepend>
+              <q-icon name="calendar_today" color="black" size="20px" />
+            </template>
+          </q-select>
+        </div>
+      </q-card-section>
+      <q-card-section>
+        <div id="allRegister"></div>
+      </q-card-section>
+      <q-card-section>
+        <div id="amountMovement"></div>
+      </q-card-section>
+    </q-card>
   </section>
 </template>

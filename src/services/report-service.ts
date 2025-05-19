@@ -5,6 +5,10 @@ import { Report } from 'src/ts/interfaces/data/Report';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { AxiosError } from 'axios';
 import { Notify } from 'quasar';
+import {
+  AmountRegister,
+  QuantityRegister,
+} from 'src/ts/interfaces/data/Dashboard';
 import { Enterprise } from '../ts/interfaces/data/Enterprise';
 
 const baseUrl = 'report';
@@ -23,16 +27,22 @@ const createError = (error: any) => {
 };
 
 export const getReportsService = (
-  id: string
+  id: string,
+  year: string
 ): Promise<{
   status: number;
   data: {
+    dashboard: {
+      amount_registers: AmountRegister[];
+      quantity_registers: QuantityRegister[];
+      list_years: string[];
+    };
     client_name: string;
     enterprise_inspected: Enterprise | null;
     reports: Report[];
     permissions: SettingsCounter;
   };
-}> => api.get(`${baseUrl}/${id}`);
+}> => api.get(`${baseUrl}/${id}?year_graph=${year}`);
 
 export const detailsReportService = (
   id: string

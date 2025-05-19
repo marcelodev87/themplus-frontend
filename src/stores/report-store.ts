@@ -12,6 +12,10 @@ import {
   undoReportCounterService,
   updateMovementByCounterService,
 } from 'src/services/report-service';
+import {
+  AmountRegister,
+  QuantityRegister,
+} from 'src/ts/interfaces/data/Dashboard';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Report } from 'src/ts/interfaces/data/Report';
@@ -23,16 +27,37 @@ export const useReportStore = defineStore('report', {
     listReport: [] as Report[],
     clientName: null as string | null,
     listMovement: [] as Movement[],
+    listAmountRegister: [] as AmountRegister[],
+    listQuantityRegister: [] as QuantityRegister[],
+    listYear: [] as string[],
     entepriseInspected: null as Enterprise | null,
     permissions: null as SettingsCounter | null,
     finalizedReport: false as boolean,
   }),
   actions: {
+    clearListYear() {
+      this.listYear.splice(0, this.listYear.length);
+    },
+    setListYear(years: string[]) {
+      years.map((item) => this.listYear.push(item));
+    },
     clearListReport() {
       this.listReport.splice(0, this.listReport.length);
     },
     clearListMovement() {
       this.listMovement.splice(0, this.listMovement.length);
+    },
+    clearListAmountRegister() {
+      this.listAmountRegister.splice(0, this.listAmountRegister.length);
+    },
+    clearListQuantityRegister() {
+      this.listQuantityRegister.splice(0, this.listQuantityRegister.length);
+    },
+    setListAmountRegister(amounts: AmountRegister[]) {
+      amounts.map((item) => this.listAmountRegister.push(item));
+    },
+    setListQuantityRegister(quantities: QuantityRegister[]) {
+      quantities.map((item) => this.listQuantityRegister.push(item));
     },
     setLoading(loading: boolean) {
       this.loadingReport = loading;
@@ -77,10 +102,10 @@ export const useReportStore = defineStore('report', {
         type: 'positive',
       });
     },
-    async getReports(id: string) {
+    async getReports(id: string, year: string) {
       try {
         this.setLoading(true);
-        const response = await getReportsService(id);
+        const response = await getReportsService(id, year);
         this.setClientName(null);
         this.setEnterpriseInspected(null);
         this.setPermissions(null);
@@ -90,6 +115,14 @@ export const useReportStore = defineStore('report', {
           this.setClientName(response.data.client_name);
           this.setPermissions(response.data.permissions);
           this.setEnterpriseInspected(response.data.enterprise_inspected);
+          this.clearListAmountRegister();
+          this.clearListQuantityRegister();
+          this.setListAmountRegister(response.data.dashboard.amount_registers);
+          this.setListQuantityRegister(
+            response.data.dashboard.quantity_registers
+          );
+          this.clearListYear();
+          this.setListYear(response.data.dashboard.list_years);
         }
       } catch (error) {
         this.createError(error);
