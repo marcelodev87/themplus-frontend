@@ -102,10 +102,10 @@ export const useReportStore = defineStore('report', {
         type: 'positive',
       });
     },
-    async getReports(id: string) {
+    async getReports(id: string, year: string) {
       try {
         this.setLoading(true);
-        const response = await getReportsService(id);
+        const response = await getReportsService(id, year);
         this.setClientName(null);
         this.setEnterpriseInspected(null);
         if (response.status === 200) {

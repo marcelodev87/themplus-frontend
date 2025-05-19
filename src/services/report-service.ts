@@ -27,7 +27,8 @@ const createError = (error: any) => {
 };
 
 export const getReportsService = (
-  id: string
+  id: string,
+  year: string
 ): Promise<{
   status: number;
   data: {
@@ -40,7 +41,7 @@ export const getReportsService = (
     enterprise_inspected: Enterprise | null;
     reports: Report[];
   };
-}> => api.get(`${baseUrl}/${id}`);
+}> => api.get(`${baseUrl}/${id}?year_graph=${year}`);
 
 export const detailsReportService = (
   id: string

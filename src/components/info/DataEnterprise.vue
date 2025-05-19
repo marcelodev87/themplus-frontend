@@ -5,7 +5,6 @@ import { computed, onMounted, ref, watch } from 'vue';
 import 'billboard.js/dist/billboard.css';
 import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
-import { getReportsService } from 'src/services/report-service';
 
 defineOptions({
   name: 'DataEnterprise',
@@ -17,6 +16,7 @@ const props = defineProps<{
 
 const { listAmountRegister, listQuantityRegister, listYear, loadingReport } =
   storeToRefs(useReportStore());
+const { getReports } = useReportStore();
 
 const dataEnterprise = computed(() => props.enterprise);
 const yearActual = computed(() => {
@@ -24,14 +24,7 @@ const yearActual = computed(() => {
 
   return `${currentDate.getFullYear()}`;
 });
-
-const selectedYear = ref<string>(yearActual.value);
-
-watch(listYear, async () => {
-  await getReportsService(String(selectedYear));
-});
-
-onMounted(() => {
+const mountDashboard = () => {
   const maxQuantityEntry = Math.max(
     ...listQuantityRegister.value.map((item) => item.entry_quantity)
   );
@@ -157,6 +150,17 @@ onMounted(() => {
   }).resize({
     height: 200,
   });
+};
+
+const selectedYear = ref<string>(yearActual.value);
+
+watch(selectedYear, async () => {
+  await getReports(props.enterprise.id, String(selectedYear.value));
+  mountDashboard();
+});
+
+onMounted(() => {
+  mountDashboard();
 });
 </script>
 <template>

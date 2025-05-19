@@ -154,7 +154,7 @@ const open = computed({
 });
 
 const fetchReports = async () => {
-  await getReports(props.idClient ?? '');
+  await getReports(props.idClient ?? '', String(new Date().getFullYear()));
 };
 const clear = (): void => {
   dataFinalizeId.value = null;
