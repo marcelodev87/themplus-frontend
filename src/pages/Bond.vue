@@ -202,7 +202,7 @@ const openCategoryPanel = (): void => {
 };
 const closeCategoryPanel = (): void => {
   showCategoryPanel.value = false;
-  // clear()
+  clear();
 };
 
 watch(
@@ -244,27 +244,22 @@ onMounted(async () => {
           : 'column justify-between no-wrap bg-grey-1'
       "
     >
-      <div class="col-11">
+      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de vínculos" />
       </div>
-      <q-card-actions>
-        <div>
-          <q-btn
-            color="black"
-            label="Painel de categorias"
-            icon-right="lists"
-            class="q-mr-sm full-width"
-            unelevated
-            no-caps
-            flat
-            @click="openCategoryPanel"
-          />
-        </div>
-      </q-card-actions>
-      <ManageCategory
-        :open="showCategoryPanel"
-        @update:open="closeCategoryPanel"
-      />
+      <div
+        class="col-6 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
+        <q-btn
+          @click="openCategoryPanel"
+          icon-right="category"
+          label="Painel de categorias"
+          class="q-mr-sm bg-contabilidade"
+          unelevated
+          no-caps
+        />
+      </div>
     </header>
     <q-scroll-area class="main-scroll">
       <main
@@ -431,6 +426,10 @@ onMounted(async () => {
           :open="showAlertsClient"
           :enterprise-id="dataManage"
           @update:open="closeAlertsClient"
+        />
+        <ManageCategory
+          :open="showCategoryPanel"
+          @update:open="closeCategoryPanel"
         />
         <ConfirmAction
           :open="showConfirmAction"

@@ -2,7 +2,7 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { Category } from 'src/ts/interfaces/data/Category';
+import { Category, CategoryPanel } from 'src/ts/interfaces/data/Category';
 import {
   createCategoryService,
   getCategoriesService,
@@ -11,9 +11,9 @@ import {
   getCategoriesWithParamsService,
   updateActiveCategoryService,
   getEnterpriseCategoryByCounter,
+  updateCategoryCodeService,
 } from 'src/services/category-service';
 import { updateNotifications } from 'src/composables/NotificationsManage';
-import { CategoryPanel } from 'src/ts/interfaces/data/CategoryPanel';
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -72,19 +72,6 @@ export const useCategoryStore = defineStore('category', {
           this.setListCategory(response.data.categories);
           updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
-        }
-      } catch (error) {
-        this.createError(error);
-      } finally {
-        this.setLoading(false);
-      }
-    },
-    async getCategoryById(id: string) {
-      this.setLoading(true);
-      try {
-        const response = await this.getCategoryById(id);
-        if (response.status === 200) {
-          this.setCategoryEdit(response.data.category);
         }
       } catch (error) {
         this.createError(error);
@@ -172,6 +159,29 @@ export const useCategoryStore = defineStore('category', {
         if (response.status === 200) {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateCategoryCode(data: {
+      id: string | null;
+      name: string;
+      codeDebt: number | null;
+      codeCredit: number | null;
+    }) {
+      this.setLoading(true);
+      try {
+        const response = await updateCategoryCodeService(data);
+        if (response.status === 200) {
+          this.clearListCategoryPanel();
+          this.setListCategoryPanel(response.data.categories);
           this.createSuccess(response.data.message);
         }
 

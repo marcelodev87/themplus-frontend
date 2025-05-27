@@ -1,6 +1,5 @@
 import { api } from 'boot/axios';
-import { Category } from 'src/ts/interfaces/data/Category';
-import { CategoryPanel } from 'src/ts/interfaces/data/CategoryPanel';
+import { Category, CategoryPanel } from 'src/ts/interfaces/data/Category';
 
 const baseUrl = 'category';
 
@@ -79,6 +78,18 @@ export const updateCategoryService = (
     type,
     alert,
   });
+export const updateCategoryCodeService = (data: {
+  id: string | null;
+  name: string;
+  codeDebt: number | null;
+  codeCredit: number | null;
+}): Promise<{
+  status: number;
+  data: {
+    categories: CategoryPanel[];
+    message: string;
+  };
+}> => api.put(`${baseUrl}/code`, data);
 export const updateActiveCategoryService = (
   id: string
 ): Promise<{

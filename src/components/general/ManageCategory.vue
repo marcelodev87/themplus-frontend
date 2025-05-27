@@ -3,22 +3,25 @@ import { computed, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from 'src/stores/category-store';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { CategoryPanel } from 'src/ts/interfaces/data/Category';
 import TitlePage from '../shared/TitlePage.vue';
-import FormCategoryUpdate from '../forms/FormCategoryUpdate.vue';
+import FormCategoryCode from '../forms/FormCategoryCode.vue';
 
-const { listCategoryPanel } = storeToRefs(useCategoryStore());
-
-const { getEnterpriseCategoryByCounter } = useCategoryStore();
+defineOptions({
+  name: 'ManageCategory',
+});
 
 const props = defineProps<{
   open: boolean;
 }>();
-
 const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const selectedCategory = ref<object>({});
+const { listCategoryPanel, loadingCategory } = storeToRefs(useCategoryStore());
+const { getEnterpriseCategoryByCounter } = useCategoryStore();
+
+const selectedCategory = ref<CategoryPanel | null>(null);
 const showFormCategoryUpdate = ref<boolean>(false);
 const filterCategory = ref<string>('');
 const selectedType = ref<QuasarSelect<string>>({
@@ -78,13 +81,13 @@ const columnsCategoryPanel = reactive<QuasarTable[]>([
   },
   {
     name: 'code_debt',
-    label: 'Code.Debt',
+    label: 'Código débito',
     field: 'code_debt',
     align: 'left',
   },
   {
     name: 'code_credit',
-    label: 'Code.Credit',
+    label: 'Código crédito',
     field: 'code_credit',
     align: 'left',
   },
@@ -96,18 +99,25 @@ const columnsCategoryPanel = reactive<QuasarTable[]>([
   },
 ]);
 
-const openFormCategoryUpdate = async ({
-  id,
-  data,
-}: {
-  id: string;
-  data: object;
-}): Promise<void> => {
-  selectedCategory.value = { id, ...data };
+const clear = (): void => {
+  selectedCategory.value = null;
+  filterCategory.value = '';
+  selectedType.value = {
+    label: 'Todos os tipos',
+    value: 'all',
+  };
+  selectedClassification.value = {
+    label: 'Todas as classificações',
+    value: 'all',
+  };
+};
+const openFormCategoryUpdate = (data: CategoryPanel): void => {
+  selectedCategory.value = data;
   showFormCategoryUpdate.value = true;
 };
 const closeFormCategoryUpdate = (): void => {
   showFormCategoryUpdate.value = false;
+  clear();
 };
 
 const open = computed({
@@ -131,7 +141,7 @@ watch(
         <TitlePage title="Listagem de categorias" />
         <q-table
           :rows="listCategoryPanel"
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[10]"
           :filter="filterCategory"
           :columns="columnsCategoryPanel"
           flat
@@ -215,12 +225,8 @@ watch(
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  @click="
-                    openFormCategoryUpdate({
-                      id: props.row.id,
-                      data: props.row,
-                    })
-                  "
+                  @click="openFormCategoryUpdate(props.row)"
+                  :disable="loadingCategory"
                   size="sm"
                   flat
                   round
@@ -231,21 +237,26 @@ watch(
             </q-tr>
           </template>
         </q-table>
-        <q-card-actions>
-          <div>
-            <q-btn
-              color="red"
-              label="Fechar"
-              size="md"
-              flat
-              @click="open = false"
-              unelevated
-              no-caps
-            />
-          </div>
+        <q-card-actions align="right">
+          <q-btn
+            color="red"
+            label="Fechar"
+            size="md"
+            @click="open = false"
+            unelevated
+            no-caps
+          />
         </q-card-actions>
       </q-card-section>
-      <FormCategoryUpdate
+      <q-inner-loading
+        :showing="loadingCategory"
+        label="Carregando os dados..."
+        label-class="black"
+        label-style="font-size: 1.1em"
+        color="primary"
+        size="50px"
+      />
+      <FormCategoryCode
         :categorySelected="selectedCategory"
         :open="showFormCategoryUpdate"
         @update:open="closeFormCategoryUpdate"

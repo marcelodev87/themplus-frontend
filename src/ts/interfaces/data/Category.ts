@@ -14,3 +14,12 @@ export interface Category {
   code_debt: number | null;
   code_credit: number | null;
 }
+
+export interface CategoryPanel {
+  id: string | null;
+  name: string;
+  type: string;
+  organization_name: string;
+  code_debt: number | null;
+  code_credit: number | null;
+}
