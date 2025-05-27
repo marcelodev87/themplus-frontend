@@ -16,6 +16,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { useRouter, useRoute } from 'vue-router';
 import { deleteEnterpriseService } from 'src/services/enterprise-service';
 import { Dialog } from 'quasar';
+import ManageCategory from 'src/components/general/ManageCategory.vue';
 
 defineOptions({
   name: 'Bond',
@@ -41,6 +42,8 @@ const dataBond = ref<string | null>(null);
 const dataEnterpriseId = ref<string | null>(null);
 const dataEnterpriseName = ref<string | null>(null);
 const dataEnterpriseCode = ref<number | null>(null);
+const showCategoryPanel = ref<boolean>(false);
+
 const columnsBond = reactive<QuasarTable[]>([
   {
     name: 'code_financial',
@@ -112,6 +115,7 @@ const clear = (): void => {
 const fetchBonds = async () => {
   await getBonds(selectedVerified.value.value);
 };
+
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
@@ -193,6 +197,14 @@ const deleteEnterpriseSystem = (id: string) => {
     });
 };
 
+const openCategoryPanel = (): void => {
+  showCategoryPanel.value = true;
+};
+const closeCategoryPanel = (): void => {
+  showCategoryPanel.value = false;
+  // clear()
+};
+
 watch(
   filledData,
   () => {
@@ -235,6 +247,24 @@ onMounted(async () => {
       <div class="col-11">
         <TitlePage title="Gerenciamento de vínculos" />
       </div>
+      <q-card-actions>
+        <div>
+          <q-btn
+            color="black"
+            label="Painel de categorias"
+            icon-right="lists"
+            class="q-mr-sm full-width"
+            unelevated
+            no-caps
+            flat
+            @click="openCategoryPanel"
+          />
+        </div>
+      </q-card-actions>
+      <ManageCategory
+        :open="showCategoryPanel"
+        @update:open="closeCategoryPanel"
+      />
     </header>
     <q-scroll-area class="main-scroll">
       <main

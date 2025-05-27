@@ -11,4 +11,6 @@ export interface Category {
   alert: string | null;
   active: 1 | 0;
   default: 1 | 0;
+  code_debt: number | null;
+  code_credit: number | null;
 }

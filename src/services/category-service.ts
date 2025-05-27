@@ -1,5 +1,6 @@
 import { api } from 'boot/axios';
 import { Category } from 'src/ts/interfaces/data/Category';
+import { CategoryPanel } from 'src/ts/interfaces/data/CategoryPanel';
 
 const baseUrl = 'category';
 
@@ -12,6 +13,27 @@ export const getCategoriesService = (): Promise<{
     message: string;
   };
 }> => api.get(`${baseUrl}`);
+
+export const getCategoryById = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    category: Category;
+    message: string;
+  };
+}> => api.get(`${baseUrl}/${id}`);
+
+export const getEnterpriseCategoryByCounter = (
+  type: string,
+  classification: string
+): Promise<{
+  status: number;
+  data: {
+    categories: CategoryPanel[];
+    message: string;
+  };
+}> => api.get(`${baseUrl}/panel?type=${type}&classification=${classification}`);
 
 export const getCategoriesWithParamsService = (
   createdByMe: boolean,

@@ -10,27 +10,40 @@ import {
   updateCategoryService,
   getCategoriesWithParamsService,
   updateActiveCategoryService,
+  getEnterpriseCategoryByCounter,
 } from 'src/services/category-service';
 import { updateNotifications } from 'src/composables/NotificationsManage';
+import { CategoryPanel } from 'src/ts/interfaces/data/CategoryPanel';
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
     filledData: true as boolean,
     loadingCategory: false as boolean,
     listCategory: [] as Category[],
+    listCategoryPanel: [] as CategoryPanel[],
+    categoryEdit: {} as Category[],
   }),
   actions: {
     clearListCategory() {
       this.listCategory.splice(0, this.listCategory.length);
     },
+    setListCategory(categories: Category[]) {
+      categories.map((item) => this.listCategory.push(item));
+    },
+    clearListCategoryPanel() {
+      this.listCategoryPanel.splice(0, this.listCategoryPanel.length);
+    },
+    setListCategoryPanel(categories: CategoryPanel[]) {
+      categories.map((item) => this.listCategoryPanel.push(item));
+    },
+    // setCategoryEdit(category: Category[]) {
+    //   this.categoryEdit.push(category);
+    // },
     setLoading(loading: boolean) {
       this.loadingCategory = loading;
     },
     setFilledData(data: boolean) {
       this.filledData = data;
-    },
-    setListCategory(categories: Category[]) {
-      categories.map((item) => this.listCategory.push(item));
     },
     createError(error: any) {
       let message = 'Error';
@@ -59,6 +72,36 @@ export const useCategoryStore = defineStore('category', {
           this.setListCategory(response.data.categories);
           updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getCategoryById(id: string) {
+      this.setLoading(true);
+      try {
+        const response = await this.getCategoryById(id);
+        if (response.status === 200) {
+          this.setCategoryEdit(response.data.category);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getEnterpriseCategoryByCounter(type: string, classification: string) {
+      this.setLoading(true);
+      try {
+        const response = await getEnterpriseCategoryByCounter(
+          type,
+          classification
+        );
+        if (response.status === 200) {
+          this.clearListCategoryPanel();
+          this.setListCategoryPanel(response.data.categories);
         }
       } catch (error) {
         this.createError(error);
