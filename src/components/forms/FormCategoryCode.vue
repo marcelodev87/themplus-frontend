@@ -77,7 +77,7 @@ watch(open, () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2 form-basic" style="min-width: 98vw">
+    <q-card class="bg-grey-2 form-basic" style="width: 500px; max-width: 98vw">
       <q-card-section class="q-pa-none">
         <TitlePage title="Edite o plano de conta" />
       </q-card-section>

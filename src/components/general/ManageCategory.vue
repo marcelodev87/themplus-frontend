@@ -179,13 +179,7 @@ watch(
               style="min-width: 200px"
               :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
             ></q-select>
-            <q-input
-              filled
-              dense
-              v-model="filterCategory"
-              label="Pesquisar"
-              q-input
-            >
+            <q-input filled dense v-model="filterCategory" label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
