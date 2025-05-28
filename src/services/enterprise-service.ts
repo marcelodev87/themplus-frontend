@@ -36,6 +36,16 @@ export const saveEnterpriseViewService = (
   };
 }> => api.post(`${baseUrl}/view`, { viewEnterprise: value });
 
+export const setViewEnterpriseService = (
+  enterpriseId: string | null
+): Promise<{
+  status: number;
+  data: {
+    user: User;
+    message: string;
+  };
+}> => api.put(`${baseUrl}/viewByCounter`, { viewEnterprise: enterpriseId });
+
 export const searchEnterpriseService = (
   text: string
 ): Promise<{

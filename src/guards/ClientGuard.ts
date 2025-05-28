@@ -7,8 +7,12 @@ export function isClientGuard(
   next: NavigationGuardNext
 ) {
   const authStore = useAuthStore();
-  const { enterprisePosition } = authStore;
-  if (enterprisePosition === 'client') {
+  const { enterprisePosition, user } = authStore;
+  if (
+    enterprisePosition === 'client' ||
+    (enterprisePosition === 'counter' &&
+      user?.view_enterprise_id !== user?.enterprise_id)
+  ) {
     next();
   } else {
     next({ name: 'admin-feed' });

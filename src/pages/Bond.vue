@@ -17,17 +17,22 @@ import { useRouter, useRoute } from 'vue-router';
 import { deleteEnterpriseService } from 'src/services/enterprise-service';
 import { Dialog } from 'quasar';
 import ManageCategory from 'src/components/general/ManageCategory.vue';
+import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { Bond } from 'src/ts/interfaces/data/Bond';
 
 defineOptions({
   name: 'Bond',
 });
 
 const { loadingOrder, listBond, filledData } = storeToRefs(useOrderStore());
+const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
+const { setViewEnterprise } = useEnterpriseStore();
 const { getBonds, deleteBond } = useOrderStore();
-const { user } = useAuthStore();
+const { user, enterprisePosition } = storeToRefs(useAuthStore());
 
 const router = useRouter();
 const route = useRoute();
+const showInspect = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormCodeFinancial = ref<boolean>(false);
 const showFormManageUsers = ref<boolean>(false);
@@ -43,6 +48,7 @@ const dataEnterpriseId = ref<string | null>(null);
 const dataEnterpriseName = ref<string | null>(null);
 const dataEnterpriseCode = ref<number | null>(null);
 const showCategoryPanel = ref<boolean>(false);
+const listEnterpriseView = reactive<Bond[]>([]);
 
 const columnsBond = reactive<QuasarTable[]>([
   {
@@ -115,7 +121,6 @@ const clear = (): void => {
 const fetchBonds = async () => {
   await getBonds(selectedVerified.value.value);
 };
-
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
@@ -196,13 +201,15 @@ const deleteEnterpriseSystem = (id: string) => {
       console.log('Operação cancelada pelo usuário.');
     });
 };
-
 const openCategoryPanel = (): void => {
   showCategoryPanel.value = true;
 };
 const closeCategoryPanel = (): void => {
   showCategoryPanel.value = false;
   clear();
+};
+const setView = async (entepriseId: string | null): Promise<void> => {
+  await setViewEnterprise(entepriseId);
 };
 
 watch(
@@ -225,6 +232,20 @@ watch(
     }
   },
   { immediate: true, deep: true }
+);
+watch(
+  showInspect,
+  () => {
+    listEnterpriseView.splice(0, listEnterpriseView.length);
+    if (showInspect.value) {
+      listBond.value.forEach((item) => {
+        if (item.id === user.value?.view_enterprise_id) {
+          listEnterpriseView.push(item);
+        }
+      });
+    }
+  },
+  { immediate: true }
 );
 watch(selectedVerified, async () => {
   clear();
@@ -268,21 +289,37 @@ onMounted(async () => {
       >
         <q-table
           v-show="!showDataClient"
-          :rows="loadingOrder ? [] : listBond"
+          :rows="
+            loadingOrder || loadingEnterprise
+              ? []
+              : showInspect
+                ? listEnterpriseView
+                : listBond
+          "
           :columns="columnsBond"
           :filter="filterOrder"
-          :loading="loadingOrder"
+          :loading="loadingOrder || loadingEnterprise"
           flat
           bordered
           dense
           row-key="index"
           no-data-label="Nenhuma vinculação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[10]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de vínculos</span>
             <q-space />
+            <q-toggle
+              v-show="
+                user?.enterprise_id !== user?.view_enterprise_id &&
+                enterprisePosition === 'counter'
+              "
+              v-model="showInspect"
+              color="primary"
+              label="Inspeção aberta"
+              left-label
+            />
             <q-select
               v-model="selectedVerified"
               :options="optionsVerified"
@@ -307,7 +344,13 @@ onMounted(async () => {
             </q-input>
           </template>
           <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
+            <q-tr
+              :props="props"
+              style="height: 28px"
+              :class="
+                props.row.id === user?.view_enterprise_id ? 'text-red' : ''
+              "
+            >
               <q-td key="code_financial" :props="props" class="text-left">
                 <span class="text-subtitle2">{{
                   props.row.code_financial
@@ -330,6 +373,31 @@ onMounted(async () => {
                 />
               </q-td>
               <q-td key="action" :props="props">
+                <q-btn
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    enterprisePosition === 'counter'
+                  "
+                  @click="setView(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="pageview"
+                >
+                  <q-tooltip> Inspecionar </q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-show="user?.view_enterprise_id === props.row.id"
+                  @click="setView(null)"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="pageview"
+                >
+                  <q-tooltip> Fechar Inspeção </q-tooltip>
+                </q-btn>
                 <q-btn
                   @click="
                     openFormCodeFinancial(

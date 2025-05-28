@@ -4,7 +4,7 @@ import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import Navbar from 'src/components/headers/Navbar.vue';
 import EmailInfo from 'src/components/info/EmailInfo.vue';
 import FormViewEnterprise from 'src/components/forms/FormViewEnterprise.vue';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
@@ -63,6 +63,14 @@ const closeDrawer = (): void => {
     leftDrawerOpen.value = false;
   }
 };
+
+const allowInspect = computed(() => {
+  return (
+    enterprisePosition.value === 'counter' &&
+    user.value?.enterprise_id !== user.value?.view_enterprise_id
+  );
+});
+
 watch(
   () => route.name,
   (name) => {
@@ -290,6 +298,39 @@ watch(
                 <q-icon name="person" />
               </q-item-section>
               <q-item-section> Usuários </q-item-section>
+            </q-item>
+          </q-expansion-item>
+          <q-expansion-item
+            v-show="allowInspect"
+            expand-separator
+            icon="visibility"
+            label="Inspeção"
+            dense-toggle
+            class="text-red"
+          >
+            <q-item
+              clickable
+              :to="{ name: 'admin-movement' }"
+              :active="isActive('admin-movement')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="attach_money" />
+              </q-item-section>
+              <q-item-section> Movimentações </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              :to="{ name: 'admin-scheduling' }"
+              :active="isActive('admin-scheduling')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="calendar_month" />
+              </q-item-section>
+              <q-item-section> Agendamentos </q-item-section>
             </q-item>
           </q-expansion-item>
 

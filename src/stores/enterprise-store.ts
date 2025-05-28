@@ -10,6 +10,7 @@ import {
   getEnterprisesViewService,
   saveEnterpriseViewService,
   searchEnterpriseService,
+  setViewEnterpriseService,
   showEnterpriseService,
   unlinkCounterService,
   updateCodeFinancialService,
@@ -147,6 +148,24 @@ export const useEnterpriseStore = defineStore('enterprise', {
       } catch (error) {
         this.createError(error);
         return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async setViewEnterprise(enterprise: string | null) {
+      this.setLoading(true);
+      try {
+        const response = await setViewEnterpriseService(enterprise);
+        if (response.status === 200) {
+          setUser(response.data.user);
+          this.createSuccess(response.data.message);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
       }
     },
     async showEnterprise(id: string) {
