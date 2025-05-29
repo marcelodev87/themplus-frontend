@@ -209,7 +209,11 @@ const closeCategoryPanel = (): void => {
   clear();
 };
 const setView = async (entepriseId: string | null): Promise<void> => {
-  await setViewEnterprise(entepriseId);
+  const response = await setViewEnterprise(entepriseId);
+  if (response?.status === 200) {
+    listEnterpriseView.splice(0, listEnterpriseView.length);
+    showInspect.value = false;
+  }
 };
 
 watch(
