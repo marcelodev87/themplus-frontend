@@ -76,7 +76,7 @@ onMounted(() => {
           bg-color="white"
           label-color="black"
           filled
-          label="Digite 'CONFIMAR'"
+          label="Digite 'CONFIRMAR'"
           dense
           input-class="text-black"
         >

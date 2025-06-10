@@ -81,6 +81,8 @@ watch(open, () => {
             input-class="text-black no-resize"
             type="textarea"
             class="no-resize"
+            counter
+            maxlength="5000"
           >
             <template v-slot:prepend>
               <q-icon name="description" color="black" size="20px" />
