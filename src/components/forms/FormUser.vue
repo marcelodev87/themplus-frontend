@@ -319,6 +319,7 @@ watch(open, async () => {
             label-color="black"
             filled
             label="Digite o e-mail do usuário"
+            autocomplete="new-email"
             dense
             input-class="text-black"
           >
@@ -396,6 +397,7 @@ watch(open, async () => {
             label-color="black"
             filled
             label="Digite a senha do usuário"
+            autocomplete="new-password"
             dense
             input-class="text-black"
             :type="isPwd ? 'password' : 'text'"
@@ -419,6 +421,7 @@ watch(open, async () => {
             label-color="black"
             filled
             label="Confirme a senha do usuário"
+            autocomplete="new-password"
             dense
             input-class="text-black"
             :type="isPwd2 ? 'password' : 'text'"
