@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
 import { useUsersMembersStore } from 'src/stores/users-store';
@@ -13,7 +13,6 @@ defineOptions({
 
 const { user, enterpriseName } = storeToRefs(useAuthStore());
 const { notifications } = storeToRefs(useUsersMembersStore());
-
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
   'update:openFormEnterprise': [void];
@@ -21,10 +20,8 @@ const emit = defineEmits<{
   'update:openViewEnterprise': [void];
   'update:changeOpenMenu': [void];
 }>();
-
 const showFormFedback = ref<boolean>(false);
 const showInbox = ref<boolean>(false);
-
 const openFormFeedback = (): void => {
   showFormFedback.value = true;
 };
@@ -37,6 +34,13 @@ const openInbox = (): void => {
 const closeInbox = (): void => {
   showInbox.value = false;
 };
+
+const getEnterpriseInspect = computed(() => {
+  if (user.value?.view_enterprise_code) {
+    return `${user.value?.view_enterprise_code} - ${user.value?.view_enterprise_name}`;
+  }
+  return user.value?.view_enterprise_name;
+});
 </script>
 <template>
   <nav>
@@ -65,8 +69,14 @@ const closeInbox = (): void => {
             </q-tooltip>
           </q-btn>
           <q-btn
+            style="
+              max-width: 350px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
             v-show="user?.enterprise_id !== user?.view_enterprise_id"
-            :label="user?.view_enterprise_name"
+            :label="getEnterpriseInspect"
             flat
             color="red"
             icon-right="holiday_village"

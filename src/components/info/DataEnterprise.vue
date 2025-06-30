@@ -172,20 +172,38 @@ onMounted(() => {
       class="border-form"
     >
       <q-form class="q-gutter-y-sm">
-        <q-input
-          v-model="dataEnterprise.name"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Nome da organização"
-          dense
-          input-class="text-black"
-          readonly
-        >
-          <template v-slot:prepend>
-            <q-icon name="person" color="black" size="20px" />
-          </template>
-        </q-input>
+        <div class="row justify-between">
+          <q-input
+            v-model="dataEnterprise.name"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Nome da organização"
+            dense
+            class="input-divider"
+            input-class="text-black"
+            readonly
+          >
+            <template v-slot:prepend>
+              <q-icon name="person" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataEnterprise.code_financial"
+            bg-color="white"
+            label-color="black"
+            filled
+            label="Código da organização"
+            dense
+            class="input-divider"
+            input-class="text-black"
+            readonly
+          >
+            <template v-slot:prepend>
+              <q-icon name="key" color="black" size="20px" />
+            </template>
+          </q-input>
+        </div>
         <q-input
           v-model="dataEnterprise.email"
           bg-color="white"

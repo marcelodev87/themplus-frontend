@@ -13,6 +13,7 @@ export const doLoginService = (
     enterprise_created: string | null;
     enterprise_position: string;
     enterprise_name: string;
+    enterprise_code_financial: number;
     token: string;
   };
 }> => api.post('/login', { email, password });

@@ -22,6 +22,10 @@ export const useAuthStore = defineStore('auth', {
     enterpriseCreated: useStorage('enterprise_created', null as string | null),
     enterprisePosition: useStorage('enterprise_position', 'client' as string),
     enterpriseName: useStorage('enterprise_name', null as string | null),
+    codeFinancial: useStorage(
+      'enterprise_code_financial',
+      null as number | null
+    ),
   }),
   actions: {
     setUser(user: User | null) {
