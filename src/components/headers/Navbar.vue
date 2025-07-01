@@ -69,19 +69,22 @@ const getEnterpriseInspect = computed(() => {
             </q-tooltip>
           </q-btn>
           <q-btn
-            style="
-              max-width: 350px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            "
             v-show="user?.enterprise_id !== user?.view_enterprise_id"
-            :label="getEnterpriseInspect"
             flat
             color="red"
-            icon-right="holiday_village"
             rounded
           >
+            <span
+              style="
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              "
+              class="q-mr-sm"
+              >{{ getEnterpriseInspect }}</span
+            >
+            <q-icon name="holiday_village" />
             <q-tooltip> Modo espectador ativado </q-tooltip>
           </q-btn>
           <q-btn
