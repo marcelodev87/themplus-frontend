@@ -403,6 +403,10 @@ onMounted(async () => {
                   <q-tooltip> Fechar Inspeção </q-tooltip>
                 </q-btn>
                 <q-btn
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    enterprisePosition === 'counter'
+                  "
                   @click="
                     openFormCodeFinancial(
                       props.row.id,
