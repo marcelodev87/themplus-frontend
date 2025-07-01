@@ -64,6 +64,8 @@ const columnsBond = reactive<QuasarTable[]>([
     field: 'name',
     align: 'left',
     sortable: true,
+    style:
+      'max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
   {
     name: 'cnpj',
@@ -454,7 +456,11 @@ onMounted(async () => {
                   <q-tooltip> Analisar </q-tooltip>
                 </q-btn>
                 <q-btn
-                  v-show="props.row.created_by === null"
+                  v-show="
+                    props.row.created_by === null &&
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    enterprisePosition === 'counter'
+                  "
                   @click="openConfirmAction(props.row.id)"
                   size="sm"
                   flat
@@ -463,7 +469,10 @@ onMounted(async () => {
                   icon="delete"
                 />
                 <q-btn
-                  v-show="user?.email === 'marcelo.dias@etikasolucoes.com.br'"
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    enterprisePosition === 'counter'
+                  "
                   @click="deleteEnterpriseSystem(props.row.id)"
                   size="sm"
                   flat
