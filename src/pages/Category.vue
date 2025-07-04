@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
@@ -94,8 +95,27 @@ const reactivate = async (id: string) => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
+const customFilterCategory = (
+  rows: readonly Category[],
+  terms: string,
+  cols: readonly Category[],
+  getCellValue: (row: Category, col: QuasarTable) => unknown
+): readonly Category[] => {
+  const searchTerm = terms.toLowerCase();
+  currentPage.value = 1;
 
-const listEnterpriseCurrent = computed(() => {
+  if (filteredCategories.length > 0) {
+    return filteredCategories.filter((item) => {
+      return item.name && item.name.toLowerCase().includes(searchTerm);
+    });
+  }
+
+  return listCategory.value.filter((item) => {
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
+
+const listCategoryCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
   return listCategory.value.slice(start, end);
@@ -172,9 +192,6 @@ watch(
   },
   { immediate: true }
 );
-watch(filterCategory, () => {
-  currentPage.value = 1;
-});
 
 onMounted(async () => {
   await fetchAlerts();
@@ -221,10 +238,11 @@ onMounted(async () => {
               ? []
               : filteredCategories.length > 0
                 ? filteredCategories
-                : listEnterpriseCurrent
+                : listCategoryCurrent
           "
           :columns="columnsCategory"
           :filter="filterCategory"
+          :filter-method="customFilterCategory"
           :loading="loadingCategory"
           flat
           bordered
