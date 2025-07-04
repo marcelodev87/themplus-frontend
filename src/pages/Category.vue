@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { Category } from 'src/ts/interfaces/data/Category';
 import FormCategory from 'src/components/forms/FormCategory.vue';
@@ -23,6 +23,8 @@ const {
   updateActiveCategory,
 } = useCategoryStore();
 
+const currentPage = ref(1);
+const rowsPerPage = ref(20);
 const onlyCreatedByMe = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
@@ -93,6 +95,15 @@ const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
 
+const listEnterpriseCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listCategory.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listCategory.value.length / rowsPerPage.value);
+});
+
 watch(
   [onlyCreatedByMe, onlyDefault],
   async ([newCreatedByMe, newDefault], [oldCreatedByMe, oldDefault]) => {
@@ -161,6 +172,9 @@ watch(
   },
   { immediate: true }
 );
+watch(filterCategory, () => {
+  currentPage.value = 1;
+});
 
 onMounted(async () => {
   await fetchAlerts();
@@ -201,12 +215,13 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
+          style="height: 750px"
           :rows="
             loadingCategory
               ? []
               : filteredCategories.length > 0
                 ? filteredCategories
-                : listCategory
+                : listEnterpriseCurrent
           "
           :columns="columnsCategory"
           :filter="filterCategory"
@@ -217,7 +232,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma categoria para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <div
@@ -380,6 +395,23 @@ onMounted(async () => {
                 </q-btn>
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div class="flex flex-center full-width">
+              <q-pagination
+                v-model="currentPage"
+                :max="maxPages"
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+            </div>
           </template>
         </q-table>
         <FormCategory

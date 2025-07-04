@@ -2,7 +2,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useRegisterStore } from 'src/stores/register-store';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
@@ -15,6 +15,8 @@ const { listRegister, loadingRegister, filledData } =
   storeToRefs(useRegisterStore());
 const { getRegisters } = useRegisterStore();
 
+const currentPage = ref(1);
+const rowsPerPage = ref(10);
 const showRegisterDetail = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
@@ -151,6 +153,15 @@ const buildAction = (action: string): string => {
   return '';
 };
 
+const listRegisterCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listRegister.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listRegister.value.length / rowsPerPage.value);
+});
+
 watch(selectedPeriod, async () => {
   await fetchRegisters();
 });
@@ -164,6 +175,9 @@ watch(
   },
   { immediate: true }
 );
+watch(filterRegister, () => {
+  currentPage.value = 1;
+});
 
 onMounted(async () => {
   await fetchRegisters();
@@ -192,7 +206,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          :rows="loadingRegister ? [] : listRegister"
+          :rows="loadingRegister ? [] : listRegisterCurrent"
           :columns="columnsRegister"
           :filter="filterRegister"
           :loading="loadingRegister"
@@ -270,6 +284,23 @@ onMounted(async () => {
                 </q-btn>
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:pagination>
+            <div class="flex flex-center flex">
+              <q-pagination
+                v-model="currentPage"
+                :max="maxPages"
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+            </div>
           </template>
         </q-table>
         <RegisterDetail
