@@ -393,6 +393,9 @@ watch(
 watch(filterMonthYear, async () => {
   await getSchedulings(filterMonthYear.value.replace('/', '-'));
 });
+watch(filterScheduling, () => {
+  currentPage.value = 1;
+});
 
 onMounted(async () => {
   await getSchedulings(dateActual.value.replace('/', '-'));
