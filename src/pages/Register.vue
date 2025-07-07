@@ -15,8 +15,8 @@ const { listRegister, loadingRegister, filledData } =
   storeToRefs(useRegisterStore());
 const { getRegisters } = useRegisterStore();
 
-const currentPage = ref(1);
-const rowsPerPage = ref(10);
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showRegisterDetail = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
@@ -216,7 +216,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma alerta para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de registros</span>
@@ -285,11 +285,17 @@ onMounted(async () => {
               </q-td>
             </q-tr>
           </template>
-          <template v-slot:pagination>
-            <div class="flex flex-center flex">
+          <template v-slot:bottom>
+            <div
+              v-show="listRegister.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
               <q-pagination
+                style="width: 96%; justify-content: center"
                 v-model="currentPage"
                 :max="maxPages"
+                :max-pages="6"
+                rounded
                 direction-links
                 boundary-links
                 color="contabilidade"
@@ -300,6 +306,7 @@ onMounted(async () => {
                 icon-prev="fast_rewind"
                 icon-next="fast_forward"
               />
+              <span class="text-red-9">Total: {{ listRegister.length }}</span>
             </div>
           </template>
         </q-table>

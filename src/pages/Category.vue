@@ -25,7 +25,7 @@ const {
 } = useCategoryStore();
 
 const currentPage = ref(1);
-const rowsPerPage = ref(20);
+const rowsPerPage = ref(10);
 const onlyCreatedByMe = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
@@ -232,7 +232,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 750px"
+          style="height: 680px"
           :rows="
             loadingCategory
               ? []
@@ -415,10 +415,16 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div class="flex flex-center full-width">
+            <div
+              v-show="listCategory.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
               <q-pagination
+                style="width: 96%; justify-content: center"
                 v-model="currentPage"
                 :max="maxPages"
+                :max-pages="6"
+                rounded
                 direction-links
                 boundary-links
                 color="contabilidade"
@@ -429,6 +435,7 @@ onMounted(async () => {
                 icon-prev="fast_rewind"
                 icon-next="fast_forward"
               />
+              <span class="text-red-9">Total: {{ listCategory.length }}</span>
             </div>
           </template>
         </q-table>

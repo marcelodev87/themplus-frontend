@@ -2,7 +2,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useFinancialStore } from 'src/stores/financial-store';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import InviteCounter from 'src/components/shared/InviteCounter.vue';
@@ -37,6 +37,9 @@ const { getDelivery, updateDelivery, getMovementsWithObservations } =
   useFinancialStore();
 const { downloadFile } = useMovementStore();
 
+const currentPage = ref<number>(1);
+const rowsPerPageMovementFinancial = ref<number>(20);
+const rowsPerPageDelivery = ref<number>(12);
 const mode = ref<'reports' | 'observations'>('reports');
 const filterDelivery = ref<string>('');
 const showCounterInfo = ref<boolean>(false);
@@ -265,6 +268,24 @@ const clear = () => {
   mode.value = 'reports';
   dateSelected.value = null;
 };
+const listDeliveryCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPageDelivery.value;
+  const end = start + rowsPerPageDelivery.value;
+  return listDelivery.value.slice(start, end);
+});
+const maxPagesDelivery = computed(() => {
+  return Math.ceil(listDelivery.value.length / rowsPerPageDelivery.value);
+});
+const maxPagesMovementFinancial = computed(() => {
+  return Math.ceil(
+    listMovementFinancial.value.length / rowsPerPageMovementFinancial.value
+  );
+});
+const listMovementeFinancialDeliveryCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPageMovementFinancial.value;
+  const end = start + rowsPerPageMovementFinancial.value;
+  return listMovementFinancial.value.slice(start, end);
+});
 
 watch(
   filledData,
@@ -403,7 +424,8 @@ onMounted(async () => {
       <main class="q-pa-sm q-mb-md">
         <q-table
           v-if="mode === 'reports'"
-          :rows="loadingDelivery ? [] : listDelivery"
+          style="height: 590px"
+          :rows="loadingDelivery ? [] : listDeliveryCurrent"
           :columns="columnsDelivery"
           :filter="filterDelivery"
           :loading="loadingDelivery"
@@ -413,7 +435,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma entrega para mostrar"
           virtual-scroll
-          :rows-per-page-options="[12]"
+          :rows-per-page-options="[rowsPerPageDelivery]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de entregas</span>
@@ -485,10 +507,35 @@ onMounted(async () => {
               </q-td>
             </q-tr>
           </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listDelivery.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPagesDelivery"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9">Total: {{ listDelivery.length }}</span>
+            </div>
+          </template>
         </q-table>
         <q-table
           v-else
-          :rows="loadingDelivery ? [] : listMovementFinancial"
+          style="height: 590px"
+          :rows="loadingDelivery ? [] : listMovementeFinancialDeliveryCurrent"
           :columns="columnsMovement"
           :loading="loadingDelivery"
           flat
@@ -497,7 +544,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPageMovementFinancial]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de movimentações</span>
@@ -556,6 +603,32 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listMovementFinancial.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-show="listMovementFinancial.length > 0"
+                class="flex justify-between"
+                v-model="currentPage"
+                :max="maxPagesMovementFinancial"
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9"
+                >Total: {{ listMovementFinancial.length }}</span
+              >
+            </div>
           </template>
         </q-table>
         <div class="q-mt-sm row justify-end">

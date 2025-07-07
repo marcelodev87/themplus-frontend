@@ -28,6 +28,8 @@ const {
 } = useFinancialStore();
 const { loadingDelivery, listFileFinancial } = storeToRefs(useFinancialStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(8);
 const textFile = ref<string | null>(null);
 const dataFile = reactive({
   name: '' as string,
@@ -146,6 +148,14 @@ const open = computed({
 const allowSave = computed((): boolean => {
   return !!dataFile.file && dataFile.name.trim().length > 0;
 });
+const listFileFinancialCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listFileFinancial.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listFileFinancial.value.length / rowsPerPage.value);
+});
 
 watch(open, async () => {
   if (open.value) {
@@ -230,7 +240,8 @@ watch(open, async () => {
         </q-form>
         <q-separator />
         <q-table
-          :rows="listFileFinancial"
+          style="height: 450px"
+          :rows="listFileFinancialCurrent"
           :columns="
             props.mode == 'client' ? columnsFileClient : columnsFileCounter
           "
@@ -241,7 +252,7 @@ watch(open, async () => {
           row-key="index"
           no-data-label="Nenhum arquivo para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de arquivos</span>
@@ -281,6 +292,32 @@ watch(open, async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listFileFinancial.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 95%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9"
+                >Total: {{ listFileFinancial.length }}</span
+              >
+            </div>
           </template>
         </q-table>
       </q-card-section>

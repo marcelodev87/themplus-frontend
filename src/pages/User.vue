@@ -4,7 +4,7 @@ import FormUser from 'src/components/forms/FormUser.vue';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
-import { reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { User } from 'src/ts/interfaces/data/User';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
@@ -20,6 +20,8 @@ const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(
 );
 const { user } = storeToRefs(useAuthStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showFormUser = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -101,6 +103,15 @@ const closeAlertDataEnterprise = (): void => {
 const setActive = async (active: number, userId: string) => {
   await updateActiveUser(active, userId);
 };
+
+const listUserMemberCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listUserMember.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listUserMember.value.length / rowsPerPage.value);
+});
 
 watch(
   filledData,
@@ -187,7 +198,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          :rows="loadingUsersMembers ? [] : listUserMember"
+          :rows="loadingUsersMembers ? [] : listUserMemberCurrent"
           :columns="columnsUser"
           :filter="filterUser"
           :loading="loadingUsersMembers"
@@ -291,6 +302,30 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listUserMember.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9">Total: {{ listUserMember.length }}</span>
+            </div>
           </template>
         </q-table>
         <FormUser

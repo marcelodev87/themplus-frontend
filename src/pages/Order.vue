@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import FormRequestUser from 'src/components/forms/FormRequestUser.vue';
@@ -17,6 +17,8 @@ const { loadingOrder, filledData, listOrderCounter } =
   storeToRefs(useOrderStore());
 const { getOrdersViewCounter, deleteOrder } = useOrderStore();
 
+const currentPage = ref(1);
+const rowsPerPage = ref(10);
 const filterOrder = ref<string>('');
 const showFormRequestUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -124,6 +126,15 @@ const customFilterOrder = (
   });
 };
 
+const listOrderCounterCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listOrderCounter.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listOrderCounter.value.length / rowsPerPage.value);
+});
+
 watch(
   filledData,
   () => {
@@ -171,7 +182,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          :rows="loadingOrder ? [] : listOrderCounter"
+          :rows="loadingOrder ? [] : listOrderCounterCurrent"
           :columns="columnsOrder"
           :filter="filterOrder"
           :filter-method="customFilterOrder"
@@ -182,7 +193,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma solicitação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de solicitações</span>
@@ -242,6 +253,32 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listOrderCounter.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9"
+                >Total: {{ listOrderCounter.length }}</span
+              >
+            </div>
           </template>
         </q-table>
         <FormRequestUser

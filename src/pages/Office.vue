@@ -2,7 +2,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useOfficeStore } from 'src/stores/office-store';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
@@ -19,6 +19,8 @@ const { user } = storeToRefs(useAuthStore());
 const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices, deleteOffice } = useOfficeStore();
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const selectedOffice = ref<string | null>(null);
@@ -87,6 +89,15 @@ const closeConfirmAction = (): void => {
   clear();
 };
 
+const listOfficeCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listOffice.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listOffice.value.length / rowsPerPage.value);
+});
+
 watch(
   filledData,
   () => {
@@ -131,7 +142,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          :rows="loadingOffice ? [] : listOffice"
+          :rows="loadingOffice ? [] : listOfficeCurrent"
           :columns="columnsAlert"
           :filter="filterAlert"
           :loading="loadingOffice"
@@ -141,7 +152,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma filial para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de filiais</span>
@@ -183,6 +194,30 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listOffice.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9">Total: {{ listOffice.length }}</span>
+            </div>
           </template>
         </q-table>
         <FormEnterprise

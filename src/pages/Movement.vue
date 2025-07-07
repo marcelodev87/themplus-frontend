@@ -40,6 +40,8 @@ const {
 } = storeToRefs(useMovementStore());
 const { user } = storeToRefs(useAuthStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(7);
 const showConfirmDownloadFile = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -382,6 +384,15 @@ watch(
   }
 );
 
+const listMovementCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listMovement.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listMovement.value.length / rowsPerPage.value);
+});
+
 watch(
   filledData,
   () => {
@@ -572,7 +583,7 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
-          :rows="loadingMovement ? [] : listMovement"
+          :rows="loadingMovement ? [] : listMovementCurrent"
           :columns="columnsMovement"
           :filter="filterMovement"
           :filter-method="customFilterMovement"
@@ -583,7 +594,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[10]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
@@ -826,6 +837,30 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listMovement.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9">Total: {{ listMovement.length }}</span>
+            </div>
           </template>
         </q-table>
         <FormEntry

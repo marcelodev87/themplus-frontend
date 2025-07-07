@@ -24,6 +24,8 @@ const { listOrderClient, loadingOrder } = storeToRefs(useOrderStore());
 const { actionRequestEnterprise, getOrdersViewClient } = useOrderStore();
 
 const filterOrder = ref<string>('');
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const columnsOrder = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -113,6 +115,15 @@ const clear = (): void => {
   filterOrder.value = '';
 };
 
+const listUserMemberCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listOrderClient.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listOrderClient.value.length / rowsPerPage.value);
+});
+
 watch(open, async () => {
   if (open.value) {
     clear();
@@ -129,7 +140,7 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section>
         <q-table
-          :rows="loadingOrder ? [] : listOrderClient"
+          :rows="loadingOrder ? [] : listUserMemberCurrent"
           :columns="columnsOrder"
           :filter="filterOrder"
           :filter-method="customFilterOrder"
@@ -140,7 +151,7 @@ watch(open, async () => {
           row-key="index"
           no-data-label="Nenhuma solicitação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de solicitações</span>
@@ -194,6 +205,32 @@ watch(open, async () => {
                 </q-btn>
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listOrderClient.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9"
+                >Total: {{ listOrderClient.length }}</span
+              >
+            </div>
           </template>
         </q-table>
       </q-card-section>
