@@ -18,7 +18,7 @@ const { loadingOrder, filledData, listOrderCounter } =
 const { getOrdersViewCounter, deleteOrder } = useOrderStore();
 
 const currentPage = ref(1);
-const rowsPerPage = ref(10);
+const rowsPerPage = ref(2);
 const filterOrder = ref<string>('');
 const showFormRequestUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -112,7 +112,8 @@ const customFilterOrder = (
 ): readonly OrderCounter[] => {
   const searchTerm = terms.toLowerCase();
 
-  return rows.filter((item) => {
+  return listOrderCounter.value.filter((item) => {
+    currentPage.value = 1;
     return (
       (item.enterprise.name &&
         item.enterprise.name.toLowerCase().includes(searchTerm)) ||
