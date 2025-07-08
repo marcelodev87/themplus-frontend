@@ -18,7 +18,7 @@ const { loadingOrder, filledData, listOrderCounter } =
 const { getOrdersViewCounter, deleteOrder } = useOrderStore();
 
 const currentPage = ref(1);
-const rowsPerPage = ref(2);
+const rowsPerPage = ref(10);
 const filterOrder = ref<string>('');
 const showFormRequestUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
