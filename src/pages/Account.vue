@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormAccount from 'src/components/forms/FormAccount.vue';
@@ -98,6 +99,18 @@ const reactivate = async (id: string) => {
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const customFilterAccount = (
+  rows: readonly Account[],
+  terms: string,
+  cols: readonly Account[],
+  getCellValue: (row: Account, col: QuasarTable) => unknown
+): readonly Account[] => {
+  const searchTerm = terms.toLowerCase();
+  return listAccount.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
 };
 
 const listAccountCurrent = computed(() => {
@@ -222,6 +235,7 @@ onMounted(async () => {
           :rows="loadingAccount ? [] : listAccountCurrent"
           :columns="columnsAccount"
           :filter="filterAccount"
+          :filter-method="customFilterAccount"
           :loading="loadingAccount"
           flat
           bordered

@@ -75,7 +75,8 @@ const customFilterOrder = (
 ): readonly OrderClient[] => {
   const searchTerm = terms.toLowerCase();
 
-  return rows.filter((item) => {
+  return listOrderClient.value.filter((item) => {
+    currentPage.value = 1;
     return (
       (item.counter.name &&
         item.counter.name.toLowerCase().includes(searchTerm)) ||

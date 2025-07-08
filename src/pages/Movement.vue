@@ -261,6 +261,7 @@ const customFilterMovement = (
   const searchTerm = terms.toLowerCase();
 
   return rows.filter((item) => {
+    currentPage.value = 1;
     return (
       (item.account?.name &&
         item.account.name.toLowerCase().includes(searchTerm)) ||

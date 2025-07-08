@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
@@ -103,6 +104,18 @@ const closeAlertDataEnterprise = (): void => {
 const setActive = async (active: number, userId: string) => {
   await updateActiveUser(active, userId);
 };
+const customFilterUser = (
+  rows: readonly User[],
+  terms: string,
+  cols: readonly User[],
+  getCellValue: (row: User, col: QuasarTable) => unknown
+): readonly User[] => {
+  const searchTerm = terms.toLowerCase();
+  return listUserMember.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
 
 const listUserMemberCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
@@ -201,6 +214,7 @@ onMounted(async () => {
           :rows="loadingUsersMembers ? [] : listUserMemberCurrent"
           :columns="columnsUser"
           :filter="filterUser"
+          :filter-method="customFilterUser"
           :loading="loadingUsersMembers"
           flat
           bordered
@@ -208,7 +222,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhum usuário para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de usuários</span>

@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
@@ -6,6 +7,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
+import type { Register } from 'src/ts/interfaces/data/Register';
 
 defineOptions({
   name: 'Alert',
@@ -152,6 +154,22 @@ const buildAction = (action: string): string => {
 
   return '';
 };
+const customFilterRegister = (
+  rows: readonly Register[],
+  terms: string,
+  cols: readonly Register[],
+  getCellValue: (row: Register, col: QuasarTable) => unknown
+): readonly Register[] => {
+  const searchTerm = terms.toLowerCase();
+
+  return listRegister.value.filter((item) => {
+    currentPage.value = 1;
+    return (
+      (item.user_name && item.user_name.toLowerCase().includes(searchTerm)) ||
+      (item.text && item.text.toLowerCase().includes(searchTerm))
+    );
+  });
+};
 
 const listRegisterCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
@@ -209,6 +227,7 @@ onMounted(async () => {
           :rows="loadingRegister ? [] : listRegisterCurrent"
           :columns="columnsRegister"
           :filter="filterRegister"
+          :filter-method="customFilterRegister"
           :loading="loadingRegister"
           flat
           bordered

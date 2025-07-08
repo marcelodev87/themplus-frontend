@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
@@ -88,6 +89,18 @@ const closeConfirmAction = (): void => {
   showConfirmAction.value = false;
   clear();
 };
+const customFilterOffice = (
+  rows: readonly Office[],
+  terms: string,
+  cols: readonly Office[],
+  getCellValue: (row: Office, col: QuasarTable) => unknown
+): readonly Office[] => {
+  const searchTerm = terms.toLowerCase();
+  return listOffice.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
 
 const listOfficeCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
@@ -145,6 +158,7 @@ onMounted(async () => {
           :rows="loadingOffice ? [] : listOfficeCurrent"
           :columns="columnsAlert"
           :filter="filterAlert"
+          :filter-method="customFilterOffice"
           :loading="loadingOffice"
           flat
           bordered
