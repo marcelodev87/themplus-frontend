@@ -211,6 +211,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
+          style="height: 693px"
           :rows="loadingUsersMembers ? [] : listUserMemberCurrent"
           :columns="columnsUser"
           :filter="filterUser"

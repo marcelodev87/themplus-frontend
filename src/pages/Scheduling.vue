@@ -530,6 +530,7 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
+          style="height: 463px"
           :rows="loadingScheduling ? [] : listSchedulingCurrent"
           :columns="columnsScheduling"
           :loading="loadingScheduling"

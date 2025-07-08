@@ -232,6 +232,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
+          style="height: 709px"
           :rows="loadingAccount ? [] : listAccountCurrent"
           :columns="columnsAccount"
           :filter="filterAccount"

@@ -224,6 +224,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
+          style="height: 693px"
           :rows="loadingRegister ? [] : listRegisterCurrent"
           :columns="columnsRegister"
           :filter="filterRegister"

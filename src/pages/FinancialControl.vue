@@ -424,7 +424,7 @@ onMounted(async () => {
       <main class="q-pa-sm q-mb-md">
         <q-table
           v-if="mode === 'reports'"
-          style="height: 590px"
+          style="height: 685px"
           :rows="loadingDelivery ? [] : listDeliveryCurrent"
           :columns="columnsDelivery"
           :filter="filterDelivery"

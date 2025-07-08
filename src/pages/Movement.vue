@@ -584,6 +584,7 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
+          style="height: 463px"
           :rows="loadingMovement ? [] : listMovementCurrent"
           :columns="columnsMovement"
           :filter="filterMovement"

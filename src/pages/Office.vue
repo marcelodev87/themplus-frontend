@@ -155,6 +155,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
+          style="height: 693px"
           :rows="loadingOffice ? [] : listOfficeCurrent"
           :columns="columnsAlert"
           :filter="filterAlert"

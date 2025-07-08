@@ -141,6 +141,7 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section>
         <q-table
+          style="height: 522px"
           :rows="loadingOrder ? [] : listUserMemberCurrent"
           :columns="columnsOrder"
           :filter="filterOrder"

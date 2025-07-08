@@ -232,7 +232,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 680px"
+          style="height: 693px"
           :rows="
             loadingCategory
               ? []
