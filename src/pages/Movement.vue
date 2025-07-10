@@ -342,6 +342,7 @@ watch(
     [oldEntry, oldOut, oldCategory, oldAccount]
   ) => {
     let lastChanged = null;
+    currentPage.value = 1;
 
     if (newEntry !== oldEntry) {
       lastChanged = 'onlyEntry';
