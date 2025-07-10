@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
@@ -21,6 +22,8 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(6);
 const filterAllCategories = ref<string>('Todos');
 const filterCategory = ref<string>('');
 const filteredCategories = reactive<Category[]>([]);
@@ -68,6 +71,36 @@ const save = async () => {
     emit('update:open');
   }
 };
+const customFilterCategory = (
+  rows: readonly Category[],
+  terms: string,
+  cols: readonly Category[],
+  getCellValue: (row: Category, col: QuasarTable) => unknown
+): readonly Category[] => {
+  const searchTerm = terms.toLowerCase();
+  return listCategory.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
+
+const listCategoryCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listCategory.value.slice(start, end);
+});
+const listFilteredCategoryCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return filteredCategories.slice(start, end);
+});
+const maxPages = computed(() => {
+  const listToPaginate =
+    filterAllCategories.value === 'Todos'
+      ? listCategory.value
+      : filteredCategories;
+  return Math.ceil(listToPaginate.length / rowsPerPage.value);
+});
 
 watch(
   filterAllCategories,
@@ -112,11 +145,12 @@ watch(open, async () => {
               loadingAlert
                 ? []
                 : filteredCategories.length > 0
-                  ? filteredCategories
-                  : listCategory
+                  ? listFilteredCategoryCurrent
+                  : listCategoryCurrent
             "
             :columns="columnsCategory"
             :filter="filterCategory"
+            :filter-method="customFilterCategory"
             :loading="loadingAlert"
             flat
             bordered
@@ -124,7 +158,7 @@ watch(open, async () => {
             row-key="index"
             no-data-label="Nenhuma categoria para mostrar"
             virtual-scroll
-            :rows-per-page-options="[10]"
+            :rows-per-page-options="[rowsPerPage]"
             style="min-height: 400px"
           >
             <template v-slot:top>
@@ -218,6 +252,37 @@ watch(open, async () => {
                   </q-popup-edit>
                 </q-td>
               </q-tr>
+            </template>
+            <template v-slot:bottom>
+              <div
+                v-show="listCategory.length > 0"
+                class="flex justify-between full-width items-center q-py-sm"
+              >
+                <q-pagination
+                  style="width: 96%; justify-content: center"
+                  v-model="currentPage"
+                  :max="maxPages"
+                  :max-pages="6"
+                  rounded
+                  direction-links
+                  boundary-links
+                  color="contabilidade"
+                  active-text-color="white"
+                  text-color="red-9"
+                  icon-first="skip_previous"
+                  icon-last="skip_next"
+                  icon-prev="fast_rewind"
+                  icon-next="fast_forward"
+                />
+                <span class="text-red-9"
+                  >Total:
+                  {{
+                    filterAllCategories === 'Todos'
+                      ? listCategory.length
+                      : filteredCategories.length
+                  }}</span
+                >
+              </div>
             </template>
           </q-table>
         </main>

@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable no-restricted-globals -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
@@ -5,7 +6,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useUsersMembersStore } from 'src/stores/users-store';
-import { DataUserByCounter } from 'src/ts/interfaces/data/User';
+import { DataUserByCounter, User } from 'src/ts/interfaces/data/User';
 import { Notify } from 'quasar';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
@@ -40,6 +41,8 @@ const dataUser = reactive<DataUserByCounter>({
   confirmPassword: '',
 });
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(9);
 const showConfirmAction = ref<boolean>(false);
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
@@ -217,6 +220,27 @@ const openConfirmAction = async (id: string): Promise<void> => {
   showConfirmAction.value = true;
 };
 
+const custonFilterUserMemberByEnterprise = (
+  rows: readonly User[],
+  terms: string,
+  cols: readonly User[],
+  getCellValue: (row: User, col: QuasarTable) => unknown
+): readonly User[] => {
+  const searchTerm = terms.toLowerCase();
+  return listUserMemberByEnterprise.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
+
+const listOfficeCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listUserMemberByEnterprise.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listUserMemberByEnterprise.value.length / rowsPerPage.value);
+});
 const formattedPhone = computed({
   get() {
     const phone = (dataUser.phone || '').replace(/\D/g, '');
@@ -277,9 +301,11 @@ watch(open, async () => {
       <q-card-section class="q-pa-sm">
         <q-table
           v-if="mode === 'list'"
-          :rows="listUserMemberByEnterprise"
+          style="height: 520px"
+          :rows="listOfficeCurrent"
           :columns="columnsUser"
           :filter="filterUser"
+          :filter-method="custonFilterUserMemberByEnterprise"
           :loading="loadingUsersMembers"
           flat
           bordered
@@ -287,7 +313,7 @@ watch(open, async () => {
           row-key="index"
           no-data-label="Nenhum usuário para mostrar"
           virtual-scroll
-          :rows-per-page-options="[10]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
@@ -363,6 +389,32 @@ watch(open, async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listUserMemberByEnterprise.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9"
+                >Total: {{ listUserMemberByEnterprise.length }}</span
+              >
+            </div>
           </template>
         </q-table>
         <q-form v-else class="q-gutter-y-sm">

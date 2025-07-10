@@ -18,7 +18,7 @@ const { listRegister, loadingRegister, filledData } =
 const { getRegisters } = useRegisterStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(14);
 const showRegisterDetail = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');

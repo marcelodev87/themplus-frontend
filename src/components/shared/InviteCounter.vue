@@ -241,7 +241,6 @@ watch(open, async () => {
           <q-btn
             @click="emit('update:open')"
             color="red"
-            flat
             label="Fechar"
             size="md"
             unelevated

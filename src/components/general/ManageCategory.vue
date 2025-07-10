@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -21,6 +22,8 @@ const emit = defineEmits<{
 const { listCategoryPanel, loadingCategory } = storeToRefs(useCategoryStore());
 const { getEnterpriseCategoryByCounter } = useCategoryStore();
 
+const currentPage = ref(1);
+const rowsPerPage = ref(10);
 const selectedCategory = ref<CategoryPanel | null>(null);
 const showFormCategoryUpdate = ref<boolean>(false);
 const filterCategory = ref<string>('');
@@ -119,7 +122,27 @@ const closeFormCategoryUpdate = (): void => {
   showFormCategoryUpdate.value = false;
   clear();
 };
+const customFilterCategory = (
+  rows: readonly CategoryPanel[],
+  terms: string,
+  cols: readonly CategoryPanel[],
+  getCellValue: (row: CategoryPanel, col: QuasarTable) => unknown
+): readonly CategoryPanel[] => {
+  const searchTerm = terms.toLowerCase();
+  currentPage.value = 1;
+  return listCategoryPanel.value.filter((item) => {
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
 
+const listCategoryCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listCategoryPanel.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listCategoryPanel.value.length / rowsPerPage.value);
+});
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
@@ -140,9 +163,11 @@ watch(
       <q-card-section class="q-pa-none">
         <TitlePage title="Listagem de categorias" />
         <q-table
-          :rows="listCategoryPanel"
-          :rows-per-page-options="[10]"
+          style="height: 525px"
+          :rows="listCategoryCurrent"
+          :rows-per-page-options="[rowsPerPage]"
           :filter="filterCategory"
+          :filter-method="customFilterCategory"
           :columns="columnsCategoryPanel"
           flat
           bordered
@@ -230,13 +255,39 @@ watch(
               </q-td>
             </q-tr>
           </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listCategoryPanel.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9"
+                >Total: {{ listCategoryPanel.length }}</span
+              >
+            </div>
+          </template>
         </q-table>
         <q-card-actions align="right">
           <q-btn
             color="red"
             label="Fechar"
             size="md"
-            @click="open = false"
+            @click="(open = false), clear()"
             unelevated
             no-caps
           />

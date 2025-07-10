@@ -38,8 +38,8 @@ const { getDelivery, updateDelivery, getMovementsWithObservations } =
 const { downloadFile } = useMovementStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPageMovementFinancial = ref<number>(20);
-const rowsPerPageDelivery = ref<number>(12);
+const rowsPerPageMovementFinancial = ref<number>(13);
+const rowsPerPageDelivery = ref<number>(14);
 const mode = ref<'reports' | 'observations'>('reports');
 const filterDelivery = ref<string>('');
 const showCounterInfo = ref<boolean>(false);
@@ -424,7 +424,7 @@ onMounted(async () => {
       <main class="q-pa-sm q-mb-md">
         <q-table
           v-if="mode === 'reports'"
-          style="height: 685px"
+          style="height: 662px"
           :rows="loadingDelivery ? [] : listDeliveryCurrent"
           :columns="columnsDelivery"
           :filter="filterDelivery"
@@ -534,7 +534,7 @@ onMounted(async () => {
         </q-table>
         <q-table
           v-else
-          style="height: 590px"
+          style="height: 649px"
           :rows="loadingDelivery ? [] : listMovementeFinancialDeliveryCurrent"
           :columns="columnsMovement"
           :loading="loadingDelivery"
@@ -615,6 +615,8 @@ onMounted(async () => {
                 class="flex justify-between"
                 v-model="currentPage"
                 :max="maxPagesMovementFinancial"
+                :max-pages="6"
+                rounded
                 direction-links
                 boundary-links
                 color="contabilidade"

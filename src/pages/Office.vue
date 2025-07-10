@@ -21,7 +21,7 @@ const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices, deleteOffice } = useOfficeStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(13);
 const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const selectedOffice = ref<string | null>(null);
@@ -155,7 +155,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          style="height: 693px"
+          style="height: 662px"
           :rows="loadingOffice ? [] : listOfficeCurrent"
           :columns="columnsAlert"
           :filter="filterAlert"

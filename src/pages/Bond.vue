@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { Alert } from 'src/ts/interfaces/data/Alert';
@@ -32,6 +32,9 @@ const { user, enterprisePosition } = storeToRefs(useAuthStore());
 
 const router = useRouter();
 const route = useRoute();
+
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(3);
 const showInspect = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormCodeFinancial = ref<boolean>(false);
@@ -218,6 +221,28 @@ const setView = async (entepriseId: string | null): Promise<void> => {
   }
 };
 
+const customFilterBonds = (
+  rows: readonly Bond[],
+  terms: string,
+  cols: readonly Bond[],
+  getCellValue: (row: Bond, col: QuasarTable) => unknown
+): readonly Bond[] => {
+  const searchTerm = terms.toLowerCase();
+  return listBond.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
+
+const listBondCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listBond.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listBond.value.length / rowsPerPage.value);
+});
+
 watch(
   filledData,
   () => {
@@ -294,24 +319,26 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
+          style="height: 653px"
           v-show="!showDataClient"
           :rows="
             loadingOrder || loadingEnterprise
               ? []
               : showInspect
                 ? listEnterpriseView
-                : listBond
+                : listBondCurrent
           "
           :columns="columnsBond"
           :filter="filterOrder"
           :loading="loadingOrder || loadingEnterprise"
+          :filter-method="customFilterBonds"
           flat
           bordered
           dense
           row-key="index"
           no-data-label="Nenhuma vinculação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[10]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de vínculos</span>
@@ -484,6 +511,30 @@ onMounted(async () => {
                 </q-btn>
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <div
+              v-show="listBond.length > 0"
+              class="flex justify-between full-width items-center q-py-sm"
+            >
+              <q-pagination
+                style="width: 96%; justify-content: center"
+                v-model="currentPage"
+                :max="maxPages"
+                :max-pages="6"
+                rounded
+                direction-links
+                boundary-links
+                color="contabilidade"
+                active-text-color="white"
+                text-color="red-9"
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+              <span class="text-red-9">Total: {{ listBond.length }}</span>
+            </div>
           </template>
         </q-table>
         <DataClient
