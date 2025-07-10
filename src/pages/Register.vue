@@ -18,7 +18,7 @@ const { listRegister, loadingRegister, filledData } =
 const { getRegisters } = useRegisterStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(14);
+const rowsPerPage = ref<number>(13);
 const showRegisterDetail = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
@@ -224,7 +224,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 693px"
+          style="height: 650px"
           :rows="loadingRegister ? [] : listRegisterCurrent"
           :columns="columnsRegister"
           :filter="filterRegister"

@@ -183,6 +183,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
+          style="height: 650px"
           :rows="loadingOrder ? [] : listOrderCounterCurrent"
           :columns="columnsOrder"
           :filter="filterOrder"
