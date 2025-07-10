@@ -18,6 +18,7 @@ import FormEntry from 'src/components/forms/FormEntry.vue';
 import FormOut from 'src/components/forms/FormOut.vue';
 import FormSettingsCounter from 'src/components/forms/FormSettingsCounter.vue';
 import FormFileFinancial from 'src/components/forms/FormFileFinancial.vue';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'FinancialControl',
@@ -38,8 +39,8 @@ const { getDelivery, updateDelivery, getMovementsWithObservations } =
 const { downloadFile } = useMovementStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPageMovementFinancial = ref<number>(13);
-const rowsPerPageDelivery = ref<number>(14);
+const rowsPerPageMovementFinancial = ref<number>(10);
+const rowsPerPageDelivery = ref<number>(12);
 const mode = ref<'reports' | 'observations'>('reports');
 const filterDelivery = ref<string>('');
 const showCounterInfo = ref<boolean>(false);
@@ -424,7 +425,7 @@ onMounted(async () => {
       <main class="q-pa-sm q-mb-md">
         <q-table
           v-if="mode === 'reports'"
-          style="height: 662px"
+          style="height: 500px"
           :rows="loadingDelivery ? [] : listDeliveryCurrent"
           :columns="columnsDelivery"
           :filter="filterDelivery"
@@ -508,33 +509,17 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listDelivery.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPagesDelivery"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listDelivery.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPagesDelivery"
+              :max-pages="6"
+              :length="listDelivery.length"
+            />
           </template>
         </q-table>
         <q-table
           v-else
-          style="height: 649px"
+          style="height: 500px"
           :rows="loadingDelivery ? [] : listMovementeFinancialDeliveryCurrent"
           :columns="columnsMovement"
           :loading="loadingDelivery"
@@ -605,32 +590,12 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listMovementFinancial.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-show="listMovementFinancial.length > 0"
-                class="flex justify-between"
-                v-model="currentPage"
-                :max="maxPagesMovementFinancial"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9"
-                >Total: {{ listMovementFinancial.length }}</span
-              >
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max-pages="6"
+              :max="maxPagesMovementFinancial"
+              :length="listMovementFinancial.length"
+            />
           </template>
         </q-table>
         <div class="q-mt-sm row justify-end">

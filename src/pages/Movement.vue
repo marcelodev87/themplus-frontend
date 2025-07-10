@@ -15,6 +15,7 @@ import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import MovementsAnalyze from 'src/components/general/MovementsAnalyze.vue';
 import { useAuthStore } from 'src/stores/auth-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Movement',
@@ -604,7 +605,7 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
-          style="height: 430px"
+          style="height: 374px"
           :rows="loadingMovement ? [] : listMovementCurrent"
           :columns="columnsMovement"
           :filter="filterMovement"
@@ -861,28 +862,12 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listMovement.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listMovement.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max-pages="6"
+              :max="maxPages"
+              :length="listMovement.length"
+            />
           </template>
         </q-table>
         <FormEntry
