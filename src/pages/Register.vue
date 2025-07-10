@@ -8,6 +8,7 @@ import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
 import type { Register } from 'src/ts/interfaces/data/Register';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Alert',
@@ -18,7 +19,7 @@ const { listRegister, loadingRegister, filledData } =
 const { getRegisters } = useRegisterStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(13);
+const rowsPerPage = ref<number>(10);
 const showRegisterDetail = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterRegister = ref<string>('');
@@ -166,7 +167,8 @@ const customFilterRegister = (
     currentPage.value = 1;
     return (
       (item.user_name && item.user_name.toLowerCase().includes(searchTerm)) ||
-      (item.text && item.text.toLowerCase().includes(searchTerm))
+      (item.text && item.text.toLowerCase().includes(searchTerm)) ||
+      (item.user_email && item.user_email.toLowerCase().includes(searchTerm))
     );
   });
 };
@@ -177,13 +179,21 @@ const listRegisterCurrent = computed(() => {
   return listRegister.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterRegister(
+    [],
+    filterRegister.value,
+    [],
+    () => null
+  ).length;
+  if (filterRegister.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listRegister.value.length / rowsPerPage.value);
 });
 
 watch(selectedPeriod, async () => {
   await fetchRegisters();
 });
-
 watch(
   filledData,
   () => {
@@ -224,7 +234,6 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 650px"
           :rows="loadingRegister ? [] : listRegisterCurrent"
           :columns="columnsRegister"
           :filter="filterRegister"
@@ -306,28 +315,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listRegister.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listRegister.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listRegister.length"
+            />
           </template>
         </q-table>
         <RegisterDetail

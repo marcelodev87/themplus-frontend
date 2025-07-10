@@ -12,6 +12,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Scheduling',
@@ -189,6 +190,9 @@ const closeFormOut = (): void => {
   showFormOut.value = false;
   clear();
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
@@ -218,10 +222,11 @@ const customFilterScheduling = (
   rows: readonly Scheduling[],
   terms: string,
   cols: readonly Scheduling[],
-  getCellValue: (row: Scheduling, col: QuasarTable) => unknown
+  getCellValue: (row: Scheduling | null, col: QuasarTable | null) => unknown
 ): readonly Scheduling[] => {
   const searchTerm = terms.toLowerCase();
 
+  resetPage();
   return rows.filter((item) => {
     return (
       (item.account?.name &&
@@ -322,6 +327,15 @@ const listSchedulingCurrent = computed(() => {
   return listScheduling.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterScheduling(
+    [],
+    filterScheduling.value,
+    [],
+    () => null
+  ).length;
+  if (filterScheduling.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listScheduling.value.length / rowsPerPage.value);
 });
 
@@ -332,6 +346,7 @@ watch(
     [oldExpired, oldEntry, oldOut, oldCategory, oldAccount]
   ) => {
     let lastChanged = null;
+    resetPage();
 
     if (newEntry !== oldEntry) {
       lastChanged = 'onlyEntry';
@@ -391,10 +406,14 @@ watch(
   { immediate: true }
 );
 watch(filterMonthYear, async () => {
-  await getSchedulings(filterMonthYear.value.replace('/', '-'));
-});
-watch(filterScheduling, () => {
-  currentPage.value = 1;
+  await getSchedulingsWithParams(
+    onlyExpired.value,
+    onlyEntry.value,
+    onlyOut.value,
+    filterMonthYear.value.replace('/', '-'),
+    selectedCategory.value.value,
+    selectedAccount.value.value
+  );
 });
 
 onMounted(async () => {
@@ -530,7 +549,6 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
-          style="height: 463px"
           :rows="loadingScheduling ? [] : listSchedulingCurrent"
           :columns="columnsScheduling"
           :loading="loadingScheduling"
@@ -826,28 +844,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listScheduling.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listScheduling.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listScheduling.length"
+            />
           </template>
         </q-table>
         <ConfirmDownloadFile
