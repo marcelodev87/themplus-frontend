@@ -252,6 +252,9 @@ const saveIdExclude = async (id: string) => {
   selectedExclude.value = id;
   openConfirmAction();
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const customFilterMovement = (
   rows: readonly Movement[],
   terms: string,
@@ -260,8 +263,8 @@ const customFilterMovement = (
 ): readonly Movement[] => {
   const searchTerm = terms.toLowerCase();
 
+  resetPage();
   return rows.filter((item) => {
-    currentPage.value = 1;
     return (
       (item.account?.name &&
         item.account.name.toLowerCase().includes(searchTerm)) ||
@@ -335,6 +338,18 @@ const getClassTotal = (total: string) => {
   return 'bg-green-2';
 };
 
+const listMovementCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listMovement.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  if (filterMovement.value.length > 0) {
+    return Math.ceil(customFilterMovement.length / rowsPerPage.value);
+  }
+  return Math.ceil(listMovement.value.length / rowsPerPage.value);
+});
+
 watch(
   [onlyEntry, onlyOut, selectedCategory, selectedAccount],
   async (
@@ -342,7 +357,7 @@ watch(
     [oldEntry, oldOut, oldCategory, oldAccount]
   ) => {
     let lastChanged = null;
-    currentPage.value = 1;
+    resetPage();
 
     if (newEntry !== oldEntry) {
       lastChanged = 'onlyEntry';
@@ -385,16 +400,6 @@ watch(
     }
   }
 );
-
-const listMovementCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return listMovement.value.slice(start, end);
-});
-const maxPages = computed(() => {
-  return Math.ceil(listMovement.value.length / rowsPerPage.value);
-});
-
 watch(
   filledData,
   () => {
@@ -405,10 +410,18 @@ watch(
   { immediate: true }
 );
 watch(filterMonthYear, async () => {
-  await getMovements(filterMonthYear.value.replace('/', '-'));
+  resetPage();
+  await getMovementsWithParams(
+    onlyEntry.value,
+    onlyOut.value,
+    filterMonthYear.value.replace('/', '-'),
+    selectedCategory.value.value,
+    selectedAccount.value.value
+  );
 });
 watch(showMovementsAnalyze, async (analyze) => {
   if (!analyze) {
+    resetPage();
     await getMovements(dateActual.value.replace('/', '-'));
   }
 });
