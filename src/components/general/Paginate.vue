@@ -6,11 +6,16 @@ defineOptions({
 });
 
 const currentPage = defineModel<number>({ required: true });
-const props = defineProps<{
-  maxPages: number;
-  max: number;
-  length: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    maxPages?: number;
+    max: number;
+    length: number;
+  }>(),
+  {
+    maxPages: 6,
+  }
+);
 
 const hasItem = computed(() => {
   return props.length > 0;

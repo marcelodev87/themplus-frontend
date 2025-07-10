@@ -512,7 +512,6 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPagesDelivery"
-              :max-pages="6"
               :length="listDelivery.length"
             />
           </template>
@@ -592,7 +591,6 @@ onMounted(async () => {
           <template v-slot:bottom>
             <Paginate
               v-model="currentPage"
-              :max-pages="6"
               :max="maxPagesMovementFinancial"
               :length="listMovementFinancial.length"
             />

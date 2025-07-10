@@ -9,6 +9,7 @@ import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { User } from 'src/ts/interfaces/data/User';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'User',
@@ -22,7 +23,7 @@ const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(
 const { user } = storeToRefs(useAuthStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(2);
 const showFormUser = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -123,6 +124,16 @@ const listUserMemberCurrent = computed(() => {
   return listUserMember.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterUser(
+    [],
+    filterUser.value,
+    [],
+    () => null
+  ).length;
+
+  if (filterUser.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listUserMember.value.length / rowsPerPage.value);
 });
 
@@ -211,7 +222,7 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 693px"
+          style="height: 500px"
           :rows="loadingUsersMembers ? [] : listUserMemberCurrent"
           :columns="columnsUser"
           :filter="filterUser"
@@ -319,28 +330,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listUserMember.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listUserMember.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listUserMember.length"
+            />
           </template>
         </q-table>
         <FormUser
