@@ -259,12 +259,12 @@ const customFilterMovement = (
   rows: readonly Movement[],
   terms: string,
   cols: readonly Movement[],
-  getCellValue: (row: Movement, col: QuasarTable) => unknown
+  getCellValue: (row: Movement | null, col: QuasarTable | null) => unknown
 ): readonly Movement[] => {
   const searchTerm = terms.toLowerCase();
 
   resetPage();
-  return rows.filter((item) => {
+  return listMovement.value.filter((item) => {
     return (
       (item.account?.name &&
         item.account.name.toLowerCase().includes(searchTerm)) ||
@@ -344,8 +344,14 @@ const listMovementCurrent = computed(() => {
   return listMovement.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterMovement(
+    [],
+    filterMovement.value,
+    [],
+    () => null
+  ).length;
   if (filterMovement.value.length > 0) {
-    return Math.ceil(customFilterMovement.length / rowsPerPage.value);
+    return Math.ceil(filterLength / rowsPerPage.value);
   }
   return Math.ceil(listMovement.value.length / rowsPerPage.value);
 });
