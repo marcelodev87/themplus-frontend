@@ -30,7 +30,7 @@ const {
 const { loadingDelivery, listFileFinancial } = storeToRefs(useFinancialStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(8);
+const rowsPerPage = ref<number>(5);
 const textFile = ref<string | null>(null);
 const dataFile = reactive({
   name: '' as string,
@@ -71,6 +71,9 @@ const columnsFileCounter = reactive<QuasarTable[]>([
   },
 ]);
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const checkData = (): { status: boolean; message?: string } => {
   if (dataFile.name.trim() === '') {
     return {
@@ -109,6 +112,7 @@ const clear = (): void => {
     name: '',
     file: null,
   });
+  resetPage();
 };
 const clearFile = () => {
   textFile.value = null;
@@ -149,6 +153,10 @@ const open = computed({
 const allowSave = computed((): boolean => {
   return !!dataFile.file && dataFile.name.trim().length > 0;
 });
+const deleteFile = async (id: string): Promise<void> => {
+  await deleteFileFinancial(id);
+  clear();
+};
 const listFileFinancialCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
@@ -290,7 +298,7 @@ watch(open, async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   v-show="mode == 'client'"
-                  @click="deleteFileFinancial(props.row.id)"
+                  @click="deleteFile(props.row.id)"
                   size="sm"
                   flat
                   round

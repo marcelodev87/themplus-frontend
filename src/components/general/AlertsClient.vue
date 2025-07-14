@@ -99,6 +99,15 @@ const maxPages = computed(() => {
     filterAllCategories.value === 'Todos'
       ? listCategory.value
       : filteredCategories;
+  if (filterCategory.value.length > 0) {
+    const filterLength = customFilterCategory(
+      [],
+      filterCategory.value,
+      [],
+      () => null
+    ).length;
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listToPaginate.length / rowsPerPage.value);
 });
 
@@ -159,7 +168,6 @@ watch(open, async () => {
             no-data-label="Nenhuma categoria para mostrar"
             virtual-scroll
             :rows-per-page-options="[rowsPerPage]"
-            style="min-height: 400px"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-2">

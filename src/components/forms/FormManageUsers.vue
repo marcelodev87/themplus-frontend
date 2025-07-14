@@ -43,7 +43,7 @@ const dataUser = reactive<DataUserByCounter>({
 });
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(9);
+const rowsPerPage = ref<number>(2);
 const showConfirmAction = ref<boolean>(false);
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
@@ -253,7 +253,7 @@ const maxPages = computed(() => {
   if (filterUser.value.length > 0) {
     return Math.ceil(filterLength / rowsPerPage.value);
   }
-  return Math.ceil(listOfficeCurrent.value.length / rowsPerPage.value);
+  return Math.ceil(listUserMemberByEnterprise.value.length / rowsPerPage.value);
 });
 
 const formattedPhone = computed({
@@ -316,7 +316,6 @@ watch(open, async () => {
       <q-card-section class="q-pa-sm">
         <q-table
           v-if="mode === 'list'"
-          style="height: 520px"
           :rows="listOfficeCurrent"
           :columns="columnsUser"
           :filter="filterUser"
@@ -338,8 +337,20 @@ watch(open, async () => {
             </q-tr>
           </template>
           <template v-slot:top>
-            <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
-              <div :class="!$q.screen.lt.md ? '' : 'column q-mt-sm '">
+            <div
+              :class="
+                !$q.screen.lt.md
+                  ? 'row justify-between full-width'
+                  : 'column full-width'
+              "
+            >
+              <div
+                :class="
+                  !$q.screen.lt.md
+                    ? 'row justify-between full-width'
+                    : 'column q-mt-sm '
+                "
+              >
                 <q-btn
                   @click="changeMode('form', null)"
                   v-show="settingsCounter?.allow_add_user"
@@ -353,7 +364,7 @@ watch(open, async () => {
                 <q-input
                   v-show="listUserMemberByEnterprise.length > 0"
                   v-model="filterUser"
-                  filled
+                  outlined
                   dense
                   label="Pesquisar"
                   :class="!$q.screen.lt.md ? '' : 'q-mt-sm'"

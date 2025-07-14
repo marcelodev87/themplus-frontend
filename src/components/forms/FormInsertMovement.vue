@@ -13,6 +13,7 @@ import {
   InsertMovement,
   InsertMovementData,
 } from 'src/ts/interfaces/data/Movement';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'FormInsertMovement',
@@ -34,6 +35,8 @@ const {
 const { loadingMovement, listAccount, listCategoryAll } =
   storeToRefs(useMovementStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const viewMode = ref<'add' | 'process'>('add');
 const optionsCategories = ref(listCategoryAll.value);
 const optionsAccounts = ref(listAccount.value);
@@ -143,6 +146,9 @@ const checkData = (): { status: boolean; message?: string } => {
 
   return { status: true };
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const clear = (): void => {
   Object.assign(dataInsert, {
     file: null,
@@ -150,6 +156,7 @@ const clear = (): void => {
   viewMode.value = 'add';
   listInsertMovement.value = [];
   mountPayloadData.splice(0, mountPayloadData.length);
+  resetPage();
 };
 const mountPayload = (): void => {
   mountPayloadData.splice(0, mountPayloadData.length);
@@ -209,6 +216,7 @@ const normalizeAndValidateValue = (valor: string): number | null => {
 };
 
 const process = () => {
+  resetPage();
   const check = checkData();
   if (check.status) {
     setLoading(true);
@@ -419,6 +427,15 @@ const filterFnCategory = (
   });
 };
 
+const listInsertMovementCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listInsertMovement.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listInsertMovement.value.length / rowsPerPage.value);
+});
+
 watch(
   () => dataInsert.file,
   (file) => {
@@ -428,9 +445,18 @@ watch(
   },
   { immediate: true }
 );
+watch(
+  viewMode,
+  (mode) => {
+    if (mode === 'add') {
+      clear();
+    }
+  },
+  { immediate: true }
+);
 watch(open, async () => {
+  clear();
   if (open.value) {
-    clear();
     await getMovementInformations(null, null);
   }
 });
@@ -464,7 +490,7 @@ watch(open, async () => {
 
         <q-table
           v-else
-          :rows="loadingMovement ? [] : listInsertMovement"
+          :rows="loadingMovement ? [] : listInsertMovementCurrent"
           :columns="columnsMovement"
           :loading="loadingMovement"
           flat
@@ -474,8 +500,15 @@ watch(open, async () => {
           no-data-label="Nenhuma movimentação para mostrar"
           style="height: 450px"
           virtual-scroll
-          :rows-per-page-options="[10]"
+          :rows-per-page-options="[rowsPerPage]"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <span class="text-subtitle2">Planilha processada</span>
           </template>
@@ -582,6 +615,13 @@ watch(open, async () => {
                 </q-file>
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listInsertMovement.length"
+            />
           </template>
         </q-table>
       </q-card-section>
