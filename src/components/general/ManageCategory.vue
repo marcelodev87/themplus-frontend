@@ -7,6 +7,7 @@ import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { CategoryPanel } from 'src/ts/interfaces/data/Category';
 import TitlePage from '../shared/TitlePage.vue';
 import FormCategoryCode from '../forms/FormCategoryCode.vue';
+import Paginate from './Paginate.vue';
 
 defineOptions({
   name: 'ManageCategory',
@@ -114,6 +115,9 @@ const clear = (): void => {
     value: 'all',
   };
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const openFormCategoryUpdate = (data: CategoryPanel): void => {
   selectedCategory.value = data;
   showFormCategoryUpdate.value = true;
@@ -129,7 +133,7 @@ const customFilterCategory = (
   getCellValue: (row: CategoryPanel, col: QuasarTable) => unknown
 ): readonly CategoryPanel[] => {
   const searchTerm = terms.toLowerCase();
-  currentPage.value = 1;
+  resetPage();
   return listCategoryPanel.value.filter((item) => {
     return item.name && item.name.toLowerCase().includes(searchTerm);
   });
@@ -141,6 +145,15 @@ const listCategoryCurrent = computed(() => {
   return listCategoryPanel.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterCategory(
+    [],
+    filterCategory.value,
+    [],
+    () => null
+  ).length;
+  if (filterCategory.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listCategoryPanel.value.length / rowsPerPage.value);
 });
 const open = computed({
@@ -175,6 +188,13 @@ watch(
           row-key="index"
           no-data-label="Nenhuma categoria para mostrar"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <span class="text-subtitle2">Lista de categorias</span>
             <q-space />
@@ -256,30 +276,11 @@ watch(
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listCategoryPanel.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9"
-                >Total: {{ listCategoryPanel.length }}</span
-              >
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listCategoryPanel.length"
+            />
           </template>
         </q-table>
         <q-card-actions align="right">

@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useFinancialStore } from 'src/stores/financial-store';
 import { storeToRefs } from 'pinia';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'FormFileFinancial',
@@ -240,7 +241,6 @@ watch(open, async () => {
         </q-form>
         <q-separator />
         <q-table
-          style="height: 450px"
           :rows="listFileFinancialCurrent"
           :columns="
             props.mode == 'client' ? columnsFileClient : columnsFileCounter
@@ -254,6 +254,13 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <span class="text-subtitle2">Lista de arquivos</span>
           </template>
@@ -294,30 +301,11 @@ watch(open, async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listFileFinancial.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 95%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9"
-                >Total: {{ listFileFinancial.length }}</span
-              >
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listFileFinancial.length"
+            />
           </template>
         </q-table>
       </q-card-section>

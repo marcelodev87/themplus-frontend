@@ -46,6 +46,8 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showFormFileFinancial = ref<boolean>(false);
 const selectedDataEdit = ref<Movement | null>(null);
 const showFormEntry = ref<boolean>(false);
@@ -293,6 +295,22 @@ const openFormFileFinancial = (monthYear: string): void => {
 const closeFormFileFinancial = async () => {
   showFormFileFinancial.value = false;
 };
+const listReportCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listReport.value.slice(start, end);
+});
+const listMovementCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listMovement.value.slice(start, end);
+});
+const maxPagesMovement = computed(() => {
+  return Math.ceil(listMovement.value.length / rowsPerPage.value);
+});
+const maxPagesReport = computed(() => {
+  return Math.ceil(listReport.value.length / rowsPerPage.value);
+});
 
 watch(modeTable, async () => {
   if (modeTable.value === 'details') {
@@ -318,7 +336,7 @@ watch(
     <div class="q-py-sm q-gutter-y-sm">
       <q-table
         v-if="modeTable === 'reports'"
-        :rows="loadingReport ? [] : listReport"
+        :rows="loadingReport ? [] : listReportCurrent"
         :columns="columnsDataClient"
         :loading="loadingReport"
         flat
@@ -329,6 +347,13 @@ watch(
         :rows-per-page-options="[12]"
         bordered
       >
+        <template v-slot:header="props">
+          <q-tr :props="props" class="bg-grey-2">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              <span style="font-size: 13px">{{ col.label }}</span>
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:top>
           <span v-if="modeTable === 'reports'" class="text-subtitle2"
             >Períodos de movimentações</span
@@ -342,9 +367,6 @@ watch(
                 convertMonthYear(props.row.month_year)
               }}</span>
             </q-td>
-            <!-- <q-td key="total_movements" :props="props" class="text-left">
-              {{ props.row.total_movements }}
-            </q-td> -->
             <q-td key="date_delivery" :props="props" class="text-left">
               <span class="text-subtitle2">{{
                 formatDate(props.row.date_delivery)
@@ -458,10 +480,17 @@ watch(
             </q-td>
           </q-tr>
         </template>
+        <template v-slot:bottom>
+          <Paginate
+            v-model="currentPage"
+            :max="maxPagesReport"
+            :length="listReport.length"
+          />
+        </template>
       </q-table>
       <q-table
         v-else
-        :rows="loadingReport ? [] : listMovement"
+        :rows="loadingReport ? [] : listMovementCurrent"
         :columns="columnsMovement"
         :loading="loadingReport"
         flat
@@ -472,6 +501,13 @@ watch(
         virtual-scroll
         :rows-per-page-options="[12]"
       >
+        <template v-slot:header="props">
+          <q-tr :props="props" class="bg-grey-2">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              <span style="font-size: 13px">{{ col.label }}</span>
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:top>
           <span class="text-subtitle2">Lista de movimentações</span>
         </template>
@@ -564,6 +600,13 @@ watch(
               />
             </q-td>
           </q-tr>
+        </template>
+        <template v-slot:bottom>
+          <Paginate
+            v-model="currentPage"
+            :max="maxPagesMovement"
+            :length="listMovement.length"
+          />
         </template>
       </q-table>
     </div>

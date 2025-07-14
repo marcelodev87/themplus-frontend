@@ -9,6 +9,7 @@ import FormCategory from 'src/components/forms/FormCategory.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useCategoryStore } from 'src/stores/category-store';
 import { useAuthStore } from 'src/stores/auth-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Category',
@@ -62,6 +63,9 @@ const columnsCategory = reactive<QuasarTable[]>([
   },
 ]);
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterCategory.value = '';
@@ -99,10 +103,10 @@ const customFilterCategory = (
   rows: readonly Category[],
   terms: string,
   cols: readonly Category[],
-  getCellValue: (row: Category, col: QuasarTable) => unknown
+  getCellValue: (row: Category | null, col: QuasarTable | null) => unknown
 ): readonly Category[] => {
   const searchTerm = terms.toLowerCase();
-  currentPage.value = 1;
+  resetPage();
 
   if (filteredCategories.length > 0) {
     return filteredCategories.filter((item) => {
@@ -121,6 +125,15 @@ const listCategoryCurrent = computed(() => {
   return listCategory.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterCategory(
+    [],
+    filterCategory.value,
+    [],
+    () => null
+  ).length;
+  if (filterCategory.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listCategory.value.length / rowsPerPage.value);
 });
 
@@ -128,6 +141,7 @@ watch(
   [onlyCreatedByMe, onlyDefault],
   async ([newCreatedByMe, newDefault], [oldCreatedByMe, oldDefault]) => {
     let lastChanged = null;
+    resetPage();
 
     if (newCreatedByMe !== oldCreatedByMe) {
       lastChanged = 'onlyCreatedByMe';
@@ -232,7 +246,6 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 693px"
           :rows="
             loadingCategory
               ? []
@@ -357,7 +370,7 @@ onMounted(async () => {
                 :class="props.row.active === 0 ? 'text-grey-5' : ''"
               >
                 <span class="text-subtitle2">{{
-                  props.row.enterprise_id === null ? 'Sim' : 'Não'
+                  props.row.default === 1 ? 'Sim' : 'Não'
                 }}</span>
               </q-td>
               <q-td
@@ -415,28 +428,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listCategory.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listCategory.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listCategory.length"
+            />
           </template>
         </q-table>
         <FormCategory

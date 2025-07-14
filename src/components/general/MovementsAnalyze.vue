@@ -199,6 +199,13 @@ watch(open, async () => {
           :rows-per-page-options="[10]"
           style="min-height: 250px"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <div>
               <span class="text-subtitle2">Lista de Pré-movimentações</span>

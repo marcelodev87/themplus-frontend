@@ -11,6 +11,7 @@ import FormUser from 'src/components/forms/FormUser.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
 import { useAuthStore } from 'src/stores/auth-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Office',
@@ -21,7 +22,7 @@ const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices, deleteOffice } = useOfficeStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(13);
+const rowsPerPage = ref<number>(1);
 const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const selectedOffice = ref<string | null>(null);
@@ -51,6 +52,9 @@ const columnsAlert = reactive<QuasarTable[]>([
   },
 ]);
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const clear = (): void => {
   filterAlert.value = '';
   selectedOffice.value = null;
@@ -96,6 +100,7 @@ const customFilterOffice = (
   getCellValue: (row: Office, col: QuasarTable) => unknown
 ): readonly Office[] => {
   const searchTerm = terms.toLowerCase();
+  resetPage();
   return listOffice.value.filter((item) => {
     currentPage.value = 1;
     return item.name && item.name.toLowerCase().includes(searchTerm);
@@ -108,6 +113,15 @@ const listOfficeCurrent = computed(() => {
   return listOffice.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterOffice(
+    [],
+    filterAlert.value,
+    [],
+    () => null
+  ).length;
+  if (filterAlert.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listOffice.value.length / rowsPerPage.value);
 });
 
@@ -155,7 +169,6 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md">
         <q-table
-          style="height: 662px"
           :rows="loadingOffice ? [] : listOfficeCurrent"
           :columns="columnsAlert"
           :filter="filterAlert"
@@ -211,28 +224,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listOffice.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listOffice.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listOffice.length"
+            />
           </template>
         </q-table>
         <FormEnterprise

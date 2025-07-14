@@ -11,6 +11,7 @@ import FormTransfer from 'src/components/forms/FormTransfer.vue';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Account',
@@ -72,6 +73,9 @@ const columnsAccount = reactive<QuasarTable[]>([
   },
 ]);
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const openFormAccount = (): void => {
   showFormAccount.value = true;
 };
@@ -107,6 +111,7 @@ const customFilterAccount = (
   getCellValue: (row: Account, col: QuasarTable) => unknown
 ): readonly Account[] => {
   const searchTerm = terms.toLowerCase();
+  resetPage();
   return listAccount.value.filter((item) => {
     currentPage.value = 1;
     return item.name && item.name.toLowerCase().includes(searchTerm);
@@ -119,6 +124,15 @@ const listAccountCurrent = computed(() => {
   return listAccount.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterAccount(
+    [],
+    filterAccount.value,
+    [],
+    () => null
+  ).length;
+  if (filterAccount.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listAccount.value.length / rowsPerPage.value);
 });
 
@@ -232,7 +246,6 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          style="height: 709px"
           :rows="loadingAccount ? [] : listAccountCurrent"
           :columns="columnsAccount"
           :filter="filterAccount"
@@ -246,6 +259,13 @@ onMounted(async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <span class="text-subtitle2">Lista de contas</span>
             <q-space />
@@ -340,28 +360,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listAccount.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listAccount.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listAccount.length"
+            />
           </template>
         </q-table>
         <FormAccount

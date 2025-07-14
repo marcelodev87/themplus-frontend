@@ -161,6 +161,13 @@ watch(open, async () => {
             :rows-per-page-options="[rowsPerPage]"
             style="min-height: 400px"
           >
+            <template v-slot:header="props">
+              <q-tr :props="props" class="bg-grey-2">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  <span style="font-size: 13px">{{ col.label }}</span>
+                </q-th>
+              </q-tr>
+            </template>
             <template v-slot:top>
               <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
                 <span class="text-subtitle2">Lista de categorias</span>
@@ -283,6 +290,11 @@ watch(open, async () => {
                   }}</span
                 >
               </div>
+              <Paginate
+                v-model="currentPage"
+                :max="maxPages"
+                :length="listCategory.length"
+              />
             </template>
           </q-table>
         </main>

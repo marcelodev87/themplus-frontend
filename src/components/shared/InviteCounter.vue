@@ -7,6 +7,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { OrderClient } from 'src/ts/interfaces/data/Order';
 import { useFinancialStore } from 'src/stores/financial-store';
 import TitlePage from './TitlePage.vue';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'InviteCounter',
@@ -67,6 +68,9 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const customFilterOrder = (
   rows: readonly OrderClient[],
   terms: string,
@@ -74,6 +78,7 @@ const customFilterOrder = (
   getCellValue: (row: OrderClient, col: QuasarTable) => unknown
 ): readonly OrderClient[] => {
   const searchTerm = terms.toLowerCase();
+  resetPage();
 
   return listOrderClient.value.filter((item) => {
     currentPage.value = 1;
@@ -122,6 +127,15 @@ const listUserMemberCurrent = computed(() => {
   return listOrderClient.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterOrder(
+    [],
+    filterOrder.value,
+    [],
+    () => null
+  ).length;
+  if (filterOrder.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listOrderClient.value.length / rowsPerPage.value);
 });
 
@@ -141,7 +155,6 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section>
         <q-table
-          style="height: 522px"
           :rows="loadingOrder ? [] : listUserMemberCurrent"
           :columns="columnsOrder"
           :filter="filterOrder"
@@ -155,6 +168,13 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <span class="text-subtitle2">Lista de solicitações</span>
             <q-space />
@@ -209,30 +229,11 @@ watch(open, async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listOrderClient.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9"
-                >Total: {{ listOrderClient.length }}</span
-              >
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listOrderClient.length"
+            />
           </template>
         </q-table>
       </q-card-section>

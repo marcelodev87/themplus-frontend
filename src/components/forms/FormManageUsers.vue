@@ -9,6 +9,7 @@ import { useUsersMembersStore } from 'src/stores/users-store';
 import { DataUserByCounter, User } from 'src/ts/interfaces/data/User';
 import { Notify } from 'quasar';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'FormManageUsers',
@@ -90,6 +91,9 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const checkData = (): { status: boolean; message?: string } => {
   if (dataUser.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do usuário' };
@@ -227,6 +231,7 @@ const custonFilterUserMemberByEnterprise = (
   getCellValue: (row: User, col: QuasarTable) => unknown
 ): readonly User[] => {
   const searchTerm = terms.toLowerCase();
+  resetPage();
   return listUserMemberByEnterprise.value.filter((item) => {
     currentPage.value = 1;
     return item.name && item.name.toLowerCase().includes(searchTerm);
@@ -239,8 +244,18 @@ const listOfficeCurrent = computed(() => {
   return listUserMemberByEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  return Math.ceil(listUserMemberByEnterprise.value.length / rowsPerPage.value);
+  const filterLength = custonFilterUserMemberByEnterprise(
+    [],
+    filterUser.value,
+    [],
+    () => null
+  ).length;
+  if (filterUser.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
+  return Math.ceil(listOfficeCurrent.value.length / rowsPerPage.value);
 });
+
 const formattedPhone = computed({
   get() {
     const phone = (dataUser.phone || '').replace(/\D/g, '');
@@ -315,6 +330,13 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-2">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <span style="font-size: 13px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:top>
             <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
               <div :class="!$q.screen.lt.md ? '' : 'column q-mt-sm '">
@@ -391,30 +413,11 @@ watch(open, async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listUserMemberByEnterprise.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9"
-                >Total: {{ listUserMemberByEnterprise.length }}</span
-              >
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listUserMemberByEnterprise.length"
+            />
           </template>
         </q-table>
         <q-form v-else class="q-gutter-y-sm">

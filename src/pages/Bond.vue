@@ -19,6 +19,7 @@ import { Dialog } from 'quasar';
 import ManageCategory from 'src/components/general/ManageCategory.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { Bond } from 'src/ts/interfaces/data/Bond';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Bond',
@@ -114,6 +115,9 @@ const optionsVerified = reactive<QuasarSelect<string>[]>([
   },
 ]);
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterOrder.value = '';
@@ -228,6 +232,7 @@ const customFilterBonds = (
   getCellValue: (row: Bond, col: QuasarTable) => unknown
 ): readonly Bond[] => {
   const searchTerm = terms.toLowerCase();
+  resetPage();
   return listBond.value.filter((item) => {
     currentPage.value = 1;
     return item.name && item.name.toLowerCase().includes(searchTerm);
@@ -240,6 +245,15 @@ const listBondCurrent = computed(() => {
   return listBond.value.slice(start, end);
 });
 const maxPages = computed(() => {
+  const filterLength = customFilterBonds(
+    [],
+    filterOrder.value,
+    [],
+    () => null
+  ).length;
+  if (filterOrder.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
   return Math.ceil(listBond.value.length / rowsPerPage.value);
 });
 
@@ -319,7 +333,6 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          style="height: 653px"
           v-show="!showDataClient"
           :rows="
             loadingOrder || loadingEnterprise
@@ -513,28 +526,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <div
-              v-show="listBond.length > 0"
-              class="flex justify-between full-width items-center q-py-sm"
-            >
-              <q-pagination
-                style="width: 96%; justify-content: center"
-                v-model="currentPage"
-                :max="maxPages"
-                :max-pages="6"
-                rounded
-                direction-links
-                boundary-links
-                color="contabilidade"
-                active-text-color="white"
-                text-color="red-9"
-                icon-first="skip_previous"
-                icon-last="skip_next"
-                icon-prev="fast_rewind"
-                icon-next="fast_forward"
-              />
-              <span class="text-red-9">Total: {{ listBond.length }}</span>
-            </div>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listBond.length"
+            />
           </template>
         </q-table>
         <DataClient
