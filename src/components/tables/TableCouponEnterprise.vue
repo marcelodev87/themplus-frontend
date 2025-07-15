@@ -79,6 +79,13 @@ const columnsCoupon = reactive<QuasarTable[]>([
         virtual-scroll
         :rows-per-page-options="[20]"
       >
+        <template v-slot:header="props">
+          <q-tr :props="props" class="bg-grey-2">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              <span style="font-size: 13px">{{ col.label }}</span>
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:top>
           <div class="row items-center justify-between full-width">
             <span class="text-subtitle2">Lista de cupons</span>
