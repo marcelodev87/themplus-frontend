@@ -22,7 +22,7 @@ const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices, deleteOffice } = useOfficeStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const selectedOffice = ref<string | null>(null);

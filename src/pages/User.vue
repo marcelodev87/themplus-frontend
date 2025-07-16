@@ -23,7 +23,7 @@ const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(
 const { user } = storeToRefs(useAuthStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(2);
+const rowsPerPage = ref<number>(10);
 const showFormUser = ref<boolean>(false);
 const loadingExport = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
