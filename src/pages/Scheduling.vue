@@ -356,8 +356,8 @@ watch(
       lastChanged = 'onlyExpired';
     }
 
-    const selectedCategoryChanged = newCategory !== oldCategory;
-    const selectedAccountChanged = newAccount !== oldAccount;
+    const selectedCategoryChanged = newCategory === oldCategory;
+    const selectedAccountChanged = newAccount === oldAccount;
 
     if (lastChanged === 'onlyEntry') {
       if (newEntry) {
@@ -390,10 +390,11 @@ watch(
         selectedCategory.value.value,
         selectedAccount.value.value
       );
-    } else {
-      await getSchedulings(filterMonthYear.value.replace('/', '-'));
-      selectedCategory.value = { label: 'Todas categorias', value: null };
     }
+    // else {
+    //   await getSchedulings(filterMonthYear.value.replace('/', '-'));
+    //   selectedCategory.value = { label: 'Todas categorias', value: null };
+    // }
   }
 );
 watch(
