@@ -5,7 +5,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useAlertStore } from 'src/stores/alert-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { Category } from 'src/ts/interfaces/data/Category';
+import Paginate from './Paginate.vue';
 
 defineOptions({
   name: 'AlertsClient',
@@ -24,9 +24,8 @@ const emit = defineEmits<{
 
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(6);
-const filterAllCategories = ref<string>('Todos');
+const selectedFilteredCategories = ref<string>('Todos');
 const filterCategory = ref<string>('');
-const filteredCategories = reactive<Category[]>([]);
 const columnsCategory = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -50,7 +49,10 @@ const open = computed({
 
 const clear = (): void => {
   filterCategory.value = '';
-  filterAllCategories.value = 'Todos';
+  selectedFilteredCategories.value = 'Todos';
+};
+const resetPage = (): void => {
+  currentPage.value = 1;
 };
 const fetchCategories = async () => {
   await getCategories(props.enterpriseId ?? '');
@@ -71,69 +73,36 @@ const save = async () => {
     emit('update:open');
   }
 };
-const customFilterCategory = (
-  rows: readonly Category[],
-  terms: string,
-  cols: readonly Category[],
-  getCellValue: (row: Category, col: QuasarTable) => unknown
-): readonly Category[] => {
-  const searchTerm = terms.toLowerCase();
-  return listCategory.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+const filteredCategory = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  resetPage();
+  const category = selectedFilteredCategories.value;
+  const filteredResult =
+    category === 'Todos'
+      ? listCategory.value
+      : listCategory.value.filter((item) =>
+          normalize(category).includes(normalize(item.type))
+        );
+  const searchTerm = normalize(filterCategory.value);
+  return filteredResult.filter((item) => {
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listCategoryCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listCategory.value.slice(start, end);
-});
-const listFilteredCategoryCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return filteredCategories.slice(start, end);
+  return filteredCategory.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const listToPaginate =
-    filterAllCategories.value === 'Todos'
-      ? listCategory.value
-      : filteredCategories;
-  if (filterCategory.value.length > 0) {
-    const filterLength = customFilterCategory(
-      [],
-      filterCategory.value,
-      [],
-      () => null
-    ).length;
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listToPaginate.length / rowsPerPage.value);
+  return Math.ceil(filteredCategory.value.length / rowsPerPage.value);
 });
 
-watch(
-  filterAllCategories,
-  (type) => {
-    if (type === 'Entradas') {
-      filteredCategories.splice(0, filteredCategories.length);
-      listCategory.value.forEach((item) => {
-        if (item.type === 'entrada') {
-          filteredCategories.push(item);
-        }
-      });
-    } else if (type === 'Saídas') {
-      filteredCategories.splice(0, filteredCategories.length);
-      listCategory.value.forEach((item) => {
-        if (item.type === 'saída') {
-          filteredCategories.push(item);
-        }
-      });
-    } else {
-      filteredCategories.splice(0, filteredCategories.length);
-    }
-  },
-  { immediate: true }
-);
 watch(open, async () => {
   if (open.value) {
     clear();
@@ -150,16 +119,8 @@ watch(open, async () => {
       <q-card-section class="q-pa-sm q-gutter-y-sm">
         <main class="q-pa-sm q-mb-md">
           <q-table
-            :rows="
-              loadingAlert
-                ? []
-                : filteredCategories.length > 0
-                  ? listFilteredCategoryCurrent
-                  : listCategoryCurrent
-            "
+            :rows="loadingAlert ? [] : listCategoryCurrent"
             :columns="columnsCategory"
-            :filter="filterCategory"
-            :filter-method="customFilterCategory"
             :loading="loadingAlert"
             flat
             bordered
@@ -182,7 +143,7 @@ watch(open, async () => {
                 <q-space />
                 <div v-if="!$q.screen.lt.md" class="row">
                   <q-select
-                    v-model="filterAllCategories"
+                    v-model="selectedFilteredCategories"
                     :options="['Todos', 'Entradas', 'Saídas']"
                     dense
                     options-dense
@@ -211,7 +172,7 @@ watch(open, async () => {
                   class="border-form"
                 >
                   <q-select
-                    v-model="filterAllCategories"
+                    v-model="selectedFilteredCategories"
                     :options="['Todos', 'Entradas', 'Saídas']"
                     dense
                     options-dense
@@ -269,39 +230,10 @@ watch(open, async () => {
               </q-tr>
             </template>
             <template v-slot:bottom>
-              <div
-                v-show="listCategory.length > 0"
-                class="flex justify-between full-width items-center q-py-sm"
-              >
-                <q-pagination
-                  style="width: 96%; justify-content: center"
-                  v-model="currentPage"
-                  :max="maxPages"
-                  :max-pages="6"
-                  rounded
-                  direction-links
-                  boundary-links
-                  color="contabilidade"
-                  active-text-color="white"
-                  text-color="red-9"
-                  icon-first="skip_previous"
-                  icon-last="skip_next"
-                  icon-prev="fast_rewind"
-                  icon-next="fast_forward"
-                />
-                <span class="text-red-9"
-                  >Total:
-                  {{
-                    filterAllCategories === 'Todos'
-                      ? listCategory.length
-                      : filteredCategories.length
-                  }}</span
-                >
-              </div>
               <Paginate
                 v-model="currentPage"
                 :max="maxPages"
-                :length="listCategory.length"
+                :length="filteredCategory.length"
               />
             </template>
           </q-table>

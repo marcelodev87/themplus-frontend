@@ -69,7 +69,7 @@ const resetPage = (): void => {
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterCategory.value = '';
-  filterAllCategories.value = ' Todas';
+  filterAllCategories.value = 'Todas';
   filteredCategories.splice(0, filteredCategories.length);
   onlyCreatedByMe.value = false;
   onlyDefault.value = false;
@@ -99,42 +99,34 @@ const reactivate = async (id: string) => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
-const customFilterCategory = (
-  rows: readonly Category[],
-  terms: string,
-  cols: readonly Category[],
-  getCellValue: (row: Category | null, col: QuasarTable | null) => unknown
-): readonly Category[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredCategory = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+
+  const filterResult =
+    filterAllCategories.value === 'Todas'
+      ? listCategory.value
+      : listCategory.value.filter((item) =>
+          normalize(filterAllCategories.value).includes(normalize(item.type))
+        );
   resetPage();
-
-  if (filteredCategories.length > 0) {
-    return filteredCategories.filter((item) => {
-      return item.name && item.name.toLowerCase().includes(searchTerm);
-    });
-  }
-
-  return listCategory.value.filter((item) => {
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+  const searchTerm = normalize(filterCategory.value);
+  return filterResult.filter((item) => {
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listCategoryCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listCategory.value.slice(start, end);
+  return filteredCategory.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterCategory(
-    [],
-    filterCategory.value,
-    [],
-    () => null
-  ).length;
-  if (filterCategory.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listCategory.value.length / rowsPerPage.value);
+  return Math.ceil(filteredCategory.value.length / rowsPerPage.value);
 });
 
 watch(
@@ -173,29 +165,6 @@ watch(
       await fetchAlerts();
     }
   }
-);
-watch(
-  filterAllCategories,
-  (type) => {
-    if (type === 'Entradas') {
-      filteredCategories.splice(0, filteredCategories.length);
-      listCategory.value.forEach((item) => {
-        if (item.type === 'entrada') {
-          filteredCategories.push(item);
-        }
-      });
-    } else if (type === 'Saídas') {
-      filteredCategories.splice(0, filteredCategories.length);
-      listCategory.value.forEach((item) => {
-        if (item.type === 'saída') {
-          filteredCategories.push(item);
-        }
-      });
-    } else {
-      filteredCategories.splice(0, filteredCategories.length);
-    }
-  },
-  { immediate: true }
 );
 watch(
   filledData,
@@ -246,16 +215,8 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
-          :rows="
-            loadingCategory
-              ? []
-              : filteredCategories.length > 0
-                ? filteredCategories
-                : listCategoryCurrent
-          "
+          :rows="loadingCategory ? [] : listCategoryCurrent"
           :columns="columnsCategory"
-          :filter="filterCategory"
-          :filter-method="customFilterCategory"
           :loading="loadingCategory"
           flat
           bordered
@@ -438,7 +399,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listCategory.length"
+              :length="filteredCategory.length"
             />
           </template>
         </q-table>

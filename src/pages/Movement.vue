@@ -311,29 +311,77 @@ const getClassTotal = (total: string) => {
 };
 
 const filteredMovement = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
   if (!filterMovement.value) {
     return listMovement.value;
   }
-  const searchTerm = filterMovement.value.toLowerCase();
 
+  const searchTerm = normalize(filterMovement.value);
   resetPage();
   return listMovement.value.filter((item) => {
     return (
       (item.account?.name &&
-        item.account.name.toLowerCase().includes(searchTerm)) ||
+        item.account.name
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
       (item.account?.agency_number &&
-        item.account.agency_number.toLowerCase().includes(searchTerm)) ||
+        item.account.agency_number
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
       (item.account?.account_number &&
-        item.account.account_number.toLowerCase().includes(searchTerm)) ||
+        item.account.account_number
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
       (item.category?.name &&
-        item.category.name.toLowerCase().includes(searchTerm)) ||
+        item.category.name
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
       (item.value &&
-        item.value.toString().toLowerCase().includes(searchTerm)) ||
+        item.value
+          .toString()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
       (item.description &&
-        item.description.toLowerCase().includes(searchTerm)) ||
-      (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
+        item.description
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.receipt &&
+        item.receipt
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
       (item.date_movement &&
-        item.date_movement.toLowerCase().includes(searchTerm))
+        item.date_movement
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm))
     );
   });
 });
@@ -861,7 +909,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listMovement.length"
+              :length="filteredMovement.length"
             />
           </template>
         </q-table>

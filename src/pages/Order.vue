@@ -108,46 +108,38 @@ const formatDate = (dateString: string): string => {
 
   return new Intl.DateTimeFormat('pt-BR', options).format(date);
 };
-const customFilterOrder = (
-  rows: readonly OrderCounter[],
-  terms: string,
-  cols: readonly OrderCounter[],
-  getCellValue: (row: OrderCounter, col: QuasarTable) => unknown
-): readonly OrderCounter[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredOrder = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterOrder.value);
   resetPage();
 
   return listOrderCounter.value.filter((item) => {
     currentPage.value = 1;
     return (
       (item.enterprise.name &&
-        item.enterprise.name.toLowerCase().includes(searchTerm)) ||
+        normalize(item.enterprise.name).includes(searchTerm)) ||
       (item.enterprise.email &&
-        item.enterprise.email.toLowerCase().includes(searchTerm)) ||
+        normalize(item.enterprise.email).includes(searchTerm)) ||
       (item.enterprise.cpf &&
-        item.enterprise.cpf.toLowerCase().includes(searchTerm)) ||
+        normalize(item.enterprise.cpf).includes(searchTerm)) ||
       (item.enterprise.cnpj &&
-        item.enterprise.cnpj.toLowerCase().includes(searchTerm))
+        normalize(item.enterprise.cnpj).includes(searchTerm))
     );
   });
-};
+});
 
 const listOrderCounterCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listOrderCounter.value.slice(start, end);
+  return filteredOrder.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterOrder(
-    [],
-    filterOrder.value,
-    [],
-    () => null
-  ).length;
-  if (filterOrder.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listOrderCounter.value.length / rowsPerPage.value);
+  return Math.ceil(filteredOrder.value.length / rowsPerPage.value);
 });
 
 watch(
@@ -199,8 +191,6 @@ onMounted(async () => {
         <q-table
           :rows="loadingOrder ? [] : listOrderCounterCurrent"
           :columns="columnsOrder"
-          :filter="filterOrder"
-          :filter-method="customFilterOrder"
           :loading="loadingOrder"
           flat
           bordered
@@ -280,7 +270,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listOrderCounter.length"
+              :length="filteredOrder.length"
             />
           </template>
         </q-table>

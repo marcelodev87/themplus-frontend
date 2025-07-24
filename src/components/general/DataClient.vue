@@ -12,6 +12,7 @@ import ConfirmAction from '../confirm/ConfirmAction.vue';
 import DataEnterprise from '../info/DataEnterprise.vue';
 import FormEntry from '../forms/FormEntry.vue';
 import FormOut from '../forms/FormOut.vue';
+import Paginate from './Paginate.vue';
 
 defineOptions({
   name: 'DataClient',
@@ -47,7 +48,7 @@ const emit = defineEmits<{
 }>();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(12);
 const showFormFileFinancial = ref<boolean>(false);
 const selectedDataEdit = ref<Movement | null>(null);
 const showFormEntry = ref<boolean>(false);
@@ -344,7 +345,7 @@ watch(
         row-key="index"
         no-data-label="Nenhum período para mostrar"
         virtual-scroll
-        :rows-per-page-options="[12]"
+        :rows-per-page-options="[rowsPerPage]"
         bordered
       >
         <template v-slot:header="props">
@@ -499,7 +500,7 @@ watch(
         row-key="index"
         no-data-label="Nenhuma movimentação para mostrar"
         virtual-scroll
-        :rows-per-page-options="[12]"
+        :rows-per-page-options="[rowsPerPage]"
       >
         <template v-slot:header="props">
           <q-tr :props="props" class="bg-grey-2">

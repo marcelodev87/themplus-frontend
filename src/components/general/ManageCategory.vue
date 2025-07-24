@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from 'src/stores/category-store';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -126,49 +126,57 @@ const closeFormCategoryUpdate = (): void => {
   showFormCategoryUpdate.value = false;
   clear();
 };
-const customFilterCategory = (
-  rows: readonly CategoryPanel[],
-  terms: string,
-  cols: readonly CategoryPanel[],
-  getCellValue: (row: CategoryPanel, col: QuasarTable) => unknown
-): readonly CategoryPanel[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredCategory = computed(() => {
+  const normalize = (text: string): string => {
+    if (!text) {
+      return text;
+    }
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+
+  const listCategoryPanelValue = listCategoryPanel.value;
+  let filteredResult =
+    selectedType.value.value === 'all'
+      ? listCategoryPanelValue
+      : listCategoryPanelValue.filter((item) =>
+          normalize(selectedType.value.value).includes(normalize(item.type))
+        );
+  filteredResult =
+    selectedClassification.value.value === 'all'
+      ? filteredResult
+      : filteredResult.filter(
+          (item) =>
+            selectedClassification.value.value === item.default.toString()
+        );
   resetPage();
-  return listCategoryPanel.value.filter((item) => {
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+  const searchTerm = normalize(filterCategory.value);
+  return filteredResult.filter((item) => {
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listCategoryCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listCategoryPanel.value.slice(start, end);
+  return filteredCategory.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterCategory(
-    [],
-    filterCategory.value,
-    [],
-    () => null
-  ).length;
-  if (filterCategory.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listCategoryPanel.value.length / rowsPerPage.value);
+  return Math.ceil(filteredCategory.value.length / rowsPerPage.value);
 });
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
 
-watch(
-  [() => open.value, selectedType, selectedClassification],
-  async ([isOpen, type, classification]) => {
-    if (isOpen) {
-      await getEnterpriseCategoryByCounter(type.value, classification.value);
-    }
-  }
-);
+onMounted(async () => {
+  await getEnterpriseCategoryByCounter(
+    selectedType.value.value,
+    selectedClassification.value.value
+  );
+});
 </script>
 <template>
   <q-dialog v-model="open">
@@ -179,8 +187,6 @@ watch(
           style="height: 525px"
           :rows="listCategoryCurrent"
           :rows-per-page-options="[rowsPerPage]"
-          :filter="filterCategory"
-          :filter-method="customFilterCategory"
           :columns="columnsCategoryPanel"
           flat
           bordered
@@ -279,7 +285,7 @@ watch(
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listCategoryPanel.length"
+              :length="filteredCategory.length"
             />
           </template>
         </q-table>

@@ -4,7 +4,6 @@ import { computed, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useOrderStore } from 'src/stores/order-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { OrderClient } from 'src/ts/interfaces/data/Order';
 import { useFinancialStore } from 'src/stores/financial-store';
 import TitlePage from './TitlePage.vue';
 import Paginate from '../general/Paginate.vue';
@@ -71,17 +70,17 @@ const open = computed({
 const resetPage = (): void => {
   currentPage.value = 1;
 };
-const customFilterOrder = (
-  rows: readonly OrderClient[],
-  terms: string,
-  cols: readonly OrderClient[],
-  getCellValue: (row: OrderClient, col: QuasarTable) => unknown
-): readonly OrderClient[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredOrder = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterOrder.value);
   resetPage();
 
   return listOrderClient.value.filter((item) => {
-    currentPage.value = 1;
     return (
       (item.counter.name &&
         item.counter.name.toLowerCase().includes(searchTerm)) ||
@@ -93,7 +92,7 @@ const customFilterOrder = (
         item.counter.cnpj.toLowerCase().includes(searchTerm))
     );
   });
-};
+});
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
 
@@ -124,19 +123,10 @@ const clear = (): void => {
 const listUserMemberCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listOrderClient.value.slice(start, end);
+  return filteredOrder.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterOrder(
-    [],
-    filterOrder.value,
-    [],
-    () => null
-  ).length;
-  if (filterOrder.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listOrderClient.value.length / rowsPerPage.value);
+  return Math.ceil(filteredOrder.value.length / rowsPerPage.value);
 });
 
 watch(open, async () => {
@@ -157,8 +147,6 @@ watch(open, async () => {
         <q-table
           :rows="loadingOrder ? [] : listUserMemberCurrent"
           :columns="columnsOrder"
-          :filter="filterOrder"
-          :filter-method="customFilterOrder"
           :loading="loadingOrder"
           flat
           bordered
@@ -232,7 +220,7 @@ watch(open, async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listOrderClient.length"
+              :length="filteredOrder.length"
             />
           </template>
         </q-table>
