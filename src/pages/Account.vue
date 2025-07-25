@@ -104,36 +104,27 @@ const reactivate = async (id: string) => {
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
-const customFilterAccount = (
-  rows: readonly Account[],
-  terms: string,
-  cols: readonly Account[],
-  getCellValue: (row: Account, col: QuasarTable) => unknown
-): readonly Account[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredAccount = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterAccount.value);
   resetPage();
   return listAccount.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listAccountCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listAccount.value.slice(start, end);
+  return filteredAccount.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterAccount(
-    [],
-    filterAccount.value,
-    [],
-    () => null
-  ).length;
-  if (filterAccount.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listAccount.value.length / rowsPerPage.value);
+  return Math.ceil(filteredAccount.value.length / rowsPerPage.value);
 });
 
 watch(
@@ -248,8 +239,6 @@ onMounted(async () => {
         <q-table
           :rows="loadingAccount ? [] : listAccountCurrent"
           :columns="columnsAccount"
-          :filter="filterAccount"
-          :filter-method="customFilterAccount"
           :loading="loadingAccount"
           flat
           bordered
@@ -363,7 +352,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listAccount.length"
+              :length="filteredAccount.length"
             />
           </template>
         </q-table>

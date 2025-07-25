@@ -76,6 +76,9 @@ const columnsUser = reactive<QuasarTable[]>([
   },
 ]);
 
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const clear = (): void => {
   selectedDataEdit.value = null;
   filterUser.value = '';
@@ -105,36 +108,27 @@ const closeAlertDataEnterprise = (): void => {
 const setActive = async (active: number, userId: string) => {
   await updateActiveUser(active, userId);
 };
-const customFilterUser = (
-  rows: readonly User[],
-  terms: string,
-  cols: readonly User[],
-  getCellValue: (row: User, col: QuasarTable) => unknown
-): readonly User[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredUser = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  resetPage();
+  const searchTerm = normalize(filterUser.value);
   return listUserMember.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listUserMemberCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listUserMember.value.slice(start, end);
+  return filteredUser.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterUser(
-    [],
-    filterUser.value,
-    [],
-    () => null
-  ).length;
-
-  if (filterUser.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listUserMember.value.length / rowsPerPage.value);
+  return Math.ceil(filteredUser.value.length / rowsPerPage.value);
 });
 
 watch(
@@ -224,8 +218,6 @@ onMounted(async () => {
         <q-table
           :rows="loadingUsersMembers ? [] : listUserMemberCurrent"
           :columns="columnsUser"
-          :filter="filterUser"
-          :filter-method="customFilterUser"
           :loading="loadingUsersMembers"
           flat
           bordered
@@ -339,7 +331,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listUserMember.length"
+              :length="filteredUser.length"
             />
           </template>
         </q-table>

@@ -43,14 +43,14 @@ const dataUser = reactive<DataUserByCounter>({
 });
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(2);
+const rowsPerPage = ref<number>(10);
 const showConfirmAction = ref<boolean>(false);
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
 const mode = ref<'list' | 'form'>('list');
 const dataEditId = ref<string | null>(null);
 const selectedData = ref<string | null>(null);
-const filterUser = ref<string>('');
+const filteredUser = ref<string>('');
 const columnsUser = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -143,7 +143,7 @@ const checkData = (): { status: boolean; message?: string } => {
 };
 const clear = (): void => {
   mode.value = 'list';
-  filterUser.value = '';
+  filteredUser.value = '';
   dataEditId.value = null;
   isPwd.value = true;
   isPwd2.value = true;
@@ -224,34 +224,32 @@ const openConfirmAction = async (id: string): Promise<void> => {
   showConfirmAction.value = true;
 };
 
-const custonFilterUserMemberByEnterprise = (
-  rows: readonly User[],
-  terms: string,
-  cols: readonly User[],
-  getCellValue: (row: User, col: QuasarTable) => unknown
-): readonly User[] => {
-  const searchTerm = terms.toLowerCase();
-  resetPage();
+const filteredUserMemberByEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  if (!filteredUser.value) {
+    return listUserMemberByEnterprise.value;
+  }
+  const searchTerm = normalize(filteredUser.value);
   return listUserMemberByEnterprise.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listOfficeCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listUserMemberByEnterprise.value.slice(start, end);
+  return filteredUserMemberByEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = custonFilterUserMemberByEnterprise(
-    [],
-    filterUser.value,
-    [],
-    () => null
-  ).length;
-  if (filterUser.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
+  if (filteredUser.value.length > 0) {
+    return Math.ceil(
+      filteredUserMemberByEnterprise.value.length / rowsPerPage.value
+    );
   }
   return Math.ceil(listUserMemberByEnterprise.value.length / rowsPerPage.value);
 });
@@ -318,8 +316,6 @@ watch(open, async () => {
           v-if="mode === 'list'"
           :rows="listOfficeCurrent"
           :columns="columnsUser"
-          :filter="filterUser"
-          :filter-method="custonFilterUserMemberByEnterprise"
           :loading="loadingUsersMembers"
           flat
           bordered
@@ -363,7 +359,7 @@ watch(open, async () => {
                 />
                 <q-input
                   v-show="listUserMemberByEnterprise.length > 0"
-                  v-model="filterUser"
+                  v-model="filteredUser"
                   outlined
                   dense
                   label="Pesquisar"
@@ -427,7 +423,7 @@ watch(open, async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listUserMemberByEnterprise.length"
+              :length="filteredUserMemberByEnterprise.length"
             />
           </template>
         </q-table>

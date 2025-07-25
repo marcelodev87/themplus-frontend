@@ -218,35 +218,7 @@ const formatDate = (dateString: string) => {
 const finalize = async (id: string): Promise<void> => {
   await finalizeScheduling(id);
 };
-const customFilterScheduling = (
-  rows: readonly Scheduling[],
-  terms: string,
-  cols: readonly Scheduling[],
-  getCellValue: (row: Scheduling | null, col: QuasarTable | null) => unknown
-): readonly Scheduling[] => {
-  const searchTerm = terms.toLowerCase();
 
-  resetPage();
-  return rows.filter((item) => {
-    return (
-      (item.account?.name &&
-        item.account.name.toLowerCase().includes(searchTerm)) ||
-      (item.account?.agency_number &&
-        item.account.agency_number.toLowerCase().includes(searchTerm)) ||
-      (item.account?.account_number &&
-        item.account.account_number.toLowerCase().includes(searchTerm)) ||
-      (item.category?.name &&
-        item.category.name.toLowerCase().includes(searchTerm)) ||
-      (item.value &&
-        item.value.toString().toLowerCase().includes(searchTerm)) ||
-      (item.description &&
-        item.description.toLowerCase().includes(searchTerm)) ||
-      (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
-      (item.date_movement &&
-        item.date_movement.toLowerCase().includes(searchTerm))
-    );
-  });
-};
 const isPastDate = (dateString: string) => {
   const date = new Date(dateString);
   const today = new Date();
@@ -304,6 +276,33 @@ const getClassTotal = (total: string) => {
   }
   return 'bg-green-2';
 };
+const filteredScheduling = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterScheduling.value);
+
+  resetPage();
+  return listScheduling.value.filter((item) => {
+    return (
+      (item.account?.name &&
+        normalize(item.account.name).includes(searchTerm)) ||
+      (item.account?.agency_number &&
+        normalize(item.account.agency_number).includes(searchTerm)) ||
+      (item.account?.account_number &&
+        normalize(item.account.account_number).includes(searchTerm)) ||
+      (item.category?.name &&
+        normalize(item.category.name).includes(searchTerm)) ||
+      (item.value && normalize(item.value.toString()).includes(searchTerm)) ||
+      (item.description && normalize(item.description).includes(searchTerm)) ||
+      (item.receipt && normalize(item.receipt).includes(searchTerm)) ||
+      (item.date_movement && normalize(item.date_movement).includes(searchTerm))
+    );
+  });
+});
 
 const optionsAccountsFilter = computed(() => {
   const baseAccounts = [
@@ -324,19 +323,10 @@ const optionsAccountsFilter = computed(() => {
 const listSchedulingCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listScheduling.value.slice(start, end);
+  return filteredScheduling.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterScheduling(
-    [],
-    filterScheduling.value,
-    [],
-    () => null
-  ).length;
-  if (filterScheduling.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listScheduling.value.length / rowsPerPage.value);
+  return Math.ceil(filteredScheduling.value.length / rowsPerPage.value);
 });
 
 watch(
@@ -553,8 +543,6 @@ onMounted(async () => {
           :rows="loadingScheduling ? [] : listSchedulingCurrent"
           :columns="columnsScheduling"
           :loading="loadingScheduling"
-          :filter="filterScheduling"
-          :filter-method="customFilterScheduling"
           flat
           bordered
           dense
@@ -855,7 +843,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listScheduling.length"
+              :length="filteredScheduling.length"
             />
           </template>
         </q-table>

@@ -256,35 +256,6 @@ const saveIdExclude = async (id: string) => {
 const resetPage = (): void => {
   currentPage.value = 1;
 };
-const customFilterMovement = (
-  rows: readonly Movement[],
-  terms: string,
-  cols: readonly Movement[],
-  getCellValue: (row: Movement | null, col: QuasarTable | null) => unknown
-): readonly Movement[] => {
-  const searchTerm = terms.toLowerCase();
-
-  resetPage();
-  return listMovement.value.filter((item) => {
-    return (
-      (item.account?.name &&
-        item.account.name.toLowerCase().includes(searchTerm)) ||
-      (item.account?.agency_number &&
-        item.account.agency_number.toLowerCase().includes(searchTerm)) ||
-      (item.account?.account_number &&
-        item.account.account_number.toLowerCase().includes(searchTerm)) ||
-      (item.category?.name &&
-        item.category.name.toLowerCase().includes(searchTerm)) ||
-      (item.value &&
-        item.value.toString().toLowerCase().includes(searchTerm)) ||
-      (item.description &&
-        item.description.toLowerCase().includes(searchTerm)) ||
-      (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
-      (item.date_movement &&
-        item.date_movement.toLowerCase().includes(searchTerm))
-    );
-  });
-};
 const exportDataExcel = async (): Promise<void> => {
   loadingExport.value = true;
   await exportMovementExcel(
@@ -339,20 +310,89 @@ const getClassTotal = (total: string) => {
   return 'bg-green-2';
 };
 
+const filteredMovement = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  if (!filterMovement.value) {
+    return listMovement.value;
+  }
+
+  const searchTerm = normalize(filterMovement.value);
+  resetPage();
+  return listMovement.value.filter((item) => {
+    return (
+      (item.account?.name &&
+        item.account.name
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.account?.agency_number &&
+        item.account.agency_number
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.account?.account_number &&
+        item.account.account_number
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.category?.name &&
+        item.category.name
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.value &&
+        item.value
+          .toString()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.description &&
+        item.description
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.receipt &&
+        item.receipt
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm)) ||
+      (item.date_movement &&
+        item.date_movement
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .includes(searchTerm))
+    );
+  });
+});
 const listMovementCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listMovement.value.slice(start, end);
+  return filteredMovement.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterMovement(
-    [],
-    filterMovement.value,
-    [],
-    () => null
-  ).length;
   if (filterMovement.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
+    return Math.ceil(filteredMovement.value.length / rowsPerPage.value);
   }
   return Math.ceil(listMovement.value.length / rowsPerPage.value);
 });
@@ -607,8 +647,6 @@ onMounted(async () => {
         <q-table
           :rows="loadingMovement ? [] : listMovementCurrent"
           :columns="columnsMovement"
-          :filter="filterMovement"
-          :filter-method="customFilterMovement"
           :loading="loadingMovement"
           flat
           bordered
@@ -871,7 +909,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listMovement.length"
+              :length="filteredMovement.length"
             />
           </template>
         </q-table>

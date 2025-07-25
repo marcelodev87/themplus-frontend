@@ -22,4 +22,5 @@ export interface CategoryPanel {
   organization_name: string;
   code_debt: number | null;
   code_credit: number | null;
+  default: number;
 }

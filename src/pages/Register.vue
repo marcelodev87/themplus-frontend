@@ -7,7 +7,6 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
-import type { Register } from 'src/ts/interfaces/data/Register';
 import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
@@ -95,6 +94,9 @@ const clear = (): void => {
   selectedDataView.value = null;
   filterRegister.value = '';
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const openRegisterDetail = (): void => {
   showRegisterDetail.value = true;
 };
@@ -155,40 +157,31 @@ const buildAction = (action: string): string => {
 
   return '';
 };
-const customFilterRegister = (
-  rows: readonly Register[],
-  terms: string,
-  cols: readonly Register[],
-  getCellValue: (row: Register, col: QuasarTable) => unknown
-): readonly Register[] => {
-  const searchTerm = terms.toLowerCase();
-
+const filteredRegister = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterRegister.value);
+  resetPage();
   return listRegister.value.filter((item) => {
-    currentPage.value = 1;
     return (
-      (item.user_name && item.user_name.toLowerCase().includes(searchTerm)) ||
-      (item.text && item.text.toLowerCase().includes(searchTerm)) ||
-      (item.user_email && item.user_email.toLowerCase().includes(searchTerm))
+      (item.user_name && normalize(item.user_name).includes(searchTerm)) ||
+      (item.text && normalize(item.text).includes(searchTerm)) ||
+      (item.user_email && normalize(item.user_email).includes(searchTerm))
     );
   });
-};
+});
 
 const listRegisterCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listRegister.value.slice(start, end);
+  return filteredRegister.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterRegister(
-    [],
-    filterRegister.value,
-    [],
-    () => null
-  ).length;
-  if (filterRegister.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listRegister.value.length / rowsPerPage.value);
+  return Math.ceil(filteredRegister.value.length / rowsPerPage.value);
 });
 
 watch(selectedPeriod, async () => {
@@ -236,8 +229,6 @@ onMounted(async () => {
         <q-table
           :rows="loadingRegister ? [] : listRegisterCurrent"
           :columns="columnsRegister"
-          :filter="filterRegister"
-          :filter-method="customFilterRegister"
           :loading="loadingRegister"
           flat
           bordered
@@ -325,7 +316,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listRegister.length"
+              :length="filteredRegister.length"
             />
           </template>
         </q-table>

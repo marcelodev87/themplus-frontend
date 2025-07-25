@@ -22,7 +22,7 @@ const { filledData, loadingOffice, listOffice } = storeToRefs(useOfficeStore());
 const { getOffices, deleteOffice } = useOfficeStore();
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(12);
 const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const selectedOffice = ref<string | null>(null);
@@ -93,36 +93,28 @@ const closeConfirmAction = (): void => {
   showConfirmAction.value = false;
   clear();
 };
-const customFilterOffice = (
-  rows: readonly Office[],
-  terms: string,
-  cols: readonly Office[],
-  getCellValue: (row: Office, col: QuasarTable) => unknown
-): readonly Office[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredOffice = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterAlert.value);
   resetPage();
   return listOffice.value.filter((item) => {
     currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listOfficeCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listOffice.value.slice(start, end);
+  return filteredOffice.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterOffice(
-    [],
-    filterAlert.value,
-    [],
-    () => null
-  ).length;
-  if (filterAlert.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listOffice.value.length / rowsPerPage.value);
+  return Math.ceil(filteredOffice.value.length / rowsPerPage.value);
 });
 
 watch(
@@ -171,8 +163,6 @@ onMounted(async () => {
         <q-table
           :rows="loadingOffice ? [] : listOfficeCurrent"
           :columns="columnsAlert"
-          :filter="filterAlert"
-          :filter-method="customFilterOffice"
           :loading="loadingOffice"
           flat
           bordered
@@ -234,7 +224,7 @@ onMounted(async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listOffice.length"
+              :length="filteredOffice.length"
             />
           </template>
         </q-table>
