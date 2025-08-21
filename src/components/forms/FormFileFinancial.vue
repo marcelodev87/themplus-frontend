@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useFinancialStore } from 'src/stores/financial-store';
 import { storeToRefs } from 'pinia';
+import imageCompression from 'browser-image-compression';
 import Paginate from '../general/Paginate.vue';
 
 defineOptions({
@@ -84,8 +85,8 @@ const checkData = (): { status: boolean; message?: string } => {
 
   if (dataFile.file) {
     const fileSizeInMB = dataFile.file.size / (1024 * 1024);
-    if (fileSizeInMB > 2) {
-      return { status: false, message: 'O arquivo deve ter no máximo 2MB' };
+    if (fileSizeInMB > 20) {
+      return { status: false, message: 'O arquivo deve ter no máximo 20MB' };
     }
 
     const validFileTypes = [
@@ -166,6 +167,22 @@ const maxPages = computed(() => {
   return Math.ceil(listFileFinancial.value.length / rowsPerPage.value);
 });
 
+watch(
+  () => dataFile.file,
+  async (file) => {
+    if (file) {
+      textFile.value = null;
+      if (file.type.startsWith('image/')) {
+        const options = {
+          maxSizeMB: 4, // Tamanho máximo em MB
+          maxWidthOrHeight: 1920, // Redimensiona se necessário
+          useWebWorker: true, // Usa Web Worker p/ não travar UI
+        };
+        dataFile.file = await imageCompression(file, options);
+      }
+    }
+  }
+);
 watch(open, async () => {
   if (open.value) {
     clear();

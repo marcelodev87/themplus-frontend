@@ -12,6 +12,7 @@ import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useReportStore } from 'src/stores/report-store';
+import imageCompression from 'browser-image-compression';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -167,8 +168,9 @@ const checkData = (): { status: boolean; message?: string } => {
 
   if (dataEntry.file) {
     const fileSizeInMB = dataEntry.file.size / (1024 * 1024);
-    if (fileSizeInMB > 2) {
-      return { status: false, message: 'O arquivo deve ter no máximo 2MB' };
+
+    if (fileSizeInMB > 20) {
+      return { status: false, message: 'O arquivo deve ter no máximo 20MB' };
     }
 
     const validFileTypes = [
@@ -177,6 +179,7 @@ const checkData = (): { status: boolean; message?: string } => {
       'image/jpeg',
       'image/jpg',
     ];
+
     const fileType = dataEntry.file.type;
 
     if (!validFileTypes.includes(fileType)) {
@@ -433,9 +436,17 @@ const clearFile = () => {
 
 watch(
   () => dataEntry.file,
-  (file) => {
+  async (file) => {
     if (file) {
       textFile.value = null;
+      if (file.type.startsWith('image/')) {
+        const options = {
+          maxSizeMB: 4, // Tamanho máximo em MB
+          maxWidthOrHeight: 1920, // Redimensiona se necessário
+          useWebWorker: true, // Usa Web Worker p/ não travar UI
+        };
+        dataEntry.file = await imageCompression(file, options);
+      }
     }
   }
 );
@@ -600,7 +611,7 @@ watch(open, async () => {
             filled
             bg-color="white"
             label-color="black"
-            :label="textFile ? textFile : 'Adicione um documento (Máx 2Mb)'"
+            :label="textFile ? textFile : 'Adicione um documento (Máx 20Mb)'"
             dense
             clearable
           >
