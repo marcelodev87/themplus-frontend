@@ -13,7 +13,7 @@ import {
   InsertMovement,
   InsertMovementData,
 } from 'src/ts/interfaces/data/Movement';
-import Paginate from '../general/Paginate.vue';
+import { ExcelData } from 'src/ts/interfaces/data/Excel';
 
 defineOptions({
   name: 'FormInsertMovement',
@@ -35,8 +35,6 @@ const {
 const { loadingMovement, listAccount, listCategoryAll } =
   storeToRefs(useMovementStore());
 
-const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
 const viewMode = ref<'add' | 'process'>('add');
 const optionsCategories = ref(listCategoryAll.value);
 const optionsAccounts = ref(listAccount.value);
@@ -146,9 +144,6 @@ const checkData = (): { status: boolean; message?: string } => {
 
   return { status: true };
 };
-const resetPage = (): void => {
-  currentPage.value = 1;
-};
 const clear = (): void => {
   Object.assign(dataInsert, {
     file: null,
@@ -156,7 +151,6 @@ const clear = (): void => {
   viewMode.value = 'add';
   listInsertMovement.value = [];
   mountPayloadData.splice(0, mountPayloadData.length);
-  resetPage();
 };
 const mountPayload = (): void => {
   mountPayloadData.splice(0, mountPayloadData.length);
@@ -214,9 +208,42 @@ const normalizeAndValidateValue = (valor: string): number | null => {
 
   return null;
 };
+const checkAccountAndCategoryRows = (rows: ExcelData[]): InsertMovement[] => {
+  return rows.map((item) => {
+    const updatedItem: ExcelData = { ...item };
 
+    if (item.accountID) {
+      const foundAccount = listAccount.value.find(
+        (account) => account.value === item.accountID
+      );
+
+      if (foundAccount) {
+        updatedItem.account = foundAccount;
+      }
+    }
+
+    if (item.categoryID) {
+      const listCategories = listCategoryAll.value.filter((category) => {
+        if (item.tipo.toLowerCase() === 'entrada') {
+          return category.type === 'entrada';
+        }
+        return category.type !== 'entrada';
+      });
+      const foundCategory = listCategories.find(
+        (category) => category.id === item.categoryID
+      );
+
+      if (foundCategory) {
+        updatedItem.category = {
+          label: foundCategory.name,
+          value: foundCategory.id,
+        };
+      }
+    }
+    return updatedItem;
+  });
+};
 const process = () => {
-  resetPage();
   const check = checkData();
   if (check.status) {
     setLoading(true);
@@ -255,6 +282,8 @@ const process = () => {
         'DATA DE MOVIMENTAÇÃO',
         'TIPO',
         'VALOR',
+        'CONTA_ID',
+        'CATEGORIA_ID',
         'DESCRIÇÃO',
       ];
       const missingHeaders = requiredHeaders.filter(
@@ -297,7 +326,9 @@ const process = () => {
           let dataMovimentacao = row[columnIndexes[0]];
           const tipo = row[columnIndexes[1]];
           const valor = row[columnIndexes[2]]?.toString() || '';
-          const descricao = row[columnIndexes[3]];
+          const accountID = row[columnIndexes[3]]?.toString() || '';
+          const categoryID = row[columnIndexes[4]]?.toString() || '';
+          const descricao = row[columnIndexes[5]];
 
           let isValid = true;
 
@@ -323,6 +354,8 @@ const process = () => {
             validRows.push({
               tipo,
               valor: normalizedValue,
+              accountID,
+              categoryID,
               dataMovimentacao,
               descricao,
             });
@@ -368,7 +401,7 @@ const process = () => {
         return;
       }
 
-      listInsertMovement.value = validRows;
+      listInsertMovement.value = checkAccountAndCategoryRows(validRows);
 
       Notify.create({
         message: 'Arquivo processado com sucesso',
@@ -427,15 +460,6 @@ const filterFnCategory = (
   });
 };
 
-const listInsertMovementCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return listInsertMovement.value.slice(start, end);
-});
-const maxPages = computed(() => {
-  return Math.ceil(listInsertMovement.value.length / rowsPerPage.value);
-});
-
 watch(
   () => dataInsert.file,
   (file) => {
@@ -490,7 +514,7 @@ watch(open, async () => {
 
         <q-table
           v-else
-          :rows="loadingMovement ? [] : listInsertMovementCurrent"
+          :rows="loadingMovement ? [] : listInsertMovement"
           :columns="columnsMovement"
           :loading="loadingMovement"
           flat
@@ -500,7 +524,6 @@ watch(open, async () => {
           no-data-label="Nenhuma movimentação para mostrar"
           style="height: 450px"
           virtual-scroll
-          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
@@ -615,13 +638,6 @@ watch(open, async () => {
                 </q-file>
               </q-td>
             </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="listInsertMovement.length"
-            />
           </template>
         </q-table>
       </q-card-section>
