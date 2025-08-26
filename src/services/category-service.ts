@@ -1,7 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
+import { Notify } from 'quasar';
 import { Category, CategoryPanel } from 'src/ts/interfaces/data/Category';
 
 const baseUrl = 'category';
+
+const createError = (error: any) => {
+  let message = 'Error';
+  if (error instanceof AxiosError) {
+    message = error.response?.data?.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  Notify.create({
+    message,
+    type: 'negative',
+  });
+};
 
 export const getCategoriesService = (): Promise<{
   status: number;
@@ -99,6 +115,29 @@ export const updateActiveCategoryService = (
     message: string;
   };
 }> => api.put(`${baseUrl}/active/${id}`);
+
+export const exportCategoryService = async () => {
+  try {
+    const response = await api.post(`${baseUrl}/export`, null, {
+      responseType: 'blob',
+    });
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `categorias_${timestamp}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
 
 export const deleteCategoryService = (
   id: string

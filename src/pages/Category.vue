@@ -23,6 +23,7 @@ const {
   deleteCategory,
   getCategoriesWithParams,
   updateActiveCategory,
+  exportCategory,
 } = useCategoryStore();
 
 const currentPage = ref(1);
@@ -31,6 +32,7 @@ const onlyCreatedByMe = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const onlyDefault = ref<boolean>(false);
 const showFormCategory = ref<boolean>(false);
+const loadingExport = ref<boolean>(false);
 const filterCategory = ref<string>('');
 const filterAllCategories = ref<string>('Todas');
 const selectedDataEdit = ref<Category | null>(null);
@@ -98,6 +100,11 @@ const reactivate = async (id: string) => {
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const exportData = async (): Promise<void> => {
+  loadingExport.value = true;
+  await exportCategory();
+  loadingExport.value = false;
 };
 const filteredCategory = computed(() => {
   const normalize = (text: string): string => {
@@ -196,6 +203,16 @@ onMounted(async () => {
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
+        <q-btn
+          @click="exportData"
+          :loading="loadingExport"
+          flat
+          color="black"
+          icon-right="download"
+          label="Exportar"
+          unelevated
+          no-caps
+        />
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormCategory"

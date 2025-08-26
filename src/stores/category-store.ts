@@ -12,6 +12,7 @@ import {
   updateActiveCategoryService,
   getEnterpriseCategoryByCounter,
   updateCategoryCodeService,
+  exportCategoryService,
 } from 'src/services/category-service';
 import { updateNotifications } from 'src/composables/NotificationsManage';
 
@@ -136,6 +137,16 @@ export const useCategoryStore = defineStore('category', {
           this.clearListCategory();
           this.setListCategory(response.data.categories);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async exportCategory() {
+      try {
+        this.setLoading(true);
+        await exportCategoryService();
       } catch (error) {
         this.createError(error);
       } finally {
