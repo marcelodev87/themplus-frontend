@@ -433,23 +433,31 @@ const checkAlert = async () => {
 const clearFile = () => {
   textFile.value = null;
 };
-
-watch(
-  () => dataEntry.file,
-  async (file) => {
-    if (file) {
-      textFile.value = null;
-      if (file.type.startsWith('image/')) {
-        const options = {
-          maxSizeMB: 4, // Tamanho máximo em MB
-          maxWidthOrHeight: 1920, // Redimensiona se necessário
-          useWebWorker: true, // Usa Web Worker p/ não travar UI
-        };
-        dataEntry.file = await imageCompression(file, options);
-      }
-    }
+async function handleFileSelect(file: File) {
+  if (!file) {
+    textFile.value = null;
+    return;
   }
-);
+
+  if (file.type.startsWith('image/')) {
+    textFile.value = null;
+
+    const options = {
+      maxSizeMB: 4,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      dataEntry.file = await imageCompression(file, options);
+    } catch (error) {
+      console.error('Erro na compressão:', error);
+    }
+  } else {
+    textFile.value = file.name;
+  }
+}
+
 watch(
   () => dataEntry.value,
   (value) => {
@@ -607,6 +615,7 @@ watch(open, async () => {
             </template>
           </q-select>
           <q-file
+            @update:model-value="handleFileSelect"
             v-model="dataEntry.file"
             filled
             bg-color="white"

@@ -146,6 +146,30 @@ const fetchFileFinancial = async () => {
 const download = async (url: string) => {
   await downloadFile(url);
 };
+async function handleFileSelect(file: File) {
+  if (!file) {
+    textFile.value = null;
+    return;
+  }
+
+  if (file.type.startsWith('image/')) {
+    textFile.value = null;
+
+    const options = {
+      maxSizeMB: 4,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      dataFile.file = await imageCompression(file, options);
+    } catch (error) {
+      console.error('Erro na compressão:', error);
+    }
+  } else {
+    textFile.value = file.name;
+  }
+}
 
 const open = computed({
   get: () => props.open,
@@ -167,22 +191,6 @@ const maxPages = computed(() => {
   return Math.ceil(listFileFinancial.value.length / rowsPerPage.value);
 });
 
-watch(
-  () => dataFile.file,
-  async (file) => {
-    if (file) {
-      textFile.value = null;
-      if (file.type.startsWith('image/')) {
-        const options = {
-          maxSizeMB: 4, // Tamanho máximo em MB
-          maxWidthOrHeight: 1920, // Redimensiona se necessário
-          useWebWorker: true, // Usa Web Worker p/ não travar UI
-        };
-        dataFile.file = await imageCompression(file, options);
-      }
-    }
-  }
-);
 watch(open, async () => {
   if (open.value) {
     clear();
@@ -226,6 +234,7 @@ watch(open, async () => {
               </template>
             </q-input>
             <q-file
+              @update:model-value="handleFileSelect"
               v-model="dataFile.file"
               filled
               bg-color="white"
