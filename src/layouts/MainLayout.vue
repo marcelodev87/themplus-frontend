@@ -225,6 +225,83 @@ watch(
           </q-item>
           <q-expansion-item
             expand-separator
+            icon="church"
+            label="Igreja"
+            dense-toggle
+          >
+            <q-item
+              v-show="enterprisePosition === 'client'"
+              clickable
+              :to="{ name: 'admin-category' }"
+              :active="isActive('admin-category')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="arrow_right" />
+              </q-item-section>
+              <q-item-section> Membros </q-item-section>
+            </q-item>
+            <q-item
+              v-show="enterprisePosition === 'client'"
+              clickable
+              :to="{ name: 'admin-account' }"
+              :active="isActive('admin-account')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="arrow_right" />
+              </q-item-section>
+              <q-item-section> Congregações </q-item-section>
+            </q-item>
+            <q-item
+              v-show="user?.position === 'admin'"
+              clickable
+              :to="{ name: 'admin-departments' }"
+              :active="isActive('admin-departments')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="arrow_right" />
+              </q-item-section>
+              <q-item-section> Ministérios </q-item-section>
+            </q-item>
+            <q-item
+              v-show="
+                enterpriseCreated === null &&
+                enterprisePosition === 'client' &&
+                user?.enterprise_id === user?.view_enterprise_id &&
+                user?.position === 'admin'
+              "
+              clickable
+              :to="{ name: 'admin-office' }"
+              :active="isActive('admin-office')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="arrow_right" />
+              </q-item-section>
+              <q-item-section> Células </q-item-section>
+            </q-item>
+            <q-item
+              v-show="user?.position === 'admin'"
+              clickable
+              :to="{ name: 'admin-users' }"
+              :active="isActive('admin-users')"
+              active-class=" active-option-menu text-bold"
+              @click="closeDrawer"
+            >
+              <q-item-section avatar>
+                <q-icon name="arrow_right" />
+              </q-item-section>
+              <q-item-section> Redes </q-item-section>
+            </q-item>
+          </q-expansion-item>
+          <q-expansion-item
+            expand-separator
             icon="settings"
             label="Configurações"
             dense-toggle
@@ -238,7 +315,8 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <q-icon name="category" />
+                <!-- <q-icon name="category" /> -->
+                <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Categorias </q-item-section>
             </q-item>
@@ -251,7 +329,8 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <q-icon name="account_balance" />
+                <!-- <q-icon name="account_balance" /> -->
+                <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Contas </q-item-section>
             </q-item>
@@ -264,7 +343,8 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <q-icon name="group_work" />
+                <!-- <q-icon name="group_work" /> -->
+                <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Departamentos </q-item-section>
             </q-item>
@@ -282,7 +362,8 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <q-icon name="holiday_village" />
+                <!-- <q-icon name="holiday_village" /> -->
+                <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Filiais </q-item-section>
             </q-item>
@@ -295,7 +376,8 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <q-icon name="person" />
+                <!-- <q-icon name="person" /> -->
+                <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Usuários </q-item-section>
             </q-item>
@@ -333,7 +415,6 @@ watch(
               <q-item-section> Agendamentos </q-item-section>
             </q-item>
           </q-expansion-item>
-
           <q-item
             v-show="enterprisePosition === 'client'"
             clickable
