@@ -48,6 +48,12 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: [isClientGuard],
       },
       {
+        path: 'membros',
+        name: 'admin-member',
+        component: () => import('src/pages/Member.vue'),
+        beforeEnter: [isClientGuard],
+      },
+      {
         path: 'categorias',
         name: 'admin-category',
         component: () => import('src/pages/Category.vue'),
