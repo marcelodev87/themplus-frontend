@@ -1,0 +1,15 @@
+export const education: { label: string; value: string | null }[] = [
+  { label: 'Não informado', value: null },
+  { label: 'Analfabeto', value: 'illiterate' },
+  { label: 'Ensino Fundamental Incompleto', value: 'elementary_incomplete' },
+  { label: 'Ensino Fundamental Completo', value: 'elementary_complete' },
+  { label: 'Ensino Médio Incompleto', value: 'high_school_incomplete' },
+  { label: 'Ensino Médio Completo', value: 'high_school_complete' },
+  { label: 'Ensino Técnico', value: 'technical' },
+  { label: 'Ensino Superior Incompleto', value: 'higher_education_incomplete' },
+  { label: 'Ensino Superior Completo', value: 'higher_education_complete' },
+  { label: 'Pós-graduação', value: 'postgraduate' },
+  { label: 'Mestrado', value: 'masters' },
+  { label: 'Doutorado', value: 'doctorate' },
+  { label: 'Pós-doutorado', value: 'post_doctorate' },
+];
