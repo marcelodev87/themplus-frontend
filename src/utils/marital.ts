@@ -1,4 +1,4 @@
-export const states: { label: string; value: string | null }[] = [
+export const marital: { label: string; value: string | null }[] = [
   { label: 'Não informado', value: null },
   { label: 'Solteiro(a)', value: 'single' },
   { label: 'Casado(a)', value: 'married' },

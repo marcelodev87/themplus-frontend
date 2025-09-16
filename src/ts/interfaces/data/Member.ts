@@ -1,3 +1,5 @@
+import { QuasarSelect } from '../framework/Quasar';
+
 export interface MemberChurch {
   id: string;
   name: string;
@@ -64,4 +66,9 @@ export interface DataMemberChurch {
   churchEndDate: string | null;
   roleID: string | null;
   ministries: { id: string }[];
+}
+
+export interface DataListFamily {
+  member: QuasarSelect<string | null>;
+  family: QuasarSelect<string | null>;
 }

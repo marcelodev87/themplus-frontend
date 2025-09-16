@@ -311,9 +311,7 @@ const formattedPhone = computed({
     return phone;
   },
   set(value) {
-    console.log('value ', value);
     const digits = value.replace(/\D/g, '');
-    console.log('digits ', digits);
     if (digits.length > 11) {
       return;
     }

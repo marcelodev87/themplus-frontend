@@ -4,15 +4,17 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { searchCep } from 'src/services/cep-service';
 import { storeToRefs } from 'pinia';
-import { MemberChurch } from 'src/ts/interfaces/data/Member';
+import { DataListFamily, MemberChurch } from 'src/ts/interfaces/data/Member';
 import { useMemberStore } from 'src/stores/member-store';
 import { useRoleStore } from 'src/stores/role-store';
-import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useCongregationStore } from 'src/stores/congregation-store';
 import { useCellStore } from 'src/stores/cell-store';
 import { useMinistryStore } from 'src/stores/ministry-store';
 import { states } from 'src/utils/state';
 import { education } from 'src/utils/education';
+import { marital } from 'src/utils/marital';
+import { statusFamily } from 'src/utils/family';
 
 defineOptions({
   name: 'FormMember',
@@ -30,8 +32,8 @@ const memberID = computed(() => props.dataEdit?.id ?? '');
 
 const { getCells } = useCellStore();
 const { loadingCell, listCell } = storeToRefs(useCellStore());
-const { createMember, updateMember } = useMemberStore();
-const { loadingMember } = storeToRefs(useMemberStore());
+const { createMember, updateMember, getMembers } = useMemberStore();
+const { loadingMember, listMember } = storeToRefs(useMemberStore());
 const { getRoles } = useRoleStore();
 const { getMinistries } = useMinistryStore();
 const { loadingMinistry, listMinistry } = storeToRefs(useMinistryStore());
@@ -44,6 +46,7 @@ const { loadingCongregation, listCongregation } = storeToRefs(
 const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(
   'individual'
 );
+const dataListFamily = ref<DataListFamily[]>([]);
 const loading = ref<boolean>(false);
 const dataMember = reactive({
   name: '' as string,
@@ -72,7 +75,6 @@ const dataMember = reactive({
   reasonEndDate: '' as string,
   churchEndDate: '' as string,
 });
-
 const selectedListMinistry = ref<QuasarSelect<string>[]>([]);
 const selectedActive = ref<QuasarSelect<number>>({
   label: 'Ativo',
@@ -106,6 +108,34 @@ const selectedCell = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
 });
+const selectedMemberFamily = ref<QuasarSelect<string | null>>({
+  label: 'Não informado',
+  value: null,
+});
+const selectedStatusFamily = ref<QuasarSelect<string | null>>({
+  label: 'Não informado',
+  value: null,
+});
+const columnsListMember = reactive<QuasarTable[]>([
+  {
+    name: 'member',
+    label: 'Membro',
+    field: 'member',
+    align: 'left',
+  },
+  {
+    name: 'family',
+    label: 'Parentesco',
+    field: 'family',
+    align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Ações',
+    field: 'action',
+    align: 'right',
+  },
+]);
 
 const open = computed({
   get: () => props.open,
@@ -204,7 +234,18 @@ const clear = (): void => {
     value: null,
   };
 
+  selectedMemberFamily.value = {
+    label: 'Não informado',
+    value: null,
+  };
+
+  selectedStatusFamily.value = {
+    label: 'Não informado',
+    value: null,
+  };
+
   selectedListMinistry.value = [];
+  dataListFamily.value = [];
 };
 const save = async () => {
   const check = checkData();
@@ -310,6 +351,18 @@ const fetchCells = async () => {
 const fetchMinistries = async () => {
   await getMinistries();
 };
+const fetchMembers = async () => {
+  await getMembers();
+};
+const addFamily = () => {
+  dataListFamily.value.push({
+    member: selectedMemberFamily.value,
+    family: selectedStatusFamily.value,
+  });
+};
+const deleteFamily = (index: number): void => {
+  dataListFamily.value.splice(index, 1);
+};
 
 const formattedPhonePessoal = computed({
   get() {
@@ -323,9 +376,7 @@ const formattedPhonePessoal = computed({
     return phone;
   },
   set(value) {
-    console.log('value ', value);
     const digits = value.replace(/\D/g, '');
-    console.log('digits ', digits);
     if (digits.length > 11) {
       return;
     }
@@ -409,6 +460,19 @@ const optionsCells = computed(() => {
 
   return [{ label: 'Não informado', value: null }, ...options];
 });
+const optionsMembers = computed(() => {
+  const options = listMember.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+  return [{ label: 'Não informado', value: null }, ...options];
+});
+const optionsStatusFamily = computed(() => {
+  return [{ label: 'Não informado', value: null }, ...statusFamily];
+});
 const isLoading = computed(() => {
   return (
     loading.value ||
@@ -457,13 +521,17 @@ watch(open, async () => {
     await fetchCongregations();
     await fetchCells();
     await fetchMinistries();
+    await fetchMembers();
     loading.value = false;
   }
 });
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2 form-basic">
+    <q-card
+      class="bg-grey-2 form-basic"
+      style="min-width: 98vw; max-width: 98vw"
+    >
       <q-card-section class="q-pa-none">
         <TitlePage
           :title="
@@ -471,11 +539,11 @@ watch(open, async () => {
           "
         />
       </q-card-section>
-      <q-card-section class="q-pa-sm">
+      <q-card-section class="q-pa-none">
         <q-tabs
           v-model="tab"
           dense
-          class="text-grey"
+          class="text-grey bg-grey-2"
           active-color="primary"
           indicator-color="primary"
           align="justify"
@@ -494,7 +562,7 @@ watch(open, async () => {
                 v-model="dataMember.name"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Nome"
                 dense
                 input-class="text-black"
@@ -507,7 +575,7 @@ watch(open, async () => {
                 v-model="dataMember.profession"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Profissão"
                 dense
                 input-class="text-black"
@@ -520,7 +588,7 @@ watch(open, async () => {
                 v-model="dataMember.dateBirth"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Data de nascimento"
                 dense
                 input-class="text-black"
@@ -534,7 +602,7 @@ watch(open, async () => {
                 v-model="dataMember.cpf"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="CPF"
                 dense
                 input-class="text-black"
@@ -548,8 +616,7 @@ watch(open, async () => {
                 v-model="selectedNaturalness"
                 :options="states"
                 label="Naturalidade"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -563,10 +630,9 @@ watch(open, async () => {
               </q-select>
               <q-select
                 v-model="selectedMaritalStatus"
-                :options="states"
+                :options="marital"
                 label="Estado civil"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -582,8 +648,7 @@ watch(open, async () => {
                 v-model="selectedEducation"
                 :options="education"
                 label="Escolaridade"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -592,7 +657,7 @@ watch(open, async () => {
                 class="full-width"
               >
                 <template v-slot:prepend>
-                  <q-icon name="favorite" color="black" size="20px" />
+                  <q-icon name="school" color="black" size="20px" />
                 </template>
               </q-select>
             </q-form>
@@ -603,7 +668,7 @@ watch(open, async () => {
                 v-model="dataMember.email"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="E-mail pessoal"
                 autocomplete="new-email"
                 dense
@@ -617,7 +682,7 @@ watch(open, async () => {
                 v-model="dataMember.emailProfessional"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="E-mail profissional"
                 autocomplete="new-email"
                 dense
@@ -631,7 +696,7 @@ watch(open, async () => {
                 v-model="formattedPhonePessoal"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Telefone pessoal"
                 dense
                 input-class="text-black"
@@ -644,7 +709,7 @@ watch(open, async () => {
                 v-model="formattedPhoneProfessional"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Telefone profissional"
                 dense
                 input-class="text-black"
@@ -661,7 +726,7 @@ watch(open, async () => {
                 v-model="dataMember.cep"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Digite o CEP"
                 dense
                 input-class="text-black"
@@ -676,70 +741,84 @@ watch(open, async () => {
                 v-model="dataMember.uf"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="UF"
                 dense
                 input-class="text-black"
                 :disable="loading"
               >
                 <template v-slot:prepend>
-                  <q-icon name="location_on" color="black" size="20px" />
-                </template>
-              </q-input>
-              <q-input
-                v-model="dataMember.address"
-                bg-color="white"
-                label-color="black"
-                filled
-                label="Endereço"
-                dense
-                input-class="text-black"
-                :disable="loading"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="location_on" color="black" size="20px" />
-                </template>
-              </q-input>
-              <q-input
-                v-model="dataMember.neighborhood"
-                bg-color="white"
-                label-color="black"
-                filled
-                label="Bairro"
-                dense
-                input-class="text-black"
-                :disable="loading"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="location_on" color="black" size="20px" />
-                </template>
-              </q-input>
-              <q-input
-                v-model="dataMember.complement"
-                bg-color="white"
-                label-color="black"
-                filled
-                label="Complemento"
-                dense
-                input-class="text-black"
-                :disable="loading"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="location_on" color="black" size="20px" />
+                  <q-icon name="arrow_right" color="black" size="20px" />
                 </template>
               </q-input>
               <q-input
                 v-model="dataMember.city"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Cidade"
                 dense
                 input-class="text-black"
                 :disable="loading"
               >
                 <template v-slot:prepend>
-                  <q-icon name="location_on" color="black" size="20px" />
+                  <q-icon name="arrow_right" color="black" size="20px" />
+                </template>
+              </q-input>
+              <q-input
+                v-model="dataMember.neighborhood"
+                bg-color="white"
+                label-color="black"
+                outlined
+                label="Bairro"
+                dense
+                input-class="text-black"
+                :disable="loading"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="arrow_right" color="black" size="20px" />
+                </template>
+              </q-input>
+              <q-input
+                v-model="dataMember.address"
+                bg-color="white"
+                label-color="black"
+                outlined
+                label="Endereço"
+                dense
+                input-class="text-black"
+                :disable="loading"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="arrow_right" color="black" size="20px" />
+                </template>
+              </q-input>
+              <q-input
+                v-model="dataMember.addressNumber"
+                bg-color="white"
+                label-color="black"
+                outlined
+                label="Nº"
+                dense
+                input-class="text-black"
+                :disable="loading"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="arrow_right" color="black" size="20px" />
+                </template>
+              </q-input>
+              <q-input
+                v-model="dataMember.complement"
+                bg-color="white"
+                label-color="black"
+                outlined
+                label="Complemento"
+                dense
+                input-class="text-black"
+                :disable="loading"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="arrow_right" color="black" size="20px" />
                 </template>
               </q-input>
             </q-form>
@@ -750,8 +829,7 @@ watch(open, async () => {
                 v-model="selectedTypeMinistry"
                 :options="optionsTypeMinistry"
                 label="Tipo"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -760,15 +838,14 @@ watch(open, async () => {
                 class="full-width"
               >
                 <template v-slot:prepend>
-                  <q-icon name="chevron_right" color="black" size="20px" />
+                  <q-icon name="person" color="black" size="20px" />
                 </template>
               </q-select>
               <q-select
                 v-model="selectedActive"
                 :options="optionsActive"
                 label="Situação"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -777,14 +854,14 @@ watch(open, async () => {
                 class="full-width"
               >
                 <template v-slot:prepend>
-                  <q-icon name="chevron_right" color="black" size="20px" />
+                  <q-icon name="check" color="black" size="20px" />
                 </template>
               </q-select>
               <q-input
                 v-model="dataMember.dateBaptismo"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Data de batismo"
                 dense
                 input-class="text-black"
@@ -795,11 +872,26 @@ watch(open, async () => {
                 </template>
               </q-input>
               <q-select
+                v-model="selectedCongregation"
+                :options="optionsCongregations"
+                label="Congregação"
+                outlined
+                dense
+                options-dense
+                map-options
+                bg-color="white"
+                label-color="black"
+                class="full-width"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="arrow_right" color="black" size="20px" />
+                </template>
+              </q-select>
+              <q-select
                 v-model="selectedListMinistry"
                 :options="optionsMinistries"
                 label="Ministérios"
-                filled
-                clearable
+                outlined
                 multiple
                 dense
                 options-dense
@@ -809,32 +901,14 @@ watch(open, async () => {
                 class="full-width"
               >
                 <template v-slot:prepend>
-                  <q-icon name="church" color="black" size="20px" />
-                </template>
-              </q-select>
-              <q-select
-                v-model="selectedCongregation"
-                :options="optionsCongregations"
-                label="Congregação"
-                filled
-                clearable
-                dense
-                options-dense
-                map-options
-                bg-color="white"
-                label-color="black"
-                class="full-width"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="church" color="black" size="20px" />
+                  <q-icon name="arrow_right" color="black" size="20px" />
                 </template>
               </q-select>
               <q-select
                 v-model="selectedRole"
                 :options="optionsRoles"
                 label="Selecione o cargo"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -843,15 +917,14 @@ watch(open, async () => {
                 class="full-width"
               >
                 <template v-slot:prepend>
-                  <q-icon name="church" color="black" size="20px" />
+                  <q-icon name="arrow_right" color="black" size="20px" />
                 </template>
               </q-select>
               <q-select
                 v-model="selectedCell"
                 :options="optionsCells"
                 label="Selecione a célula"
-                filled
-                clearable
+                outlined
                 dense
                 options-dense
                 map-options
@@ -867,7 +940,7 @@ watch(open, async () => {
                 v-model="dataMember.startDate"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Membro desde:"
                 dense
                 input-class="text-black"
@@ -881,7 +954,7 @@ watch(open, async () => {
                 v-model="dataMember.churchStartDate"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Igreja origem"
                 dense
                 input-class="text-black"
@@ -894,7 +967,7 @@ watch(open, async () => {
                 v-model="dataMember.endDate"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Data de saída:"
                 dense
                 input-class="text-black"
@@ -908,7 +981,7 @@ watch(open, async () => {
                 v-model="dataMember.churchEndDate"
                 bg-color="white"
                 label-color="black"
-                filled
+                outlined
                 label="Igreja destino"
                 dense
                 input-class="text-black"
@@ -919,45 +992,142 @@ watch(open, async () => {
               </q-input>
             </q-form>
           </q-tab-panel>
+          <q-tab-panel name="family">
+            <q-form class="q-gutter-y-sm">
+              <div class="col q-gutter-y-sm">
+                <q-select
+                  v-model="selectedMemberFamily"
+                  :options="optionsMembers"
+                  label="Membro"
+                  outlined
+                  dense
+                  options-dense
+                  map-options
+                  bg-color="white"
+                  label-color="black"
+                  class="full-width"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="person" color="black" size="20px" />
+                  </template>
+                </q-select>
+                <q-select
+                  v-model="selectedStatusFamily"
+                  :options="optionsStatusFamily"
+                  label="Parentesco"
+                  outlined
+                  dense
+                  options-dense
+                  map-options
+                  bg-color="white"
+                  label-color="black"
+                  class="full-width"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="favorite" color="black" size="20px" />
+                  </template>
+                </q-select>
+              </div>
+              <div class="row justify-end">
+                <q-btn
+                  @click="addFamily"
+                  color="secondary"
+                  label="Adicionar"
+                  size="md"
+                  unelevated
+                  no-caps
+                />
+              </div>
+              <div>
+                <q-table
+                  :rows="dataListFamily"
+                  :rows-per-page-options="[10]"
+                  :columns="columnsListMember"
+                  flat
+                  bordered
+                  dense
+                  row-key="index"
+                  no-data-label="Nenhum familiar para mostrar"
+                >
+                  <template v-slot:header="props">
+                    <q-tr :props="props" class="bg-grey-2">
+                      <q-th
+                        v-for="col in props.cols"
+                        :key="col.name"
+                        :props="props"
+                      >
+                        <span style="font-size: 13px">{{ col.label }}</span>
+                      </q-th>
+                    </q-tr>
+                  </template>
+                  <template v-slot:top>
+                    <span class="text-subtitle2">Lista de familiares</span>
+                  </template>
+                  <template v-slot:body="props">
+                    <q-tr :props="props" style="height: 28px">
+                      <q-td key="member" :props="props" class="text-left">
+                        <span class="text-subtitle2">{{
+                          props.row.member.label
+                        }}</span>
+                      </q-td>
+                      <q-td key="family" :props="props" class="text-left">
+                        <span class="text-subtitle2">{{
+                          props.row.family.label
+                        }}</span>
+                      </q-td>
+                      <q-td key="action" :props="props">
+                        <q-btn
+                          @click="deleteFamily(props.rowIndex)"
+                          size="sm"
+                          flat
+                          round
+                          color="red"
+                          icon="delete"
+                        />
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
+            </q-form>
+          </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
-      <q-card-actions>
-        <div class="row justify-between full-width">
-          <div class="q-gutter-x-sm">
-            <q-btn
-              color="red"
-              label="Fechar"
-              size="md"
-              flat
-              @click="open = false"
-              unelevated
-              no-caps
-            />
-            <q-btn
-              v-if="props.dataEdit"
-              @click="update"
-              color="primary"
-              label="Atualizar"
-              size="md"
-              :loading="isLoading"
-              unelevated
-              no-caps
-            />
-            <q-btn
-              v-else
-              @click="save"
-              color="primary"
-              label="Salvar"
-              size="md"
-              :loading="isLoading"
-              unelevated
-              no-caps
-            />
-          </div>
+      <q-card-actions align="right">
+        <div class="row justify-between q-gutter-x-sm">
+          <q-btn
+            color="red"
+            label="Fechar"
+            size="md"
+            flat
+            @click="open = false"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-if="props.dataEdit"
+            @click="update"
+            color="primary"
+            label="Atualizar"
+            size="md"
+            :loading="isLoading"
+            unelevated
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="save"
+            color="primary"
+            label="Salvar"
+            size="md"
+            :loading="isLoading"
+            unelevated
+            no-caps
+          />
         </div>
       </q-card-actions>
       <q-inner-loading
-        :showing="loadingRole || loadingCongregation"
+        :showing="loading"
         label="Carregando os dados..."
         label-class="black"
         label-style="font-size: 1.1em"
