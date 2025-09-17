@@ -8,5 +8,5 @@ export interface Ministry {
 export interface DataMinistry {
   id?: string | null;
   name: string;
-  member_id: string;
+  memberID: string | null;
 }

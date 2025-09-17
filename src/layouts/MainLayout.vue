@@ -258,8 +258,8 @@ watch(
             <q-item
               v-show="user?.position === 'admin'"
               clickable
-              :to="{ name: 'admin-departments' }"
-              :active="isActive('admin-departments')"
+              :to="{ name: 'admin-ministry' }"
+              :active="isActive('admin-ministry')"
               active-class=" active-option-menu text-bold"
               @click="closeDrawer"
             >

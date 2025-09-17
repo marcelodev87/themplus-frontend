@@ -54,6 +54,12 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: [isClientGuard],
       },
       {
+        path: 'ministérios',
+        name: 'admin-ministry',
+        component: () => import('src/pages/Ministry.vue'),
+        beforeEnter: [isClientGuard],
+      },
+      {
         path: 'categorias',
         name: 'admin-category',
         component: () => import('src/pages/Category.vue'),
