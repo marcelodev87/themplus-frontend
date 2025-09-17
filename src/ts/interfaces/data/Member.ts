@@ -24,7 +24,6 @@ export interface MemberChurch {
   type: string;
   active: number;
   date_baptismo: string | null;
-  congregation_id: string | null;
   start_date: string | null;
   reason_start_date: string | null;
   church_start_date: string | null;
@@ -56,8 +55,6 @@ export interface DataMemberChurch {
   type: string;
   active: number;
   dateBaptismo: string | null;
-  congregationID: string | null;
-  cellID: string | null;
   startDate: string | null;
   // reasonStartDate: string | null;
   churchStartDate: string | null;
@@ -65,7 +62,6 @@ export interface DataMemberChurch {
   // reasonEndDate: string | null;
   churchEndDate: string | null;
   roleID: string | null;
-  ministries: { id: string }[];
 }
 
 export interface DataListFamily {

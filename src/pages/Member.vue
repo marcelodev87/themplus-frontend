@@ -10,6 +10,7 @@ import Paginate from 'src/components/general/Paginate.vue';
 import { useMemberStore } from 'src/stores/member-store';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import FormMember from 'src/components/forms/FormMember.vue';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'Member',
@@ -19,29 +20,19 @@ const { user } = storeToRefs(useAuthStore());
 const { listMember, loadingMember, filledData } = storeToRefs(useMemberStore());
 const { getMembers, deleteMember } = useMemberStore();
 
-const currentPage = ref(1);
-const rowsPerPage = ref(10);
+const showConfirmAction = ref<boolean>(false);
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormMember = ref<boolean>(false);
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
+const dataExclude = ref<string | null>(null);
 const columnsMember = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Nome',
     field: 'name',
-    align: 'left',
-  },
-  {
-    name: 'role',
-    label: 'Cargo',
-    field: 'role.name',
-    align: 'left',
-  },
-  {
-    name: 'congregation',
-    label: 'Congregação',
-    field: 'congregation.name',
     align: 'left',
   },
   {
@@ -57,6 +48,7 @@ const columnsMember = reactive<QuasarTable[]>([
 // };
 const clear = (): void => {
   selectedDataEdit.value = null;
+  dataExclude.value = null;
   filterMember.value = '';
 };
 const openFormMember = (): void => {
@@ -79,6 +71,19 @@ const fetchMembers = async () => {
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await exclude(dataExclude.value ?? '');
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  dataExclude.value = null;
+};
+const openConfirmAction = (id: string): void => {
+  dataExclude.value = id;
+  showConfirmAction.value = true;
 };
 
 const listMemberCurrent = computed(() => {
@@ -198,23 +203,9 @@ onMounted(async () => {
             </div>
           </template>
           <template v-slot:body="props">
-            <q-tr
-              :props="props"
-              style="height: 28px"
-              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
-            >
+            <q-tr :props="props" style="height: 28px">
               <q-td key="name" :props="props" class="text-left">
                 <span class="text-subtitle2">{{ props.row.name }}</span>
-              </q-td>
-              <q-td key="role" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.role ? props.row.role.name : ''
-                }}</span>
-              </q-td>
-              <q-td key="congregation" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.congregation ? props.row.congregation.name : ''
-                }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
@@ -227,7 +218,7 @@ onMounted(async () => {
                   icon="edit"
                 />
                 <q-btn
-                  @click="exclude(props.row.id)"
+                  @click="openConfirmAction(props.row.id)"
                   v-show="
                     user?.enterprise_id === user?.view_enterprise_id &&
                     user?.position === 'admin'
@@ -257,6 +248,14 @@ onMounted(async () => {
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
+        />
+        <ConfirmAction
+          :open="showConfirmAction"
+          label-action="Continuar"
+          title="Confirmação de exclusão"
+          message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+          @update:open="closeConfirmAction"
+          @update:ok="closeConfirmActionOk"
         />
       </main>
     </q-scroll-area>

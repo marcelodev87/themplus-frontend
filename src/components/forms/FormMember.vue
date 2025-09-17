@@ -7,14 +7,11 @@ import { storeToRefs } from 'pinia';
 import { DataListFamily, MemberChurch } from 'src/ts/interfaces/data/Member';
 import { useMemberStore } from 'src/stores/member-store';
 import { useRoleStore } from 'src/stores/role-store';
-import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { useCongregationStore } from 'src/stores/congregation-store';
-import { useCellStore } from 'src/stores/cell-store';
-import { useMinistryStore } from 'src/stores/ministry-store';
+import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { states } from 'src/utils/state';
 import { education } from 'src/utils/education';
 import { marital } from 'src/utils/marital';
-import { statusFamily } from 'src/utils/family';
+// import { statusFamily } from 'src/utils/family';
 
 defineOptions({
   name: 'FormMember',
@@ -30,18 +27,9 @@ const emit = defineEmits<{
 
 const memberID = computed(() => props.dataEdit?.id ?? '');
 
-const { getCells } = useCellStore();
-const { loadingCell, listCell } = storeToRefs(useCellStore());
 const { createMember, updateMember, getMembers } = useMemberStore();
-const { loadingMember, listMember } = storeToRefs(useMemberStore());
 const { getRoles } = useRoleStore();
-const { getMinistries } = useMinistryStore();
-const { loadingMinistry, listMinistry } = storeToRefs(useMinistryStore());
 const { loadingRole, listRole } = storeToRefs(useRoleStore());
-const { getCongregations } = useCongregationStore();
-const { loadingCongregation, listCongregation } = storeToRefs(
-  useCongregationStore()
-);
 
 const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(
   'individual'
@@ -75,7 +63,6 @@ const dataMember = reactive({
   reasonEndDate: '' as string,
   churchEndDate: '' as string,
 });
-const selectedListMinistry = ref<QuasarSelect<string>[]>([]);
 const selectedActive = ref<QuasarSelect<number>>({
   label: 'Ativo',
   value: 1,
@@ -87,10 +74,6 @@ const selectedRole = ref<QuasarSelect<string | null>>({
 const selectedTypeMinistry = ref<QuasarSelect<string>>({
   label: 'Visitante',
   value: 'visitor',
-});
-const selectedCongregation = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
 });
 const selectedNaturalness = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
@@ -104,10 +87,6 @@ const selectedEducation = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
 });
-const selectedCell = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
 const selectedMemberFamily = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
@@ -116,31 +95,42 @@ const selectedStatusFamily = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
 });
-const columnsListMember = reactive<QuasarTable[]>([
-  {
-    name: 'member',
-    label: 'Membro',
-    field: 'member',
-    align: 'left',
-  },
-  {
-    name: 'family',
-    label: 'Parentesco',
-    field: 'family',
-    align: 'left',
-  },
-  {
-    name: 'action',
-    label: 'Ações',
-    field: 'action',
-    align: 'right',
-  },
-]);
+// const columnsListMember = reactive<QuasarTable[]>([
+//   {
+//     name: 'member',
+//     label: 'Membro',
+//     field: 'member',
+//     align: 'left',
+//   },
+//   {
+//     name: 'family',
+//     label: 'Parentesco',
+//     field: 'family',
+//     align: 'left',
+//   },
+//   {
+//     name: 'action',
+//     label: 'Ações',
+//     field: 'action',
+//     align: 'right',
+//   },
+// ]);
 
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
+const optionsRoles = computed(() => {
+  const options = listRole.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+  return [{ label: 'Não informado', value: null }, ...options];
+});
+
 const clearSpaces = (text: string) => {
   return text.trim().length > 0 ? text : null;
 };
@@ -204,11 +194,6 @@ const clear = (): void => {
     value: null,
   };
 
-  selectedCongregation.value = {
-    label: 'Sem congregação',
-    value: null,
-  };
-
   selectedNaturalness.value = {
     label: 'Não informado',
     value: null,
@@ -229,11 +214,6 @@ const clear = (): void => {
     value: 'visitor',
   };
 
-  selectedCell.value = {
-    label: 'Não informado',
-    value: null,
-  };
-
   selectedMemberFamily.value = {
     label: 'Não informado',
     value: null,
@@ -244,9 +224,20 @@ const clear = (): void => {
     value: null,
   };
 
-  selectedListMinistry.value = [];
   dataListFamily.value = [];
 };
+// const getDataFamily = () => {
+//   if (!dataListFamily.value || dataListFamily.value.length === 0) {
+//     return null;
+//   }
+
+//   return dataListFamily.value.map((item) => {
+//     return {
+//       memberID: item.member.value!,
+//       kinship: item.family.value!,
+//     };
+//   });
+// };
 const save = async () => {
   const check = checkData();
   if (check.status) {
@@ -254,7 +245,7 @@ const save = async () => {
       name: dataMember.name,
       dateBirth: dataMember.dateBirth,
       profession: clearSpaces(dataMember.profession),
-      naturalness: selectedEducation.value.value,
+      naturalness: selectedNaturalness.value.value,
       maritalStatus: selectedMaritalStatus.value.value,
       education: selectedEducation.value.value,
       cpf: clearSpaces(dataMember.cpf),
@@ -272,15 +263,10 @@ const save = async () => {
       type: selectedTypeMinistry.value.value,
       active: selectedActive.value.value,
       dateBaptismo: clearSpaces(dataMember.dateBaptismo),
-      congregationID: selectedCongregation.value.value,
-      cellID: selectedCell.value.value,
       startDate: clearSpaces(dataMember.startDate),
       endDate: clearSpaces(dataMember.endDate),
       churchStartDate: clearSpaces(dataMember.churchStartDate),
       churchEndDate: clearSpaces(dataMember.churchEndDate),
-      ministries: selectedListMinistry.value.map((item) => {
-        return { id: item.value };
-      }),
       roleID: selectedRole.value.value,
     });
     if (response?.status === 201) {
@@ -300,7 +286,7 @@ const update = async () => {
       name: dataMember.name,
       dateBirth: dataMember.dateBirth,
       profession: clearSpaces(dataMember.profession),
-      naturalness: selectedEducation.value.value,
+      naturalness: selectedNaturalness.value.value,
       maritalStatus: selectedMaritalStatus.value.value,
       education: selectedEducation.value.value,
       cpf: clearSpaces(dataMember.cpf),
@@ -318,16 +304,11 @@ const update = async () => {
       type: selectedTypeMinistry.value.value,
       active: selectedActive.value.value,
       dateBaptismo: clearSpaces(dataMember.dateBaptismo),
-      congregationID: selectedCongregation.value.value,
-      cellID: selectedCell.value.value,
       startDate: clearSpaces(dataMember.startDate),
       endDate: clearSpaces(dataMember.endDate),
       churchStartDate: clearSpaces(dataMember.churchStartDate),
       churchEndDate: clearSpaces(dataMember.churchEndDate),
       roleID: selectedRole.value.value,
-      ministries: selectedListMinistry.value.map((item) => {
-        return { id: item.value };
-      }),
     });
     if (response?.status === 200) {
       emit('update:open');
@@ -342,26 +323,82 @@ const update = async () => {
 const fetchRoles = async () => {
   await getRoles();
 };
-const fetchCongregations = async () => {
-  await getCongregations();
-};
-const fetchCells = async () => {
-  await getCells();
-};
-const fetchMinistries = async () => {
-  await getMinistries();
-};
 const fetchMembers = async () => {
   await getMembers();
 };
-const addFamily = () => {
-  dataListFamily.value.push({
-    member: selectedMemberFamily.value,
-    family: selectedStatusFamily.value,
-  });
-};
-const deleteFamily = (index: number): void => {
-  dataListFamily.value.splice(index, 1);
+// const addFamily = () => {
+//   dataListFamily.value.push({
+//     member: selectedMemberFamily.value,
+//     family: selectedStatusFamily.value,
+//   });
+// };
+// const deleteFamily = (index: number): void => {
+//   dataListFamily.value.splice(index, 1);
+// };
+const mountData = () => {
+  if (props.dataEdit) {
+    Object.assign(dataMember, {
+      name: props.dataEdit.name,
+      profession: props.dataEdit.profession ?? '',
+      dateBirth: props.dataEdit.date_birth ?? '',
+      cpf: props.dataEdit.cpf ?? '',
+      email: props.dataEdit.email ?? '',
+      emailProfessional: props.dataEdit.email_professional ?? '',
+      phone: props.dataEdit.phone ?? '',
+      phoneProfessional: props.dataEdit.phone_professional ?? '',
+      cep: props.dataEdit.cep ?? '',
+      uf: props.dataEdit.uf ?? '',
+      address: props.dataEdit.address ?? '',
+      neighborhood: props.dataEdit.neighborhood ?? '',
+      addressNumber: props.dataEdit.address_number ?? '',
+      city: props.dataEdit.city ?? '',
+      complement: props.dataEdit.complement ?? '',
+      dateBaptismo: props.dataEdit.date_baptismo ?? '',
+      startDate: props.dataEdit.start_date ?? '',
+      churchStartDate: props.dataEdit.church_start_date ?? '',
+      endDate: props.dataEdit.end_date ?? '',
+      churchEndDate: props.dataEdit.church_end_date ?? '',
+    });
+
+    selectedNaturalness.value = {
+      label:
+        states.find((state) => state.value === props.dataEdit?.naturalness)
+          ?.label || 'Não informado',
+      value: props.dataEdit.naturalness,
+    };
+
+    selectedMaritalStatus.value = {
+      label:
+        marital.find((state) => state.value === props.dataEdit?.marital_status)
+          ?.label || 'Não informado',
+      value: props.dataEdit.marital_status,
+    };
+
+    selectedEducation.value = {
+      label:
+        education.find((state) => state.value === props.dataEdit?.education)
+          ?.label || 'Não informado',
+      value: props.dataEdit.education,
+    };
+
+    selectedRole.value = {
+      label:
+        optionsRoles.value.find(
+          (state) => state.value === props.dataEdit?.role_id
+        )?.label || 'Não informado',
+      value: props.dataEdit.role_id,
+    };
+
+    selectedTypeMinistry.value = {
+      label: props.dataEdit.type === 'visitor' ? 'Visitante' : 'Membro',
+      value: props.dataEdit.type,
+    };
+
+    selectedActive.value = {
+      label: props.dataEdit.active === 1 ? 'Ativo' : 'Inativo',
+      value: props.dataEdit.active,
+    };
+  }
 };
 
 const formattedPhonePessoal = computed({
@@ -422,66 +459,21 @@ const optionsActive = computed(() => [
     value: 0,
   },
 ]);
-const optionsCongregations = computed(() => {
-  const options = listCongregation.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+// const optionsMembers = computed(() => {
+//   const options = listMember.value.map((item) => {
+//     return {
+//       label: item.name,
+//       value: item.id,
+//     };
+//   });
 
-  return [{ label: 'Não informado', value: null }, ...options];
-});
-const optionsRoles = computed(() => {
-  const options = listRole.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-
-  return [{ label: 'Não informado', value: null }, ...options];
-});
-const optionsMinistries = computed(() => {
-  return listMinistry.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-});
-const optionsCells = computed(() => {
-  const options = listCell.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-
-  return [{ label: 'Não informado', value: null }, ...options];
-});
-const optionsMembers = computed(() => {
-  const options = listMember.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-
-  return [{ label: 'Não informado', value: null }, ...options];
-});
-const optionsStatusFamily = computed(() => {
-  return [{ label: 'Não informado', value: null }, ...statusFamily];
-});
+//   return [{ label: 'Não informado', value: null }, ...options];
+// });
+// const optionsStatusFamily = computed(() => {
+//   return [{ label: 'Não informado', value: null }, ...statusFamily];
+// });
 const isLoading = computed(() => {
-  return (
-    loading.value ||
-    loadingCongregation.value ||
-    loadingMember.value ||
-    loadingRole.value ||
-    loadingMinistry.value ||
-    loadingCell.value
-  );
+  return loading.value || loadingRole.value;
 });
 
 watch(
@@ -518,10 +510,8 @@ watch(open, async () => {
     loading.value = true;
     clear();
     await fetchRoles();
-    await fetchCongregations();
-    await fetchCells();
-    await fetchMinistries();
     await fetchMembers();
+    mountData();
     loading.value = false;
   }
 });
@@ -553,7 +543,7 @@ watch(open, async () => {
           <q-tab name="contact" label="Contatos" />
           <q-tab name="address" label="Endereço" />
           <q-tab name="ministry" label="Dados Ministeriais" />
-          <q-tab name="family" label="Família" />
+          <!-- <q-tab name="family" label="Família" /> -->
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="individual">
@@ -746,6 +736,7 @@ watch(open, async () => {
                 dense
                 input-class="text-black"
                 :disable="loading"
+                :maxlength="2"
               >
                 <template v-slot:prepend>
                   <q-icon name="arrow_right" color="black" size="20px" />
@@ -872,39 +863,6 @@ watch(open, async () => {
                 </template>
               </q-input>
               <q-select
-                v-model="selectedCongregation"
-                :options="optionsCongregations"
-                label="Congregação"
-                outlined
-                dense
-                options-dense
-                map-options
-                bg-color="white"
-                label-color="black"
-                class="full-width"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="arrow_right" color="black" size="20px" />
-                </template>
-              </q-select>
-              <q-select
-                v-model="selectedListMinistry"
-                :options="optionsMinistries"
-                label="Ministérios"
-                outlined
-                multiple
-                dense
-                options-dense
-                map-options
-                bg-color="white"
-                label-color="black"
-                class="full-width"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="arrow_right" color="black" size="20px" />
-                </template>
-              </q-select>
-              <q-select
                 v-model="selectedRole"
                 :options="optionsRoles"
                 label="Selecione o cargo"
@@ -918,22 +876,6 @@ watch(open, async () => {
               >
                 <template v-slot:prepend>
                   <q-icon name="arrow_right" color="black" size="20px" />
-                </template>
-              </q-select>
-              <q-select
-                v-model="selectedCell"
-                :options="optionsCells"
-                label="Selecione a célula"
-                outlined
-                dense
-                options-dense
-                map-options
-                bg-color="white"
-                label-color="black"
-                class="full-width"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="church" color="black" size="20px" />
                 </template>
               </q-select>
               <q-input
@@ -992,8 +934,8 @@ watch(open, async () => {
               </q-input>
             </q-form>
           </q-tab-panel>
-          <q-tab-panel name="family">
-            <q-form class="q-gutter-y-sm">
+          <!-- <q-tab-panel name="family">
+            <q-form v-if="listMember.length > 0" class="q-gutter-y-sm">
               <div class="col q-gutter-y-sm">
                 <q-select
                   v-model="selectedMemberFamily"
@@ -1090,7 +1032,11 @@ watch(open, async () => {
                 </q-table>
               </div>
             </q-form>
-          </q-tab-panel>
+            <q-banner v-else dense class="text-white bg-red" rounded>
+              Não é possível configurar a sessão de família pois não há membros
+              cadastrados.
+            </q-banner>
+          </q-tab-panel> -->
         </q-tab-panels>
       </q-card-section>
       <q-card-actions align="right">
