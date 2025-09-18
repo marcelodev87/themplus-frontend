@@ -3,6 +3,7 @@ export interface Congregation {
   name: string;
   date_foundation: string | null;
   cnpj: string | null;
+  cpf: string | null;
   email: string | null;
   phone: string | null;
   cep: string | null;
@@ -21,6 +22,7 @@ export interface DataCongregation {
   name: string;
   dateFoundation: string | null;
   cnpj: string | null;
+  cpf: string | null;
   email: string | null;
   phone: string | null;
   cep: string | null;

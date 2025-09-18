@@ -245,8 +245,8 @@ watch(
             <q-item
               v-show="enterprisePosition === 'client'"
               clickable
-              :to="{ name: 'admin-account' }"
-              :active="isActive('admin-account')"
+              :to="{ name: 'admin-congregation' }"
+              :active="isActive('admin-congregation')"
               active-class=" active-option-menu text-bold"
               @click="closeDrawer"
             >
