@@ -222,6 +222,49 @@ const fetchMembers = async () => {
 const fetchNetworks = async () => {
   await getNetworks();
 };
+
+const optionsMembers = computed(() => {
+  const options = listMember.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+  return [{ label: 'Não informado', value: null }, ...options];
+});
+const optionsNetworks = computed(() => {
+  const options = listNetwork.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+  return [{ label: 'Não informado', value: null }, ...options];
+});
+const optionsWeekDays = computed(() => {
+  return [{ label: 'Não informado', value: null }, ...weekDays];
+});
+const optionsFrequencies = computed(() => {
+  return [{ label: 'Não informado', value: null }, ...frequencies];
+});
+const optionsActive = computed(() => {
+  return [
+    {
+      label: 'Ativo',
+      value: 1,
+    },
+    {
+      label: 'Inativo',
+      value: 0,
+    },
+  ];
+});
+const isLoading = computed(() => {
+  return loadingCell.value || loadingMember.value || loadingNetwork.value;
+});
+
 const mountData = () => {
   if (props.dataEdit) {
     Object.assign(dataCell, {
@@ -272,50 +315,15 @@ const mountData = () => {
           ?.label || 'Não informado',
       value: props.dataEdit.frequency,
     };
+    selectedStatus.value = {
+      label:
+        optionsActive.value.find(
+          (state) => state.value === props.dataEdit?.active
+        )?.label || 'Não informado',
+      value: props.dataEdit.active,
+    };
   }
 };
-
-const optionsMembers = computed(() => {
-  const options = listMember.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-
-  return [{ label: 'Não informado', value: null }, ...options];
-});
-const optionsNetworks = computed(() => {
-  const options = listNetwork.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-
-  return [{ label: 'Não informado', value: null }, ...options];
-});
-const optionsWeekDays = computed(() => {
-  return [{ label: 'Não informado', value: null }, ...weekDays];
-});
-const optionsFrequencies = computed(() => {
-  return [{ label: 'Não informado', value: null }, ...frequencies];
-});
-const optionsActive = computed(() => {
-  return [
-    {
-      label: 'Ativo',
-      value: 1,
-    },
-    {
-      label: 'Inativo',
-      value: 0,
-    },
-  ];
-});
-const isLoading = computed(() => {
-  return loadingCell.value || loadingMember.value || loadingNetwork.value;
-});
 
 watch(
   () => dataCell.cep,
@@ -372,7 +380,7 @@ watch(open, async () => {
             input-class="text-black no-spinners"
           >
             <template v-slot:prepend>
-              <q-icon name="attach_money" color="black" size="20px" />
+              <q-icon name="badge" color="black" size="20px" />
             </template>
           </q-input>
           <q-input
@@ -415,7 +423,7 @@ watch(open, async () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="person" color="black" size="20px" />
             </template>
           </q-select>
           <q-select
@@ -430,7 +438,7 @@ watch(open, async () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="group_work" color="black" size="20px" />
             </template>
           </q-select>
           <q-select
@@ -445,7 +453,7 @@ watch(open, async () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="check" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -458,7 +466,7 @@ watch(open, async () => {
             input-class="text-black no-spinners"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="location_on" color="black" size="20px" />
             </template>
           </q-input>
           <q-select
@@ -473,7 +481,7 @@ watch(open, async () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="calendar_month" color="black" size="20px" />
             </template>
           </q-select>
           <q-select
@@ -488,7 +496,7 @@ watch(open, async () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="event_repeat" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -502,7 +510,7 @@ watch(open, async () => {
             input-class="text-black no-spinners"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="timer" color="black" size="20px" />
             </template>
           </q-input>
           <q-select
@@ -517,7 +525,7 @@ watch(open, async () => {
             label-color="black"
           >
             <template v-slot:prepend>
-              <q-icon name="arrow_right" color="black" size="20px" />
+              <q-icon name="person" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -547,7 +555,7 @@ watch(open, async () => {
               class="input-divider"
             >
               <template v-slot:prepend>
-                <q-icon name="map" color="black" size="20px" />
+                <q-icon name="location_on" color="black" size="20px" />
               </template>
             </q-input>
             <q-input
@@ -561,7 +569,7 @@ watch(open, async () => {
               class="input-divider"
             >
               <template v-slot:prepend>
-                <q-icon name="pin_drop" color="black" size="20px" />
+                <q-icon name="location_on" color="black" size="20px" />
               </template>
             </q-input>
           </div>
@@ -575,7 +583,7 @@ watch(open, async () => {
             input-class="text-black"
           >
             <template v-slot:prepend>
-              <q-icon name="pin_drop" color="black" size="20px" />
+              <q-icon name="location_on" color="black" size="20px" />
             </template>
           </q-input>
           <q-input
@@ -588,7 +596,7 @@ watch(open, async () => {
             input-class="text-black"
           >
             <template v-slot:prepend>
-              <q-icon name="pin_drop" color="black" size="20px" />
+              <q-icon name="location_on" color="black" size="20px" />
             </template>
           </q-input>
           <div class="row justify-between">
@@ -604,7 +612,7 @@ watch(open, async () => {
               maxlength="15"
             >
               <template v-slot:prepend>
-                <q-icon name="numbers" color="black" size="20px" />
+                <q-icon name="location_on" color="black" size="20px" />
               </template>
             </q-input>
             <q-input
@@ -618,7 +626,7 @@ watch(open, async () => {
               class="input-divider"
             >
               <template v-slot:prepend>
-                <q-icon name="numbers" color="black" size="20px" />
+                <q-icon name="location_on" color="black" size="20px" />
               </template>
             </q-input>
           </div>
