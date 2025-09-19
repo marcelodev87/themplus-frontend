@@ -276,8 +276,8 @@ watch(
                 user?.position === 'admin'
               "
               clickable
-              :to="{ name: 'admin-office' }"
-              :active="isActive('admin-office')"
+              :to="{ name: 'admin-cell' }"
+              :active="isActive('admin-cell')"
               active-class=" active-option-menu text-bold"
               @click="closeDrawer"
             >
