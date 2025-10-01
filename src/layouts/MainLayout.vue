@@ -243,19 +243,6 @@ watch(
               <q-item-section> Membros </q-item-section>
             </q-item>
             <q-item
-              v-show="enterprisePosition === 'client'"
-              clickable
-              :to="{ name: 'admin-congregation' }"
-              :active="isActive('admin-congregation')"
-              active-class=" active-option-menu text-bold"
-              @click="closeDrawer"
-            >
-              <q-item-section avatar>
-                <q-icon name="arrow_right" />
-              </q-item-section>
-              <q-item-section> Congregações </q-item-section>
-            </q-item>
-            <q-item
               v-show="user?.position === 'admin'"
               clickable
               :to="{ name: 'admin-ministry' }"

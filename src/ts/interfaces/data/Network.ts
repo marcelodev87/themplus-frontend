@@ -1,4 +1,4 @@
-import { Congregation } from './Congregation';
+import { Enterprise } from './Enterprise';
 import { MemberChurch } from './Member';
 
 export interface Network {
@@ -7,7 +7,7 @@ export interface Network {
   member_id: string | null;
   member: MemberChurch | null;
   congregation_id: string | null;
-  congregation: Congregation | null;
+  congregation: Enterprise | null;
   enterprise_id: string;
 }
 
