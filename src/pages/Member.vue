@@ -11,6 +11,7 @@ import { useMemberStore } from 'src/stores/member-store';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import FormMember from 'src/components/forms/FormMember.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import ManageRole from 'src/components/manage/ManageRole.vue';
 
 defineOptions({
   name: 'Member',
@@ -25,6 +26,7 @@ const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormMember = ref<boolean>(false);
+const showManageRole = ref<boolean>(false);
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
 const dataExclude = ref<string | null>(null);
@@ -43,9 +45,6 @@ const columnsMember = reactive<QuasarTable[]>([
   },
 ]);
 
-// const resetPage = (): void => {
-//   currentPage.value = 1;
-// };
 const clear = (): void => {
   selectedDataEdit.value = null;
   dataExclude.value = null;
@@ -56,6 +55,13 @@ const openFormMember = (): void => {
 };
 const closeFormMember = (): void => {
   showFormMember.value = false;
+  clear();
+};
+const openManageRole = (): void => {
+  showManageRole.value = true;
+};
+const closeManageRole = (): void => {
+  showManageRole.value = false;
   clear();
 };
 const handleEdit = (member: MemberChurch) => {
@@ -125,6 +131,16 @@ onMounted(async () => {
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
+        <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          @click="openManageRole"
+          icon-right="add"
+          label="Cargos"
+          class="q-mr-sm bg-contabilidade"
+          unelevated
+          no-caps
+          flat
+        />
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openFormMember"
@@ -245,6 +261,7 @@ onMounted(async () => {
           :data-edit="selectedDataEdit"
           @update:open="closeFormMember"
         />
+        <ManageRole :open="showManageRole" @update:open="closeManageRole" />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"

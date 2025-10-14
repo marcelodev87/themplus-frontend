@@ -8,7 +8,6 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useMemberStore } from 'src/stores/member-store';
 import { useNetworkStore } from 'src/stores/network-store';
 import { Network } from 'src/ts/interfaces/data/Network';
-import { useCongregationStore } from 'src/stores/congregation-store';
 
 defineOptions({
   name: 'FormNetwork',
@@ -24,10 +23,6 @@ const emit = defineEmits<{
 
 const { getMembers } = useMemberStore();
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
-const { getCongregations } = useCongregationStore();
-const { loadingCongregation, listCongregation } = storeToRefs(
-  useCongregationStore()
-);
 const { createNetwork, updateNetwork } = useNetworkStore();
 const { loadingNetwork } = storeToRefs(useNetworkStore());
 
@@ -124,9 +119,9 @@ const update = async () => {
 const fetchMembers = async () => {
   await getMembers();
 };
-const fetchCongregations = async () => {
-  await getCongregations();
-};
+// const fetchCongregations = async () => {
+//   await getCongregations();
+// };
 const mountData = () => {
   if (props.dataEdit) {
     Object.assign(dataNetwork, {
@@ -139,13 +134,13 @@ const mountData = () => {
           ?.name || 'Não informado',
       value: props.dataEdit.member_id,
     };
-    selectedCongregation.value = {
-      label:
-        listCongregation.value.find(
-          (state) => state.id === props.dataEdit?.congregation_id
-        )?.name || 'Não informado',
-      value: props.dataEdit.congregation_id,
-    };
+    // selectedCongregation.value = {
+    //   label:
+    //     listCongregation.value.find(
+    //       (state) => state.id === props.dataEdit?.congregation_id
+    //     )?.name || 'Não informado',
+    //   value: props.dataEdit.congregation_id,
+    // };
   }
 };
 
@@ -159,22 +154,22 @@ const optionsMembers = computed(() => {
 
   return [{ label: 'Não informado', value: null }, ...options];
 });
-const optionsCongregations = computed(() => {
-  const options = listCongregation.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+// const optionsCongregations = computed(() => {
+//   const options = listCongregation.value.map((item) => {
+//     return {
+//       label: item.name,
+//       value: item.id,
+//     };
+//   });
 
-  return [{ label: 'Não informado', value: null }, ...options];
-});
+//   return [{ label: 'Não informado', value: null }, ...options];
+// });
 
 watch(open, async () => {
   if (open.value) {
     clear();
     await fetchMembers();
-    await fetchCongregations();
+    // await fetchCongregations();
     mountData();
   }
 });
@@ -221,7 +216,7 @@ watch(open, async () => {
           </q-select>
           <q-select
             v-model="selectedCongregation"
-            :options="optionsCongregations"
+            :options="[]"
             label="Congregação"
             filled
             dense
@@ -253,7 +248,7 @@ watch(open, async () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="loadingMember || loadingCongregation || loadingNetwork"
+            :loading="loadingMember || loadingNetwork"
             unelevated
             no-caps
           />
@@ -263,14 +258,14 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingMember || loadingCongregation || loadingNetwork"
+            :loading="loadingMember || loadingNetwork"
             unelevated
             no-caps
           />
         </div>
       </q-card-actions>
       <q-inner-loading
-        :loading="loadingMember || loadingCongregation"
+        :loading="loadingMember"
         label="Carregando os dados..."
         label-class="black"
         label-style="font-size: 1.1em"
