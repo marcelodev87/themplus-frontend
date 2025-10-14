@@ -107,7 +107,6 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[0]"
           :filter="filterRole"
-          >
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

@@ -67,10 +67,7 @@ const selectedActive = ref<QuasarSelect<number>>({
   label: 'Ativo',
   value: 1,
 });
-const selectedRole = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
+const selectedRole = ref<QuasarSelect<string>[]>([]);
 const selectedTypeMinistry = ref<QuasarSelect<string>>({
   label: 'Visitante',
   value: 'visitor',
@@ -121,14 +118,12 @@ const open = computed({
   set: () => emit('update:open'),
 });
 const optionsRoles = computed(() => {
-  const options = listRole.value.map((item) => {
+  return listRole.value.map((item) => {
     return {
       label: item.name,
       value: item.id,
     };
   });
-
-  return [{ label: 'Não informado', value: null }, ...options];
 });
 
 const clearSpaces = (text: string) => {
@@ -155,6 +150,7 @@ const checkData = (): { status: boolean; message?: string } => {
   return { status: true };
 };
 const clear = (): void => {
+  tab.value = 'individual';
   Object.assign(dataMember, {
     name: '',
     profession: '',
@@ -189,10 +185,7 @@ const clear = (): void => {
     value: 1,
   };
 
-  selectedRole.value = {
-    label: 'Sem cargo',
-    value: null,
-  };
+  selectedRole.value = [];
 
   selectedNaturalness.value = {
     label: 'Não informado',
@@ -267,7 +260,7 @@ const save = async () => {
       endDate: clearSpaces(dataMember.endDate),
       churchStartDate: clearSpaces(dataMember.churchStartDate),
       churchEndDate: clearSpaces(dataMember.churchEndDate),
-      roleID: selectedRole.value.value,
+      roles: selectedRole.value.map((role) => role.value),
     });
     if (response?.status === 201) {
       emit('update:open');
@@ -308,7 +301,7 @@ const update = async () => {
       endDate: clearSpaces(dataMember.endDate),
       churchStartDate: clearSpaces(dataMember.churchStartDate),
       churchEndDate: clearSpaces(dataMember.churchEndDate),
-      roleID: selectedRole.value.value,
+      roles: selectedRole.value.map((role) => role.value),
     });
     if (response?.status === 200) {
       emit('update:open');
@@ -381,13 +374,12 @@ const mountData = () => {
       value: props.dataEdit.education,
     };
 
-    selectedRole.value = {
-      label:
-        optionsRoles.value.find(
-          (state) => state.value === props.dataEdit?.role_id
-        )?.label || 'Não informado',
-      value: props.dataEdit.role_id,
-    };
+    selectedRole.value = props.dataEdit.roles.map((role) => {
+      return {
+        label: role.name,
+        value: role.id,
+      };
+    });
 
     selectedTypeMinistry.value = {
       label: props.dataEdit.type === 'visitor' ? 'Visitante' : 'Membro',
@@ -868,6 +860,7 @@ watch(open, async () => {
                 label="Selecione o cargo"
                 outlined
                 dense
+                multiple
                 options-dense
                 map-options
                 bg-color="white"

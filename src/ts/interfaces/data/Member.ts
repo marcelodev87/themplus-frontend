@@ -1,4 +1,5 @@
 import { QuasarSelect } from '../framework/Quasar';
+import { Role } from './Role';
 
 export interface MemberChurch {
   id: string;
@@ -30,7 +31,7 @@ export interface MemberChurch {
   end_date: string | null;
   reason_end_date: string | null;
   church_end_date: string | null;
-  role_id: string | null;
+  roles: Role[];
 }
 export interface DataMemberChurch {
   id?: string | null;
@@ -61,7 +62,7 @@ export interface DataMemberChurch {
   endDate: string | null;
   // reasonEndDate: string | null;
   churchEndDate: string | null;
-  roleID: string | null;
+  roles: string[];
 }
 
 export interface DataListFamily {
