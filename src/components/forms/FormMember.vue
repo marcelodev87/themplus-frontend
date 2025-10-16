@@ -27,7 +27,7 @@ const emit = defineEmits<{
 
 const memberID = computed(() => props.dataEdit?.id ?? '');
 
-const { createMember, updateMember, getMembers } = useMemberStore();
+const { createMember, updateMember } = useMemberStore();
 const { getRoles } = useRoleStore();
 const { loadingRole, listRole } = storeToRefs(useRoleStore());
 
@@ -316,9 +316,6 @@ const update = async () => {
 const fetchRoles = async () => {
   await getRoles();
 };
-const fetchMembers = async () => {
-  await getMembers();
-};
 // const addFamily = () => {
 //   dataListFamily.value.push({
 //     member: selectedMemberFamily.value,
@@ -502,7 +499,6 @@ watch(open, async () => {
     loading.value = true;
     clear();
     await fetchRoles();
-    await fetchMembers();
     mountData();
     loading.value = false;
   }

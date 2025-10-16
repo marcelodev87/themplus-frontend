@@ -50,19 +50,23 @@ const clear = (): void => {
   dataExclude.value = null;
   filterMember.value = '';
 };
+const fetchMembers = async () => {
+  await getMembers();
+};
 const openFormMember = (): void => {
   showFormMember.value = true;
 };
-const closeFormMember = (): void => {
+const closeFormMember = async () => {
   showFormMember.value = false;
   clear();
 };
 const openManageRole = (): void => {
   showManageRole.value = true;
 };
-const closeManageRole = (): void => {
+const closeManageRole = async (): Promise<void> => {
   showManageRole.value = false;
   clear();
+  await fetchMembers();
 };
 const handleEdit = (member: MemberChurch) => {
   selectedDataEdit.value = member;
@@ -71,9 +75,6 @@ const handleEdit = (member: MemberChurch) => {
 const exclude = async (id: string) => {
   await deleteMember(id);
   clear();
-};
-const fetchMembers = async () => {
-  await getMembers();
 };
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
