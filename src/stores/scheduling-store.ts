@@ -253,7 +253,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       file: File | null,
       category: string,
       account: string,
-      programmed: number
+      programmed: number,
+      member: string | null
     ) {
       try {
         this.setLoading(true);
@@ -267,7 +268,8 @@ export const useSchedulingStore = defineStore('scheduling', {
           file,
           category,
           account,
-          programmed
+          programmed,
+          member
         );
         if (response.status === 201) {
           this.clearListScheduling();
@@ -291,7 +293,8 @@ export const useSchedulingStore = defineStore('scheduling', {
       description: string | null,
       file: File | string | null,
       category: string,
-      account: string
+      account: string,
+      member: string | null
     ) {
       try {
         this.setLoading(true);
@@ -305,7 +308,8 @@ export const useSchedulingStore = defineStore('scheduling', {
           description,
           file,
           category,
-          account
+          account,
+          member
         );
         if (response.status === 200) {
           this.clearListScheduling();

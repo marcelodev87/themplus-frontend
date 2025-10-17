@@ -299,9 +299,12 @@ export const useMovementStore = defineStore('movement', {
       file: File | null,
       category: string,
       account: string,
-      programmed: number
+      programmed: number,
+      member: string | null
     ) {
       this.setLoading(true);
+
+      console.log('member', member);
       try {
         const response = await createMovementService(
           type,
@@ -311,7 +314,8 @@ export const useMovementStore = defineStore('movement', {
           file,
           category,
           account,
-          programmed
+          programmed,
+          member
         );
         if (response.status === 201) {
           this.clearListMovement();
@@ -401,7 +405,8 @@ export const useMovementStore = defineStore('movement', {
       description: string | null,
       file: File | string | null,
       category: string,
-      account: string
+      account: string,
+      member: string | null
     ) {
       this.setLoading(true);
       try {
@@ -413,7 +418,8 @@ export const useMovementStore = defineStore('movement', {
           description,
           file,
           category,
-          account
+          account,
+          member
         );
         if (response.status === 200) {
           this.clearListMovement();

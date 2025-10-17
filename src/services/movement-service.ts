@@ -86,7 +86,8 @@ export const createMovementService = (
   file: File | null,
   category: string,
   account: string,
-  programmed: number
+  programmed: number,
+  member: string | null
 ): Promise<{
   status: number;
   data: {
@@ -104,6 +105,7 @@ export const createMovementService = (
   formData.append('value', value);
   formData.append('date', date);
   if (description) formData.append('description', description);
+  if (member) formData.append('member', member);
   formData.append('category', category);
   formData.append('account', account);
   formData.append('programmed', programmed.toString());
@@ -126,7 +128,8 @@ export const updateMovementService = (
   description: string | null,
   file: File | string | null,
   category: string,
-  account: string
+  account: string,
+  member: string | null
 ): Promise<{
   status: number;
   data: {
@@ -145,6 +148,7 @@ export const updateMovementService = (
   formData.append('value', value);
   formData.append('date', date);
   if (description) formData.append('description', description);
+  if (member) formData.append('member', member);
   formData.append('category', category);
   formData.append('account', account);
 

@@ -1,6 +1,7 @@
 import { QuasarSelect } from '../framework/Quasar';
 import { Account } from './Account';
 import { Category } from './Category';
+import { MemberChurch } from './Member';
 
 export interface Movement {
   id: string;
@@ -13,6 +14,8 @@ export interface Movement {
   account_id: string;
   account: Account | null;
   category: Category | null;
+  member_id: string | null;
+  member: MemberChurch | null;
   observation: string | null;
   enterprise_id: string | null;
 }

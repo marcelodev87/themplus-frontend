@@ -7,6 +7,7 @@ import { DataEntry } from 'src/ts/interfaces/data/Entry';
 import { MovementOrSchedule } from 'src/ts/types/FormMode';
 import { useMovementStore } from 'src/stores/movement-store';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
+import { useMemberStore } from 'src/stores/member-store';
 import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
@@ -32,6 +33,7 @@ const emit = defineEmits<{
 
 const { getMovementInformations, createMovement, updateMovement } =
   useMovementStore();
+const { getMembers } = useMemberStore();
 const {
   loadingMovement,
   listAccount: listAccountMovement,
@@ -48,6 +50,7 @@ const {
 } = storeToRefs(useSchedulingStore());
 const { updateMovementByCounter } = useReportStore();
 const { loadingReport } = storeToRefs(useReportStore());
+const { loadingMember, listMember } = storeToRefs(useMemberStore());
 
 const dataEntry = reactive<DataEntry>({
   type: 'entrada',
@@ -55,12 +58,14 @@ const dataEntry = reactive<DataEntry>({
   description: '',
   file: null,
   category: null,
+  member: null,
   account: null,
   date: '',
   programmed: { label: 'Apenas mês selecionado', value: 0 },
   observation: null,
 });
 const optionsCategoriesMovement = ref(listCategoryMovement.value);
+const optionsMember = ref(listMember.value);
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
 const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
@@ -201,6 +206,7 @@ const clear = (): void => {
     date: '',
     account: null,
     description: '',
+    member: null,
     file: null,
     programmed: { label: 'Apenas mês selecionado', value: 0 },
     observation: null,
@@ -221,7 +227,8 @@ const save = async () => {
         dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
         dataEntry.account ? dataEntry.account.value : '',
-        dataEntry.programmed.value
+        dataEntry.programmed.value,
+        dataEntry.member ? dataEntry.member.value : null
       );
     } else {
       await createMovement(
@@ -232,7 +239,8 @@ const save = async () => {
         dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
         dataEntry.account ? dataEntry.account.value : '',
-        dataEntry.programmed.value
+        dataEntry.programmed.value,
+        dataEntry.member ? dataEntry.member.value : null
       );
     }
     clear();
@@ -256,7 +264,8 @@ const update = async () => {
         dataEntry.description,
         textFile.value ? 'keep' : dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
-        dataEntry.account ? dataEntry.account.value : ''
+        dataEntry.account ? dataEntry.account.value : '',
+        dataEntry.member ? dataEntry.member.value : null
       );
     } else {
       await updateMovement(
@@ -267,7 +276,8 @@ const update = async () => {
         dataEntry.description,
         textFile.value ? 'keep' : dataEntry.file,
         dataEntry.category ? dataEntry.category.value : '',
-        dataEntry.account ? dataEntry.account.value : ''
+        dataEntry.account ? dataEntry.account.value : '',
+        dataEntry.member ? dataEntry.member.value : null
       );
     }
     clear();
@@ -301,37 +311,8 @@ const updateByCounter = async () => {
     });
   }
 };
-const mountEdit = (): void => {
-  if (props.mode === 'schedule') {
-    Object.assign(dataEntry, {
-      category: listCategoryScheduling.value.find(
-        (item) => item.value === props.dataEdit?.category_id
-      ),
-      value: props.dataEdit?.value ?? '',
-      date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
-      account: listAccountScheduling.value.find(
-        (item) => item.value === props.dataEdit?.account_id
-      ),
-      description: props.dataEdit?.description ?? '',
-    });
-    textFile.value = props.dataEdit?.receipt ?? null;
-  } else {
-    Object.assign(dataEntry, {
-      category: listCategoryMovement.value.find(
-        (item) => item.value === props.dataEdit?.category_id
-      ),
-      value: props.dataEdit?.value ?? '',
-      date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
-      account: listAccountMovement.value.find(
-        (item) => item.value === props.dataEdit?.account_id
-      ),
-      description: props.dataEdit?.description ?? '',
-      observation: props.dataEdit?.observation ?? '',
-    });
-    textFile.value = props.dataEdit?.receipt ?? null;
-  }
-};
 const fetchInformations = async () => {
+  await getMembers();
   if (props.mode === 'schedule') {
     await getSchedulingsInformations(dataEntry.type);
   } else {
@@ -385,6 +366,20 @@ const filterFnAccount = (
               element.label?.toLowerCase().includes(needle)
             );
     }
+  });
+};
+const filterFnMember = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    optionsMember.value =
+      val === ''
+        ? listMember.value
+        : listMember.value.filter((element) =>
+            element.name?.toLowerCase().includes(needle)
+          );
   });
 };
 const closeConfirmActionOk = async (): Promise<void> => {
@@ -458,6 +453,48 @@ async function handleFileSelect(file: File) {
   }
 }
 
+const getMembersOptions = computed(() => {
+  return listMember.value.map((member) => ({
+    label: member.name,
+    value: member.id,
+  }));
+});
+const mountEdit = (): void => {
+  if (props.mode === 'schedule') {
+    Object.assign(dataEntry, {
+      category: listCategoryScheduling.value.find(
+        (item) => item.value === props.dataEdit?.category_id
+      ),
+      member: getMembersOptions.value.find(
+        (item) => item.value === props.dataEdit?.member_id
+      ),
+      value: props.dataEdit?.value ?? '',
+      date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
+      account: listAccountScheduling.value.find(
+        (item) => item.value === props.dataEdit?.account_id
+      ),
+      description: props.dataEdit?.description ?? '',
+    });
+    textFile.value = props.dataEdit?.receipt ?? null;
+  } else {
+    Object.assign(dataEntry, {
+      category: listCategoryMovement.value.find(
+        (item) => item.value === props.dataEdit?.category_id
+      ),
+      value: props.dataEdit?.value ?? '',
+      date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
+      account: listAccountMovement.value.find(
+        (item) => item.value === props.dataEdit?.account_id
+      ),
+      member: getMembersOptions.value.find(
+        (item) => item.value === props.dataEdit?.member_id
+      ),
+      description: props.dataEdit?.description ?? '',
+      observation: props.dataEdit?.observation ?? '',
+    });
+    textFile.value = props.dataEdit?.receipt ?? null;
+  }
+};
 watch(
   () => dataEntry.value,
   (value) => {
@@ -516,6 +553,27 @@ watch(open, async () => {
           >
             <template v-slot:prepend>
               <q-icon name="category" color="black" size="20px" />
+            </template>
+          </q-select>
+          <q-select
+            v-model="dataEntry.member"
+            :options="getMembersOptions"
+            @filter="filterFnMember"
+            label="Membro"
+            :readonly="props.type === 'counter'"
+            filled
+            clearable
+            dense
+            options-dense
+            map-options
+            bg-color="white"
+            label-color="black"
+            use-input
+            input-debounce="0"
+            behavior="menu"
+          >
+            <template v-slot:prepend>
+              <q-icon name="person" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -675,7 +733,12 @@ watch(open, async () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="loadingMovement || loadingScheduling"
+            :loading="
+              loadingMovement ||
+              loadingScheduling ||
+              loadingMember ||
+              loadingReport
+            "
             unelevated
             no-caps
           />
@@ -685,7 +748,12 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingMovement || loadingScheduling || loadingReport"
+            :loading="
+              loadingMovement ||
+              loadingScheduling ||
+              loadingReport ||
+              loadingMember
+            "
             unelevated
             no-caps
             :disable="dataEntry.observation ? !readObservation : false"
