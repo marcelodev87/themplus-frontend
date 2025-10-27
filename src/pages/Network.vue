@@ -16,7 +16,7 @@ defineOptions({
   name: 'Network',
 });
 
-const { user } = storeToRefs(useAuthStore());
+const { user, enterpriseCreated } = storeToRefs(useAuthStore());
 const { listNetwork, loadingNetwork, filledData } =
   storeToRefs(useNetworkStore());
 const { getNetworks, deleteNetwork } = useNetworkStore();
@@ -136,7 +136,10 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            enterpriseCreated === null
+          "
           @click="openFormNetwork"
           icon-right="add"
           label="Rede"
@@ -229,7 +232,10 @@ onMounted(async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="user?.enterprise_id === user?.view_enterprise_id"
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    enterpriseCreated === null
+                  "
                   size="sm"
                   flat
                   round
@@ -240,7 +246,8 @@ onMounted(async () => {
                   @click="openConfirmAction(props.row.id)"
                   v-show="
                     user?.enterprise_id === user?.view_enterprise_id &&
-                    user?.position === 'admin'
+                    user?.position === 'admin' &&
+                    enterpriseCreated === null
                   "
                   size="sm"
                   flat

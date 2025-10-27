@@ -30,8 +30,7 @@ const memberID = computed(() => props.dataEdit?.id ?? '');
 const { createMember, updateMember } = useMemberStore();
 const { getRoles } = useRoleStore();
 const { loadingRole, listRole } = storeToRefs(useRoleStore());
-const { listMinistry, loadingMinistry } =
-  storeToRefs(useMinistryStore());
+const { listMinistry, loadingMinistry } = storeToRefs(useMinistryStore());
 const { getMinistries } = useMinistryStore();
 
 const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(

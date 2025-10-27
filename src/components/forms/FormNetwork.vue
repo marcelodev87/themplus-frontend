@@ -8,6 +8,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useMemberStore } from 'src/stores/member-store';
 import { useNetworkStore } from 'src/stores/network-store';
 import { Network } from 'src/ts/interfaces/data/Network';
+import { useOfficeStore } from 'src/stores/office-store';
 
 defineOptions({
   name: 'FormNetwork',
@@ -25,6 +26,8 @@ const { getMembers } = useMemberStore();
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
 const { createNetwork, updateNetwork } = useNetworkStore();
 const { loadingNetwork } = storeToRefs(useNetworkStore());
+const { loadingOffice, listOffice } = storeToRefs(useOfficeStore());
+const { getOffices } = useOfficeStore();
 
 const dataNetwork = reactive({
   name: '' as string,
@@ -119,9 +122,9 @@ const update = async () => {
 const fetchMembers = async () => {
   await getMembers();
 };
-// const fetchCongregations = async () => {
-//   await getCongregations();
-// };
+const fetchCongregations = async () => {
+  await getOffices();
+};
 const mountData = () => {
   if (props.dataEdit) {
     Object.assign(dataNetwork, {
@@ -134,13 +137,13 @@ const mountData = () => {
           ?.name || 'Não informado',
       value: props.dataEdit.member_id,
     };
-    // selectedCongregation.value = {
-    //   label:
-    //     listCongregation.value.find(
-    //       (state) => state.id === props.dataEdit?.congregation_id
-    //     )?.name || 'Não informado',
-    //   value: props.dataEdit.congregation_id,
-    // };
+    selectedCongregation.value = {
+      label:
+        listOffice.value.find(
+          (state) => state.id === props.dataEdit?.congregation_id
+        )?.name || 'Não informado',
+      value: props.dataEdit.congregation_id,
+    };
   }
 };
 
@@ -154,22 +157,20 @@ const optionsMembers = computed(() => {
 
   return [{ label: 'Não informado', value: null }, ...options];
 });
-// const optionsCongregations = computed(() => {
-//   const options = listCongregation.value.map((item) => {
-//     return {
-//       label: item.name,
-//       value: item.id,
-//     };
-//   });
-
-//   return [{ label: 'Não informado', value: null }, ...options];
-// });
+const optionsOffices = computed(() => {
+  return listOffice.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+});
 
 watch(open, async () => {
   if (open.value) {
     clear();
     await fetchMembers();
-    // await fetchCongregations();
+    await fetchCongregations();
     mountData();
   }
 });
@@ -216,7 +217,7 @@ watch(open, async () => {
           </q-select>
           <q-select
             v-model="selectedCongregation"
-            :options="[]"
+            :options="optionsOffices"
             label="Congregação"
             filled
             dense
@@ -248,7 +249,7 @@ watch(open, async () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="loadingMember || loadingNetwork"
+            :loading="loadingMember || loadingNetwork || loadingOffice"
             unelevated
             no-caps
           />
@@ -258,7 +259,7 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingMember || loadingNetwork"
+            :loading="loadingMember || loadingNetwork || loadingOffice"
             unelevated
             no-caps
           />
