@@ -133,7 +133,10 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id && enterpriseCreated === null"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            enterpriseCreated === null
+          "
           @click="openFormMinistry"
           icon-right="add"
           label="Ministérios"
@@ -221,7 +224,10 @@ onMounted(async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="user?.enterprise_id === user?.view_enterprise_id && enterpriseCreated === null"
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    enterpriseCreated === null
+                  "
                   size="sm"
                   flat
                   round
@@ -232,7 +238,8 @@ onMounted(async () => {
                   @click="openConfirmAction(props.row.id)"
                   v-show="
                     user?.enterprise_id === user?.view_enterprise_id &&
-                    user?.position === 'admin' && enterpriseCreated === null
+                    user?.position === 'admin' &&
+                    enterpriseCreated === null
                   "
                   size="sm"
                   flat

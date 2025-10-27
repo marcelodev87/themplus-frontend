@@ -11,7 +11,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { states } from 'src/utils/state';
 import { education } from 'src/utils/education';
 import { marital } from 'src/utils/marital';
-// import { statusFamily } from 'src/utils/family';
+import { useMinistryStore } from 'src/stores/ministry-store';
 
 defineOptions({
   name: 'FormMember',
@@ -30,6 +30,9 @@ const memberID = computed(() => props.dataEdit?.id ?? '');
 const { createMember, updateMember } = useMemberStore();
 const { getRoles } = useRoleStore();
 const { loadingRole, listRole } = storeToRefs(useRoleStore());
+const { listMinistry, loadingMinistry } =
+  storeToRefs(useMinistryStore());
+const { getMinistries } = useMinistryStore();
 
 const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(
   'individual'
@@ -68,6 +71,7 @@ const selectedActive = ref<QuasarSelect<number>>({
   value: 1,
 });
 const selectedRole = ref<QuasarSelect<string>[]>([]);
+const selectedMinistry = ref<QuasarSelect<string>[]>([]);
 const selectedTypeMinistry = ref<QuasarSelect<string>>({
   label: 'Visitante',
   value: 'visitor',
@@ -119,6 +123,14 @@ const open = computed({
 });
 const optionsRoles = computed(() => {
   return listRole.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+});
+const optionsMinistries = computed(() => {
+  return listMinistry.value.map((item) => {
     return {
       label: item.name,
       value: item.id,
@@ -186,6 +198,7 @@ const clear = (): void => {
   };
 
   selectedRole.value = [];
+  selectedMinistry.value = [];
 
   selectedNaturalness.value = {
     label: 'Não informado',
@@ -261,6 +274,7 @@ const save = async () => {
       churchStartDate: clearSpaces(dataMember.churchStartDate),
       churchEndDate: clearSpaces(dataMember.churchEndDate),
       roles: selectedRole.value.map((role) => role.value),
+      ministries: selectedMinistry.value.map((ministry) => ministry.value),
     });
     if (response?.status === 201) {
       emit('update:open');
@@ -302,6 +316,7 @@ const update = async () => {
       churchStartDate: clearSpaces(dataMember.churchStartDate),
       churchEndDate: clearSpaces(dataMember.churchEndDate),
       roles: selectedRole.value.map((role) => role.value),
+      ministries: selectedMinistry.value.map((ministry) => ministry.value),
     });
     if (response?.status === 200) {
       emit('update:open');
@@ -312,9 +327,6 @@ const update = async () => {
       type: 'negative',
     });
   }
-};
-const fetchRoles = async () => {
-  await getRoles();
 };
 // const addFamily = () => {
 //   dataListFamily.value.push({
@@ -377,6 +389,12 @@ const mountData = () => {
         value: role.id,
       };
     });
+    selectedMinistry.value = props.dataEdit.ministries.map((role) => {
+      return {
+        label: role.name,
+        value: role.id,
+      };
+    });
 
     selectedTypeMinistry.value = {
       label: props.dataEdit.type === 'visitor' ? 'Visitante' : 'Membro',
@@ -388,6 +406,12 @@ const mountData = () => {
       value: props.dataEdit.active,
     };
   }
+};
+const fetchMinistries = async () => {
+  await getMinistries();
+};
+const fetchRoles = async () => {
+  await getRoles();
 };
 
 const formattedPhonePessoal = computed({
@@ -462,7 +486,7 @@ const optionsActive = computed(() => [
 //   return [{ label: 'Não informado', value: null }, ...statusFamily];
 // });
 const isLoading = computed(() => {
-  return loading.value || loadingRole.value;
+  return loading.value || loadingRole.value || loadingMinistry.value;
 });
 
 watch(
@@ -499,6 +523,7 @@ watch(open, async () => {
     loading.value = true;
     clear();
     await fetchRoles();
+    await fetchMinistries();
     mountData();
     loading.value = false;
   }
@@ -850,6 +875,23 @@ watch(open, async () => {
                   <q-icon name="calendar_today" color="black" size="20px" />
                 </template>
               </q-input>
+              <q-select
+                v-model="selectedMinistry"
+                :options="optionsMinistries"
+                label="Selecione o ministério"
+                outlined
+                dense
+                multiple
+                options-dense
+                map-options
+                bg-color="white"
+                label-color="black"
+                class="full-width"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="arrow_right" color="black" size="20px" />
+                </template>
+              </q-select>
               <q-select
                 v-model="selectedRole"
                 :options="optionsRoles"
