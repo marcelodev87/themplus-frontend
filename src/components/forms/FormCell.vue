@@ -12,6 +12,7 @@ import { useNetworkStore } from 'src/stores/network-store';
 import { frequencies } from 'src/utils/frequency';
 import { weekDays } from 'src/utils/week-days';
 import { searchCep } from 'src/services/cep-service';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'FormCell',
@@ -26,6 +27,7 @@ const emit = defineEmits<{
 }>();
 
 const { createCell, updateCell } = useCellStore();
+const { user } = storeToRefs(useAuthStore());
 const { loadingCell } = storeToRefs(useCellStore());
 const { getMembers } = useMemberStore();
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
@@ -224,15 +226,18 @@ const fetchNetworks = async () => {
 };
 
 const optionsMembers = computed(() => {
-  const options = listMember.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+  const options = listMember.value
+    .filter(item => item.enterprise_id === user?.value?.enterprise_id)
+    .map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
 
   return [{ label: 'Não informado', value: null }, ...options];
 });
+
 const optionsNetworks = computed(() => {
   const options = listNetwork.value.map((item) => {
     return {

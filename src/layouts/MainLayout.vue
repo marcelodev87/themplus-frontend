@@ -257,7 +257,6 @@ watch(
             </q-item>
             <q-item
               v-show="
-                enterpriseCreated === null &&
                 enterprisePosition === 'client' &&
                 user?.enterprise_id === user?.view_enterprise_id &&
                 user?.position === 'admin'

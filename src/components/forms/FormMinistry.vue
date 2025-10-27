@@ -8,6 +8,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useMemberStore } from 'src/stores/member-store';
 import { Ministry } from 'src/ts/interfaces/data/Ministry';
 import { useMinistryStore } from 'src/stores/ministry-store';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'FormMinistry',
@@ -22,6 +23,7 @@ const emit = defineEmits<{
 }>();
 
 const { getMembers } = useMemberStore();
+const {  user } = storeToRefs(useAuthStore());
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
 const { createMinistry, updateMinistry } = useMinistryStore();
 const { loadingMinistry } = storeToRefs(useMinistryStore());
@@ -119,12 +121,14 @@ const mountData = () => {
 };
 
 const optionsMembers = computed(() => {
-  const options = listMember.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+  const members = listMember.value.filter(
+    item => item.enterprise_id === user.value?.enterprise_id
+  );
+
+  const options = members.map(item => ({
+    label: item.name,
+    value: item.id
+  }));
 
   return [{ label: 'Não informado', value: null }, ...options];
 });

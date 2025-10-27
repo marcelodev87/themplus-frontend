@@ -9,6 +9,7 @@ import { useMemberStore } from 'src/stores/member-store';
 import { useNetworkStore } from 'src/stores/network-store';
 import { Network } from 'src/ts/interfaces/data/Network';
 import { useOfficeStore } from 'src/stores/office-store';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'FormNetwork',
@@ -23,6 +24,7 @@ const emit = defineEmits<{
 }>();
 
 const { getMembers } = useMemberStore();
+const { user } = storeToRefs(useAuthStore());
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
 const { createNetwork, updateNetwork } = useNetworkStore();
 const { loadingNetwork } = storeToRefs(useNetworkStore());
@@ -148,15 +150,18 @@ const mountData = () => {
 };
 
 const optionsMembers = computed(() => {
-  const options = listMember.value.map((item) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+  const options = listMember.value
+    .filter(item => item.enterprise_id === user?.value?.enterprise_id)
+    .map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
 
   return [{ label: 'Não informado', value: null }, ...options];
 });
+
 const optionsOffices = computed(() => {
   return listOffice.value.map((item) => {
     return {
