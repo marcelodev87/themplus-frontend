@@ -227,7 +227,7 @@ const fetchNetworks = async () => {
 
 const optionsMembers = computed(() => {
   const options = listMember.value
-    .filter(item => item.enterprise_id === user?.value?.enterprise_id)
+    .filter((item) => item.enterprise_id === user?.value?.enterprise_id)
     .map((item) => {
       return {
         label: item.name,

@@ -12,6 +12,7 @@ import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import FormMember from 'src/components/forms/FormMember.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ManageRole from 'src/components/manage/ManageRole.vue';
+import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
 
 defineOptions({
   name: 'Member',
@@ -26,6 +27,7 @@ const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
 const showAlertDataEnterprise = ref<boolean>(false);
 const showFormMember = ref<boolean>(false);
+const showMemberMovementInfo = ref<boolean>(false);
 const showManageRole = ref<boolean>(false);
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
@@ -58,6 +60,14 @@ const openFormMember = (): void => {
 };
 const closeFormMember = async () => {
   showFormMember.value = false;
+  clear();
+};
+const openMemberMovementInfo = (member: MemberChurch): void => {
+  selectedDataEdit.value = member;
+  showMemberMovementInfo.value = true;
+};
+const closeMemberMovementInfo = async () => {
+  showMemberMovementInfo.value = false;
   clear();
 };
 const openManageRole = (): void => {
@@ -226,6 +236,17 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="openMemberMovementInfo(props.row)"
+                  v-show="user?.enterprise_id === user?.view_enterprise_id"
+                  size="sm"
+                  flat
+                  round
+                  color="primary"
+                  icon="attach_money"
+                >
+                  <q-tooltip>Contribuições</q-tooltip>
+                </q-btn>
+                <q-btn
                   @click="handleEdit(props.row)"
                   v-show="user?.enterprise_id === user?.view_enterprise_id"
                   size="sm"
@@ -261,6 +282,11 @@ onMounted(async () => {
           :open="showFormMember"
           :data-edit="selectedDataEdit"
           @update:open="closeFormMember"
+        />
+        <MemberMovementInfo
+          :open="showMemberMovementInfo"
+          :member-selected="selectedDataEdit"
+          @update:open="closeMemberMovementInfo"
         />
         <ManageRole :open="showManageRole" @update:open="closeManageRole" />
         <AlertDataEnterprise

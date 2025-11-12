@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>();
 
 const { getMembers } = useMemberStore();
-const {  user } = storeToRefs(useAuthStore());
+const { user } = storeToRefs(useAuthStore());
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
 const { createMinistry, updateMinistry } = useMinistryStore();
 const { loadingMinistry } = storeToRefs(useMinistryStore());
@@ -122,12 +122,12 @@ const mountData = () => {
 
 const optionsMembers = computed(() => {
   const members = listMember.value.filter(
-    item => item.enterprise_id === user.value?.enterprise_id
+    (item) => item.enterprise_id === user.value?.enterprise_id
   );
 
-  const options = members.map(item => ({
+  const options = members.map((item) => ({
     label: item.name,
-    value: item.id
+    value: item.id,
   }));
 
   return [{ label: 'Não informado', value: null }, ...options];

@@ -16,6 +16,7 @@ import {
   exportMovementInsertExampleService,
   exportMovementPDFService,
   getMovementInformationsService,
+  getMovementsMemberService,
   getMovementsService,
   getMovementsWithParamsService,
   insertMovementService,
@@ -163,8 +164,22 @@ export const useMovementStore = defineStore('movement', {
           this.setMovementsAnalyze(response.data.movements_analyze);
           updateNotifications(response.data.notifications);
         }
+
+        return response;
       } catch (error) {
         this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getMovementsMember(filters: Record<string, any> = {}) {
+      try {
+        this.setLoading(true);
+        return await getMovementsMemberService(filters);
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

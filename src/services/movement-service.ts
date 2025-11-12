@@ -41,6 +41,37 @@ export const getMovementsService = (
   };
 }> => api.get(`${baseUrl}/${date}`);
 
+export const getMovementsMemberService = (
+  filters: Record<string, any> = {}
+): Promise<{
+  status: number;
+  data: {
+    movements: Movement[];
+    months_years: string[];
+    categories: QuasarSelect<string>[];
+    accounts: QuasarSelect<string>[];
+  };
+}> => {
+  let url = `${baseUrl}/member`;
+
+  const filterKeys = Object.keys(filters).filter(
+    (key) => filters[key] !== null && filters[key] !== undefined
+  );
+
+  if (filterKeys.length > 0) {
+    const queryString = filterKeys
+      .map(
+        (key) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(filters[key])}`
+      )
+      .join('&');
+
+    url = `${url}?${queryString}`;
+  }
+
+  return api.get(url);
+};
+
 export const getMovementsWithParamsService = (
   entry: boolean,
   out: boolean,
