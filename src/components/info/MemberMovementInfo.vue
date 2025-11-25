@@ -31,6 +31,7 @@ const listCategories = ref<QuasarSelect<string>[]>([]);
 const listAccounts = ref<QuasarSelect<string>[]>([]);
 const listPeriods = ref<string[]>([]);
 const period = ref<string | null>(null);
+const totalAll = ref<string>('');
 const optionsType = reactive<QuasarSelect<string | null>[]>([
   {
     label: 'Todos os tipos',
@@ -137,6 +138,7 @@ const clear = (): void => {
     value: null,
   };
   list.value = [];
+  totalAll.value = '';
 };
 const fetchMovements = async () => {
   const response = await getMovementsMember({
@@ -151,6 +153,7 @@ const fetchMovements = async () => {
     listAccounts.value = response.data.accounts;
     listCategories.value = response.data.categories;
     listPeriods.value = response.data.months_years;
+    totalAll.value = response.data.total;
   }
 };
 const formatDate = (dateString: string) => {
@@ -212,25 +215,21 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
-const getTotalEntry = computed(() => {
-  if (!list.value?.length) return 'R$ 0,00';
+const getTotalAll = computed(() => {
+  const num = parseFloat(totalAll.value) || 0;
 
-  const total = list.value
-    .filter((item) => item.type === 'entrada')
-    .reduce((acc, item) => acc + (parseFloat(String(item.value)) || 0), 0);
-
-  return total.toLocaleString('pt-BR', {
+  return num.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   });
 });
-
-const getTotalOut = computed(() => {
+const getTotalPeriod = computed(() => {
   if (!list.value?.length) return 'R$ 0,00';
 
-  const total = list.value
-    .filter((item) => item.type !== 'entrada')
-    .reduce((acc, item) => acc + (parseFloat(String(item.value)) || 0), 0);
+  const total = list.value.reduce(
+    (acc, item) => acc + (parseFloat(String(item.value)) || 0),
+    0
+  );
 
   return total.toLocaleString('pt-BR', {
     style: 'currency',
@@ -261,23 +260,27 @@ watch(open, async () => {
           <q-card
             flat
             bordered
-            class="q-mt-sm row justify-center text-green text-bold text-h6"
+            class="q-mt-sm column justify-center"
             style="min-width: 200px; max-width: 100%"
           >
-            <q-tooltip> Total R$ Entrada </q-tooltip>
-            <q-card-section class="row justify-between">
-              <span>{{ getTotalEntry }}</span>
+            <q-card-section class="q-px-sm q-py-none text-bold"
+              >Total de contribuição</q-card-section
+            >
+            <q-card-section class="q-px-sm q-py-none">
+              <span>{{ getTotalAll }}</span>
             </q-card-section>
           </q-card>
           <q-card
             flat
             bordered
-            class="q-mt-sm row justify-center text-red text-bold text-h6"
+            class="q-mt-sm column justify-center q-pa-sm"
             style="min-width: 200px; max-width: 100%"
           >
-            <q-tooltip> Total R$ Saída </q-tooltip>
-            <q-card-section class="row justify-between">
-              <span>{{ getTotalOut }}</span>
+            <q-card-section class="q-px-sm q-py-none text-bold"
+              >Total do período</q-card-section
+            >
+            <q-card-section class="q-px-sm q-py-none">
+              <span>{{ getTotalPeriod }}</span>
             </q-card-section>
           </q-card>
         </div>

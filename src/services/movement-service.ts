@@ -50,6 +50,7 @@ export const getMovementsMemberService = (
     months_years: string[];
     categories: QuasarSelect<string>[];
     accounts: QuasarSelect<string>[];
+    total: string;
   };
 }> => {
   let url = `${baseUrl}/member`;

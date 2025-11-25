@@ -221,7 +221,7 @@ const save = async () => {
         dataOut.file,
         dataOut.category ? dataOut.category.value : '',
         dataOut.account ? dataOut.account.value : '',
-        dataOut.programmed.value,
+        dataOut.programmed.value
       );
     } else {
       await createMovement(
@@ -232,7 +232,7 @@ const save = async () => {
         dataOut.file,
         dataOut.category ? dataOut.category.value : '',
         dataOut.account ? dataOut.account.value : '',
-        dataOut.programmed.value,
+        dataOut.programmed.value
       );
     }
     clear();
@@ -256,7 +256,7 @@ const update = async () => {
         dataOut.description,
         dataOut.file,
         dataOut.category ? dataOut.category.value : '',
-        dataOut.account ? dataOut.account.value : '',
+        dataOut.account ? dataOut.account.value : ''
       );
     } else {
       await updateMovement(
@@ -267,7 +267,7 @@ const update = async () => {
         dataOut.description,
         dataOut.file,
         dataOut.category ? dataOut.category.value : '',
-        dataOut.account ? dataOut.account.value : '',
+        dataOut.account ? dataOut.account.value : ''
       );
     }
     clear();
@@ -695,11 +695,7 @@ watch(open, async () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="
-              loadingMovement ||
-              loadingScheduling ||
-              loadingReport
-            "
+            :loading="loadingMovement || loadingScheduling || loadingReport"
             unelevated
             no-caps
           />
@@ -709,11 +705,7 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="
-              loadingMovement ||
-              loadingScheduling ||
-              loadingReport
-            "
+            :loading="loadingMovement || loadingScheduling || loadingReport"
             unelevated
             no-caps
             :disable="dataOut.observation ? !readObservation : false"
