@@ -254,7 +254,7 @@ export const useSchedulingStore = defineStore('scheduling', {
       category: string,
       account: string,
       programmed: number,
-      member: string | null
+      member: string | null = null
     ) {
       try {
         this.setLoading(true);
@@ -294,7 +294,7 @@ export const useSchedulingStore = defineStore('scheduling', {
       file: File | string | null,
       category: string,
       account: string,
-      member: string | null
+      member: string | null = null
     ) {
       try {
         this.setLoading(true);

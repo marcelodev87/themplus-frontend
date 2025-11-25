@@ -7,7 +7,6 @@ import { DataOut } from 'src/ts/interfaces/data/Out';
 import { MovementOrSchedule } from 'src/ts/types/FormMode';
 import { useMovementStore } from 'src/stores/movement-store';
 import { useSchedulingStore } from 'src/stores/scheduling-store';
-import { useMemberStore } from 'src/stores/member-store';
 import { storeToRefs } from 'pinia';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
@@ -49,8 +48,6 @@ const {
 } = storeToRefs(useSchedulingStore());
 const { updateMovementByCounter } = useReportStore();
 const { loadingReport } = storeToRefs(useReportStore());
-const { getMembers } = useMemberStore();
-const { loadingMember, listMember } = storeToRefs(useMemberStore());
 
 const dataOut = reactive<DataOut>({
   type: 'saída',
@@ -59,7 +56,6 @@ const dataOut = reactive<DataOut>({
   file: null,
   category: null,
   account: null,
-  member: null,
   date: '',
   programmed: { label: 'Apenas mês selecionado', value: 0 },
   observation: null,
@@ -68,7 +64,6 @@ const optionsCategoriesMovement = ref(listCategoryMovement.value);
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
 const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
-const optionsMember = ref(listMember.value);
 const showConfirmAction = ref<boolean>(false);
 const textAlert = ref<string | null>(null);
 const textFile = ref<string | null>(null);
@@ -205,7 +200,6 @@ const clear = (): void => {
     value: '0.00',
     date: '',
     account: null,
-    member: null,
     description: '',
     file: null,
     programmed: { label: 'Apenas mês selecionado', value: 0 },
@@ -228,7 +222,6 @@ const save = async () => {
         dataOut.category ? dataOut.category.value : '',
         dataOut.account ? dataOut.account.value : '',
         dataOut.programmed.value,
-        dataOut.member ? dataOut.member.value : null
       );
     } else {
       await createMovement(
@@ -240,7 +233,6 @@ const save = async () => {
         dataOut.category ? dataOut.category.value : '',
         dataOut.account ? dataOut.account.value : '',
         dataOut.programmed.value,
-        dataOut.member ? dataOut.member.value : null
       );
     }
     clear();
@@ -265,7 +257,6 @@ const update = async () => {
         dataOut.file,
         dataOut.category ? dataOut.category.value : '',
         dataOut.account ? dataOut.account.value : '',
-        dataOut.member ? dataOut.member.value : null
       );
     } else {
       await updateMovement(
@@ -277,7 +268,6 @@ const update = async () => {
         dataOut.file,
         dataOut.category ? dataOut.category.value : '',
         dataOut.account ? dataOut.account.value : '',
-        dataOut.member ? dataOut.member.value : null
       );
     }
     clear();
@@ -312,7 +302,6 @@ const updateByCounter = async () => {
   }
 };
 const fetchInformations = async () => {
-  await getMembers();
   if (props.mode === 'schedule') {
     await getSchedulingsInformations(dataOut.type);
   } else {
@@ -343,20 +332,6 @@ const filterFnCategory = (
               element.label?.toLowerCase().includes(needle)
             );
     }
-  });
-};
-const filterFnMember = (
-  val: string,
-  updateFilter: (callback: () => void) => void
-) => {
-  const needle = val.toLowerCase();
-  updateFilter(() => {
-    optionsMember.value =
-      val === ''
-        ? listMember.value
-        : listMember.value.filter((element) =>
-            element.name?.toLowerCase().includes(needle)
-          );
   });
 };
 const filterFnAccount = (
@@ -452,21 +427,11 @@ async function handleFileSelect(file: File) {
     textFile.value = file.name;
   }
 }
-
-const getMembersOptions = computed(() => {
-  return listMember.value.map((member) => ({
-    label: member.name,
-    value: member.id,
-  }));
-});
 const mountEdit = (): void => {
   if (props.mode === 'schedule') {
     Object.assign(dataOut, {
       category: listCategoryScheduling.value.find(
         (item) => item.value === props.dataEdit?.category_id
-      ),
-      member: getMembersOptions.value.find(
-        (item) => item.value === props.dataEdit?.member_id
       ),
       value: props.dataEdit?.value ?? '',
       date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
@@ -480,9 +445,6 @@ const mountEdit = (): void => {
     Object.assign(dataOut, {
       category: listCategoryMovement.value.find(
         (item) => item.value === props.dataEdit?.category_id
-      ),
-      member: getMembersOptions.value.find(
-        (item) => item.value === props.dataEdit?.member_id
       ),
       value: props.dataEdit?.value ?? '',
       date: props.dataEdit?.date_movement.split('-').reverse().join('/') ?? '',
@@ -555,27 +517,6 @@ watch(open, async () => {
           >
             <template v-slot:prepend>
               <q-icon name="category" color="black" size="20px" />
-            </template>
-          </q-select>
-          <q-select
-            v-model="dataOut.member"
-            :options="getMembersOptions"
-            @filter="filterFnMember"
-            label="Membro"
-            :readonly="props.type === 'counter'"
-            filled
-            clearable
-            dense
-            options-dense
-            map-options
-            bg-color="white"
-            label-color="black"
-            use-input
-            input-debounce="0"
-            behavior="menu"
-          >
-            <template v-slot:prepend>
-              <q-icon name="person" color="black" size="20px" />
             </template>
           </q-select>
           <q-input
@@ -757,7 +698,6 @@ watch(open, async () => {
             :loading="
               loadingMovement ||
               loadingScheduling ||
-              loadingMember ||
               loadingReport
             "
             unelevated
@@ -772,8 +712,7 @@ watch(open, async () => {
             :loading="
               loadingMovement ||
               loadingScheduling ||
-              loadingReport ||
-              loadingMember
+              loadingReport
             "
             unelevated
             no-caps

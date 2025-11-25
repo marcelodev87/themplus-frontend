@@ -5,7 +5,6 @@ export interface DataOut {
   value: string;
   date: string;
   account: QuasarSelect<string> | null;
-  member: QuasarSelect<string> | null;
   description: string | null;
   file: File | null;
   type: string;

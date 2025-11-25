@@ -315,11 +315,10 @@ export const useMovementStore = defineStore('movement', {
       category: string,
       account: string,
       programmed: number,
-      member: string | null
+      member: string | null = null
     ) {
       this.setLoading(true);
 
-      console.log('member', member);
       try {
         const response = await createMovementService(
           type,
@@ -421,7 +420,7 @@ export const useMovementStore = defineStore('movement', {
       file: File | string | null,
       category: string,
       account: string,
-      member: string | null
+      member: string | null = null
     ) {
       this.setLoading(true);
       try {
