@@ -158,31 +158,31 @@ const mountData = () => {
           ?.name || 'Não informado',
       value: props.dataEdit.member_id,
     };
-  const congregationId = props.dataEdit?.congregation_id;
+    const congregationId = props.dataEdit?.congregation_id;
 
-  if (congregationId) {
-    if (congregationId === user.value?.enterprise_id) {
-      selectedCongregation.value = {
-        label: 'Minha organização',
-        value: congregationId,
-      };
-    } else {
-      const foundOffice = listOffice.value.find(
-        (state) => state.id === congregationId
-      );
-
-      if (foundOffice) {
+    if (congregationId) {
+      if (congregationId === user.value?.enterprise_id) {
         selectedCongregation.value = {
-          label: foundOffice.name,
-          value: foundOffice.id,
+          label: 'Minha organização',
+          value: congregationId,
         };
       } else {
-        selectedCongregation.value = null;
+        const foundOffice = listOffice.value.find(
+          (state) => state.id === congregationId
+        );
+
+        if (foundOffice) {
+          selectedCongregation.value = {
+            label: foundOffice.name,
+            value: foundOffice.id,
+          };
+        } else {
+          selectedCongregation.value = null;
+        }
       }
+    } else {
+      selectedCongregation.value = null;
     }
-  } else {
-    selectedCongregation.value = null;
-  }
   }
 };
 

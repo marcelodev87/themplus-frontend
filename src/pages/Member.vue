@@ -13,6 +13,7 @@ import FormMember from 'src/components/forms/FormMember.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ManageRole from 'src/components/manage/ManageRole.vue';
 import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
+import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
 
 defineOptions({
   name: 'Member',
@@ -29,6 +30,7 @@ const showAlertDataEnterprise = ref<boolean>(false);
 const showFormMember = ref<boolean>(false);
 const showMemberMovementInfo = ref<boolean>(false);
 const showManageRole = ref<boolean>(false);
+const showManageRelationship = ref<boolean>(false);
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
 const dataExclude = ref<string | null>(null);
@@ -77,6 +79,13 @@ const closeManageRole = async (): Promise<void> => {
   showManageRole.value = false;
   clear();
   await fetchMembers();
+};
+const openManageRelationship = (): void => {
+  showManageRelationship.value = true;
+};
+const closeManageRelationship = (): void => {
+  showManageRelationship.value = false;
+  clear();
 };
 const handleEdit = (member: MemberChurch) => {
   selectedDataEdit.value = member;
@@ -145,6 +154,16 @@ onMounted(async () => {
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
+        <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          @click="openManageRelationship"
+          icon-right="add"
+          label="Família"
+          class="q-mr-sm bg-contabilidade"
+          unelevated
+          no-caps
+          flat
+        />
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openManageRole"
@@ -313,6 +332,10 @@ onMounted(async () => {
           @update:open="closeMemberMovementInfo"
         />
         <ManageRole :open="showManageRole" @update:open="closeManageRole" />
+        <ManageRelationship
+          :open="showManageRelationship"
+          @update:open="closeManageRelationship"
+        />
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"

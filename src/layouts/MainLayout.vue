@@ -224,13 +224,13 @@ watch(
             <q-item-section> Atividades </q-item-section>
           </q-item>
           <q-expansion-item
+            v-show="enterprisePosition === 'client'"
             expand-separator
             icon="church"
             label="Igreja"
             dense-toggle
           >
             <q-item
-              v-show="enterprisePosition === 'client'"
               clickable
               :to="{ name: 'admin-member' }"
               :active="isActive('admin-member')"
@@ -257,7 +257,6 @@ watch(
             </q-item>
             <q-item
               v-show="
-                enterprisePosition === 'client' &&
                 user?.enterprise_id === user?.view_enterprise_id &&
                 user?.position === 'admin'
               "
