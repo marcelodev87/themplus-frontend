@@ -147,19 +147,69 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Deve ser informado o nome do membro',
     };
   }
+
   if (dataMember.phone.trim() !== '') {
     if (!/^\+?[1-9]\d{1,14}$/.test(dataMember.phone.trim())) {
       return { status: false, message: 'Digite um telefone válido' };
     }
   }
+
   if (dataMember.phoneProfessional.trim() !== '') {
     if (!/^\+?[1-9]\d{1,14}$/.test(dataMember.phoneProfessional.trim())) {
       return { status: false, message: 'Digite um telefone válido' };
     }
   }
 
+  const validateDate = (value: string, label: string) => {
+    if (value.trim() === '') return null;
+
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = value.match(regex);
+
+    if (!match) {
+      return `${label} deve estar no formato DD/MM/YYYY`;
+    }
+
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
+
+    if (month < 1 || month > 12) {
+      return `${label}: mês inválido`;
+    }
+
+    if (day < 1 || day > 31) {
+      return `${label}: dia inválido`;
+    }
+
+    const lastDay = new Date(year, month, 0).getDate();
+
+    if (day > lastDay) {
+      return `${label}: dia inválido para o mês informado`;
+    }
+
+    if (year < 1900 || year > 2100) {
+      return `${label}: ano fora do intervalo permitido`;
+    }
+
+    return null;
+  };
+
+  const dateFields = [
+    { field: dataMember.dateBirth, label: "Data de nascimento" },
+    { field: dataMember.dateBaptismo, label: "Data de batismo" },
+    { field: dataMember.startDate, label: "Data de início" },
+    { field: dataMember.endDate, label: "Data de término" },
+  ];
+
+  for (const item of dateFields) {
+    const error = validateDate(item.field, item.label);
+    if (error) return { status: false, message: error };
+  }
+
   return { status: true };
 };
+
 const clear = (): void => {
   tab.value = 'individual';
   Object.assign(dataMember, {
