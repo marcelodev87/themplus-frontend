@@ -14,6 +14,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ManageRole from 'src/components/manage/ManageRole.vue';
 import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
 import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
+import MemberFamilyInfo from 'src/components/info/MemberFamilyInfo.vue';
 
 defineOptions({
   name: 'Member',
@@ -27,6 +28,7 @@ const showConfirmAction = ref<boolean>(false);
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
 const showAlertDataEnterprise = ref<boolean>(false);
+const showMemberFamily = ref<boolean>(false);
 const showFormMember = ref<boolean>(false);
 const showMemberMovementInfo = ref<boolean>(false);
 const showManageRole = ref<boolean>(false);
@@ -85,6 +87,14 @@ const openManageRelationship = (): void => {
 };
 const closeManageRelationship = (): void => {
   showManageRelationship.value = false;
+  clear();
+};
+const openMemberFamilyInfo = (member: MemberChurch): void => {
+  selectedDataEdit.value = member;
+  showMemberFamily.value = true;
+};
+const closeMemberFamilyInfo = (): void => {
+  showMemberFamily.value = false;
   clear();
 };
 const handleEdit = (member: MemberChurch) => {
@@ -279,6 +289,20 @@ onMounted(async () => {
                   </q-tooltip>
                 </q-btn>
                 <q-btn
+                  @click="openMemberFamilyInfo(props.row)"
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    props.row.family.length > 0
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="secondary"
+                  icon="group"
+                >
+                  <q-tooltip>Família</q-tooltip>
+                </q-btn>
+                <q-btn
                   @click="openMemberMovementInfo(props.row)"
                   v-show="user?.enterprise_id === user?.view_enterprise_id"
                   size="sm"
@@ -330,6 +354,11 @@ onMounted(async () => {
           :open="showMemberMovementInfo"
           :member-selected="selectedDataEdit"
           @update:open="closeMemberMovementInfo"
+        />
+        <MemberFamilyInfo
+          :open="showMemberFamily"
+          :member-selected="selectedDataEdit"
+          @update:open="closeMemberFamilyInfo"
         />
         <ManageRole :open="showManageRole" @update:open="closeManageRole" />
         <ManageRelationship
