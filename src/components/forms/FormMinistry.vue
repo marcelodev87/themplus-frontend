@@ -110,6 +110,12 @@ const filterFnMember = (
 };
 const fetchMembers = async () => {
   await getMembers();
+  if (listMember.value.length === 0) {
+    Notify.create({
+      message: 'Necessário cadastrar membro antes de cadastrar ministério',
+      type: 'negative',
+    });
+  }
 };
 const mountData = () => {
   if (props.dataEdit) {
@@ -184,7 +190,7 @@ watch(open, async () => {
             input-class="text-black no-spinners"
           >
             <template v-slot:prepend>
-              <q-icon name="attach_money" color="black" size="20px" />
+              <q-icon name="arrow_right" color="black" size="20px" />
             </template>
           </q-input>
           <q-select
@@ -203,7 +209,7 @@ watch(open, async () => {
             behavior="menu"
           >
             <template v-slot:prepend>
-              <q-icon name="category" color="black" size="20px" />
+              <q-icon name="person" color="black" size="20px" />
             </template>
           </q-select>
         </q-form>

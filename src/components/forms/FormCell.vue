@@ -209,9 +209,21 @@ const update = async () => {
 };
 const fetchMembers = async () => {
   await getMembers();
+  if (listMember.value.length === 0) {
+    Notify.create({
+      message: 'Necessário cadastrar membro antes de cadastrar célula',
+      type: 'negative',
+    });
+  }
 };
 const fetchNetworks = async () => {
   await getNetworks();
+  if (listNetwork.value.length === 0) {
+    Notify.create({
+      message: 'Necessário cadastrar rede antes de cadastrar célula',
+      type: 'negative',
+    });
+  }
 };
 const filterFnHost = (
   val: string,
