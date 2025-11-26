@@ -65,7 +65,7 @@ const dataEntry = reactive<DataEntry>({
   observation: null,
 });
 const optionsCategoriesMovement = ref(listCategoryMovement.value);
-const filterMember = ref<string>('')
+const filterMember = ref<string>('');
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
 const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
@@ -214,7 +214,7 @@ const clear = (): void => {
   textAlert.value = '';
   textFile.value = null;
   readObservation.value = false;
-  filterMember.value = ''
+  filterMember.value = '';
 };
 const save = async () => {
   const check = checkData();
@@ -375,7 +375,7 @@ const filterFnMember = (
 ) => {
   const needle = val.toLowerCase();
   updateFilter(() => {
-    filterMember.value = needle
+    filterMember.value = needle;
   });
 };
 const closeConfirmActionOk = async (): Promise<void> => {
