@@ -8,6 +8,7 @@ import {
   deleteMemberService,
   getMembersService,
   updateMemberService,
+  updateActiveMemberService,
 } from 'src/services/member-service';
 import { DataMemberChurch, MemberChurch } from 'src/ts/interfaces/data/Member';
 
@@ -69,6 +70,24 @@ export const useMemberStore = defineStore('member', {
         this.setLoading(true);
         const response = await createMemberService(data);
         if (response.status === 201) {
+          this.clearListMember();
+          this.setListMember(response.data.members);
+          this.createSuccess(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateActiveMember(active: number, userId: string) {
+      try {
+        this.setLoading(true);
+        const response = await updateActiveMemberService(active, userId);
+        if (response.status === 200) {
           this.clearListMember();
           this.setListMember(response.data.members);
           this.createSuccess(response.data.message);

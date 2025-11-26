@@ -20,7 +20,7 @@ defineOptions({
 
 const { user } = storeToRefs(useAuthStore());
 const { listMember, loadingMember, filledData } = storeToRefs(useMemberStore());
-const { getMembers, deleteMember } = useMemberStore();
+const { getMembers, deleteMember, updateActiveMember } = useMemberStore();
 
 const showConfirmAction = ref<boolean>(false);
 const currentPage = ref<number>(1);
@@ -101,6 +101,9 @@ const closeConfirmAction = (): void => {
 const openConfirmAction = (id: string): void => {
   dataExclude.value = id;
   showConfirmAction.value = true;
+};
+const setActive = async (active: number, userId: string) => {
+  await updateActiveMember(active, userId);
 };
 
 const listMemberCurrent = computed(() => {
@@ -235,6 +238,27 @@ onMounted(async () => {
                 <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
               <q-td key="action" :props="props">
+                <q-btn
+                  v-show="
+                    user &&
+                    (user?.enterprise_id === user?.view_enterprise_id
+                      ? true
+                      : false) &&
+                    props.row.enterprise_id === user?.enterprise_id
+                  "
+                  @click="
+                    setActive(props.row.active === 1 ? 0 : 1, props.row.id)
+                  "
+                  size="sm"
+                  flat
+                  round
+                  :color="props.row.active ? 'red' : 'green'"
+                  :icon="props.row.active ? 'block' : 'check'"
+                >
+                  <q-tooltip>
+                    {{ props.row.active ? 'Inativar' : 'Ativar' }}
+                  </q-tooltip>
+                </q-btn>
                 <q-btn
                   @click="openMemberMovementInfo(props.row)"
                   v-show="user?.enterprise_id === user?.view_enterprise_id"

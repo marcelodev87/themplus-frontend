@@ -34,6 +34,17 @@ export const updateMemberService = (
   };
 }> => api.put(baseUrl, { id, ...data });
 
+export const updateActiveMemberService = (
+  active: number,
+  userId: string
+): Promise<{
+  status: number;
+  data: {
+    members: MemberChurch[];
+    message: string;
+  };
+}> => api.put(`${baseUrl}/active/`, { active, userId });
+
 export const deleteMemberService = (
   id: string
 ): Promise<{

@@ -196,10 +196,10 @@ const checkData = (): { status: boolean; message?: string } => {
   };
 
   const dateFields = [
-    { field: dataMember.dateBirth, label: "Data de nascimento" },
-    { field: dataMember.dateBaptismo, label: "Data de batismo" },
-    { field: dataMember.startDate, label: "Data de início" },
-    { field: dataMember.endDate, label: "Data de término" },
+    { field: dataMember.dateBirth, label: 'Data de nascimento' },
+    { field: dataMember.dateBaptismo, label: 'Data de batismo' },
+    { field: dataMember.startDate, label: 'Data de início' },
+    { field: dataMember.endDate, label: 'Data de término' },
   ];
 
   for (const item of dateFields) {
