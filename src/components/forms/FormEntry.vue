@@ -65,7 +65,7 @@ const dataEntry = reactive<DataEntry>({
   observation: null,
 });
 const optionsCategoriesMovement = ref(listCategoryMovement.value);
-const optionsMember = ref(listMember.value);
+const filterMember = ref<string>('')
 const optionsCategoriesScheduling = ref(listCategoryScheduling.value);
 const optionsAccountsMovement = ref(listAccountMovement.value);
 const optionsAccountsScheduling = ref(listAccountScheduling.value);
@@ -214,6 +214,7 @@ const clear = (): void => {
   textAlert.value = '';
   textFile.value = null;
   readObservation.value = false;
+  filterMember.value = ''
 };
 const save = async () => {
   const check = checkData();
@@ -374,12 +375,7 @@ const filterFnMember = (
 ) => {
   const needle = val.toLowerCase();
   updateFilter(() => {
-    optionsMember.value =
-      val === ''
-        ? listMember.value
-        : listMember.value.filter((element) =>
-            element.name?.toLowerCase().includes(needle)
-          );
+    filterMember.value = needle
   });
 };
 const closeConfirmActionOk = async (): Promise<void> => {
@@ -454,10 +450,23 @@ async function handleFileSelect(file: File) {
 }
 
 const getMembersOptions = computed(() => {
-  return listMember.value.map((member) => ({
-    label: member.name,
-    value: member.id,
-  }));
+  const needle = filterMember.value.toLowerCase();
+
+  if (filterMember.value === '') {
+    return listMember.value.map((member) => ({
+      label: member.name,
+      value: member.id,
+    }));
+  } else {
+    const filteredList = listMember.value.filter((element) =>
+      element.name?.toLowerCase().includes(needle)
+    );
+
+    return filteredList.map((member) => ({
+      label: member.name,
+      value: member.id,
+    }));
+  }
 });
 const mountEdit = (): void => {
   if (props.mode === 'schedule') {
@@ -558,7 +567,6 @@ watch(open, async () => {
           <q-select
             v-model="dataEntry.member"
             :options="getMembersOptions"
-            @filter="filterFnMember"
             label="Membro"
             :readonly="props.type === 'counter'"
             filled
@@ -571,6 +579,7 @@ watch(open, async () => {
             use-input
             input-debounce="0"
             behavior="menu"
+            @filter="filterFnMember"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />
