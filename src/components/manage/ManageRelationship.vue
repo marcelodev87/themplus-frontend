@@ -61,6 +61,9 @@ const closeFormRelationship = (): void => {
   showFormRelationship.value = false;
   clear();
 };
+const exclude = async (id: string) => {
+  await deleteRelationship(id);
+};
 const closeConfirmActionOk = async (): Promise<void> => {
   showConfirmAction.value = false;
   await exclude(selectedData.value ?? '');
@@ -72,9 +75,6 @@ const closeConfirmAction = (): void => {
 const openConfirmAction = async (id: string): Promise<void> => {
   selectedData.value = id;
   showConfirmAction.value = true;
-};
-const exclude = async (id: string) => {
-  await deleteRelationship(id);
 };
 const handleEdit = (relationship: Relationship) => {
   selectedDataEdit.value = relationship;

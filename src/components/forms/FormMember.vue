@@ -7,11 +7,12 @@ import { storeToRefs } from 'pinia';
 import { DataListFamily, MemberChurch } from 'src/ts/interfaces/data/Member';
 import { useMemberStore } from 'src/stores/member-store';
 import { useRoleStore } from 'src/stores/role-store';
-import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { states } from 'src/utils/state';
 import { education } from 'src/utils/education';
 import { marital } from 'src/utils/marital';
 import { useMinistryStore } from 'src/stores/ministry-store';
+import { useRelationshipStore } from 'src/stores/relationship-store';
 
 defineOptions({
   name: 'FormMember',
@@ -27,10 +28,15 @@ const emit = defineEmits<{
 
 const memberID = computed(() => props.dataEdit?.id ?? '');
 
-const { createMember, updateMember } = useMemberStore();
+const { createMember, updateMember, getMembers } = useMemberStore();
 const { getRoles } = useRoleStore();
+const { listMember, loadingMember } = storeToRefs(useMemberStore());
 const { loadingRole, listRole } = storeToRefs(useRoleStore());
 const { listMinistry, loadingMinistry } = storeToRefs(useMinistryStore());
+const { listRelationship, loadingRelationship } = storeToRefs(
+  useRelationshipStore()
+);
+const { getRelationships } = useRelationshipStore();
 const { getMinistries } = useMinistryStore();
 
 const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(
@@ -38,6 +44,8 @@ const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(
 );
 const filterMinistry = ref<string>('');
 const filterRole = ref<string>('');
+const filterMember = ref<string>('');
+const filterRelationship = ref<string>('');
 const dataListFamily = ref<DataListFamily[]>([]);
 const loading = ref<boolean>(false);
 const dataMember = reactive({
@@ -89,34 +97,28 @@ const selectedEducation = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
 });
-const selectedMemberFamily = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
-const selectedStatusFamily = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
-// const columnsListMember = reactive<QuasarTable[]>([
-//   {
-//     name: 'member',
-//     label: 'Membro',
-//     field: 'member',
-//     align: 'left',
-//   },
-//   {
-//     name: 'family',
-//     label: 'Parentesco',
-//     field: 'family',
-//     align: 'left',
-//   },
-//   {
-//     name: 'action',
-//     label: 'Ações',
-//     field: 'action',
-//     align: 'right',
-//   },
-// ]);
+const selectedMemberFamily = ref<QuasarSelect<string | null> | null>(null);
+const selectedStatusFamily = ref<QuasarSelect<string | null> | null>(null);
+const columnsListFamily = reactive<QuasarTable[]>([
+  {
+    name: 'member',
+    label: 'Membro',
+    field: 'member',
+    align: 'left',
+  },
+  {
+    name: 'family',
+    label: 'Parentesco',
+    field: 'family',
+    align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Ações',
+    field: 'action',
+    align: 'right',
+  },
+]);
 
 const open = computed({
   get: () => props.open,
@@ -198,14 +200,9 @@ const checkData = (): { status: boolean; message?: string } => {
     if (month < 1 || month > 12) {
       return `${label}: mês inválido`;
     }
+    const dateCheck = new Date(year, month - 1, day);
 
-    if (day < 1 || day > 31) {
-      return `${label}: dia inválido`;
-    }
-
-    const lastDay = new Date(year, month, 0).getDate();
-
-    if (day > lastDay) {
+    if (dateCheck.getMonth() !== month - 1 || dateCheck.getDate() !== day) {
       return `${label}: dia inválido para o mês informado`;
     }
 
@@ -223,14 +220,22 @@ const checkData = (): { status: boolean; message?: string } => {
     { field: dataMember.endDate, label: 'Data de término' },
   ];
 
-  for (const item of dateFields) {
-    const error = validateDate(item.field, item.label);
-    if (error) return { status: false, message: error };
-  }
+  let validationError: string | null = null;
 
+  const hasError = dateFields.some((item) => {
+    const error = validateDate(item.field, item.label);
+    if (error) {
+      validationError = error;
+      return true;
+    }
+    return false;
+  });
+
+  if (hasError) {
+    return { status: false, message: validationError! };
+  }
   return { status: true };
 };
-
 const clear = (): void => {
   tab.value = 'individual';
   Object.assign(dataMember, {
@@ -290,33 +295,29 @@ const clear = (): void => {
     value: 'visitor',
   };
 
-  selectedMemberFamily.value = {
-    label: 'Não informado',
-    value: null,
-  };
+  selectedMemberFamily.value = null;
 
-  selectedStatusFamily.value = {
-    label: 'Não informado',
-    value: null,
-  };
+  selectedStatusFamily.value = null;
 
   dataListFamily.value = [];
 
   filterMinistry.value = '';
   filterRole.value = '';
+  filterRelationship.value = '';
+  filterMember.value = '';
 };
-// const getDataFamily = () => {
-//   if (!dataListFamily.value || dataListFamily.value.length === 0) {
-//     return null;
-//   }
+const getDataFamily = () => {
+  if (!dataListFamily.value || dataListFamily.value.length === 0) {
+    return null;
+  }
 
-//   return dataListFamily.value.map((item) => {
-//     return {
-//       memberID: item.member.value!,
-//       kinship: item.family.value!,
-//     };
-//   });
-// };
+  return dataListFamily.value.map((item) => {
+    return {
+      memberID: item.member.value!,
+      relationshipID: item.family.value!,
+    };
+  });
+};
 const save = async () => {
   const check = checkData();
   if (check.status) {
@@ -348,6 +349,7 @@ const save = async () => {
       churchEndDate: clearSpaces(dataMember.churchEndDate),
       roles: selectedRole.value.map((role) => role.value),
       ministries: selectedMinistry.value.map((ministry) => ministry.value),
+      family: getDataFamily(),
     });
     if (response?.status === 201) {
       emit('update:open');
@@ -390,6 +392,7 @@ const update = async () => {
       churchEndDate: clearSpaces(dataMember.churchEndDate),
       roles: selectedRole.value.map((role) => role.value),
       ministries: selectedMinistry.value.map((ministry) => ministry.value),
+      family: getDataFamily(),
     });
     if (response?.status === 200) {
       emit('update:open');
@@ -401,15 +404,35 @@ const update = async () => {
     });
   }
 };
-// const addFamily = () => {
-//   dataListFamily.value.push({
-//     member: selectedMemberFamily.value,
-//     family: selectedStatusFamily.value,
-//   });
-// };
-// const deleteFamily = (index: number): void => {
-//   dataListFamily.value.splice(index, 1);
-// };
+const addFamily = () => {
+  const memberToAdd = selectedMemberFamily.value;
+  const statusToAdd = selectedStatusFamily.value;
+
+  if (memberToAdd?.value && statusToAdd?.value) {
+    const memberAlreadyExists = dataListFamily.value.some(
+      (item) => item.member.value === memberToAdd.value
+    );
+
+    if (memberAlreadyExists) {
+      Notify.create({
+        message: 'Não é possível ter 2 parentescos com o mesmo membro',
+        type: 'negative',
+      });
+      return;
+    }
+
+    dataListFamily.value.push({
+      member: memberToAdd,
+      family: statusToAdd,
+    });
+
+    selectedMemberFamily.value = null;
+    selectedStatusFamily.value = null;
+  }
+};
+const deleteFamily = (index: number): void => {
+  dataListFamily.value.splice(index, 1);
+};
 const mountData = () => {
   if (props.dataEdit) {
     Object.assign(dataMember, {
@@ -478,6 +501,33 @@ const mountData = () => {
       label: props.dataEdit.active === 1 ? 'Ativo' : 'Inativo',
       value: props.dataEdit.active,
     };
+
+    if (props.dataEdit.family.length > 0) {
+      props.dataEdit.family.forEach((item) => {
+        const foundMember = listMember.value.find(
+          (member) => member.id === item.pivot.related_member_id
+        );
+
+        const foundFamily = listRelationship.value.find(
+          (relationship) => relationship.id === item.pivot.relationship_id
+        );
+
+        const memberOption = foundMember
+          ? { label: foundMember.name, value: foundMember.id }
+          : null;
+
+        const familyOption = foundFamily
+          ? { label: foundFamily.name, value: foundFamily.id }
+          : null;
+
+        if (memberOption && familyOption) {
+          dataListFamily.value.push({
+            member: memberOption,
+            family: familyOption,
+          });
+        }
+      });
+    }
   }
 };
 const fetchMinistries = async () => {
@@ -485,6 +535,12 @@ const fetchMinistries = async () => {
 };
 const fetchRoles = async () => {
   await getRoles();
+};
+const fetchMembers = async () => {
+  await getMembers();
+};
+const fetchRelationships = async () => {
+  await getRelationships();
 };
 const filterFnMinistry = (
   val: string,
@@ -502,6 +558,24 @@ const filterFnRoles = (
   const needle = val.toLowerCase();
   updateFilter(() => {
     filterRole.value = needle;
+  });
+};
+const filterFnMembers = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterMember.value = needle;
+  });
+};
+const filterFnRelationships = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterRelationship.value = needle;
   });
 };
 
@@ -563,21 +637,53 @@ const optionsActive = computed(() => [
     value: 0,
   },
 ]);
-// const optionsMembers = computed(() => {
-//   const options = listMember.value.map((item) => {
-//     return {
-//       label: item.name,
-//       value: item.id,
-//     };
-//   });
+const optionsMembers = computed(() => {
+  const needle = filterMember.value.trim().toLowerCase();
 
-//   return [{ label: 'Não informado', value: null }, ...options];
-// });
-// const optionsStatusFamily = computed(() => {
-//   return [{ label: 'Não informado', value: null }, ...statusFamily];
-// });
+  let filteredList = listMember.value;
+
+  if (needle !== '') {
+    filteredList = listMember.value.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+
+  return filteredList.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+});
+const optionsStatusFamily = computed(() => {
+  const needle = filterRelationship.value.trim().toLowerCase();
+
+  let filteredList = listRelationship.value;
+
+  if (needle !== '') {
+    filteredList = listRelationship.value.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+
+  return filteredList.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+});
 const isLoading = computed(() => {
-  return loading.value || loadingRole.value || loadingMinistry.value;
+  return (
+    loading.value ||
+    loadingRole.value ||
+    loadingMinistry.value ||
+    loadingMember.value ||
+    loadingRelationship.value
+  );
+});
+const disableBtnAddFamily = computed(() => {
+  return selectedMemberFamily.value?.value && selectedStatusFamily.value?.value;
 });
 
 watch(
@@ -615,6 +721,8 @@ watch(open, async () => {
     clear();
     await fetchRoles();
     await fetchMinistries();
+    await fetchMembers();
+    await fetchRelationships();
     mountData();
     loading.value = false;
   }
@@ -647,7 +755,7 @@ watch(open, async () => {
           <q-tab name="contact" label="Contatos" />
           <q-tab name="address" label="Endereço" />
           <q-tab name="ministry" label="Dados Ministeriais" />
-          <!-- <q-tab name="family" label="Família" /> -->
+          <q-tab name="family" label="Família" />
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="individual">
@@ -1064,7 +1172,7 @@ watch(open, async () => {
               </q-input>
             </q-form>
           </q-tab-panel>
-          <!-- <q-tab-panel name="family">
+          <q-tab-panel name="family">
             <q-form v-if="listMember.length > 0" class="q-gutter-y-sm">
               <div class="col q-gutter-y-sm">
                 <q-select
@@ -1078,6 +1186,10 @@ watch(open, async () => {
                   bg-color="white"
                   label-color="black"
                   class="full-width"
+                  use-input
+                  input-debounce="0"
+                  behavior="menu"
+                  @filter="filterFnMembers"
                 >
                   <template v-slot:prepend>
                     <q-icon name="person" color="black" size="20px" />
@@ -1094,6 +1206,10 @@ watch(open, async () => {
                   bg-color="white"
                   label-color="black"
                   class="full-width"
+                  use-input
+                  input-debounce="0"
+                  behavior="menu"
+                  @filter="filterFnRelationships"
                 >
                   <template v-slot:prepend>
                     <q-icon name="favorite" color="black" size="20px" />
@@ -1103,6 +1219,7 @@ watch(open, async () => {
               <div class="row justify-end">
                 <q-btn
                   @click="addFamily"
+                  :disable="!disableBtnAddFamily"
                   color="secondary"
                   label="Adicionar"
                   size="md"
@@ -1114,7 +1231,7 @@ watch(open, async () => {
                 <q-table
                   :rows="dataListFamily"
                   :rows-per-page-options="[10]"
-                  :columns="columnsListMember"
+                  :columns="columnsListFamily"
                   flat
                   bordered
                   dense
@@ -1166,7 +1283,7 @@ watch(open, async () => {
               Não é possível configurar a sessão de família pois não há membros
               cadastrados.
             </q-banner>
-          </q-tab-panel> -->
+          </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
       <q-card-actions align="right">

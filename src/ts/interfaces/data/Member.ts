@@ -34,6 +34,13 @@ export interface MemberChurch {
   church_end_date: string | null;
   roles: Role[];
   ministries: Ministry[];
+  family: {
+    pivot: {
+      member_id: string;
+      related_member_id: string;
+      relationship_id: string;
+    };
+  }[];
 }
 export interface DataMemberChurch {
   id?: string | null;
@@ -66,6 +73,12 @@ export interface DataMemberChurch {
   churchEndDate: string | null;
   roles: string[];
   ministries: string[];
+  family:
+    | {
+        memberID: string;
+        relationshipID: string;
+      }[]
+    | null;
 }
 
 export interface DataListFamily {

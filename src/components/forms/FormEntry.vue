@@ -14,8 +14,8 @@ import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useReportStore } from 'src/stores/report-store';
 import imageCompression from 'browser-image-compression';
-import ConfirmAction from '../confirm/ConfirmAction.vue';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
+import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'FormEntry',
@@ -462,18 +462,19 @@ const getMembersOptions = computed(() => {
       label: member.name,
       value: member.id,
     }));
-  } else {
-    const filteredList = listMember.value.filter(
-      (element) =>
-        element.name?.toLowerCase().includes(needle) && isActive(element)
-    );
-
-    return filteredList.map((member) => ({
-      label: member.name,
-      value: member.id,
-    }));
   }
+
+  const filteredList = listMember.value.filter(
+    (element) =>
+      element.name?.toLowerCase().includes(needle) && isActive(element)
+  );
+
+  return filteredList.map((member) => ({
+    label: member.name,
+    value: member.id,
+  }));
 });
+
 const mountEdit = (): void => {
   if (props.mode === 'schedule') {
     Object.assign(dataEntry, {
