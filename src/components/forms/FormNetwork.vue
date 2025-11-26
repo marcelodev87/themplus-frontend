@@ -34,14 +34,10 @@ const { getOffices } = useOfficeStore();
 const dataNetwork = reactive({
   name: '' as string,
 });
-const selectedMember = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
-const selectedCongregation = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
+const selectedMember = ref<QuasarSelect<string | null> | null>(null);
+const selectedCongregation = ref<QuasarSelect<string | null> | null>(null);
+const filterMember = ref<string>('');
+const filterCongregation = ref<string>('');
 
 const open = computed({
   get: () => props.open,
@@ -55,13 +51,16 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Deve ser informado o nome da rede',
     };
   }
-  if (selectedMember.value.value === null) {
+  if (selectedMember.value === null || selectedMember.value?.value === null) {
     return {
       status: false,
       message: 'Selecione um membro para coordenar a rede',
     };
   }
-  if (selectedCongregation.value.value === null) {
+  if (
+    selectedCongregation.value === null ||
+    selectedCongregation.value?.value === null
+  ) {
     return {
       status: false,
       message: 'Selecione uma congregação',
@@ -75,22 +74,18 @@ const clear = (): void => {
     name: '',
   });
 
-  selectedMember.value = {
-    label: 'Não informado',
-    value: null,
-  };
-  selectedCongregation.value = {
-    label: 'Não informado',
-    value: null,
-  };
+  selectedMember.value = null;
+  selectedCongregation.value = null;
+  filterMember.value = '';
+  filterCongregation.value = '';
 };
 const save = async () => {
   const check = checkData();
   if (check.status) {
     const response = await createNetwork({
       name: dataNetwork.name,
-      memberID: selectedMember.value.value,
-      congregationID: selectedCongregation.value.value,
+      memberID: selectedMember.value!.value,
+      congregationID: selectedCongregation.value!.value,
     });
     if (response?.status === 201) {
       emit('update:open');
@@ -108,8 +103,8 @@ const update = async () => {
     const response = await updateNetwork({
       id: props.dataEdit?.id,
       name: dataNetwork.name,
-      memberID: selectedMember.value.value,
-      congregationID: selectedCongregation.value.value,
+      memberID: selectedMember.value!.value,
+      congregationID: selectedCongregation.value!.value,
     });
     if (response?.status === 200) {
       emit('update:open');
@@ -126,6 +121,24 @@ const fetchMembers = async () => {
 };
 const fetchCongregations = async () => {
   await getOffices();
+};
+const filterFnMember = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterMember.value = needle;
+  });
+};
+const filterFnCongregation = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterCongregation.value = needle;
+  });
 };
 const mountData = () => {
   if (props.dataEdit) {
@@ -150,20 +163,37 @@ const mountData = () => {
 };
 
 const optionsMembers = computed(() => {
-  const options = listMember.value
-    .filter((item) => item.enterprise_id === user?.value?.enterprise_id)
-    .map((item) => {
-      return {
-        label: item.name,
-        value: item.id,
-      };
-    });
+  const needle = filterMember.value.trim().toLowerCase();
 
-  return [{ label: 'Não informado', value: null }, ...options];
+  let members = listMember.value.filter(
+    (item) => item.enterprise_id === user?.value?.enterprise_id
+  );
+
+  if (needle !== '') {
+    members = members.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+
+  const options = members.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  return [...options];
 });
-
 const optionsOffices = computed(() => {
-  return listOffice.value.map((item) => {
+  const needle = filterCongregation.value.trim().toLowerCase();
+
+  let filteredList = listOffice.value;
+
+  if (needle !== '') {
+    filteredList = listOffice.value.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+
+  return filteredList.map((item) => {
     return {
       label: item.name,
       value: item.id,
@@ -215,6 +245,10 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            @filter="filterFnMember"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="category" color="black" size="20px" />
@@ -230,6 +264,10 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            @filter="filterFnCongregation"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="category" color="black" size="20px" />

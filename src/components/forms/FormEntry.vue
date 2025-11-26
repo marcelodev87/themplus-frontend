@@ -15,6 +15,7 @@ import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useReportStore } from 'src/stores/report-store';
 import imageCompression from 'browser-image-compression';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
+import { MemberChurch } from 'src/ts/interfaces/data/Member';
 
 defineOptions({
   name: 'FormEntry',
@@ -452,14 +453,19 @@ async function handleFileSelect(file: File) {
 const getMembersOptions = computed(() => {
   const needle = filterMember.value.toLowerCase();
 
+  const isActive = (member: MemberChurch) => member.active === 1;
+
   if (filterMember.value === '') {
-    return listMember.value.map((member) => ({
+    const activeMembers = listMember.value.filter(isActive);
+
+    return activeMembers.map((member) => ({
       label: member.name,
       value: member.id,
     }));
   } else {
-    const filteredList = listMember.value.filter((element) =>
-      element.name?.toLowerCase().includes(needle)
+    const filteredList = listMember.value.filter(
+      (element) =>
+        element.name?.toLowerCase().includes(needle) && isActive(element)
     );
 
     return filteredList.map((member) => ({

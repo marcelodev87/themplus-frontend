@@ -35,6 +35,9 @@ const { getNetworks } = useNetworkStore();
 const { loadingNetwork, listNetwork } = storeToRefs(useNetworkStore());
 
 const loading = ref<boolean>(false);
+const filterHost = ref<string>('');
+const filterLeader = ref<string>('');
+const filterNetwork = ref<string>('');
 const dataCell = reactive({
   name: '' as string,
   dateFoundation: '' as string,
@@ -49,18 +52,9 @@ const dataCell = reactive({
   complement: '' as string,
   location: '' as string,
 });
-const selectedLeader = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
-const selectedHost = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
-const selectedNetwork = ref<QuasarSelect<string | null>>({
-  label: 'Não informado',
-  value: null,
-});
+const selectedLeader = ref<QuasarSelect<string | null> | null>(null);
+const selectedHost = ref<QuasarSelect<string | null> | null>(null);
+const selectedNetwork = ref<QuasarSelect<string | null> | null>(null);
 const selectedDayWeek = ref<QuasarSelect<number>>({
   label: 'Segunda-Feira',
   value: 1,
@@ -86,19 +80,19 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Deve ser informado o nome da célula',
     };
   }
-  if (selectedLeader.value.value === null) {
+  if (selectedLeader.value === null || selectedLeader.value?.value === null) {
     return {
       status: false,
       message: 'Selecione um membro dirigente',
     };
   }
-  if (selectedHost.value.value === null) {
+  if (selectedHost.value === null || selectedHost.value?.value === null) {
     return {
       status: false,
       message: 'Selecione um membro anfitrião',
     };
   }
-  if (selectedNetwork.value.value === null) {
+  if (selectedNetwork.value === null || selectedNetwork.value?.value === null) {
     return {
       status: false,
       message: 'Selecione uma rede',
@@ -126,18 +120,9 @@ const clear = (): void => {
     location: '',
   });
 
-  selectedHost.value = {
-    label: 'Não informado',
-    value: null,
-  };
-  selectedLeader.value = {
-    label: 'Não informado',
-    value: null,
-  };
-  selectedNetwork.value = {
-    label: 'Não informado',
-    value: null,
-  };
+  selectedHost.value = null;
+  selectedLeader.value = null;
+  selectedNetwork.value = null;
   selectedDayWeek.value = {
     label: 'Segunda-Feira',
     value: 1,
@@ -150,6 +135,10 @@ const clear = (): void => {
     label: 'Ativo',
     value: 1,
   };
+
+  filterHost.value = '';
+  filterLeader.value = '';
+  filterNetwork.value = '';
 };
 const save = async () => {
   const check = checkData();
@@ -158,9 +147,9 @@ const save = async () => {
       name: dataCell.name,
       dateFoundation: dataCell.dateFoundation,
       dateEnd: dataCell.dateEnd,
-      networkID: selectedNetwork.value.value,
-      leaderID: selectedLeader.value.value,
-      hostID: selectedHost.value.value,
+      networkID: selectedNetwork.value!.value,
+      leaderID: selectedLeader.value!.value,
+      hostID: selectedHost.value!.value,
       active: selectedStatus.value.value,
       location: clearSpaces(dataCell.location),
       dayWeek: selectedDayWeek.value.value,
@@ -192,9 +181,9 @@ const update = async () => {
       name: dataCell.name,
       dateFoundation: dataCell.dateFoundation,
       dateEnd: dataCell.dateEnd,
-      networkID: selectedNetwork.value.value,
-      leaderID: selectedLeader.value.value,
-      hostID: selectedHost.value.value,
+      networkID: selectedNetwork.value!.value,
+      leaderID: selectedLeader.value!.value,
+      hostID: selectedHost.value!.value,
       active: selectedStatus.value.value,
       location: clearSpaces(dataCell.location),
       dayWeek: selectedDayWeek.value.value,
@@ -224,29 +213,65 @@ const fetchMembers = async () => {
 const fetchNetworks = async () => {
   await getNetworks();
 };
+const filterFnHost = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterHost.value = needle;
+  });
+};
+const filterFnNetwork = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterNetwork.value = needle;
+  });
+};
 
 const optionsMembers = computed(() => {
-  const options = listMember.value
-    .filter((item) => item.enterprise_id === user?.value?.enterprise_id)
-    .map((item) => {
-      return {
-        label: item.name,
-        value: item.id,
-      };
-    });
+  const needle = filterHost.value.trim().toLowerCase();
 
-  return [{ label: 'Não informado', value: null }, ...options];
-});
+  let filteredList = listMember.value.filter(
+    (item) => item.enterprise_id === user?.value?.enterprise_id
+  );
 
-const optionsNetworks = computed(() => {
-  const options = listNetwork.value.map((item) => {
+  if (needle !== '') {
+    filteredList = filteredList.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+
+  const options = filteredList.map((item) => {
     return {
       label: item.name,
       value: item.id,
     };
   });
 
-  return [{ label: 'Não informado', value: null }, ...options];
+  return [...options];
+});
+const optionsNetworks = computed(() => {
+  const needle = filterNetwork.value.trim().toLowerCase();
+
+  let filteredList = listNetwork.value;
+
+  if (needle !== '') {
+    filteredList = listNetwork.value.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+  const options = filteredList.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+
+  return [...options];
 });
 const optionsWeekDays = computed(() => {
   return [{ label: 'Não informado', value: null }, ...weekDays];
@@ -289,37 +314,41 @@ const mountData = () => {
       active: props.dataEdit.active,
     });
 
-    selectedHost.value = {
-      label:
-        listMember.value.find((state) => state.id === props.dataEdit?.host_id)
-          ?.name || 'Não informado',
-      value: props.dataEdit.host_id,
-    };
-    selectedNetwork.value = {
-      label:
-        listNetwork.value.find(
-          (state) => state.id === props.dataEdit?.network_id
-        )?.name || 'Não informado',
-      value: props.dataEdit.network_id,
-    };
-    selectedLeader.value = {
-      label:
-        listMember.value.find((state) => state.id === props.dataEdit?.leader_id)
-          ?.name || 'Não informado',
-      value: props.dataEdit.leader_id,
-    };
+    const foundHost = listMember.value.find(
+      (state) => state.id === props.dataEdit?.host_id
+    );
+    selectedHost.value = foundHost
+      ? { label: foundHost.name, value: foundHost.id }
+      : null;
+
+    const foundNetwork = listNetwork.value.find(
+      (state) => state.id === props.dataEdit?.network_id
+    );
+    selectedNetwork.value = foundNetwork
+      ? { label: foundNetwork.name, value: foundNetwork.id }
+      : null;
+
+    const foundLeader = listMember.value.find(
+      (state) => state.id === props.dataEdit?.leader_id
+    );
+    selectedLeader.value = foundLeader
+      ? { label: foundLeader.name, value: foundLeader.id }
+      : null;
+
     selectedDayWeek.value = {
       label:
         weekDays.find((state) => state.value === props.dataEdit?.day_week)
           ?.label || 'Não informado',
       value: props.dataEdit.day_week,
     };
+
     selectedFrequency.value = {
       label:
         frequencies.find((state) => state.value === props.dataEdit?.frequency)
           ?.label || 'Não informado',
       value: props.dataEdit.frequency,
     };
+
     selectedStatus.value = {
       label:
         optionsActive.value.find(
@@ -368,8 +397,8 @@ watch(open, async () => {
         <TitlePage
           :title="
             props.dataEdit === null
-              ? 'Cadastro de ministério'
-              : 'Atualização de ministério'
+              ? 'Cadastro de célula'
+              : 'Atualização de célula'
           "
         />
       </q-card-section>
@@ -426,6 +455,10 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            @filter="filterFnHost"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />
@@ -441,6 +474,10 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            @filter="filterFnNetwork"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="group_work" color="black" size="20px" />
@@ -528,6 +565,10 @@ watch(open, async () => {
             map-options
             bg-color="white"
             label-color="black"
+            @filter="filterFnHost"
+            use-input
+            input-debounce="0"
+            behavior="menu"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />

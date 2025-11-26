@@ -36,6 +36,8 @@ const { getMinistries } = useMinistryStore();
 const tab = ref<'individual' | 'contact' | 'address' | 'ministry' | 'family'>(
   'individual'
 );
+const filterMinistry = ref<string>('');
+const filterRole = ref<string>('');
 const dataListFamily = ref<DataListFamily[]>([]);
 const loading = ref<boolean>(false);
 const dataMember = reactive({
@@ -121,7 +123,17 @@ const open = computed({
   set: () => emit('update:open'),
 });
 const optionsRoles = computed(() => {
-  return listRole.value.map((item) => {
+  const needle = filterRole.value.trim().toLowerCase();
+
+  let filteredList = listRole.value;
+
+  if (needle !== '') {
+    filteredList = listRole.value.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+
+  return filteredList.map((item) => {
     return {
       label: item.name,
       value: item.id,
@@ -129,7 +141,16 @@ const optionsRoles = computed(() => {
   });
 });
 const optionsMinistries = computed(() => {
-  return listMinistry.value.map((item) => {
+  const needle = filterMinistry.value.trim().toLowerCase();
+
+  let filteredList = listMinistry.value;
+
+  if (needle !== '') {
+    filteredList = listMinistry.value.filter((item) =>
+      item.name?.toLowerCase().includes(needle)
+    );
+  }
+  return filteredList.map((item) => {
     return {
       label: item.name,
       value: item.id,
@@ -280,6 +301,9 @@ const clear = (): void => {
   };
 
   dataListFamily.value = [];
+
+  filterMinistry.value = '';
+  filterRole.value = '';
 };
 // const getDataFamily = () => {
 //   if (!dataListFamily.value || dataListFamily.value.length === 0) {
@@ -461,6 +485,24 @@ const fetchMinistries = async () => {
 };
 const fetchRoles = async () => {
   await getRoles();
+};
+const filterFnMinistry = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterMinistry.value = needle;
+  });
+};
+const filterFnRoles = (
+  val: string,
+  updateFilter: (callback: () => void) => void
+) => {
+  const needle = val.toLowerCase();
+  updateFilter(() => {
+    filterRole.value = needle;
+  });
 };
 
 const formattedPhonePessoal = computed({
@@ -936,6 +978,10 @@ watch(open, async () => {
                 bg-color="white"
                 label-color="black"
                 class="full-width"
+                use-input
+                input-debounce="0"
+                behavior="menu"
+                @filter="filterFnMinistry"
               >
                 <template v-slot:prepend>
                   <q-icon name="arrow_right" color="black" size="20px" />
@@ -953,6 +999,10 @@ watch(open, async () => {
                 bg-color="white"
                 label-color="black"
                 class="full-width"
+                use-input
+                input-debounce="0"
+                behavior="menu"
+                @filter="filterFnRoles"
               >
                 <template v-slot:prepend>
                   <q-icon name="arrow_right" color="black" size="20px" />
