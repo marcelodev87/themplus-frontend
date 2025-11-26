@@ -158,13 +158,31 @@ const mountData = () => {
           ?.name || 'Não informado',
       value: props.dataEdit.member_id,
     };
-    selectedCongregation.value = {
-      label:
-        listOffice.value.find(
-          (state) => state.id === props.dataEdit?.congregation_id
-        )?.name || 'Não informado',
-      value: props.dataEdit.congregation_id,
-    };
+  const congregationId = props.dataEdit?.congregation_id;
+
+  if (congregationId) {
+    if (congregationId === user.value?.enterprise_id) {
+      selectedCongregation.value = {
+        label: 'Minha organização',
+        value: congregationId,
+      };
+    } else {
+      const foundOffice = listOffice.value.find(
+        (state) => state.id === congregationId
+      );
+
+      if (foundOffice) {
+        selectedCongregation.value = {
+          label: foundOffice.name,
+          value: foundOffice.id,
+        };
+      } else {
+        selectedCongregation.value = null;
+      }
+    }
+  } else {
+    selectedCongregation.value = null;
+  }
   }
 };
 
@@ -199,12 +217,19 @@ const optionsOffices = computed(() => {
     );
   }
 
-  return filteredList.map((item) => {
+  const mappedOptions = filteredList.map((item) => {
     return {
       label: item.name,
       value: item.id,
     };
   });
+
+  const organizationOption = {
+    label: 'Minha organização',
+    value: user.value?.enterprise_id || '',
+  };
+
+  return [organizationOption, ...mappedOptions];
 });
 
 watch(open, async () => {
