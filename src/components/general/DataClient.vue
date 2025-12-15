@@ -2,7 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useAuthStore } from 'src/stores/auth-store';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
@@ -36,7 +36,8 @@ const {
 } = storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
 const { downloadFile, saveObservations } = useMovementStore();
-const { loadingMovement } = storeToRefs(useMovementStore());
+const { loadingMovement, listCategoryFilters, listAccountFilters } =
+  storeToRefs(useMovementStore());
 
 const props = defineProps<{
   open: boolean;
@@ -46,6 +47,9 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const filterMovement = ref<string>('');
+const onlyEntry = ref<boolean>(false);
+const onlyOut = ref<boolean>(false);
 const showFormFileFinancial = ref<boolean>(false);
 const selectedDataEdit = ref<Movement | null>(null);
 const showFormEntry = ref<boolean>(false);
@@ -58,6 +62,14 @@ const dataFinalizeId = ref<string | null>(null);
 const dataUndoId = ref<string | null>(null);
 const dataDetailsReport = ref<string | null>(null);
 const actionSelected = ref<string | null>(null);
+const selectedCategory = ref<QuasarSelect<string | null>>({
+  label: 'Todas categorias',
+  value: null,
+});
+const selectedAccount = ref<QuasarSelect<string | null>>({
+  label: 'Todas contas',
+  value: null,
+});
 const columnsDataClient = reactive<QuasarTable[]>([
   {
     name: 'month_year',
@@ -167,6 +179,11 @@ const clear = (): void => {
   dataDetailsReport.value = null;
   modeTable.value = 'reports';
   selectedFinancialMonthYear.value = null;
+  onlyEntry.value = false;
+  onlyOut.value = false;
+  filterMovement.value = '';
+  selectedCategory.value = { label: 'Todas categorias', value: null };
+  selectedAccount.value = { label: 'Todas contas', value: null };
 };
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -293,6 +310,94 @@ const openFormFileFinancial = (monthYear: string): void => {
 const closeFormFileFinancial = async () => {
   showFormFileFinancial.value = false;
 };
+
+const optionsCategoriesFilter = computed(() => {
+  const baseCategory = {
+    label: 'Todas categorias',
+    value: null,
+  };
+
+  const map = new Map<string, { label: string; value: string }>();
+
+  listMovement.value.forEach(item => {
+    if (item.category) {
+      map.set(item.category.id, {
+        label: item.category.name,
+        value: item.category.id,
+      });
+    }
+  });
+
+  const dynamicCategories = Array.from(map.values()).sort((a, b) =>
+    a.label.localeCompare(b.label)
+  );
+
+  return [baseCategory, ...dynamicCategories];
+});
+const optionsAccountsFilter = computed(() => {
+  const baseAccount = {
+    label: 'Todas contas',
+    value: null,
+  };
+
+  const map = new Map<string, { label: string; value: string }>();
+
+  listMovement.value.forEach(item => {
+    if (item.account) {
+      map.set(item.account.id, {
+        label: item.account.name,
+        value: item.account.id,
+      });
+    }
+  });
+
+  const dynamicAccounts = Array.from(map.values()).sort((a, b) =>
+    a.label.localeCompare(b.label)
+  );
+
+  return [baseAccount, ...dynamicAccounts];
+});
+const getListMovements = computed(() => {
+  let list = listMovement.value;
+
+  if (onlyEntry.value) {
+    list = list.filter(item => item.type === 'entrada');
+  }
+
+  if (onlyOut.value) {
+    list = list.filter(item => item.type !== 'entrada');
+  }
+
+  if (selectedCategory.value.value !== null) {
+    list = list.filter(
+      item => item.category_id === selectedCategory.value.value
+    );
+  }
+
+  if (selectedAccount.value.value !== null) {
+    list = list.filter(
+      item => item.account_id === selectedAccount.value.value
+    );
+  }
+
+  if (filterMovement.value?.trim() !== '') {
+    const search = filterMovement.value.toLowerCase().trim();
+
+    list = list.filter(item => {
+      const categoryName = item.category?.name?.toLowerCase() ?? '';
+      const accountName  = item.account?.name?.toLowerCase() ?? '';
+      const value        = String(item.value ?? '').toLowerCase();
+
+      return (
+        categoryName.includes(search) ||
+        accountName.includes(search) ||
+        value.includes(search)
+      );
+    });
+  }
+
+  return list;
+});
 
 watch(modeTable, async () => {
   if (modeTable.value === 'details') {
@@ -465,7 +570,7 @@ watch(
       </q-table>
       <q-table
         v-else
-        :rows="loadingReport ? [] : listMovement"
+        :rows="loadingReport ? [] : getListMovements"
         :columns="columnsMovement"
         :loading="loadingReport"
         flat
@@ -484,7 +589,119 @@ watch(
           </q-tr>
         </template>
         <template v-slot:top>
-          <span class="text-subtitle2">Lista de movimentações</span>
+          <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
+            <span class="text-subtitle2">Lista de movimentações</span>
+            <q-space />
+            <div v-if="!$q.screen.lt.md" class="row">
+              <q-toggle
+                v-model="onlyEntry"
+                :disable="loadingMovement"
+                color="primary"
+                label="Entradas"
+                left-label
+              />
+              <q-toggle
+                v-model="onlyOut"
+                :disable="loadingMovement"
+                color="primary"
+                label="Saídas"
+                left-label
+              />
+              <q-select
+                v-model="selectedCategory"
+                :options="optionsCategoriesFilter"
+                :readonly="loadingMovement"
+                label="Filtre categoria"
+                filled
+                dense
+                options-dense
+                bg-color="grey-1"
+                label-color="black"
+                style="min-width: 200px"
+                :class="!$q.screen.lt.md ? '' : 'full-width'"
+                class="q-mr-sm"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="category" color="black" size="20px" />
+                </template>
+              </q-select>
+              <q-select
+                v-model="selectedAccount"
+                :options="optionsAccountsFilter"
+                :readonly="loadingMovement"
+                label="Filtre conta"
+                filled
+                dense
+                options-dense
+                bg-color="grey-1"
+                label-color="black"
+                style="min-width: 200px"
+                :class="!$q.screen.lt.md ? '' : 'full-width'"
+                class="q-mr-sm"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="account_balance" color="black" size="20px" />
+                </template>
+              </q-select>
+              <q-input filled v-model="filterMovement" dense label="Pesquisar">
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
+            <q-expansion-item
+              v-else
+              expand-separator
+              icon="filter_alt"
+              label="Filtros"
+              class="border-form"
+            >
+              <q-toggle
+                v-model="onlyEntry"
+                :disable="loadingMovement"
+                color="primary"
+                label="Entradas"
+                left-label
+                class="q-ml-sm"
+              />
+              <q-toggle
+                v-model="onlyOut"
+                :disable="loadingMovement"
+                color="primary"
+                label="Saídas"
+                left-label
+              />
+              <q-select
+                v-model="selectedCategory"
+                :options="optionsCategoriesFilter"
+                :readonly="loadingMovement"
+                label="Filtre categoria"
+                filled
+                dense
+                options-dense
+                bg-color="grey-1"
+                label-color="black"
+                style="min-width: 200px"
+                :class="!$q.screen.lt.md ? '' : 'full-width'"
+                class="q-mt-sm"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="category" color="black" size="20px" />
+                </template>
+              </q-select>
+              <q-input
+                filled
+                v-model="filterMovement"
+                dense
+                label="Pesquisar"
+                class="q-mt-sm"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </q-expansion-item>
+          </div>
         </template>
         <template v-slot:body="props">
           <q-tr
