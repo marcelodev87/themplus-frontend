@@ -171,6 +171,13 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
 
+  if (dataMember.cpf.trim() === '' && dataMember.email.trim().length !== 11) {
+    return {
+      status: false,
+      message: 'Deve ser informado um cpf válido',
+    };
+  }
+
   if (dataMember.phone.trim() !== '') {
     if (!/^\+?[1-9]\d{1,14}$/.test(dataMember.phone.trim())) {
       return { status: false, message: 'Digite um telefone válido' };
@@ -180,6 +187,23 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataMember.phoneProfessional.trim() !== '') {
     if (!/^\+?[1-9]\d{1,14}$/.test(dataMember.phoneProfessional.trim())) {
       return { status: false, message: 'Digite um telefone válido' };
+    }
+  }
+
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  if (dataMember.email?.trim() !== '') {
+    if (!validateEmail(dataMember.email.trim())) {
+      return { status: false, message: 'Digite um email pessoal válido' };
+    }
+  }
+
+  if (dataMember.emailProfessional?.trim() !== '') {
+    if (!validateEmail(dataMember.emailProfessional.trim())) {
+      return { status: false, message: 'Digite um email profissional válido' };
     }
   }
 
