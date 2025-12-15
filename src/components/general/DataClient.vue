@@ -12,7 +12,6 @@ import ConfirmAction from '../confirm/ConfirmAction.vue';
 import DataEnterprise from '../info/DataEnterprise.vue';
 import FormEntry from '../forms/FormEntry.vue';
 import FormOut from '../forms/FormOut.vue';
-import Paginate from './Paginate.vue';
 
 defineOptions({
   name: 'DataClient',
@@ -47,8 +46,6 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(12);
 const showFormFileFinancial = ref<boolean>(false);
 const selectedDataEdit = ref<Movement | null>(null);
 const showFormEntry = ref<boolean>(false);
@@ -296,22 +293,6 @@ const openFormFileFinancial = (monthYear: string): void => {
 const closeFormFileFinancial = async () => {
   showFormFileFinancial.value = false;
 };
-const listReportCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return listReport.value.slice(start, end);
-});
-const listMovementCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return listMovement.value.slice(start, end);
-});
-const maxPagesMovement = computed(() => {
-  return Math.ceil(listMovement.value.length / rowsPerPage.value);
-});
-const maxPagesReport = computed(() => {
-  return Math.ceil(listReport.value.length / rowsPerPage.value);
-});
 
 watch(modeTable, async () => {
   if (modeTable.value === 'details') {
@@ -337,7 +318,7 @@ watch(
     <div class="q-py-sm q-gutter-y-sm">
       <q-table
         v-if="modeTable === 'reports'"
-        :rows="loadingReport ? [] : listReportCurrent"
+        :rows="loadingReport ? [] : listReport"
         :columns="columnsDataClient"
         :loading="loadingReport"
         flat
@@ -345,7 +326,7 @@ watch(
         row-key="index"
         no-data-label="Nenhum período para mostrar"
         virtual-scroll
-        :rows-per-page-options="[rowsPerPage]"
+        :rows-per-page-options="[0]"
         bordered
       >
         <template v-slot:header="props">
@@ -481,17 +462,10 @@ watch(
             </q-td>
           </q-tr>
         </template>
-        <template v-slot:bottom>
-          <Paginate
-            v-model="currentPage"
-            :max="maxPagesReport"
-            :length="listReport.length"
-          />
-        </template>
       </q-table>
       <q-table
         v-else
-        :rows="loadingReport ? [] : listMovementCurrent"
+        :rows="loadingReport ? [] : listMovement"
         :columns="columnsMovement"
         :loading="loadingReport"
         flat
@@ -500,7 +474,7 @@ watch(
         row-key="index"
         no-data-label="Nenhuma movimentação para mostrar"
         virtual-scroll
-        :rows-per-page-options="[rowsPerPage]"
+        :rows-per-page-options="[0]"
       >
         <template v-slot:header="props">
           <q-tr :props="props" class="bg-grey-2">
@@ -601,13 +575,6 @@ watch(
               />
             </q-td>
           </q-tr>
-        </template>
-        <template v-slot:bottom>
-          <Paginate
-            v-model="currentPage"
-            :max="maxPagesMovement"
-            :length="listMovement.length"
-          />
         </template>
       </q-table>
     </div>
