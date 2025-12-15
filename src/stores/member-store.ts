@@ -49,10 +49,10 @@ export const useMemberStore = defineStore('member', {
         type: 'positive',
       });
     },
-    async getMembers() {
+    async getMembers(active?: number) {
       try {
         this.setLoading(true);
-        const response = await getMembersService();
+        const response = await getMembersService(active);
         if (response.status === 200) {
           this.clearListMember();
           this.setListMember(response.data.members);

@@ -208,7 +208,7 @@ const update = async () => {
   }
 };
 const fetchMembers = async () => {
-  await getMembers();
+  await getMembers(1);
   if (listMember.value.length === 0) {
     Notify.create({
       message: 'Necessário cadastrar membro antes de cadastrar célula',

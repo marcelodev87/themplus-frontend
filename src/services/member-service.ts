@@ -3,7 +3,9 @@ import { DataMemberChurch, MemberChurch } from 'src/ts/interfaces/data/Member';
 
 const baseUrl = 'member-church';
 
-export const getMembersService = (): Promise<{
+export const getMembersService = (
+  active?: number
+): Promise<{
   status: number;
   data: {
     members: MemberChurch[];
@@ -11,7 +13,12 @@ export const getMembersService = (): Promise<{
     notifications: number;
     message: string;
   };
-}> => api.get(`${baseUrl}`);
+}> => {
+  return api.get(baseUrl, {
+    params: active !== undefined ? { active } : undefined,
+  });
+};
+
 
 export const createMemberService = (
   data: DataMemberChurch
