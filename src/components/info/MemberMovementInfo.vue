@@ -7,6 +7,7 @@ import { Movement } from 'src/ts/interfaces/data/Movement';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
+import FormEntry from 'src/components/forms/FormEntry.vue';
 import TitlePage from '../shared/TitlePage.vue';
 
 defineOptions({
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 const { loadingMovement } = storeToRefs(useMovementStore());
 const { getMovementsMember, downloadFile } = useMovementStore();
 
+const showFormEntry = ref<boolean>(false);
 const list = ref<Movement[]>([]);
 const listCategories = ref<QuasarSelect<string>[]>([]);
 const listAccounts = ref<QuasarSelect<string>[]>([]);
@@ -162,6 +164,13 @@ const formatDate = (dateString: string) => {
 const download = async (url: string) => {
   await downloadFile(url);
 };
+const openFormEntry = (): void => {
+  showFormEntry.value = true;
+};
+const closeFormEntry = async () => {
+  showFormEntry.value = false;
+  await fetchMovements();
+};
 
 const optionsCategory = computed<QuasarSelect<string | null>[]>(() => {
   const mappedCategories: QuasarSelect<string>[] = listCategories.value.map(
@@ -256,33 +265,48 @@ watch(open, async () => {
         <TitlePage
           :title="`Contribuições do membro (${props.memberSelected?.name ?? ''})`"
         />
-        <div class="row q-gutter-x-sm q-mb-sm">
-          <q-card
-            flat
-            bordered
-            class="q-mt-sm column justify-center"
-            style="min-width: 200px; max-width: 100%"
-          >
-            <q-card-section class="q-px-sm q-py-none text-bold"
-              >Total de contribuição</q-card-section
+        <div class="row justify-between items-center q-gutter-x-sm q-mb-sm">
+          <div class="row q-gutter-x-sm">
+            <q-card
+              flat
+              bordered
+              class="q-mt-sm column justify-center"
+              style="min-width: 200px; max-width: 100%"
             >
-            <q-card-section class="q-px-sm q-py-none">
-              <span>{{ getTotalAll }}</span>
-            </q-card-section>
-          </q-card>
-          <q-card
-            flat
-            bordered
-            class="q-mt-sm column justify-center q-pa-sm"
-            style="min-width: 200px; max-width: 100%"
-          >
-            <q-card-section class="q-px-sm q-py-none text-bold"
-              >Total do período</q-card-section
+              <q-card-section class="q-px-sm q-py-none text-bold"
+                >Total de contribuição</q-card-section
+              >
+              <q-card-section class="q-px-sm q-py-none">
+                <span>{{ getTotalAll }}</span>
+              </q-card-section>
+            </q-card>
+            <q-card
+              flat
+              bordered
+              class="q-mt-sm column justify-center q-pa-sm"
+              style="min-width: 200px; max-width: 100%"
             >
-            <q-card-section class="q-px-sm q-py-none">
-              <span>{{ getTotalPeriod }}</span>
-            </q-card-section>
-          </q-card>
+              <q-card-section class="q-px-sm q-py-none text-bold"
+                >Total do período</q-card-section
+              >
+              <q-card-section class="q-px-sm q-py-none">
+                <span>{{ getTotalPeriod }}</span>
+              </q-card-section>
+            </q-card>
+          </div>
+          <div>
+            <q-btn
+              @click="openFormEntry"
+              color="positive"
+              icon="add"
+              class="q-mr-sm"
+              unelevated
+              size="md"
+              round
+            >
+              <q-tooltip>Nova contribuição</q-tooltip>
+            </q-btn>
+          </div>
         </div>
         <q-table
           :rows="loadingMovement ? [] : list"
@@ -532,6 +556,16 @@ watch(open, async () => {
         label-style="font-size: 1.1em"
         color="primary"
         size="50px"
+      />
+      <FormEntry
+        :open="showFormEntry"
+        :member="props.memberSelected"
+        type="client"
+        :data-edit="null"
+        title="Registre uma entrada"
+        mode="movement"
+        :isContributionShortcut="true"
+        @update:open="closeFormEntry"
       />
     </q-card>
   </q-dialog>

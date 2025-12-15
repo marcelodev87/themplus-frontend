@@ -97,7 +97,9 @@ const checkData = (): { status: boolean; message?: string } => {
     ];
     const fileType = dataFile.file.type;
     const fileName = dataFile.file.name;
-    const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    const fileExtension = fileName
+      .substring(fileName.lastIndexOf('.') + 1)
+      .toLowerCase();
 
     const validFileExtensions = ['ofx'];
 

@@ -36,8 +36,7 @@ const {
 } = storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
 const { downloadFile, saveObservations } = useMovementStore();
-const { loadingMovement, listCategoryFilters, listAccountFilters } =
-  storeToRefs(useMovementStore());
+const { loadingMovement } = storeToRefs(useMovementStore());
 
 const props = defineProps<{
   open: boolean;
@@ -319,7 +318,7 @@ const optionsCategoriesFilter = computed(() => {
 
   const map = new Map<string, { label: string; value: string }>();
 
-  listMovement.value.forEach(item => {
+  listMovement.value.forEach((item) => {
     if (item.category) {
       map.set(item.category.id, {
         label: item.category.name,
@@ -342,7 +341,7 @@ const optionsAccountsFilter = computed(() => {
 
   const map = new Map<string, { label: string; value: string }>();
 
-  listMovement.value.forEach(item => {
+  listMovement.value.forEach((item) => {
     if (item.account) {
       map.set(item.account.id, {
         label: item.account.name,
@@ -361,32 +360,32 @@ const getListMovements = computed(() => {
   let list = listMovement.value;
 
   if (onlyEntry.value) {
-    list = list.filter(item => item.type === 'entrada');
+    list = list.filter((item) => item.type === 'entrada');
   }
 
   if (onlyOut.value) {
-    list = list.filter(item => item.type !== 'entrada');
+    list = list.filter((item) => item.type !== 'entrada');
   }
 
   if (selectedCategory.value.value !== null) {
     list = list.filter(
-      item => item.category_id === selectedCategory.value.value
+      (item) => item.category_id === selectedCategory.value.value
     );
   }
 
   if (selectedAccount.value.value !== null) {
     list = list.filter(
-      item => item.account_id === selectedAccount.value.value
+      (item) => item.account_id === selectedAccount.value.value
     );
   }
 
   if (filterMovement.value?.trim() !== '') {
     const search = filterMovement.value.toLowerCase().trim();
 
-    list = list.filter(item => {
+    list = list.filter((item) => {
       const categoryName = item.category?.name?.toLowerCase() ?? '';
-      const accountName  = item.account?.name?.toLowerCase() ?? '';
-      const value        = String(item.value ?? '').toLowerCase();
+      const accountName = item.account?.name?.toLowerCase() ?? '';
+      const value = String(item.value ?? '').toLowerCase();
 
       return (
         categoryName.includes(search) ||

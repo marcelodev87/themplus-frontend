@@ -27,6 +27,8 @@ const props = defineProps<{
   mode: MovementOrSchedule;
   dataEdit: Movement | Scheduling | null;
   type: 'client' | 'counter';
+  member?: MemberChurch | null;
+  isContributionShortcut?: boolean;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -314,7 +316,14 @@ const updateByCounter = async () => {
   }
 };
 const fetchInformations = async () => {
-  await getMembers();
+  if (props.member) {
+    dataEntry.member = {
+      label: props.member.name,
+      value: props.member.id,
+    };
+  } else {
+    await getMembers();
+  }
   if (props.mode === 'schedule') {
     await getSchedulingsInformations(dataEntry.type);
   } else {
@@ -587,6 +596,7 @@ watch(open, async () => {
             input-debounce="0"
             behavior="menu"
             @filter="filterFnMember"
+            :disable="props.isContributionShortcut"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />
