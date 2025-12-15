@@ -666,13 +666,14 @@ const optionsStatusFamily = computed(() => {
     );
   }
 
-  return filteredList.map((item) => {
-    return {
+  return filteredList
+    .map((item) => ({
       label: item.name,
       value: item.id,
-    };
-  });
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
 });
+
 const isLoading = computed(() => {
   return (
     loading.value ||

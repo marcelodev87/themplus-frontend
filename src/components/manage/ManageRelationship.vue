@@ -3,11 +3,11 @@ import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { useAuthStore } from 'src/stores/auth-store';
+// import { useAuthStore } from 'src/stores/auth-store';
 import { useRelationshipStore } from 'src/stores/relationship-store';
 import { Relationship } from 'src/ts/interfaces/data/Relationship';
-import ConfirmAction from '../confirm/ConfirmAction.vue';
-import FormRelationship from '../forms/FormRelationship.vue';
+// import ConfirmAction from '../confirm/ConfirmAction.vue';
+// import FormRelationship from '../forms/FormRelationship.vue';
 
 defineOptions({
   name: 'ManageRole',
@@ -20,30 +20,30 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { getRelationships, deleteRelationship } = useRelationshipStore();
+const { getRelationships } = useRelationshipStore();
 const { loadingRelationship, listRelationship } = storeToRefs(
   useRelationshipStore()
 );
-const { user } = storeToRefs(useAuthStore());
+// const { user } = storeToRefs(useAuthStore());
 
-const showConfirmAction = ref<boolean>(false);
-const showFormRelationship = ref<boolean>(false);
+// const showConfirmAction = ref<boolean>(false);
+// const showFormRelationship = ref<boolean>(false);
 const selectedData = ref<string | null>(null);
 const filterRelationship = ref<string>('');
 const selectedDataEdit = ref<Relationship | null>(null);
 const columnsRelationship = reactive<QuasarTable[]>([
   {
     name: 'name',
-    label: 'Nome',
+    label: 'Relação',
     field: 'name',
     align: 'left',
   },
-  {
-    name: 'action',
-    label: 'Ação',
-    field: 'action',
-    align: 'right',
-  },
+  // {
+  //   name: 'action',
+  //   label: 'Ação',
+  //   field: 'action',
+  //   align: 'right',
+  // },
 ]);
 
 const clear = (): void => {
@@ -54,32 +54,32 @@ const clear = (): void => {
 const fetchRelationships = async () => {
   await getRelationships();
 };
-const openFormRelationship = (): void => {
-  showFormRelationship.value = true;
-};
-const closeFormRelationship = (): void => {
-  showFormRelationship.value = false;
-  clear();
-};
-const exclude = async (id: string) => {
-  await deleteRelationship(id);
-};
-const closeConfirmActionOk = async (): Promise<void> => {
-  showConfirmAction.value = false;
-  await exclude(selectedData.value ?? '');
-};
-const closeConfirmAction = (): void => {
-  showConfirmAction.value = false;
-  selectedData.value = null;
-};
-const openConfirmAction = async (id: string): Promise<void> => {
-  selectedData.value = id;
-  showConfirmAction.value = true;
-};
-const handleEdit = (relationship: Relationship) => {
-  selectedDataEdit.value = relationship;
-  openFormRelationship();
-};
+// const openFormRelationship = (): void => {
+//   showFormRelationship.value = true;
+// };
+// const closeFormRelationship = (): void => {
+//   showFormRelationship.value = false;
+//   clear();
+// };
+// const exclude = async (id: string) => {
+//   await deleteRelationship(id);
+// };
+// const closeConfirmActionOk = async (): Promise<void> => {
+//   showConfirmAction.value = false;
+//   await exclude(selectedData.value ?? '');
+// };
+// const closeConfirmAction = (): void => {
+//   showConfirmAction.value = false;
+//   selectedData.value = null;
+// };
+// const openConfirmAction = async (id: string): Promise<void> => {
+//   selectedData.value = id;
+//   showConfirmAction.value = true;
+// };
+// const handleEdit = (relationship: Relationship) => {
+//   selectedDataEdit.value = relationship;
+//   openFormRelationship();
+// };
 
 const open = computed({
   get: () => props.open,
@@ -123,8 +123,9 @@ watch(open, async () => {
           row-key="index"
           no-data-label="Nenhuma relação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[10]"
+          :rows-per-page-options="[0]"
           :filter="filterRelationship"
+          style="max-height: 500px"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
@@ -182,7 +183,7 @@ watch(open, async () => {
               >
                 <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
-              <q-td key="action" :props="props">
+              <!-- <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
                   v-show="
@@ -207,7 +208,7 @@ watch(open, async () => {
                   color="negative"
                   icon="delete"
                 />
-              </q-td>
+              </q-td> -->
             </q-tr>
           </template>
         </q-table>
@@ -218,12 +219,11 @@ watch(open, async () => {
             color="red"
             label="Fechar"
             size="md"
-            flat
             @click="open = false"
             unelevated
             no-caps
           />
-          <q-btn
+          <!-- <q-btn
             @click="openFormRelationship"
             :loading="loadingRelationship"
             color="primary"
@@ -231,12 +231,12 @@ watch(open, async () => {
             size="md"
             unelevated
             no-caps
-          />
+          /> -->
         </div>
       </q-card-actions>
 
       <!-- Modals -->
-      <FormRelationship
+      <!-- <FormRelationship
         :data-edit="selectedDataEdit"
         :open="showFormRelationship"
         @update:open="closeFormRelationship"
@@ -248,7 +248,7 @@ watch(open, async () => {
         message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
         @update:open="closeConfirmAction"
         @update:ok="closeConfirmActionOk"
-      />
+      /> -->
     </q-card>
   </q-dialog>
 </template>

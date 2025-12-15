@@ -19,7 +19,6 @@ export const getMembersService = (
   });
 };
 
-
 export const createMemberService = (
   data: DataMemberChurch
 ): Promise<{

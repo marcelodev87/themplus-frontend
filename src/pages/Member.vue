@@ -13,7 +13,7 @@ import FormMember from 'src/components/forms/FormMember.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ManageRole from 'src/components/manage/ManageRole.vue';
 import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
-import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
+// import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
 import MemberFamilyInfo from 'src/components/info/MemberFamilyInfo.vue';
 
 defineOptions({
@@ -82,9 +82,9 @@ const closeManageRole = async (): Promise<void> => {
   clear();
   await fetchMembers();
 };
-const openManageRelationship = (): void => {
-  showManageRelationship.value = true;
-};
+// const openManageRelationship = (): void => {
+//   showManageRelationship.value = true;
+// };
 const closeManageRelationship = (): void => {
   showManageRelationship.value = false;
   clear();
@@ -164,7 +164,7 @@ onMounted(async () => {
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
-        <q-btn
+        <!-- <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openManageRelationship"
           icon-right="add"
@@ -173,7 +173,7 @@ onMounted(async () => {
           unelevated
           no-caps
           flat
-        />
+        /> -->
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openManageRole"
@@ -361,10 +361,10 @@ onMounted(async () => {
           @update:open="closeMemberFamilyInfo"
         />
         <ManageRole :open="showManageRole" @update:open="closeManageRole" />
-        <ManageRelationship
+        <!-- <ManageRelationship
           :open="showManageRelationship"
           @update:open="closeManageRelationship"
-        />
+        /> -->
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
