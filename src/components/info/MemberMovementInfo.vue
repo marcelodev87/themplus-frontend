@@ -1,12 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { Category } from 'src/ts/interfaces/data/Category';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
-import { Account } from 'src/ts/interfaces/data/Account';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
 import TitlePage from '../shared/TitlePage.vue';
@@ -255,7 +253,9 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic" style="min-width: 98vw">
       <q-card-section class="q-pa-sm">
-        <TitlePage title="Contribuições do membro" />
+        <TitlePage
+          :title="`Contribuições do membro (${props.memberSelected?.name ?? ''})`"
+        />
         <div class="row q-gutter-x-sm q-mb-sm">
           <q-card
             flat

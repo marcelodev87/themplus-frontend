@@ -15,7 +15,6 @@ import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import MovementsAnalyze from 'src/components/general/MovementsAnalyze.vue';
 import { useAuthStore } from 'src/stores/auth-store';
-import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Movement',
@@ -41,8 +40,6 @@ const {
 } = storeToRefs(useMovementStore());
 const { user } = storeToRefs(useAuthStore());
 
-const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(7);
 const showConfirmDownloadFile = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
@@ -253,9 +250,6 @@ const saveIdExclude = async (id: string) => {
   selectedExclude.value = id;
   openConfirmAction();
 };
-const resetPage = (): void => {
-  currentPage.value = 1;
-};
 const exportDataExcel = async (): Promise<void> => {
   loadingExport.value = true;
   await exportMovementExcel(
@@ -322,7 +316,6 @@ const filteredMovement = computed(() => {
   }
 
   const searchTerm = normalize(filterMovement.value);
-  resetPage();
   return listMovement.value.filter((item) => {
     return (
       (item.account?.name &&
@@ -385,17 +378,6 @@ const filteredMovement = computed(() => {
     );
   });
 });
-const listMovementCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return filteredMovement.value.slice(start, end);
-});
-const maxPages = computed(() => {
-  if (filterMovement.value.length > 0) {
-    return Math.ceil(filteredMovement.value.length / rowsPerPage.value);
-  }
-  return Math.ceil(listMovement.value.length / rowsPerPage.value);
-});
 
 watch(
   [onlyEntry, onlyOut, selectedCategory, selectedAccount],
@@ -404,7 +386,6 @@ watch(
     [oldEntry, oldOut, oldCategory, oldAccount]
   ) => {
     let lastChanged = null;
-    resetPage();
 
     if (newEntry !== oldEntry) {
       lastChanged = 'onlyEntry';
@@ -457,7 +438,6 @@ watch(
   { immediate: true }
 );
 watch(filterMonthYear, async () => {
-  resetPage();
   await getMovementsWithParams(
     onlyEntry.value,
     onlyOut.value,
@@ -468,7 +448,6 @@ watch(filterMonthYear, async () => {
 });
 watch(showMovementsAnalyze, async (analyze) => {
   if (!analyze) {
-    resetPage();
     await getMovements(dateActual.value.replace('/', '-'));
   }
 });
@@ -645,7 +624,7 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
-          :rows="loadingMovement ? [] : listMovementCurrent"
+          :rows="loadingMovement ? [] : filteredMovement"
           :columns="columnsMovement"
           :loading="loadingMovement"
           flat
@@ -654,7 +633,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
-          :rows-per-page-options="[rowsPerPage]"
+          :rows-per-page-options="[0]"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
@@ -904,13 +883,6 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="filteredMovement.length"
-            />
           </template>
         </q-table>
         <FormEntry

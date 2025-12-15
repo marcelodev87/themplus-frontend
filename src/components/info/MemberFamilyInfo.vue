@@ -104,7 +104,7 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic" style="min-width: 98vw">
       <q-card-section class="q-pa-sm">
-        <TitlePage title="Relações" />
+        <TitlePage :title="`Relações (${props.memberSelected?.name ?? ''})`" />
         <q-table
           :rows="loading ? [] : getListFamily"
           :columns="columnsMemberFamily"

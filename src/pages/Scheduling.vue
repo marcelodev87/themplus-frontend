@@ -12,7 +12,6 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
-import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Scheduling',
@@ -37,8 +36,6 @@ const {
   downloadFile,
 } = useSchedulingStore();
 
-const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(7);
 const onlyExpired = ref<boolean>(false);
 const onlyEntry = ref<boolean>(false);
 const onlyOut = ref<boolean>(false);
@@ -190,9 +187,6 @@ const closeFormOut = (): void => {
   showFormOut.value = false;
   clear();
 };
-const resetPage = (): void => {
-  currentPage.value = 1;
-};
 const closeAlertDataEnterprise = (): void => {
   showAlertDataEnterprise.value = false;
 };
@@ -285,7 +279,6 @@ const filteredScheduling = computed(() => {
   };
   const searchTerm = normalize(filterScheduling.value);
 
-  resetPage();
   return listScheduling.value.filter((item) => {
     return (
       (item.account?.name &&
@@ -320,14 +313,6 @@ const optionsAccountsFilter = computed(() => {
 
   return [...baseAccounts, ...additionalAccounts];
 });
-const listSchedulingCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return filteredScheduling.value.slice(start, end);
-});
-const maxPages = computed(() => {
-  return Math.ceil(filteredScheduling.value.length / rowsPerPage.value);
-});
 
 watch(
   [onlyExpired, onlyEntry, onlyOut, selectedCategory, selectedAccount],
@@ -336,7 +321,6 @@ watch(
     [oldExpired, oldEntry, oldOut, oldCategory, oldAccount]
   ) => {
     let lastChanged = null;
-    resetPage();
 
     if (newEntry !== oldEntry) {
       lastChanged = 'onlyEntry';
@@ -540,7 +524,7 @@ onMounted(async () => {
           </q-card-section>
         </q-card>
         <q-table
-          :rows="loadingScheduling ? [] : listSchedulingCurrent"
+          :rows="loadingScheduling ? [] : filteredScheduling"
           :columns="columnsScheduling"
           :loading="loadingScheduling"
           flat
@@ -549,7 +533,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhum agendamento para mostrar"
           virtual-scroll
-          :rows-per-page-options="[rowsPerPage]"
+          :rows-per-page-options="[0]"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
@@ -838,13 +822,6 @@ onMounted(async () => {
                 </q-btn>
               </q-td>
             </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="filteredScheduling.length"
-            />
           </template>
         </q-table>
         <ConfirmDownloadFile
