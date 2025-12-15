@@ -89,21 +89,31 @@ const checkData = (): { status: boolean; message?: string } => {
       return { status: false, message: 'O arquivo deve ter no máximo 20MB' };
     }
 
-    const validFileTypes = [
+    const validMimeTypes = [
       'application/pdf',
       'image/png',
       'image/jpeg',
       'image/jpg',
     ];
     const fileType = dataFile.file.type;
+    const fileName = dataFile.file.name;
+    const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
 
-    if (!validFileTypes.includes(fileType)) {
-      return {
-        status: false,
-        message:
-          'O arquivo deve ser um PDF ou uma imagem (PNG, JPG, JPEG, GIF).',
-      };
+    const validFileExtensions = ['ofx'];
+
+    if (validMimeTypes.includes(fileType)) {
+      return { status: true };
     }
+
+    if (validFileExtensions.includes(fileExtension)) {
+      return { status: true };
+    }
+
+    return {
+      status: false,
+      message:
+        'O arquivo deve ser um PDF, uma imagem (PNG, JPG, JPEG) ou um arquivo OFX.',
+    };
   }
 
   return { status: true };
