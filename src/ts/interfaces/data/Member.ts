@@ -93,7 +93,21 @@ export interface PreRegistration {
   phone: string;
   role: string;
   description: string | null;
-  relationship: {
+  profession: string | null;
+  date_birth: string | null;
+  naturalness: string | null;
+  marital_status: string | null;
+  education: string | null;
+  cep: string | null;
+  uf: string | null;
+  address: string | null;
+  address_number: string | null;
+  neighborhood: string | null;
+  city: string | null;
+  complement: string | null;
+  cpf: string | null;
+  date_baptismo: string | null;
+  relationships: {
     member: string;
     kinship: string;
   }[];
@@ -104,11 +118,25 @@ export interface ConfigPreRegistration {
 }
 
 export interface DataPreRegistration {
-  enterprise_id: string;
+  enterpriseID: string;
   name: string;
   email: string;
   phone: string;
-  role: string;
+  role: string | null;
+  profession: string | null;
+  dateBirth: string | null;
+  naturalness: string | null;
+  maritalStatus: string | null;
+  education: string | null;
+  cep: string | null;
+  uf: string | null;
+  address: string | null;
+  addressNumber: string | null;
+  neighborhood: string | null;
+  city: string | null;
+  complement: string | null;
+  cpf: string | null;
+  dateBaptismo: string | null;
   description: string | null;
   relationship:
     | {

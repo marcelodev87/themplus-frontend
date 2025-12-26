@@ -33,10 +33,13 @@ export const useMemberStore = defineStore('member', {
     setListMember(members: MemberChurch[]) {
       members.map((item) => this.listMember.push(item));
     },
-    clearListMemberPreRegistrationr() {
-      this.listMember.splice(0, this.listMember.length);
+    clearListMemberPreRegistration() {
+      this.listMemberPreRegistration.splice(
+        0,
+        this.listMemberPreRegistration.length
+      );
     },
-    setListMemberPreRegistrationr(members: PreRegistration[]) {
+    setListMemberPreRegistration(members: PreRegistration[]) {
       members.map((item) => this.listMemberPreRegistration.push(item));
     },
     setLoading(loading: boolean) {
@@ -84,8 +87,8 @@ export const useMemberStore = defineStore('member', {
         this.setLoading(true);
         const response = await getPreRegistrationService();
         if (response.status === 200) {
-          this.clearListMemberPreRegistrationr();
-          this.setListMemberPreRegistrationr(response.data.pre_registration);
+          this.clearListMemberPreRegistration();
+          this.setListMemberPreRegistration(response.data.pre_registration);
         }
       } catch (error) {
         this.createError(error);
@@ -178,8 +181,8 @@ export const useMemberStore = defineStore('member', {
       try {
         const response = await deleteRegistrationService(registrationID);
         if (response.status === 200) {
-          this.clearListMemberPreRegistrationr();
-          this.setListMemberPreRegistrationr(response.data.pre_registration);
+          this.clearListMemberPreRegistration();
+          this.setListMemberPreRegistration(response.data.pre_registration);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

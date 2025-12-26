@@ -65,7 +65,7 @@ export const createPreRegistrationService = (
   data: {
     message: string;
   };
-}> => api.post(`create-pre-registration/`, data);
+}> => api.post('create-pre-registration/', data);
 
 export const updateMemberService = (
   id: string,
@@ -77,6 +77,15 @@ export const updateMemberService = (
     message: string;
   };
 }> => api.put(baseUrl, { id, ...data });
+
+export const updateConfigPreRegistration = (data: {
+  active: number;
+}): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.put(`${baseUrl}/pre-registration/config`, data);
 
 export const updateActiveMemberService = (
   active: number,

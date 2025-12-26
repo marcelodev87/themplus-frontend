@@ -1,13 +1,18 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import {
   checkActivePreRegistration,
   createPreRegistrationService,
 } from 'src/services/member-service';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import TitleAuth from 'src/components/shared/TitleAuth.vue';
 import { Notify } from 'quasar';
+import { states } from 'src/utils/state';
+import { marital } from 'src/utils/marital';
+import { education } from 'src/utils/education';
+import { searchCep } from 'src/services/cep-service';
 
 defineOptions({
   name: 'PreRegistration',
@@ -25,6 +30,17 @@ const data = ref({
   phone: '',
   role: '',
   description: '',
+  cpf: '',
+  profession: '',
+  dateBirth: '',
+  cep: '',
+  uf: '',
+  address: '',
+  neighborhood: '',
+  addressNumber: '',
+  city: '',
+  complement: '',
+  dateBaptismo: '',
   relations: [] as { member: string; kinship: string }[],
 });
 const columnsPreRegistration = reactive<QuasarTable[]>([
@@ -43,6 +59,18 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
     sortable: true,
   },
 ]);
+const selectedNaturalness = ref<QuasarSelect<string | null>>({
+  label: 'Não informado',
+  value: null,
+});
+const selectedMaritalStatus = ref<QuasarSelect<string | null>>({
+  label: 'Não informado',
+  value: null,
+});
+const selectedEducation = ref<QuasarSelect<string | null>>({
+  label: 'Não informado',
+  value: null,
+});
 
 const checkActive = async () => {
   const enterpriseId = Array.isArray(route.query.enterprise_id)
@@ -67,55 +95,93 @@ const addRelation = () => {
   memberName.value = '';
   kinship.value = '';
 };
+const clear = () => {
+  data.value.name = '';
+  data.value.email = '';
+  data.value.phone = '';
+  data.value.role = '';
+  data.value.description = '';
+  data.value.cpf = '';
+  data.value.profession = '';
+  data.value.dateBirth = '';
+  data.value.cep = '';
+  data.value.uf = '';
+  data.value.address = '';
+  data.value.neighborhood = '';
+  data.value.addressNumber = '';
+  data.value.city = '';
+  data.value.complement = '';
+  data.value.dateBaptismo = '';
+  data.value.relations = [];
+
+  memberName.value = '';
+  kinship.value = '';
+
+  selectedNaturalness.value = {
+    label: 'Não informado',
+    value: null,
+  };
+
+  selectedMaritalStatus.value = {
+    label: 'Não informado',
+    value: null,
+  };
+
+  selectedEducation.value = {
+    label: 'Não informado',
+    value: null,
+  };
+};
 const send = async () => {
   try {
     const enterpriseId =
       typeof route.query.enterprise_id === 'string'
         ? route.query.enterprise_id
         : Array.isArray(route.query.enterprise_id)
-        ? route.query.enterprise_id[0]
-        : '';
+          ? route.query.enterprise_id[0]
+          : '';
 
     const response = await createPreRegistrationService({
-      enterprise_id: enterpriseId ?? '',
+      enterpriseID: enterpriseId ?? '',
       name: data.value.name,
       email: data.value.email,
       phone: data.value.phone,
       role: data.value.role,
       description:
         data.value.description.trim() === '' ? null : data.value.description,
+      address: data.value.address,
+      addressNumber: data.value.addressNumber,
+      cep: data.value.cep,
+      city: data.value.city,
+      complement: data.value.complement,
+      cpf: data.value.cpf,
+      dateBaptismo: data.value.dateBaptismo,
+      dateBirth: data.value.dateBirth,
+      education: selectedEducation.value.value,
+      maritalStatus: selectedMaritalStatus.value.value,
+      naturalness: selectedNaturalness.value.value,
+      neighborhood: data.value.neighborhood,
+      profession: data.value.profession,
+      uf: data.value.uf,
       relationship:
         data.value.relations.length > 0 ? data.value.relations : null,
     });
 
-    if(response.status === 200) {
-      data.value.name = '';
-      data.value.email = '';
-      data.value.phone = '';
-      data.value.role = '';
-      data.value.description = '';
-      data.value.relations = [];
-      memberName.value = '';
-      kinship.value = '';
-
+    if (response.status === 200) {
+      clear();
       Notify.create({
         type: 'positive',
         message: 'Pré-registro enviado com sucesso',
-      })
-
+      });
     }
-
-
   } catch (error: any) {
     Notify.create({
       type: 'negative',
       message:
-        error?.response?.data?.message ||
-        'Erro ao enviar o pré-registro',
+        error?.response?.data?.message || 'Erro ao enviar o pré-registro',
     });
   }
 };
-
 
 const formattedPhone = computed({
   get() {
@@ -147,6 +213,36 @@ const allowSend = computed(() => {
   );
 });
 
+watch(
+  () => data.value.cep,
+  async (cep: string) => {
+    data.value.cep = data.value.cep.replace(/\D/g, '');
+    if (cep.trim().length === 8) {
+      loading.value = true;
+      const response = await searchCep(cep);
+      if (response.status === 200) {
+        data.value.neighborhood = response.data.bairro;
+        data.value.city = response.data.localidade;
+        data.value.uf = response.data.uf;
+        data.value.address = response.data.logradouro;
+      }
+    } else {
+      data.value.neighborhood = '';
+      data.value.city = '';
+      data.value.address = '';
+      data.value.uf = '';
+    }
+    loading.value = false;
+  }
+);
+watch(
+  [() => data.value.cpf, () => data.value.addressNumber],
+  ([cpf, numberAdress]) => {
+    data.value.cpf = cpf.replace(/\D/g, '');
+    data.value.addressNumber = numberAdress.replace(/\D/g, '');
+  }
+);
+
 onMounted(async () => {
   loading.value = true;
   await checkActive();
@@ -174,8 +270,8 @@ onMounted(async () => {
           v-model="data.name"
           bg-color="white"
           label-color="black"
-          filled
-          label="Digite seu nome"
+          outlined
+          label="Nome"
           autocomplete="new-name"
           dense
           input-class="text-black"
@@ -185,13 +281,12 @@ onMounted(async () => {
             <q-icon name="person" color="black" size="20px" />
           </template>
         </q-input>
-
         <q-input
           v-model="data.email"
           bg-color="white"
           label-color="black"
-          filled
-          label="Digite seu e-mail"
+          outlined
+          label="E-mail"
           autocomplete="new-email"
           dense
           input-class="text-black"
@@ -201,13 +296,12 @@ onMounted(async () => {
             <q-icon name="email" color="black" size="20px" />
           </template>
         </q-input>
-
         <q-input
           v-model="formattedPhone"
           bg-color="white"
           label-color="black"
-          filled
-          label="Telefone da organização"
+          outlined
+          label="Telefone"
           dense
           input-class="text-black"
           :disable="loading"
@@ -216,13 +310,53 @@ onMounted(async () => {
             <q-icon name="call" color="black" size="20px" />
           </template>
         </q-input>
-
+        <q-input
+          v-model="data.profession"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Profissão"
+          dense
+          input-class="text-black"
+        >
+          <template v-slot:prepend>
+            <q-icon name="engineering" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.dateBirth"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Data de nascimento"
+          dense
+          input-class="text-black"
+          mask="##/##/####"
+        >
+          <template v-slot:prepend>
+            <q-icon name="calendar_today" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.cpf"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="CPF"
+          dense
+          input-class="text-black"
+          maxlength="11"
+        >
+          <template v-slot:prepend>
+            <q-icon name="badge" color="black" size="20px" />
+          </template>
+        </q-input>
         <q-input
           v-model="data.role"
           bg-color="white"
           label-color="black"
-          filled
-          label="Digite seu cargo"
+          outlined
+          label="Seu cargo"
           autocomplete="new-role"
           dense
           input-class="text-black"
@@ -232,12 +366,173 @@ onMounted(async () => {
             <q-icon name="arrow_right" color="black" size="20px" />
           </template>
         </q-input>
-
+        <q-select
+          v-model="selectedNaturalness"
+          :options="states"
+          label="Naturalidade"
+          outlined
+          dense
+          options-dense
+          map-options
+          bg-color="white"
+          label-color="black"
+          class="full-width"
+        >
+          <template v-slot:prepend>
+            <q-icon name="south_america" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-select
+          v-model="selectedMaritalStatus"
+          :options="marital"
+          label="Estado civil"
+          outlined
+          dense
+          options-dense
+          map-options
+          bg-color="white"
+          label-color="black"
+          class="full-width"
+        >
+          <template v-slot:prepend>
+            <q-icon name="favorite" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-select
+          v-model="selectedEducation"
+          :options="education"
+          label="Escolaridade"
+          outlined
+          dense
+          options-dense
+          map-options
+          bg-color="white"
+          label-color="black"
+          class="full-width"
+        >
+          <template v-slot:prepend>
+            <q-icon name="school" color="black" size="20px" />
+          </template>
+        </q-select>
+        <q-input
+          v-model="data.dateBaptismo"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Data de batismo"
+          dense
+          input-class="text-black"
+          mask="##/##/####"
+        >
+          <template v-slot:prepend>
+            <q-icon name="calendar_today" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.cep"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Digite o CEP"
+          dense
+          input-class="text-black"
+          :loading="loading"
+          maxlength="8"
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.uf"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="UF"
+          dense
+          input-class="text-black"
+          :disable="loading"
+          :maxlength="2"
+        >
+          <template v-slot:prepend>
+            <q-icon name="arrow_right" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.city"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Cidade"
+          dense
+          input-class="text-black"
+          :disable="loading"
+        >
+          <template v-slot:prepend>
+            <q-icon name="arrow_right" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.neighborhood"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Bairro"
+          dense
+          input-class="text-black"
+          :disable="loading"
+        >
+          <template v-slot:prepend>
+            <q-icon name="arrow_right" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.address"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Endereço"
+          dense
+          input-class="text-black"
+          :disable="loading"
+        >
+          <template v-slot:prepend>
+            <q-icon name="arrow_right" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.addressNumber"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Nº"
+          dense
+          input-class="text-black"
+          :disable="loading"
+        >
+          <template v-slot:prepend>
+            <q-icon name="arrow_right" color="black" size="20px" />
+          </template>
+        </q-input>
+        <q-input
+          v-model="data.complement"
+          bg-color="white"
+          label-color="black"
+          outlined
+          label="Complemento"
+          dense
+          input-class="text-black"
+          :disable="loading"
+        >
+          <template v-slot:prepend>
+            <q-icon name="arrow_right" color="black" size="20px" />
+          </template>
+        </q-input>
         <q-input
           v-model="data.description"
           bg-color="white"
           label-color="black"
-          filled
+          outlined
           label="Digite uma descrição"
           dense
           input-class="text-black no-resize"

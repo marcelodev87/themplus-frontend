@@ -4,7 +4,11 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { searchCep } from 'src/services/cep-service';
 import { storeToRefs } from 'pinia';
-import { DataListFamily, MemberChurch } from 'src/ts/interfaces/data/Member';
+import {
+  DataListFamily,
+  MemberChurch,
+  PreRegistration,
+} from 'src/ts/interfaces/data/Member';
 import { useMemberStore } from 'src/stores/member-store';
 import { useRoleStore } from 'src/stores/role-store';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -21,6 +25,7 @@ defineOptions({
 const props = defineProps<{
   open: boolean;
   dataEdit: MemberChurch | null;
+  dataPreRegistration: PreRegistration | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -28,6 +33,7 @@ const emit = defineEmits<{
 
 const memberID = computed(() => props.dataEdit?.id ?? '');
 
+const { deleteRegistration } = useMemberStore();
 const { createMember, updateMember, getMembers } = useMemberStore();
 const { getRoles } = useRoleStore();
 const { listMember, loadingMember } = storeToRefs(useMemberStore());
@@ -376,6 +382,9 @@ const save = async () => {
       family: getDataFamily(),
     });
     if (response?.status === 201) {
+      if (props.dataPreRegistration) {
+        await deleteRegistration(props.dataPreRegistration.id);
+      }
       emit('update:open');
     }
   } else {
@@ -553,6 +562,48 @@ const mountData = () => {
       });
     }
   }
+  if (props.dataPreRegistration) {
+    Object.assign(dataMember, {
+      name: props.dataPreRegistration.name,
+      email: props.dataPreRegistration.email ?? '',
+      phone: props.dataPreRegistration.phone ?? '',
+      cpf: props.dataPreRegistration.cpf ?? '',
+      profession: props.dataPreRegistration.profession ?? '',
+      dateBirth: props.dataPreRegistration.date_birth ?? '',
+      cep: props.dataPreRegistration.cep ?? '',
+      uf: props.dataPreRegistration.uf ?? '',
+      address: props.dataPreRegistration.address ?? '',
+      neighborhood: props.dataPreRegistration.neighborhood ?? '',
+      addressNumber: props.dataPreRegistration.address_number ?? '',
+      city: props.dataPreRegistration.city ?? '',
+      complement: props.dataPreRegistration.complement ?? '',
+      dateBaptismo: props.dataPreRegistration.date_baptismo ?? '',
+    });
+
+    selectedNaturalness.value = {
+      label:
+        states.find(
+          (state) => state.value === props.dataPreRegistration?.naturalness
+        )?.label || 'Não informado',
+      value: props.dataPreRegistration.naturalness,
+    };
+
+    selectedMaritalStatus.value = {
+      label:
+        marital.find(
+          (state) => state.value === props.dataPreRegistration?.marital_status
+        )?.label || 'Não informado',
+      value: props.dataPreRegistration.marital_status,
+    };
+
+    selectedEducation.value = {
+      label:
+        education.find(
+          (state) => state.value === props.dataPreRegistration?.education
+        )?.label || 'Não informado',
+      value: props.dataPreRegistration.education,
+    };
+  }
 };
 const fetchMinistries = async () => {
   await getMinistries();
@@ -709,6 +760,12 @@ const isLoading = computed(() => {
 });
 const disableBtnAddFamily = computed(() => {
   return selectedMemberFamily.value?.value && selectedStatusFamily.value?.value;
+});
+const showInfoRelationship = computed(() => {
+  return (
+    props.dataPreRegistration &&
+    props.dataPreRegistration.relationships.length > 0
+  );
 });
 
 watch(
@@ -1241,7 +1298,30 @@ watch(open, async () => {
                   </template>
                 </q-select>
               </div>
-              <div class="row justify-end">
+              <div class="row justify-end q-gutter-x-sm">
+                <q-btn
+                  v-if="showInfoRelationship"
+                  color="secondary"
+                  icon="info"
+                  size="md"
+                  unelevated
+                  no-caps
+                  round
+                >
+                  <q-tooltip class="bg-dark text-white">
+                    <div class="column q-gutter-xs" style="min-width: 200px">
+                      <div
+                        v-for="(item, index) in props.dataPreRegistration
+                          ?.relationships"
+                        :key="index"
+                        class="row items-center"
+                      >
+                        <span class="text-bold">{{ item.member }}</span>
+                        <span class="q-ml-xs">— {{ item.kinship }}</span>
+                      </div>
+                    </div>
+                  </q-tooltip>
+                </q-btn>
                 <q-btn
                   @click="addFamily"
                   :disable="!disableBtnAddFamily"

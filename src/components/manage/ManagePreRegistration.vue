@@ -7,6 +7,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { useMemberStore } from 'src/stores/member-store';
 import { PreRegistration } from 'src/ts/interfaces/data/Member';
 import { Notify } from 'quasar';
+import { updateConfigPreRegistration } from 'src/services/member-service';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -18,6 +19,8 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   'update:open': [void];
+  'update:openByRegistration': [void];
+  showFormMemberByRegistration: [PreRegistration];
 }>();
 
 const { listMemberPreRegistration, loadingMember } =
@@ -27,7 +30,7 @@ const { getPreRegistration, deleteRegistration, getConfigPreRegistration } =
 const { user } = storeToRefs(useAuthStore());
 
 const loading = ref<boolean>(false);
-const showFormAcceptPreRegistration = ref<boolean>(false);
+const startMonitoringConfig = ref<boolean>(false);
 const filter = ref<string>('');
 const activeFormPreRegistration = ref<number>(1);
 const selectedDataEdit = ref<PreRegistration | null>(null);
@@ -41,7 +44,7 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
   },
   {
     name: 'email',
-    label: 'Nome',
+    label: 'E-mail',
     field: 'email',
     align: 'left',
   },
@@ -58,6 +61,12 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
+    name: 'description',
+    label: 'Descrição',
+    field: 'description',
+    align: 'left',
+  },
+  {
     name: 'action',
     label: 'Ação',
     field: 'action',
@@ -68,6 +77,7 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
 const clear = (): void => {
   filter.value = '';
   selectedDataEdit.value = null;
+  startMonitoringConfig.value = false;
 };
 const fetchPreRegistration = async () => {
   await getPreRegistration();
@@ -78,15 +88,12 @@ const fetchConfigPreRegistration = async () => {
     activeFormPreRegistration.value = response.data.config.active;
   }
 };
-const openFormAcceptPreRegistration = (): void => {
-  showFormAcceptPreRegistration.value = true;
-};
 const exclude = async (id: string) => {
   await deleteRegistration(id);
 };
 const handleApprove = (registration: PreRegistration) => {
-  selectedDataEdit.value = registration;
-  openFormAcceptPreRegistration();
+  emit('showFormMemberByRegistration', registration);
+  emit('update:openByRegistration');
 };
 const closeConfirmActionOk = async (): Promise<void> => {
   showConfirmAction.value = false;
@@ -127,7 +134,36 @@ const getLink = async (): Promise<void> => {
     console.error('Erro ao copiar o link', error);
   }
 };
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
 
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+
+  return new Intl.DateTimeFormat('pt-BR', options).format(date);
+};
+
+watch(activeFormPreRegistration, async () => {
+  if (startMonitoringConfig.value) {
+    loading.value = true;
+    const reponse = await updateConfigPreRegistration({
+      active: activeFormPreRegistration.value ? 1 : 0,
+    });
+    if (reponse?.status === 200) {
+      Notify.create({
+        message: reponse.data.message,
+        type: 'positive',
+      });
+    }
+    loading.value = false;
+  }
+});
 watch(open, async () => {
   if (open.value) {
     loading.value = true;
@@ -135,6 +171,7 @@ watch(open, async () => {
     await fetchConfigPreRegistration();
     await fetchPreRegistration();
     loading.value = false;
+    startMonitoringConfig.value = true;
   }
 });
 </script>
@@ -142,7 +179,7 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card
       class="bg-grey-2 form-basic"
-      style="min-width: 900px; max-width: 98vw"
+      style="min-width: 98vw; max-width: 98vw"
     >
       <q-card-section class="q-pa-none">
         <header
@@ -240,6 +277,16 @@ watch(open, async () => {
               </q-td>
               <q-td key="phone" :props="props" class="text-left">
                 <span class="text-subtitle2">{{ props.row.phone }}</span>
+              </q-td>
+              <q-td key="created_at" :props="props" class="text-left">
+                <span class="text-subtitle2">{{
+                  formatDate(props.row.created_at)
+                }}</span>
+              </q-td>
+              <q-td key="description" :props="props" class="text-left">
+                <span class="text-subtitle2">{{
+                  props.row.description ?? ''
+                }}</span>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

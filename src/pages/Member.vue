@@ -2,13 +2,13 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useAuthStore } from 'src/stores/auth-store';
 import Paginate from 'src/components/general/Paginate.vue';
 import { useMemberStore } from 'src/stores/member-store';
-import { MemberChurch } from 'src/ts/interfaces/data/Member';
+import { MemberChurch, PreRegistration } from 'src/ts/interfaces/data/Member';
 import FormMember from 'src/components/forms/FormMember.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ManageRole from 'src/components/manage/ManageRole.vue';
@@ -38,6 +38,7 @@ const showManagePreRegistration = ref<boolean>(false);
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
 const dataExclude = ref<string | null>(null);
+const dataPreRegistration = ref<PreRegistration | null>(null);
 const columnsMember = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -57,6 +58,7 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   dataExclude.value = null;
   filterMember.value = '';
+  dataPreRegistration.value = null;
 };
 const fetchMembers = async () => {
   await getMembers();
@@ -70,6 +72,12 @@ const closeFormMember = async () => {
 };
 const openManagePreRegistration = (): void => {
   showManagePreRegistration.value = true;
+};
+const closeManagePreRegistrationWithoutData = async () => {
+  showManagePreRegistration.value = false;
+  selectedDataEdit.value = null;
+  dataExclude.value = null;
+  filterMember.value = '';
 };
 const closeManagePreRegistration = async () => {
   showManagePreRegistration.value = false;
@@ -132,6 +140,10 @@ const openConfirmAction = (id: string): void => {
 };
 const setActive = async (active: number, userId: string) => {
   await updateActiveMember(active, userId);
+};
+const openFormMemberByPreRegistration = (data: PreRegistration): void => {
+  dataPreRegistration.value = data;
+  openFormMember();
 };
 
 const listMemberCurrent = computed(() => {
@@ -367,6 +379,7 @@ onMounted(async () => {
         <FormMember
           :open="showFormMember"
           :data-edit="selectedDataEdit"
+          :data-pre-registration="dataPreRegistration"
           @update:open="closeFormMember"
         />
         <MemberMovementInfo
@@ -383,6 +396,8 @@ onMounted(async () => {
         <ManagePreRegistration
           :open="showManagePreRegistration"
           @update:open="closeManagePreRegistration"
+          @update:open-by-registration="closeManagePreRegistrationWithoutData"
+          @showFormMemberByRegistration="openFormMemberByPreRegistration"
         />
         <!-- <ManageRelationship
           :open="showManageRelationship"
