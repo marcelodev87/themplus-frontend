@@ -9,14 +9,22 @@ import {
   getMembersService,
   updateMemberService,
   updateActiveMemberService,
+  getPreRegistrationService,
+  deleteRegistrationService,
+  getConfigPreRegistrationService,
 } from 'src/services/member-service';
-import { DataMemberChurch, MemberChurch } from 'src/ts/interfaces/data/Member';
+import {
+  DataMemberChurch,
+  MemberChurch,
+  PreRegistration,
+} from 'src/ts/interfaces/data/Member';
 
 export const useMemberStore = defineStore('member', {
   state: () => ({
     filledData: true as boolean,
     loadingMember: false as boolean,
     listMember: [] as MemberChurch[],
+    listMemberPreRegistration: [] as PreRegistration[],
   }),
   actions: {
     clearListMember() {
@@ -24,6 +32,12 @@ export const useMemberStore = defineStore('member', {
     },
     setListMember(members: MemberChurch[]) {
       members.map((item) => this.listMember.push(item));
+    },
+    clearListMemberPreRegistrationr() {
+      this.listMember.splice(0, this.listMember.length);
+    },
+    setListMemberPreRegistrationr(members: PreRegistration[]) {
+      members.map((item) => this.listMemberPreRegistration.push(item));
     },
     setLoading(loading: boolean) {
       this.loadingMember = loading;
@@ -61,6 +75,31 @@ export const useMemberStore = defineStore('member', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getPreRegistration() {
+      try {
+        this.setLoading(true);
+        const response = await getPreRegistrationService();
+        if (response.status === 200) {
+          this.clearListMemberPreRegistrationr();
+          this.setListMemberPreRegistrationr(response.data.pre_registration);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getConfigPreRegistration() {
+      try {
+        this.setLoading(true);
+        return await getConfigPreRegistrationService();
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }
@@ -126,6 +165,21 @@ export const useMemberStore = defineStore('member', {
         if (response.status === 200) {
           this.clearListMember();
           this.setListMember(response.data.members);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteRegistration(registrationID: string) {
+      this.setLoading(true);
+      try {
+        const response = await deleteRegistrationService(registrationID);
+        if (response.status === 200) {
+          this.clearListMemberPreRegistrationr();
+          this.setListMemberPreRegistrationr(response.data.pre_registration);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

@@ -10,6 +10,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/pages/Auth.vue'),
   },
   {
+    path: '/pre-registration/form',
+    name: 'pre-registration-form',
+    component: () => import('src/pages/PreRegistration.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
     path: '/admin',
     component: () => import('src/layouts/MainLayout.vue'),
     meta: { requiresAuth: true },

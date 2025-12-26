@@ -85,3 +85,35 @@ export interface DataListFamily {
   member: QuasarSelect<string | null>;
   family: QuasarSelect<string | null>;
 }
+
+export interface PreRegistration {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  description: string | null;
+  relationship: {
+    member: string;
+    kinship: string;
+  }[];
+}
+
+export interface ConfigPreRegistration {
+  active: number;
+}
+
+export interface DataPreRegistration {
+  enterprise_id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  description: string | null;
+  relationship:
+    | {
+        member: string;
+        kinship: string;
+      }[]
+    | null;
+}

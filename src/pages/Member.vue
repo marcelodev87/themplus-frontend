@@ -15,6 +15,7 @@ import ManageRole from 'src/components/manage/ManageRole.vue';
 import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
 // import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
 import MemberFamilyInfo from 'src/components/info/MemberFamilyInfo.vue';
+import ManagePreRegistration from 'src/components/manage/ManagePreRegistration.vue';
 
 defineOptions({
   name: 'Member',
@@ -32,7 +33,8 @@ const showMemberFamily = ref<boolean>(false);
 const showFormMember = ref<boolean>(false);
 const showMemberMovementInfo = ref<boolean>(false);
 const showManageRole = ref<boolean>(false);
-const showManageRelationship = ref<boolean>(false);
+const showManagePreRegistration = ref<boolean>(false);
+// const showManageRelationship = ref<boolean>(false);
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
 const dataExclude = ref<string | null>(null);
@@ -66,6 +68,13 @@ const closeFormMember = async () => {
   showFormMember.value = false;
   clear();
 };
+const openManagePreRegistration = (): void => {
+  showManagePreRegistration.value = true;
+};
+const closeManagePreRegistration = async () => {
+  showManagePreRegistration.value = false;
+  clear();
+};
 const openMemberMovementInfo = (member: MemberChurch): void => {
   selectedDataEdit.value = member;
   showMemberMovementInfo.value = true;
@@ -85,10 +94,10 @@ const closeManageRole = async (): Promise<void> => {
 // const openManageRelationship = (): void => {
 //   showManageRelationship.value = true;
 // };
-const closeManageRelationship = (): void => {
-  showManageRelationship.value = false;
-  clear();
-};
+// const closeManageRelationship = (): void => {
+//   showManageRelationship.value = false;
+//   clear();
+// };
 const openMemberFamilyInfo = (member: MemberChurch): void => {
   selectedDataEdit.value = member;
   showMemberFamily.value = true;
@@ -174,6 +183,16 @@ onMounted(async () => {
           no-caps
           flat
         /> -->
+        <q-btn
+          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          @click="openManagePreRegistration"
+          icon-right="assignment_add"
+          label="Formulário"
+          class="q-mr-sm bg-contabilidade"
+          unelevated
+          no-caps
+          flat
+        />
         <q-btn
           v-show="user?.enterprise_id === user?.view_enterprise_id"
           @click="openManageRole"
@@ -361,6 +380,10 @@ onMounted(async () => {
           @update:open="closeMemberFamilyInfo"
         />
         <ManageRole :open="showManageRole" @update:open="closeManageRole" />
+        <ManagePreRegistration
+          :open="showManagePreRegistration"
+          @update:open="closeManagePreRegistration"
+        />
         <!-- <ManageRelationship
           :open="showManageRelationship"
           @update:open="closeManageRelationship"

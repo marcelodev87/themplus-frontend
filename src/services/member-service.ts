@@ -1,5 +1,11 @@
 import { api } from 'boot/axios';
-import { DataMemberChurch, MemberChurch } from 'src/ts/interfaces/data/Member';
+import {
+  ConfigPreRegistration,
+  DataMemberChurch,
+  DataPreRegistration,
+  MemberChurch,
+  PreRegistration,
+} from 'src/ts/interfaces/data/Member';
 
 const baseUrl = 'member-church';
 
@@ -19,6 +25,29 @@ export const getMembersService = (
   });
 };
 
+export const getPreRegistrationService = (): Promise<{
+  status: number;
+  data: {
+    pre_registration: PreRegistration[];
+  };
+}> => api.get(`${baseUrl}/pre-registration`);
+
+export const getConfigPreRegistrationService = (): Promise<{
+  status: number;
+  data: {
+    config: ConfigPreRegistration;
+  };
+}> => api.get(`${baseUrl}/pre-registration/config`);
+
+export const checkActivePreRegistration = (
+  enterpriseID: string
+): Promise<{
+  status: number;
+  data: {
+    active: boolean;
+  };
+}> => api.get(`/active-pre-registration/${enterpriseID}`);
+
 export const createMemberService = (
   data: DataMemberChurch
 ): Promise<{
@@ -28,6 +57,15 @@ export const createMemberService = (
     message: string;
   };
 }> => api.post(`${baseUrl}/`, data);
+
+export const createPreRegistrationService = (
+  data: DataPreRegistration
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post(`create-pre-registration/`, data);
 
 export const updateMemberService = (
   id: string,
@@ -60,3 +98,13 @@ export const deleteMemberService = (
     message: string;
   };
 }> => api.delete(`${baseUrl}/${id}`);
+
+export const deleteRegistrationService = (
+  id: string
+): Promise<{
+  status: number;
+  data: {
+    pre_registration: PreRegistration[];
+    message: string;
+  };
+}> => api.delete(`${baseUrl}/pre-registration/${id}`);
