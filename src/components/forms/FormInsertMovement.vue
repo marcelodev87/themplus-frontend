@@ -14,6 +14,7 @@ import {
   InsertMovementData,
 } from 'src/ts/interfaces/data/Movement';
 import { ExcelData } from 'src/ts/interfaces/data/Excel';
+import { DataOFX } from 'src/ts/interfaces/data/Geral';
 
 defineOptions({
   name: 'FormInsertMovement',
@@ -105,8 +106,15 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataInsert.file === null) {
     return {
       status: false,
-      message: 'Selecione uma planilha',
+      message: 'Selecione um arquivo',
     };
+  }
+
+  if (
+    dataInsert.file.type === 'application/x-ofx' ||
+    dataInsert.file.name.toLowerCase().endsWith('.ofx')
+  ) {
+    return { status: true };
   }
 
   const allowedTypes = [
@@ -121,6 +129,30 @@ const checkData = (): { status: boolean; message?: string } => {
     };
   }
 
+  const hasNoAccount = listInsertMovement.value.some(
+    (movement) => !movement.account
+  );
+  const hasNoCategory = listInsertMovement.value.some(
+    (movement) => !movement.category
+  );
+
+  if (hasNoAccount) {
+    return {
+      status: false,
+      message: 'Há registros sem conta selecionada.',
+    };
+  }
+
+  if (hasNoCategory) {
+    return {
+      status: false,
+      message: 'Há registros sem categoria selecionada.',
+    };
+  }
+
+  return { status: true };
+};
+const checkDataSave = (): { status: boolean; message?: string } => {
   const hasNoAccount = listInsertMovement.value.some(
     (movement) => !movement.account
   );
@@ -168,7 +200,7 @@ const mountPayload = (): void => {
   });
 };
 const save = async () => {
-  const check = checkData();
+  const check = checkDataSave();
   if (check.status) {
     mountPayload();
     const response = await insertMovement(mountPayloadData);
@@ -243,9 +275,131 @@ const checkAccountAndCategoryRows = (rows: ExcelData[]): InsertMovement[] => {
     return updatedItem;
   });
 };
+const mapOFXToInsertMovement = (transactions: DataOFX[]): ExcelData[] => {
+  return transactions.map((t) => ({
+    tipo: t.type === 'entry' ? 'entrada' : 'saída',
+    valor: t.value,
+    dataMovimentacao: t.date,
+    descricao: t.description,
+    accountID: '',
+    categoryID: '',
+  })) as unknown as ExcelData[];
+};
+const formatOFXDate = (raw: string): string => {
+  const clean = raw.replace(/\[.*?\]/, '');
+
+  const year = clean.slice(0, 4);
+  const month = clean.slice(4, 6);
+  const day = clean.slice(6, 8);
+
+  return `${day}/${month}/${year}`;
+};
+const getTagValue = (block: string, tag: string): string | null => {
+  const regex = new RegExp(`<${tag}>([^<\\r\\n]+)`, 'i');
+  const match = block.match(regex);
+  return match ? match[1].trim() : null;
+};
+const parseOFX = (content: string): DataOFX[] => {
+  const transactions: DataOFX[] = [];
+
+  const stmtRegex = /<STMTTRN>([\s\S]*?)<\/STMTTRN>/gi;
+  const blocks = content.match(stmtRegex) || [];
+
+  blocks.forEach((block) => {
+    const trnType = getTagValue(block, 'TRNTYPE');
+    const dtPosted = getTagValue(block, 'DTPOSTED');
+    const trnAmt = getTagValue(block, 'TRNAMT');
+    const memo = getTagValue(block, 'MEMO');
+
+    if (!trnType || !dtPosted || !trnAmt) return;
+
+    const type =
+      trnType.toUpperCase() === 'DEBIT'
+        ? 'out'
+        : trnType.toUpperCase() === 'CREDIT'
+          ? 'entry'
+          : null;
+
+    if (!type) return;
+
+    transactions.push({
+      type,
+      date: formatOFXDate(dtPosted),
+      value: Math.abs(Number(trnAmt)).toFixed(2),
+      description: memo ?? '',
+    });
+  });
+
+  return transactions;
+};
+const processOFXFile = (file: File) => {
+  setLoading(true);
+
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const content = e.target?.result;
+
+    if (typeof content !== 'string') {
+      Notify.create({
+        type: 'negative',
+        message: 'Erro ao ler o arquivo OFX',
+      });
+      setLoading(false);
+      return;
+    }
+
+    const transactions = parseOFX(content);
+
+    if (transactions.length === 0) {
+      Notify.create({
+        type: 'negative',
+        message: 'Nenhuma movimentação válida encontrada no arquivo OFX',
+      });
+      setLoading(false);
+      return;
+    }
+
+    const mappedRows = mapOFXToInsertMovement(transactions);
+
+    listInsertMovement.value = checkAccountAndCategoryRows(mappedRows);
+
+    Notify.create({
+      type: 'positive',
+      message: `Arquivo OFX processado com sucesso (${mappedRows.length} registros)`,
+    });
+
+    viewMode.value = 'process';
+    setLoading(false);
+  };
+
+  reader.onerror = () => {
+    Notify.create({
+      type: 'negative',
+      message: 'Erro ao ler o arquivo OFX',
+    });
+    setLoading(false);
+  };
+
+  reader.readAsText(file, 'utf-8');
+};
 const process = () => {
   const check = checkData();
   if (check.status) {
+    const isOFX = dataInsert.file?.name?.toLowerCase().endsWith('.ofx');
+
+    if (isOFX) {
+      if (!dataInsert.file) {
+        Notify.create({
+          type: 'negative',
+          message: 'Nenhum arquivo OFX selecionado',
+        });
+        return;
+      }
+
+      processOFXFile(dataInsert.file);
+      return;
+    }
     setLoading(true);
     const reader = new FileReader();
 
@@ -492,7 +646,7 @@ watch(open, async () => {
       :style="viewMode === 'process' ? 'min-width: 98vw' : 'min-width: 40vw'"
     >
       <q-card-section class="q-pa-none">
-        <TitlePage title="Inserção de movimentações em lote" />
+        <TitlePage title="Inserção de movimentações" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form v-if="viewMode === 'add'" class="q-gutter-y-sm">
@@ -501,10 +655,10 @@ watch(open, async () => {
             filled
             bg-color="white"
             label-color="black"
-            label="Adicione um documento ( .xls ou .xlsx )"
+            label="Adicione um documento ( .xls, .xlsx ou .ofx )"
             dense
             clearable
-            accept=".xls,.xlsx"
+            accept=".xls,.xlsx,.ofx"
           >
             <template v-slot:prepend>
               <q-icon name="attach_file" color="black" size="20px" />
@@ -524,6 +678,7 @@ watch(open, async () => {
           no-data-label="Nenhuma movimentação para mostrar"
           style="height: 450px"
           virtual-scroll
+          :rows-per-page-options="[25]"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
@@ -539,7 +694,11 @@ watch(open, async () => {
             <q-tr
               :props="props"
               style="height: 28px"
-              :class="props.row.tipo === 'Entrada' ? 'text-green' : 'text-red'"
+              :class="
+                props.row.tipo.toLocaleLowerCase() === 'entrada'
+                  ? 'text-green'
+                  : 'text-red'
+              "
             >
               <q-td key="dataMovimentacao" :props="props" class="text-left">
                 {{ props.row.dataMovimentacao }}
