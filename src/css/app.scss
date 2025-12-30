@@ -17,6 +17,11 @@
   width: 900px;
   max-width: 99%;
 }
+.sub-page {
+  width: 800px !important;
+  max-width: 98vw !important;
+  min-height: 300px;
+}
 .no-spinners::-webkit-outer-spin-button,
 .no-spinners::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -50,6 +55,10 @@
 }
 .input-divider {
   width: 49%;
+}
+.input-3-divider {
+  flex: 1;
+  min-width: 0; 
 }
 .opacity-50 {
   opacity: 0.5;
