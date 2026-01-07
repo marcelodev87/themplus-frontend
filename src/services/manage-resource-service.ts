@@ -1,6 +1,6 @@
 import { api } from 'boot/axios';
 import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
-import { ISubscriptionInfo } from 'src/ts/interfaces/data/SubscriptionInfo';
+import { ISubscriptionInfo } from 'src/ts/interfaces/data/Subscription';
 
 const baseUrl = 'resource';
 

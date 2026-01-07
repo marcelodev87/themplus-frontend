@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ISubscriptionInfo } from 'src/ts/interfaces/data/SubscriptionInfo';
+import { ISubscriptionInfo } from 'src/ts/interfaces/data/Subscription';
 import { computed } from 'vue';
 import TitlePage from '../shared/TitlePage.vue';
 

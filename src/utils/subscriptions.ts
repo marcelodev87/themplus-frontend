@@ -6,21 +6,21 @@ export const subscriptions: {
   assistent: boolean;
 }[] = [
   {
-    name: 'Grátis',
+    name: 'free',
     movement: 50,
     members: false,
     financial: false,
     assistent: false,
   },
   {
-    name: 'Básico',
+    name: 'basic',
     movement: 'Ilimitado',
     members: true,
     financial: true,
     assistent: false,
   },
   {
-    name: 'Avançado',
+    name: 'advanced',
     movement: 'Ilimitado',
     members: true,
     financial: true,

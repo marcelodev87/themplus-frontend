@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
-import type { ISubscriptionInfo } from 'src/ts/interfaces/data/SubscriptionInfo';
+import type { ISubscriptionInfo } from 'src/ts/interfaces/data/Subscription';
 import { useManageResourceStore } from 'src/stores/manage-resource-store';
 import { storeToRefs } from 'pinia';
 import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
