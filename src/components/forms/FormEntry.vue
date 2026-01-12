@@ -149,8 +149,19 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataEntry.category == null) {
     return { status: false, message: 'A categoria deve ser selecionada' };
   }
-  if (dataEntry.value.trim() === '') {
+  const rawValue = dataEntry.value.trim();
+
+  if (rawValue === '') {
     return { status: false, message: 'O valor deve ser inserido' };
+  }
+
+  const numericValue = Number(rawValue.replace(',', '.'));
+
+  if (isNaN(numericValue) || numericValue <= 0) {
+    return {
+      status: false,
+      message: 'O valor deve ser maior que 0,00',
+    };
   }
   if (dataEntry.account == null) {
     return { status: false, message: 'A conta deve ser selecionada' };

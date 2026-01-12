@@ -296,7 +296,7 @@ watch(open, async () => {
                   flat
                   round
                   color="black"
-                  icon="check_circle"
+                  icon="edit"
                 />
                 <q-btn
                   @click="openConfirmAction(props.row)"
