@@ -169,31 +169,31 @@ const optionsMinistries = computed(() => {
 const clearSpaces = (text: string) => {
   return text.trim().length > 0 ? text : null;
 };
-const checkData = (): { status: boolean; message?: string } => {
+const checkData = (): { status: boolean; messages?: string[] } => {
+  const errors: string[] = [];
+
   if (dataMember.name.trim() === '') {
-    return {
-      status: false,
-      message: 'Deve ser informado o nome do membro',
-    };
+    errors.push('Deve ser informado o nome do membro');
   }
 
-  if (dataMember.cpf.trim() === '' && dataMember.email.trim().length !== 11) {
-    return {
-      status: false,
-      message: 'Deve ser informado um cpf válido',
-    };
+  if (
+    dataMember.cpf.trim() === '' ||
+    dataMember.cpf.trim().length !== 11
+  ) {
+    errors.push('Deve ser informado um CPF válido');
   }
 
-  if (dataMember.phone.trim() !== '') {
-    if (!/^\+?[1-9]\d{1,14}$/.test(dataMember.phone.trim())) {
-      return { status: false, message: 'Digite um telefone válido' };
-    }
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+
+  if (dataMember.phone.trim() !== '' && !phoneRegex.test(dataMember.phone.trim())) {
+    errors.push('Digite um telefone pessoal válido');
   }
 
-  if (dataMember.phoneProfessional.trim() !== '') {
-    if (!/^\+?[1-9]\d{1,14}$/.test(dataMember.phoneProfessional.trim())) {
-      return { status: false, message: 'Digite um telefone válido' };
-    }
+  if (
+    dataMember.phoneProfessional.trim() !== '' &&
+    !phoneRegex.test(dataMember.phoneProfessional.trim())
+  ) {
+    errors.push('Digite um telefone profissional válido');
   }
 
   const validateEmail = (email: string) => {
@@ -201,26 +201,26 @@ const checkData = (): { status: boolean; message?: string } => {
     return regex.test(email);
   };
 
-  if (dataMember.email?.trim() !== '') {
-    if (!validateEmail(dataMember.email.trim())) {
-      return { status: false, message: 'Digite um email pessoal válido' };
-    }
+  if (dataMember.email?.trim() !== '' && !validateEmail(dataMember.email.trim())) {
+    errors.push('Digite um email pessoal válido');
   }
 
-  if (dataMember.emailProfessional?.trim() !== '') {
-    if (!validateEmail(dataMember.emailProfessional.trim())) {
-      return { status: false, message: 'Digite um email profissional válido' };
-    }
+  if (
+    dataMember.emailProfessional?.trim() !== '' &&
+    !validateEmail(dataMember.emailProfessional.trim())
+  ) {
+    errors.push('Digite um email profissional válido');
   }
 
   const validateDate = (value: string, label: string) => {
-    if (value.trim() === '') return null;
+    if (value.trim() === '') return;
 
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     const match = value.match(regex);
 
     if (!match) {
-      return `${label} deve estar no formato DD/MM/YYYY`;
+      errors.push(`${label} deve estar no formato DD/MM/YYYY`);
+      return;
     }
 
     const day = Number(match[1]);
@@ -228,44 +228,36 @@ const checkData = (): { status: boolean; message?: string } => {
     const year = Number(match[3]);
 
     if (month < 1 || month > 12) {
-      return `${label}: mês inválido`;
+      errors.push(`${label}: mês inválido`);
+      return;
     }
+
     const dateCheck = new Date(year, month - 1, day);
 
     if (dateCheck.getMonth() !== month - 1 || dateCheck.getDate() !== day) {
-      return `${label}: dia inválido para o mês informado`;
+      errors.push(`${label}: dia inválido para o mês informado`);
     }
 
     if (year < 1900 || year > 2100) {
-      return `${label}: ano fora do intervalo permitido`;
+      errors.push(`${label}: ano fora do intervalo permitido`);
     }
-
-    return null;
   };
 
-  const dateFields = [
-    { field: dataMember.dateBirth, label: 'Data de nascimento' },
-    { field: dataMember.dateBaptismo, label: 'Data de batismo' },
-    { field: dataMember.startDate, label: 'Data de início' },
-    { field: dataMember.endDate, label: 'Data de término' },
-  ];
+  validateDate(dataMember.dateBirth, 'Data de nascimento');
+  validateDate(dataMember.dateBaptismo, 'Data de batismo');
+  validateDate(dataMember.startDate, 'Data de início');
+  validateDate(dataMember.endDate, 'Data de término');
 
-  let validationError: string | null = null;
-
-  const hasError = dateFields.some((item) => {
-    const error = validateDate(item.field, item.label);
-    if (error) {
-      validationError = error;
-      return true;
-    }
-    return false;
-  });
-
-  if (hasError) {
-    return { status: false, message: validationError! };
+  if (errors.length > 0) {
+    return {
+      status: false,
+      messages: errors,
+    };
   }
+
   return { status: true };
 };
+
 const clear = (): void => {
   tab.value = 'individual';
   Object.assign(dataMember, {
@@ -389,7 +381,8 @@ const save = async () => {
     }
   } else {
     Notify.create({
-      message: check.message,
+      message: (check.messages ?? []).join('<br>'),
+      html: true,
       type: 'negative',
     });
   }
@@ -432,7 +425,8 @@ const update = async () => {
     }
   } else {
     Notify.create({
-      message: check.message,
+      message: (check.messages ?? []).join('<br>'),
+      html: true,
       type: 'negative',
     });
   }
