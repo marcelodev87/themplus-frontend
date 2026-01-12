@@ -75,7 +75,78 @@ const selectedEducation = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
 });
+const checkData = (): { status: boolean; messages?: string[] } => {
+  const errors: string[] = [];
 
+  if (data.value.name.trim() === '') {
+    errors.push('Deve ser informado o nome');
+  }
+
+  if (
+    data.value.cpf.trim() === '' ||
+    data.value.cpf.trim().length !== 11
+  ) {
+    errors.push('Deve ser informado um CPF válido');
+  }
+
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+
+  if (data.value.phone.trim() !== '' && !phoneRegex.test(data.value.phone.trim())) {
+    errors.push('Digite um telefone pessoal válido');
+  }
+
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  if (data.value.email?.trim() !== '' && !validateEmail(data.value.email.trim())) {
+    errors.push('Digite um email pessoal válido');
+  }
+
+  const validateDate = (value: string, label: string) => {
+    if (value.trim() === '') return;
+
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = value.match(regex);
+
+    if (!match) {
+      errors.push(`${label} deve estar no formato DD/MM/YYYY`);
+      return;
+    }
+
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
+
+    if (month < 1 || month > 12) {
+      errors.push(`${label}: mês inválido`);
+      return;
+    }
+
+    const dateCheck = new Date(year, month - 1, day);
+
+    if (dateCheck.getMonth() !== month - 1 || dateCheck.getDate() !== day) {
+      errors.push(`${label}: dia inválido para o mês informado`);
+    }
+
+    if (year < 1900 || year > 2100) {
+      errors.push(`${label}: ano fora do intervalo permitido`);
+    }
+  };
+
+  validateDate(data.value.dateBirth, 'Data de nascimento');
+  validateDate(data.value.dateBaptismo, 'Data de batismo');
+
+  if (errors.length > 0) {
+    return {
+      status: false,
+      messages: errors,
+    };
+  }
+
+  return { status: true };
+};
 const checkActive = async () => {
   const enterpriseId = Array.isArray(route.query.enterprise_id)
     ? route.query.enterprise_id[0]
@@ -137,6 +208,18 @@ const clear = () => {
   };
 };
 const send = async () => {
+  const check = checkData();
+
+  if (!check.status) {
+    Notify.create({
+      type: 'negative',
+      message: check.messages?.join('<br>'),
+      html: true,
+      position: 'bottom',
+    });
+    return;
+  }
+
   try {
     const enterpriseId =
       typeof route.query.enterprise_id === 'string'

@@ -257,7 +257,6 @@ const checkData = (): { status: boolean; messages?: string[] } => {
 
   return { status: true };
 };
-
 const clear = (): void => {
   tab.value = 'individual';
   Object.assign(dataMember, {
