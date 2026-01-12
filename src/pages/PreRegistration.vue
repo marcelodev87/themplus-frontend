@@ -21,6 +21,10 @@ defineOptions({
 const route = useRoute();
 
 const loading = ref<boolean>(false);
+const hasMember = ref<QuasarSelect<boolean>>({
+  label: 'Não',
+  value: false,
+});
 const activeFormPreRegistration = ref<boolean>(false);
 const memberName = ref<string>('');
 const kinship = ref<string>('');
@@ -212,6 +216,10 @@ const allowSend = computed(() => {
     data.value.phone.trim() !== ''
   );
 });
+const optionsHasMember = reactive<QuasarSelect<boolean>[]>([
+  { label: 'Sim', value: true },
+  { label: 'Não', value: false },
+]);
 
 watch(
   () => data.value.cep,
@@ -240,6 +248,16 @@ watch(
   ([cpf, numberAdress]) => {
     data.value.cpf = cpf.replace(/\D/g, '');
     data.value.addressNumber = numberAdress.replace(/\D/g, '');
+  }
+);
+watch(
+  () => hasMember.value,
+  (newValue) => {
+    if (!newValue.value) {
+      memberName.value = '';
+      kinship.value = '';
+      data.value.relations = [];
+    }
   }
 );
 
@@ -546,6 +564,24 @@ onMounted(async () => {
         </q-input>
 
         <div class="row q-col-gutter-x-sm">
+          <q-select
+            v-model="hasMember"
+            :options="optionsHasMember"
+            label="Possui parentes na igreja?"
+            outlined
+            dense
+            options-dense
+            map-options
+            bg-color="white"
+            label-color="black"
+            class="full-width"
+          >
+            <template v-slot:prepend>
+              <q-icon name="church" color="black" size="20px" />
+            </template>
+          </q-select>
+        </div>
+        <div v-if="hasMember.value" class="row q-col-gutter-x-sm">
           <div class="col-6">
             <q-input
               v-model="memberName"
