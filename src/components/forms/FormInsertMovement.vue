@@ -585,6 +585,12 @@ const process = () => {
     });
   }
 };
+const onChangeAccount = (account: any) => {
+  listInsertMovement.value = listInsertMovement.value.map((item) => ({
+    ...item,
+    account,
+  }));
+};
 const filterFnAccount = (
   val: string,
   updateFilter: (callback: () => void) => void
@@ -714,6 +720,7 @@ watch(open, async () => {
                   v-model="props.row.account"
                   :options="optionsAccounts"
                   @filter="filterFnAccount"
+                  @update:model-value="onChangeAccount"
                   label="Conta"
                   filled
                   dense
@@ -734,12 +741,12 @@ watch(open, async () => {
                 <q-select
                   v-model="props.row.category"
                   :options="
-                    (props.row.tipo === 'Entrada'
+                    (props.row.tipo.toLocaleLowerCase() === 'entrada'
                       ? optionsCategories.filter(
                           (item) => item.type === 'entrada'
                         )
                       : optionsCategories.filter(
-                          (item) => item.type === 'saída'
+                          (item) => item.type !== 'entrada'
                         )
                     ).map((item) => ({ value: item.id, label: item.name }))
                   "
