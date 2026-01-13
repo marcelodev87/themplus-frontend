@@ -176,16 +176,16 @@ const checkData = (): { status: boolean; messages?: string[] } => {
     errors.push('Deve ser informado o nome do membro');
   }
 
-  if (
-    dataMember.cpf.trim() === '' ||
-    dataMember.cpf.trim().length !== 11
-  ) {
+  if (dataMember.cpf.trim() === '' || dataMember.cpf.trim().length !== 11) {
     errors.push('Deve ser informado um CPF válido');
   }
 
   const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
-  if (dataMember.phone.trim() !== '' && !phoneRegex.test(dataMember.phone.trim())) {
+  if (
+    dataMember.phone.trim() !== '' &&
+    !phoneRegex.test(dataMember.phone.trim())
+  ) {
     errors.push('Digite um telefone pessoal válido');
   }
 
@@ -201,7 +201,10 @@ const checkData = (): { status: boolean; messages?: string[] } => {
     return regex.test(email);
   };
 
-  if (dataMember.email?.trim() !== '' && !validateEmail(dataMember.email.trim())) {
+  if (
+    dataMember.email?.trim() !== '' &&
+    !validateEmail(dataMember.email.trim())
+  ) {
     errors.push('Digite um email pessoal válido');
   }
 

@@ -9,6 +9,7 @@ import { PreRegistration } from 'src/ts/interfaces/data/Member';
 import { Notify } from 'quasar';
 import { updateConfigPreRegistration } from 'src/services/member-service';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
+import RelationshipDetails from '../info/RelationshipDetails.vue';
 
 defineOptions({
   name: 'ManagePreRegistration',
@@ -32,6 +33,7 @@ const { user } = storeToRefs(useAuthStore());
 const loading = ref<boolean>(false);
 const startMonitoringConfig = ref<boolean>(false);
 const filter = ref<string>('');
+const showRelationshipDetails = ref<boolean>(false);
 const activeFormPreRegistration = ref<number>(1);
 const selectedDataEdit = ref<PreRegistration | null>(null);
 const showConfirmAction = ref<boolean>(false);
@@ -78,6 +80,7 @@ const clear = (): void => {
   filter.value = '';
   selectedDataEdit.value = null;
   startMonitoringConfig.value = false;
+  showRelationshipDetails.value = false;
 };
 const fetchPreRegistration = async () => {
   await getPreRegistration();
@@ -148,6 +151,12 @@ const formatDate = (dateString: string): string => {
 
   return new Intl.DateTimeFormat('pt-BR', options).format(date);
 };
+const changeShowRelationshipDetails = (
+  registration: PreRegistration | null = null
+): void => {
+  showRelationshipDetails.value = !showRelationshipDetails.value;
+  selectedDataEdit.value = registration;
+};
 
 watch(activeFormPreRegistration, async () => {
   if (startMonitoringConfig.value) {
@@ -190,7 +199,7 @@ watch(open, async () => {
           "
         >
           <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
-            <TitlePage title="Gerenciamento de cargos" />
+            <TitlePage title="Gerenciamento de pré-registros" />
           </div>
         </header>
       </q-card-section>
@@ -290,6 +299,18 @@ watch(open, async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="changeShowRelationshipDetails(props.row)"
+                  v-show="
+                    props.row.relationships.length > 0 &&
+                    user?.enterprise_id === user?.view_enterprise_id
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="primary"
+                  icon="group"
+                />
+                <q-btn
                   @click="handleApprove(props.row)"
                   v-show="user?.enterprise_id === user?.view_enterprise_id"
                   size="sm"
@@ -342,6 +363,11 @@ watch(open, async () => {
         message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
         @update:open="closeConfirmAction"
         @update:ok="closeConfirmActionOk"
+      />
+      <RelationshipDetails
+        :open="showRelationshipDetails"
+        :data="selectedDataEdit"
+        @update:open="changeShowRelationshipDetails()"
       />
     </q-card>
   </q-dialog>

@@ -4,3 +4,8 @@ export interface Relationship {
   enterprise_id: string;
   default: number;
 }
+
+export interface RelationshipDetailsPreRegistration {
+  kinship: string;
+  member: string;
+}
