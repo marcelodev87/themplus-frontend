@@ -27,7 +27,7 @@ const subscription = computed(() => {
 </script>
 
 <template>
-  <q-card class="bg-grey-2 full-width">
+  <q-card class="bg-grey-2 full-width" flat>
     <q-card-section class="q-pa-none">
       <TitlePage title="Gerenciamento de assinatura" />
     </q-card-section>

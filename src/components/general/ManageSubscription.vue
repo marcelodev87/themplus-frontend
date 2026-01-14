@@ -82,44 +82,7 @@ watch(
         <TitlePage title="Gerenciamento de assinatura" />
       </q-card-section>
       <q-card-section class="q-pa-sm q-gutter-y-sm">
-        <q-tabs
-          v-model="tab"
-          dense
-          class="text-grey"
-          active-color="primary"
-          indicator-color="primary"
-          align="justify"
-          inline-label
-        >
-          <q-tab name="subscription" no-caps icon="paid" label="Assinatura" />
-          <!-- <q-tab name="coupon" no-caps icon="percent" label="Cupons" /> -->
-          <!-- <q-tab
-            name="capacity"
-            no-caps
-            icon="donut_large"
-            label="Capacidade"
-          /> -->
-        </q-tabs>
-
-        <q-separator />
-
-        <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="subscription" class="q-pa-none">
-            <SubscriptionInfo
-              :data="dataSubscription"
-              :loading="loadingResource"
-            />
-          </q-tab-panel>
-          <!-- <q-tab-panel name="coupon" class="q-pa-none">
-            <TableCouponEnterprise
-              :data="listCouponsEnterprise"
-              :loading="loadingResource"
-            />
-          </q-tab-panel> -->
-          <!-- <q-tab-panel name="capacity" class="q-pa-none">
-            <DashboardCapacity />
-          </q-tab-panel> -->
-        </q-tab-panels>
+        <SubscriptionInfo :data="dataSubscription" :loading="loadingResource" />
       </q-card-section>
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">

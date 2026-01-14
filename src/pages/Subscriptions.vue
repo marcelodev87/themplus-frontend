@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useFeedStore } from 'src/stores/feed-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { subscriptions } from 'src/utils/subscriptions';
+import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import ManageSubscription from 'src/components/general/ManageSubscription.vue';
 import SubscriptionStepper from 'src/components/stepper/SubscriptionStepper.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
@@ -54,6 +55,12 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
     name: 'assistent',
     label: 'Assistente de whatsapp',
     field: 'assistent',
+    align: 'center',
+  },
+  {
+    name: 'price',
+    label: 'Valor',
+    field: 'price',
     align: 'center',
   },
   {
@@ -115,18 +122,21 @@ const fetchSubscriptions = async () => {
 const subscriptionsTable = computed(() => {
   if (!listSubscription.value?.length) return [];
 
-  return listSubscription.value.map((sub) => {
-    const mock = subscriptions.find((s) => s.name === sub.name);
+  return listSubscription.value
+    .map((sub) => {
+      const mock = subscriptions.find((s) => s.name === sub.name);
 
-    return {
-      id: sub.id,
-      name: sub.name,
-      movement: mock?.movement ?? '-',
-      members: mock?.members ?? false,
-      financial: mock?.financial ?? false,
-      assistent: mock?.assistent ?? false,
-    };
-  });
+      return {
+        id: sub.id,
+        name: sub.name,
+        movement: mock?.movement ?? '-',
+        members: mock?.members ?? false,
+        financial: mock?.financial ?? false,
+        assistent: mock?.assistent ?? false,
+        price: sub.price ?? '0.00',
+      };
+    })
+    .sort((a, b) => Number(a.price) - Number(b.price));
 });
 
 watch(
@@ -233,8 +243,18 @@ onMounted(async () => {
                     :color="props.row.assistent ? 'green' : 'red'"
                   />
                 </q-td>
+                <q-td
+                  key="price"
+                  :props="props"
+                  class="text-center"
+                  style="font-size: 14px"
+                >
+                  <span v-if="props.row.name === 'free'">-</span>
+                  <span v-else>{{ formatCurrencyBRL(props.row.price) }}</span>
+                </q-td>
                 <q-td key="actions" :props="props" class="text-center">
                   <q-btn
+                    v-if="props.row.name !== 'free'"
                     rounded
                     flat
                     icon="attach_money"
