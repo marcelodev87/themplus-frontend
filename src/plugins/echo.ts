@@ -5,11 +5,14 @@ window.Pusher = Pusher;
 
 const echo = new Echo({
   broadcaster: 'reverb',
-  key: 'wuimh9w8yp9oceqfc73y',
-  wsHost: 'localhost',
-  wsPort: 9001,
-  forceTLS: false,
-  enabledTransports: ['ws'],
+  key: import.meta.env.VITE_REVERB_APP_KEY,
+  wsHost: import.meta.env.VITE_REVERB_HOST,
+  wsPort: import.meta.env.VITE_REVERB_WS_PORT,
+  wssPort: import.meta.env.VITE_REVERB_WSS_PORT,
+  forceTLS: false, // TRUE - PROD
+  enabledTransports: import.meta.env.VITE_REVERB_ENABLED_TRANSPORTS,
+  encrypted: false,
+  withCredentials: true,
 });
 
 export default echo;
