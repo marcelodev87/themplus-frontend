@@ -36,6 +36,13 @@ export const getUsersMembersService = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
+export const getProfileService = (): Promise<{
+  status: number;
+  data: {
+    user: User;
+  };
+}> => api.get(`${baseUrl}/profile`);
+
 export const getInboxService = (): Promise<{
   status: number;
   data: {

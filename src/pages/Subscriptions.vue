@@ -9,115 +9,75 @@ import { subscriptions } from 'src/utils/subscriptions';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import ManageSubscription from 'src/components/general/ManageSubscription.vue';
 import SubscriptionStepper from 'src/components/stepper/SubscriptionStepper.vue';
-import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useSubscriptionStore } from 'src/stores/subscription-store';
+import { useAuthStore } from 'src/stores/auth-store';
 
-defineOptions({
-  name: 'Subscriptions',
-});
+defineOptions({ name: 'Subscriptions' });
 
 const { filledData } = storeToRefs(useFeedStore());
 const { getFeed } = useFeedStore();
-const { listSubscription, loadingTableSubscription, freeSubscriptionLoading } =
-  storeToRefs(useSubscriptionStore());
 
-const subscriptionID = ref<string | null>(null);
-const showSubscriptionStepper = ref<boolean>(false);
-const showManageSubscription = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(false);
-const showConfirmAction = ref<boolean>(false);
+const {
+  listSubscription,
+  loadingTableSubscription,
+  freeSubscriptionLoading
+} = storeToRefs(useSubscriptionStore());
+
+const { user } = storeToRefs(useAuthStore());
+
+const planLabels: Record<string, string> = {
+  free: 'Grátis',
+  basic: 'Básico',
+  advanced: 'Avançado'
+};
+
+const getPlanLabel = (name?: string) =>
+  name ? (planLabels[name] ?? name) : '';
+
+const currentPlanLabel = computed(() => {
+  const name = user.value?.enterprise?.subscription.name;
+  return getPlanLabel(name);
+});
+
+const subscriptionInfo = computed(() => {
+  const expired = user.value?.enterprise?.expired_date;
+  if (!expired) return null;
+
+  const expireDate = new Date(expired.replace(' ', 'T'));
+  const now = new Date();
+
+  const diffMs = expireDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  return {
+    expireDate,
+    diffDays,
+    isExpired: diffDays <= 0,
+    isNearExpire: diffDays <= 7 && diffDays > 0
+  };
+});
+
+const expireFormatted = computed(() => {
+  if (!subscriptionInfo.value) return '';
+  return subscriptionInfo.value.expireDate.toLocaleDateString('pt-BR');
+});
+
+const statusColor = computed(() => {
+  if (!subscriptionInfo.value) return 'grey';
+  if (subscriptionInfo.value.isExpired) return 'negative';
+  if (subscriptionInfo.value.isNearExpire) return 'orange';
+  return 'positive';
+});
+
 const columnsSubscriptions = reactive<QuasarTable[]>([
-  {
-    name: 'name',
-    label: 'Assinatura',
-    field: 'name',
-    align: 'center',
-  },
-  {
-    name: 'movement',
-    label: 'Movimentações financeiras',
-    field: 'movement',
-    align: 'center',
-  },
-  {
-    name: 'members',
-    label: 'Gerenciamento de membros',
-    field: 'members',
-    align: 'center',
-  },
-  {
-    name: 'financial',
-    label: 'Painel de contabilidade',
-    field: 'financial',
-    align: 'center',
-  },
-  {
-    name: 'assistent',
-    label: 'Assistente de whatsapp',
-    field: 'assistent',
-    align: 'center',
-  },
-  {
-    name: 'price',
-    label: 'Valor',
-    field: 'price',
-    align: 'center',
-  },
-  {
-    name: 'actions',
-    label: 'Ações',
-    field: 'actions',
-    align: 'center',
-  },
+  { name: 'name', label: 'Assinatura', field: 'name', align: 'center' },
+  { name: 'movement', label: 'Movimentações financeiras', field: 'movement', align: 'center' },
+  { name: 'members', label: 'Gerenciamento de membros', field: 'members', align: 'center' },
+  { name: 'financial', label: 'Painel de contabilidade', field: 'financial', align: 'center' },
+  { name: 'assistent', label: 'Assistente de whatsapp', field: 'assistent', align: 'center' },
+  { name: 'price', label: 'Valor', field: 'price', align: 'center' },
+  { name: 'actions', label: 'Ações', field: 'actions', align: 'center' }
 ]);
-
-const fetchFeed = async () => {
-  await getFeed();
-};
-const closeAlertDataEnterprise = async (): Promise<void> => {
-  showAlertDataEnterprise.value = false;
-  await fetchFeed();
-};
-const closeManageSubscription = (): void => {
-  showManageSubscription.value = false;
-};
-const openManageSubscription = (): void => {
-  showManageSubscription.value = true;
-};
-const closeConfirmActionOk = async (): Promise<void> => {
-  showConfirmAction.value = false;
-  if (subscriptionID.value) {
-    await useSubscriptionStore().updateForFreeSubscription(
-      subscriptionID.value
-    );
-  }
-};
-const closeConfirmAction = (): void => {
-  subscriptionID.value = null;
-  showConfirmAction.value = false;
-};
-const openConfirmAction = (): void => {
-  showConfirmAction.value = true;
-};
-const openSubscriptionStepper = (open: boolean, id: string) => {
-  const freeSubscription = listSubscription.value.find((subs) => {
-    return subs.id === id && subs.name === 'free';
-  });
-
-  if (freeSubscription) {
-    subscriptionID.value = id;
-    openConfirmAction();
-  } else {
-    subscriptionID.value = id;
-    showSubscriptionStepper.value = open;
-  }
-};
-const closeSubscriptionStepper = (): void => {
-  showSubscriptionStepper.value = false;
-};
-const fetchSubscriptions = async () => {
-  await useSubscriptionStore().getSubscriptions();
-};
 
 const subscriptionsTable = computed(() => {
   if (!listSubscription.value?.length) return [];
@@ -133,18 +93,51 @@ const subscriptionsTable = computed(() => {
         members: mock?.members ?? false,
         financial: mock?.financial ?? false,
         assistent: mock?.assistent ?? false,
-        price: sub.price ?? '0.00',
+        price: sub.price ?? '0.00'
       };
     })
     .sort((a, b) => Number(a.price) - Number(b.price));
 });
 
+const subscriptionID = ref<string | null>(null);
+const showSubscriptionStepper = ref(false);
+const showManageSubscription = ref(false);
+const showAlertDataEnterprise = ref(false);
+const showConfirmAction = ref(false);
+
+const fetchFeed = async () => await getFeed();
+const fetchSubscriptions = async () => await useSubscriptionStore().getSubscriptions();
+
+const openManageSubscription = () => (showManageSubscription.value = true);
+const closeManageSubscription = () => (showManageSubscription.value = false);
+
+const openConfirmAction = () => (showConfirmAction.value = true);
+
+const openSubscriptionStepper = (open: boolean, id: string) => {
+  const freeSubscription = listSubscription.value.find(
+    (subs) => subs.id === id && subs.name === 'free'
+  );
+
+  if (freeSubscription) {
+    subscriptionID.value = id;
+    openConfirmAction();
+  } else {
+    subscriptionID.value = id;
+    showSubscriptionStepper.value = open;
+  }
+};
+
+const closeSubscriptionStepper = () => (showSubscriptionStepper.value = false);
+
+const closeAlertDataEnterprise = async () => {
+  showAlertDataEnterprise.value = false;
+  await fetchFeed();
+};
+
 watch(
   filledData,
   () => {
-    if (!filledData.value) {
-      showAlertDataEnterprise.value = true;
-    }
+    if (!filledData.value) showAlertDataEnterprise.value = true;
   },
   { immediate: true }
 );
@@ -154,12 +147,38 @@ onMounted(async () => {
   await fetchSubscriptions();
 });
 </script>
+
 <template>
   <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div>
         <TitlePage title="Painel de assinaturas" />
+
+        <div class="row q-gutter-sm q-mt-xs">
+
+          <q-chip color="primary" text-color="white" dense class="q-ml-md">
+            Plano atual: {{ currentPlanLabel }}
+          </q-chip>
+
+          <q-chip
+            v-if="subscriptionInfo"
+            :color="statusColor"
+            text-color="white"
+            dense
+          >
+            <template v-if="subscriptionInfo.isExpired">
+              Vencido em {{ expireFormatted }}
+            </template>
+
+            <template v-else>
+              Vence em {{ expireFormatted }} —
+              faltam {{ subscriptionInfo.diffDays }} dias
+            </template>
+          </q-chip>
+
+        </div>
       </div>
+
       <div
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
@@ -174,6 +193,8 @@ onMounted(async () => {
         />
       </div>
     </header>
+
+
     <main>
       <q-scroll-area class="main-scroll q-pa-sm">
         <section class="q-mt-md">
@@ -204,15 +225,7 @@ onMounted(async () => {
                   class="text-center text-bold"
                   style="font-size: 14px"
                 >
-                  {{
-                    props.row.name === 'free'
-                      ? 'Grátis'
-                      : props.row.name === 'basic'
-                        ? 'Básico'
-                        : props.row.name === 'advanced'
-                          ? 'Avançado'
-                          : props.row.name
-                  }}
+                  {{ getPlanLabel(props.row.name) }}
                 </q-td>
                 <q-td
                   key="movement"
@@ -250,11 +263,17 @@ onMounted(async () => {
                   style="font-size: 14px"
                 >
                   <span v-if="props.row.name === 'free'">-</span>
-                  <span v-else>{{ formatCurrencyBRL(props.row.price) }}</span>
+                  <span v-if="props.row.name === 'advanced'">Em breve</span>
+                  <span
+                    v-if="
+                      props.row.name !== 'advanced' && props.row.name !== 'free'
+                    "
+                    >{{ formatCurrencyBRL(props.row.price) }}</span
+                  >
                 </q-td>
                 <q-td key="actions" :props="props" class="text-center">
                   <q-btn
-                    v-if="props.row.name !== 'free'"
+                    v-if="props.row.name === 'basic'"
                     rounded
                     flat
                     icon="attach_money"
@@ -287,14 +306,14 @@ onMounted(async () => {
         :subscriptionId="subscriptionID"
         @update:open="closeSubscriptionStepper"
       />
-      <ConfirmAction
+      <!-- <ConfirmAction
         :open="showConfirmAction"
         @update:open="closeConfirmAction"
         @update:ok="closeConfirmActionOk"
         label-action="Atualizar"
         title="Confirmação de atualização de assinatura"
         message="Deseja realmente atualizar sua assinatura para a assinatura gratuita? Caso atualize e queira mudar de assinatura, terá que pagar as outras demais"
-      />
+      /> -->
     </main>
   </section>
 </template>

@@ -1,3 +1,5 @@
+import { Enterprise } from './Enterprise';
+
 export interface DataUser {
   name: string;
   position: string;
@@ -87,6 +89,7 @@ export interface User {
   phone: string | null;
   position: string;
   enterprise_id: string;
+  enterprise: Enterprise;
   department_id: string | null;
   created_by: string | null;
   created_at: string;

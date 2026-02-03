@@ -1,3 +1,4 @@
+import { ISubscription } from './Subscription';
 import { User } from './User';
 
 export interface DataEnterprise {
@@ -32,8 +33,10 @@ export interface Enterprise {
   email: string | null;
   phone: string | null;
   subscription_id?: string;
+  subscription: ISubscription;
   created_by: string | null;
   code_financial: number | null;
+  expired_date: string | null;
 }
 
 export interface ResultEnterprise {

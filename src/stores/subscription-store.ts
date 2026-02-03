@@ -80,8 +80,9 @@ export const useSubscriptionStore = defineStore('subscription', {
           return response;
         }
       } catch (error) {
-        this.setLoading(false);
         this.createError(error);
+      } finally {
+        this.setLoading(false);
       }
       return null;
     },

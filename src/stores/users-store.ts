@@ -13,6 +13,7 @@ import {
   exportUserService,
   findUserService,
   getInboxService,
+  getProfileService,
   getUsersMembersByEnterpriseService,
   getUsersMembersService,
   readAllNotificationService,
@@ -24,6 +25,10 @@ import {
 import { Inbox } from 'src/ts/interfaces/data/Inbox';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { User } from 'src/ts/interfaces/data/User';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from './auth-store';
+
+const { user } = storeToRefs(useAuthStore());
 
 export const useUsersMembersStore = defineStore('members', {
   state: () => ({
@@ -113,6 +118,21 @@ export const useUsersMembersStore = defineStore('members', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getProfile() {
+      try {
+        this.setLoading(true);
+        const response = await getProfileService();
+        if (response.status === 200) {
+          user.value = response.data.user;
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

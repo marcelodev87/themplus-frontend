@@ -5,6 +5,7 @@ import { useSubscriptionStore } from 'src/stores/subscription-store';
 import { ICreditCardData } from 'src/ts/interfaces/data/Subscription';
 import { Notify } from 'quasar';
 import echo from 'src/plugins/echo';
+import { useUsersMembersStore } from 'src/stores/users-store';
 import FormCreditCard from '../forms/FormCreditCard.vue';
 import QrCodePix from '../general/QrCodePix.vue';
 
@@ -247,7 +248,12 @@ const checkData = () => {
 const sendDataCreditCard = async (dataCreditCard: ICreditCardData) => {
   const check = checkData();
   if (check.status) {
-    await useSubscriptionStore().creditCardPayment(dataCreditCard);
+    const response =
+      await useSubscriptionStore().creditCardPayment(dataCreditCard);
+      if (response?.status === 200) {
+      step.value = 3;
+      await useUsersMembersStore().getProfile();
+    }
   } else {
     Notify.create({
       message: check.message,
@@ -324,9 +330,10 @@ watch(
 );
 
 onMounted(() => {
-  echo.channel('payments').listen('.payment.made', () => {
+  echo.channel('payments').listen('.payment.made', async () => {
     useSubscriptionStore().setLoading(false);
     step.value = 3;
+    await useUsersMembersStore().getProfile();
   });
 });
 
