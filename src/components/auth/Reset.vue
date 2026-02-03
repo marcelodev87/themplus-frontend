@@ -28,7 +28,6 @@ const dataReset = reactive({
 });
 const modeView = ref<'setEmail' | 'setCode' | 'setPassword'>('setEmail');
 const isPwd = ref<boolean>(true);
-const isPwd2 = ref<boolean>(true);
 
 const checkDataReset = () => {
   if (dataReset.email.trim() === '') {
@@ -118,55 +117,51 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-form class="form-auth rounded-borders bg-grey-3">
-    <div class="row justify-center items-center q-pa-md">
-      <q-img src="/images/logo.png" spinner-color="white" width="250px" />
+  <q-form
+    class="form-auth q-pa-lg shadow-2 rounded-borders bg-white"
+    style="max-width: 400px; width: 100%"
+  >
+    <div class="row justify-center q-mb-md">
+      <q-img src="/images/logo.png" width="180px" />
     </div>
-    <div class="q-px-md">
-      <TitleAuth title="Recupere sua senha" />
+
+    <div class="text-center q-mb-lg">
+      <TitleAuth title="Recuperar Senha" />
+      <div class="text-grey-7" v-if="modeView === 'setEmail'">
+        Enviaremos um código para o seu e-mail
+      </div>
     </div>
-    <div class="q-pb-sm q-px-md q-gutter-y-sm">
+
+    <div class="q-gutter-y-md q-mb-lg">
       <q-input
         v-if="modeView === 'setEmail'"
         v-model="dataReset.email"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite seu e-mail"
         dense
-        input-class="text-black"
-        autocomplete="new-email"
+        outlined
+        label="Seu e-mail"
       >
-        <template v-slot:prepend>
-          <q-icon name="email" color="black" size="20px" />
-        </template>
+        <template v-slot:prepend><q-icon name="mail_outline" /></template>
       </q-input>
+
       <q-input
         v-else-if="modeView === 'setCode'"
         v-model="dataReset.code"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite o código enviado para o e-mail "
         dense
-        input-class="text-black"
+        outlined
+        label="Código"
       >
-        <template v-slot:prepend>
-          <q-icon name="vpn_key" color="black" size="20px" />
-        </template>
+        <template v-slot:prepend><q-icon name="pin" /></template>
       </q-input>
-      <div v-else class="column q-gutter-y-sm">
+
+      <template v-else>
         <q-input
           v-model="dataReset.password"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Digite sua senha"
-          autocomplete="new-password"
+          outlined
           dense
-          input-class="text-black"
+          label="Nova Senha"
           :type="isPwd ? 'password' : 'text'"
         >
+          <template v-slot:prepend><q-icon name="lock_outline" /></template>
           <template v-slot:append>
             <q-icon
               @click="isPwd = !isPwd"
@@ -175,81 +170,66 @@ onMounted(() => {
               size="20px"
             />
           </template>
-          <template v-slot:prepend>
-            <q-icon name="key" color="black" size="20px" />
-          </template>
         </q-input>
         <q-input
           v-model="dataReset.passwordConfirm"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Confirme sua senha"
-          autocomplete="new-password"
+          outlined
           dense
-          input-class="text-black"
-          :type="isPwd2 ? 'password' : 'text'"
+          label="Confirmar Nova Senha"
+          :type="isPwd ? 'password' : 'text'"
         >
+          <template v-slot:prepend><q-icon name="lock_outline" /></template>
           <template v-slot:append>
             <q-icon
-              @click="isPwd2 = !isPwd2"
-              :name="isPwd2 ? 'visibility_off' : 'visibility'"
+              @click="isPwd = !isPwd"
+              :name="isPwd ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
               size="20px"
             />
           </template>
-          <template v-slot:prepend>
-            <q-icon name="key" color="black" size="20px" />
-          </template>
         </q-input>
-      </div>
+      </template>
     </div>
-    <div class="q-pb-sm q-px-md row justify-end items-center q-gutter-x-sm">
+
+    <q-btn
+      v-if="modeView === 'setEmail'"
+      @click="sendEmailReset"
+      color="red-6"
+      label="Enviar Código"
+      class="full-width"
+      unelevated
+      no-caps
+    />
+    <q-btn
+      v-show="modeView === 'setCode'"
+      @click="verifyCode"
+      color="red-6"
+      label="Verificar"
+      size="md"
+      class="full-width"
+      :loading="loadingAuth"
+      unelevated
+      no-caps
+    />
+    <q-btn
+      v-show="modeView === 'setPassword'"
+      @click="newPassword"
+      color="red-6"
+      label="Salvar"
+      size="md"
+      class="full-width"
+      :loading="loadingAuth"
+      unelevated
+      no-caps
+    />
+    <div class="row justify-center q-mt-md">
       <q-btn
-        @click="changeRender('register')"
-        color="black"
-        label="Cadastrar"
-        size="md"
-        no-caps
         flat
-      />
-      <q-btn
+        no-caps
+        color="grey-7"
+        label="Voltar para o login"
+        icon="arrow_back"
         @click="changeRender('login')"
-        color="black"
-        label="Entrar"
-        size="md"
-        no-caps
-        flat
-      />
-      <q-btn
-        v-show="modeView === 'setEmail'"
-        @click="sendEmailReset"
-        color="red-6"
-        label="Enviar"
-        size="md"
-        :loading="loadingAuth"
-        unelevated
-        no-caps
-      />
-      <q-btn
-        v-show="modeView === 'setCode'"
-        @click="verifyCode"
-        color="red-6"
-        label="Verificar"
-        size="md"
-        :loading="loadingAuth"
-        unelevated
-        no-caps
-      />
-      <q-btn
-        v-show="modeView === 'setPassword'"
-        @click="newPassword"
-        color="red-6"
-        label="Salvar"
-        size="md"
-        :loading="loadingAuth"
-        unelevated
-        no-caps
       />
     </div>
   </q-form>

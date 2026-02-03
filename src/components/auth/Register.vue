@@ -19,7 +19,6 @@ const { loadingAuth } = storeToRefs(useAuthStore());
 const { doRegister } = useAuthStore();
 
 const isPwd = ref<boolean>(true);
-const isPwd2 = ref<boolean>(true);
 const dataRegister = reactive<DataRegister>({
   name: '',
   email: '',
@@ -112,144 +111,152 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-form class="form-auth rounded-borders bg-grey-3">
-    <div class="row justify-center items-center q-pa-md">
-      <q-img src="/images/logo.png" spinner-color="white" width="250px" />
+  <q-form
+    class="form-auth q-pa-lg shadow-2 rounded-borders bg-white"
+    style="max-width: 450px; width: 100%"
+  >
+    <div class="row justify-center q-mb-md">
+      <q-img src="/images/logo.png" width="200px" />
     </div>
-    <div class="q-px-md">
-      <TitleAuth title="Faça seu cadastro" />
+
+    <div class="text-center q-mb-lg">
+      <TitleAuth title="Crie sua conta" />
+      <div class="text-grey-7 text-caption">
+        Preencha os dados abaixo para começar
+      </div>
     </div>
-    <div class="q-pb-sm q-px-md q-gutter-y-sm">
+
+    <div class="q-gutter-y-sm">
       <q-select
         v-model="dataRegister.position"
         :options="['Cliente', 'Contador']"
-        label="Você é ... ?"
-        filled
+        label="Eu sou..."
+        outlined
         dense
-        options-dense
+        color="red-6"
+        emit-value
         map-options
-        bg-color="white"
-        label-color="black"
-        class="full-width"
       >
         <template v-slot:prepend>
-          <q-icon name="verified" color="black" size="20px" />
+          <q-icon name="verified_user" color="grey-7" size="20px" />
         </template>
       </q-select>
+
       <q-input
         v-model="dataRegister.name"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite seu nome de usuário"
+        outlined
+        label="Nome de usuário"
         dense
-        input-class="text-black"
+        color="red-6"
       >
         <template v-slot:prepend>
-          <q-icon name="person" color="black" size="20px" />
+          <q-icon name="person_outline" color="grey-7" size="20px" />
         </template>
       </q-input>
+
       <q-input
         v-model="dataRegister.email"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite seu e-mail"
-        autocomplete="new-email"
+        outlined
+        label="E-mail"
+        type="email"
         dense
-        input-class="text-black"
+        color="red-6"
       >
         <template v-slot:prepend>
-          <q-icon name="email" color="black" size="20px" />
+          <q-icon name="mail_outline" color="grey-7" size="20px" />
         </template>
       </q-input>
+
       <q-input
         v-model="dataRegister.nameEnterprise"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite o nome de sua organização"
+        outlined
+        label="Nome da organização"
         dense
-        input-class="text-black"
+        color="red-6"
       >
         <template v-slot:prepend>
-          <q-icon name="corporate_fare" color="black" size="20px" />
+          <q-icon name="business" color="grey-7" size="20px" />
         </template>
       </q-input>
-      <q-input
-        v-model="dataRegister.password"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite sua senha"
-        autocomplete="new-password"
-        dense
-        input-class="text-black"
-        :type="isPwd ? 'password' : 'text'"
-      >
-        <template v-slot:append>
-          <q-icon
-            @click="isPwd = !isPwd"
-            :name="isPwd ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            size="20px"
-          />
-        </template>
-        <template v-slot:prepend>
-          <q-icon name="key" color="black" size="20px" />
-        </template>
-      </q-input>
-      <q-input
-        v-model="dataRegister.confirmPassword"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Confirme sua senha"
-        autocomplete="new-password"
-        dense
-        input-class="text-black"
-        :type="isPwd2 ? 'password' : 'text'"
-      >
-        <template v-slot:append>
-          <q-icon
-            @click="isPwd2 = !isPwd2"
-            :name="isPwd2 ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            size="20px"
-          />
-        </template>
-        <template v-slot:prepend>
-          <q-icon name="key" color="black" size="20px" />
-        </template>
-      </q-input>
+
+      <div class="row q-col-gutter-x-sm">
+        <div class="col-12 col-sm-6">
+          <q-input
+            v-model="dataRegister.password"
+            outlined
+            label="Senha"
+            dense
+            color="red-6"
+            :type="isPwd ? 'password' : 'text'"
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock_open" color="grey-7" size="20px" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                @click="isPwd = !isPwd"
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                size="20px"
+              />
+            </template>
+          </q-input>
+        </div>
+        <div class="col-12 col-sm-6">
+          <q-input
+            v-model="dataRegister.confirmPassword"
+            outlined
+            label="Confirmar"
+            dense
+            color="red-6"
+            :type="isPwd ? 'password' : 'text'"
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock_clock" color="grey-7" size="20px" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                @click="isPwd = !isPwd"
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                size="20px"
+              />
+            </template>
+          </q-input>
+        </div>
+      </div>
     </div>
-    <div class="q-pb-sm q-px-md row justify-end items-center q-gutter-x-sm">
-      <q-btn
-        color="black"
-        label="Esqueceu senha"
-        size="md"
-        flat
-        @click="changeRender('reset')"
-        no-caps
-      />
-      <q-btn
-        @click="changeRender('login')"
-        color="black"
-        label="Entrar"
-        size="md"
-        unelevated
-        no-caps
-        flat
-      />
+
+    <div class="q-mt-sm">
       <q-btn
         @click="register"
         color="red-6"
-        label="Cadastrar"
+        label="Finalizar Cadastro"
+        class="full-width"
+        dense
         size="md"
         :loading="loadingAuth"
         unelevated
         no-caps
       />
     </div>
+    <div class="column items-center justify-center q-mt-md q-gutter-x-sm">
+      <span class="text-grey-7">Já tem conta?</span>
+      <q-btn
+        @click="changeRender('login')"
+        color="red-6"
+        label="Fazer Login"
+        flat
+        dense
+        no-caps
+      />
+    </div>
   </q-form>
 </template>
+
+<style scoped>
+/* Melhora a borda arredondada global dos inputs no componente */
+:deep(.q-field--outlined .q-field__control) {
+  border-radius: 8px;
+}
+</style>

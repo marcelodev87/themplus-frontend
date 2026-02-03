@@ -67,78 +67,86 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-form class="form-auth rounded-borders bg-grey-3">
-    <div class="row justify-center items-center q-pa-md">
-      <q-img src="/images/logo.png" spinner-color="white" width="350px" />
+  <q-form
+    class="form-auth q-pa-lg shadow-2 rounded-borders bg-white"
+    style="max-width: 400px; width: 100%"
+  >
+    <div class="row justify-center q-mb-md">
+      <q-img src="/images/logo.png" width="220px" />
     </div>
-    <div class="q-px-md">
-      <TitleAuth title="Faça seu login" />
+
+    <div class="text-center q-mb-lg">
+      <TitleAuth title="Bem-vindo de volta" />
+      <div class="text-grey-7">Faça login para acessar sua conta</div>
     </div>
-    <div class="q-pb-sm q-px-md q-gutter-y-sm">
+
+    <div class="q-gutter-y-md">
       <q-input
         v-model="dataLogin.email"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite seu e-mail"
-        autocomplete="new-email"
+        outlined
         dense
-        input-class="text-black"
+        label="E-mail"
+        autocomplete="email"
       >
         <template v-slot:prepend>
-          <q-icon name="email" color="black" size="20px" />
+          <q-icon name="mail_outline" color="grey-7" />
         </template>
       </q-input>
+
       <q-input
         v-model="dataLogin.password"
-        bg-color="white"
-        label-color="black"
-        filled
-        label="Digite sua senha"
-        autocomplete="new-password"
+        outlined
         dense
-        input-class="text-black"
+        label="Senha"
         :type="isPwd ? 'password' : 'text'"
       >
+        <template v-slot:prepend>
+          <q-icon name="lock_open" color="grey-7" />
+        </template>
         <template v-slot:append>
           <q-icon
             @click="isPwd = !isPwd"
             :name="isPwd ? 'visibility_off' : 'visibility'"
             class="cursor-pointer"
-            size="20px"
           />
-        </template>
-        <template v-slot:prepend>
-          <q-icon name="key" color="black" size="20px" />
         </template>
       </q-input>
     </div>
-    <div class="q-pb-sm q-px-md row justify-end items-center q-gutter-x-sm">
+
+    <div class="row justify-end q-mt-xs">
       <q-btn
-        color="black"
-        label="Esqueceu senha"
-        size="md"
         flat
+        no-caps
+        color="grey-7"
+        label="Esqueceu a senha?"
+        size="md"
         @click="changeRender('reset')"
-        no-caps
       />
-      <q-btn
-        @click="changeRender('register')"
-        color="black"
-        label="Cadastrar"
-        size="md"
-        unelevated
-        no-caps
-        flat
-      />
+    </div>
+
+    <div class="q-mt-sm">
       <q-btn
         @click="login"
         color="red-6"
         label="Entrar"
+        class="full-width"
+        dense
         size="md"
         :loading="loadingAuth"
         unelevated
         no-caps
+      />
+    </div>
+
+    <div class="column items-center justify-center q-mt-md">
+      <span class="text-grey-7 q-mr-xs">Não tem uma conta?</span>
+      <q-btn
+        flat
+        no-caps
+        color="red-6"
+        label="Cadastre-se"
+        dense
+        @click="changeRender('register')"
       />
     </div>
   </q-form>
