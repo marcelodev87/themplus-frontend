@@ -70,13 +70,13 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
   { name: 'name', label: 'Assinatura', field: 'name', align: 'center' },
   {
     name: 'movement',
-    label: 'Movimentações financeiras',
+    label: 'Movimentações e Agendamentos',
     field: 'movement',
     align: 'center',
   },
   {
     name: 'members',
-    label: 'Gerenciamento de membros',
+    label: 'Gestão de membros',
     field: 'members',
     align: 'center',
   },

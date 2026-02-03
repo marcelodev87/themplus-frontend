@@ -13,6 +13,7 @@ import { Movement } from 'src/ts/interfaces/data/Movement';
 import { Scheduling } from 'src/ts/interfaces/data/Scheduling';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useReportStore } from 'src/stores/report-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import imageCompression from 'browser-image-compression';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
@@ -54,6 +55,11 @@ const {
 const { updateMovementByCounter } = useReportStore();
 const { loadingReport } = storeToRefs(useReportStore());
 const { loadingMember, listMember } = storeToRefs(useMemberStore());
+const { user } = storeToRefs(useAuthStore());
+
+const subscripitonName = computed(
+  () => user.value?.enterprise.subscription.name
+);
 
 const dataEntry = reactive<DataEntry>({
   type: 'entrada',
@@ -332,9 +338,10 @@ const fetchInformations = async () => {
       label: props.member.name,
       value: props.member.id,
     };
-  } else {
+  } else if (subscripitonName.value !== 'free') {
     await getMembers();
   }
+
   if (props.mode === 'schedule') {
     await getSchedulingsInformations(dataEntry.type);
   } else {
@@ -344,6 +351,7 @@ const fetchInformations = async () => {
     );
   }
 };
+
 const filterFnCategory = (
   val: string,
   updateFilter: (callback: () => void) => void
@@ -531,6 +539,7 @@ const mountEdit = (): void => {
     textFile.value = props.dataEdit?.receipt ?? null;
   }
 };
+
 watch(
   () => dataEntry.value,
   (value) => {
@@ -607,7 +616,9 @@ watch(open, async () => {
             input-debounce="0"
             behavior="menu"
             @filter="filterFnMember"
-            :disable="props.isContributionShortcut"
+            :disable="
+              props.isContributionShortcut || subscripitonName === 'free'
+            "
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />

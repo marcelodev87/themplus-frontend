@@ -21,6 +21,10 @@ const { listMinistry, loadingMinistry, filledData } =
   storeToRefs(useMinistryStore());
 const { getMinistries, deleteMinistry } = useMinistryStore();
 
+const subscripitonName = computed(
+  () => user.value?.enterprise.subscription.name
+);
+
 const showConfirmAction = ref<boolean>(false);
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
@@ -135,7 +139,8 @@ onMounted(async () => {
         <q-btn
           v-show="
             user?.enterprise_id === user?.view_enterprise_id &&
-            enterpriseCreated === null
+            enterpriseCreated === null &&
+            subscripitonName !== 'free'
           "
           @click="openFormMinistry"
           icon-right="add"
@@ -226,7 +231,8 @@ onMounted(async () => {
                   @click="handleEdit(props.row)"
                   v-show="
                     user?.enterprise_id === user?.view_enterprise_id &&
-                    enterpriseCreated === null
+                    enterpriseCreated === null &&
+                    subscripitonName !== 'free'
                   "
                   size="sm"
                   flat

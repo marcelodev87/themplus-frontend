@@ -25,6 +25,10 @@ const { user } = storeToRefs(useAuthStore());
 const { listMember, loadingMember, filledData } = storeToRefs(useMemberStore());
 const { getMembers, deleteMember, updateActiveMember } = useMemberStore();
 
+const subscripitonName = computed(
+  () => user.value?.enterprise.subscription.name
+);
+
 const showConfirmAction = ref<boolean>(false);
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
@@ -196,7 +200,10 @@ onMounted(async () => {
           flat
         /> -->
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            subscripitonName !== 'free'
+          "
           @click="openManagePreRegistration"
           icon-right="assignment_add"
           label="Formulário"
@@ -206,7 +213,10 @@ onMounted(async () => {
           flat
         />
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            subscripitonName !== 'free'
+          "
           @click="openManageRole"
           icon-right="add"
           label="Cargos"
@@ -216,7 +226,10 @@ onMounted(async () => {
           flat
         />
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            subscripitonName !== 'free'
+          "
           @click="openFormMember"
           icon-right="add"
           label="Membros"
@@ -301,6 +314,7 @@ onMounted(async () => {
                 <q-btn
                   v-show="
                     user &&
+                    subscripitonName !== 'free' &&
                     (user?.enterprise_id === user?.view_enterprise_id
                       ? true
                       : false) &&
@@ -346,7 +360,10 @@ onMounted(async () => {
                 </q-btn>
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="user?.enterprise_id === user?.view_enterprise_id"
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    subscripitonName !== 'free'
+                  "
                   size="sm"
                   flat
                   round

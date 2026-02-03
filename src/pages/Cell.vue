@@ -20,6 +20,10 @@ const { user } = storeToRefs(useAuthStore());
 const { listCell, loadingCell, filledData } = storeToRefs(useCellStore());
 const { getCells, deleteCell } = useCellStore();
 
+const subscripitonName = computed(
+  () => user.value?.enterprise.subscription.name
+);
+
 const showConfirmAction = ref<boolean>(false);
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
@@ -135,7 +139,10 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            subscripitonName !== 'free'
+          "
           @click="openFormCell"
           icon-right="add"
           label="Célula"
@@ -227,7 +234,10 @@ onMounted(async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row)"
-                  v-show="user?.enterprise_id === user?.view_enterprise_id"
+                  v-show="
+                    user?.enterprise_id === user?.view_enterprise_id &&
+                    subscripitonName !== 'free'
+                  "
                   size="sm"
                   flat
                   round

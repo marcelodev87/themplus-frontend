@@ -116,6 +116,9 @@ const listOfficeCurrent = computed(() => {
 const maxPages = computed(() => {
   return Math.ceil(filteredOffice.value.length / rowsPerPage.value);
 });
+const subscripitonName = computed(
+  () => user.value?.enterprise.subscription.name
+);
 
 watch(
   filledData,
@@ -148,7 +151,10 @@ onMounted(async () => {
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
         <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
+          v-show="
+            user?.enterprise_id === user?.view_enterprise_id &&
+            subscripitonName !== 'free'
+          "
           @click="openFormEnterprise"
           icon-right="add"
           label="Filiais"
