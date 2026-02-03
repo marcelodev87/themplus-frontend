@@ -7,7 +7,6 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import RegisterDetail from 'src/components/shared/RegisterDetail.vue';
-import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Alert',
@@ -175,15 +174,6 @@ const filteredRegister = computed(() => {
   });
 });
 
-const listRegisterCurrent = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-  return filteredRegister.value.slice(start, end);
-});
-const maxPages = computed(() => {
-  return Math.ceil(filteredRegister.value.length / rowsPerPage.value);
-});
-
 watch(selectedPeriod, async () => {
   await fetchRegisters();
 });
@@ -214,117 +204,128 @@ onMounted(async () => {
       "
     >
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
-        <TitlePage title="Gerenciamento de registros" />
+        <TitlePage title="Gerenciamento de registros" class="q-ml-sm" />
       </div>
-      <div
-        class="col-6 row items-center justify-end q-gutter-x-sm"
-        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
-      ></div>
     </header>
-    <q-scroll-area class="main-scroll">
-      <main
-        class="q-pa-sm q-mb-md"
-        :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
-      >
-        <q-table
-          :rows="loadingRegister ? [] : listRegisterCurrent"
-          :columns="columnsRegister"
-          :loading="loadingRegister"
-          flat
-          bordered
-          dense
-          row-key="index"
-          no-data-label="Nenhuma alerta para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[rowsPerPage]"
-        >
-          <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <span style="font-size: 13px">{{ col.label }}</span>
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:top>
-            <span class="text-subtitle2">Lista de registros</span>
-            <q-space />
-            <q-select
-              v-model="selectedPeriod"
-              :options="optionsFiltersPeriod"
-              :readonly="loadingRegister"
-              label="Filtre um período"
-              class="q-mr-sm"
-              filled
-              dense
-              options-dense
-              bg-color="grey-1"
-              label-color="black"
-              style="min-width: 200px"
-              :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
-            >
-              <template v-slot:prepend>
-                <q-icon name="calendar_month" color="black" size="20px" />
-              </template>
-            </q-select>
-            <q-input
-              filled
-              v-model="filterRegister"
-              dense
-              label="Pesquisar"
-              :class="!$q.screen.lt.md ? '' : 'full-width q-mt-sm'"
-            >
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="user_name" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.user_name }}</span>
-              </q-td>
-              <q-td key="user_email" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.user_email }}</span>
-              </q-td>
-              <q-td key="date" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.date }}</span>
-              </q-td>
-              <q-td key="type" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  buildAction(props.row.action)
-                }}</span>
-              </q-td>
-              <q-td key="text" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.text }}</span>
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  @click="handleEdit(props.row.id)"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="visibility"
-                  :disable="loadingRegister"
+
+    <q-scroll-area class="main-scroll bg-grey-1">
+      <main class="q-pa-md">
+        <q-card flat bordered class="rounded-borders">
+          <q-card-section class="bg-grey-2">
+            <div class="row q-col-gutter-md items-center">
+              <div class="col-12 col-md-auto text-subtitle1 text-weight-medium">
+                Lista de registros
+              </div>
+
+              <div class="col-grow" />
+
+              <div class="col-12 col-md-auto">
+                <q-select
+                  v-model="selectedPeriod"
+                  :options="optionsFiltersPeriod"
+                  :readonly="loadingRegister"
+                  label="Período"
+                  filled
+                  dense
+                  options-dense
+                  bg-color="white"
+                  style="min-width: 210px"
                 >
-                  <q-tooltip> Detalhes </q-tooltip>
-                </q-btn>
-              </q-td>
-            </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="filteredRegister.length"
-            />
-          </template>
-        </q-table>
+                  <template v-slot:prepend>
+                    <q-icon name="calendar_month" />
+                  </template>
+                </q-select>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <q-input
+                  filled
+                  v-model="filterRegister"
+                  dense
+                  label="Pesquisar registro"
+                  bg-color="white"
+                  clearable
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
+            </div>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-table
+            :rows="loadingRegister ? [] : filteredRegister"
+            :columns="columnsRegister"
+            :loading="loadingRegister"
+            flat
+            dense
+            row-key="index"
+            no-data-label="Nenhum registro encontrado"
+            virtual-scroll
+            :rows-per-page-options="[0]"
+          >
+            <template v-slot:header="props">
+              <q-tr :props="props" class="bg-grey-3 text-weight-medium">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
+
+            <template v-slot:body="props">
+              <q-tr :props="props" class="table-row">
+                <q-td key="user_name">
+                  <div class="text-weight-medium">
+                    {{ props.row.user_name }}
+                  </div>
+                </q-td>
+
+                <q-td key="user_email" class="text-grey-8">
+                  {{ props.row.user_email }}
+                </q-td>
+
+                <q-td key="date">
+                  {{ props.row.date }}
+                </q-td>
+
+                <q-td key="type">
+                  <q-chip dense color="blue-1" text-color="blue-9" icon="label">
+                    {{ buildAction(props.row.action) }}
+                  </q-chip>
+                </q-td>
+
+                <q-td key="text" class="text-grey-9">
+                  {{ props.row.text }}
+                </q-td>
+
+                <q-td key="action" class="text-right">
+                  <q-btn
+                    @click="handleEdit(props.row.id)"
+                    size="sm"
+                    round
+                    unelevated
+                    color="grey-3"
+                    text-color="dark"
+                    icon="visibility"
+                    :disable="loadingRegister"
+                  >
+                    <q-tooltip>Ver detalhes</q-tooltip>
+                  </q-btn>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </q-card>
+
         <RegisterDetail
           :open="showRegisterDetail"
           :data-id="selectedDataView"
           @update:open="closeRegisterDetail"
         />
+
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"
@@ -333,3 +334,8 @@ onMounted(async () => {
     </q-scroll-area>
   </section>
 </template>
+<style scoped>
+.rounded-borders {
+  border-radius: 12px;
+}
+</style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ref, computed, markRaw } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
-import { ref } from 'vue';
 import IntroDocument from 'src/components/document/IntroDocument.vue';
 import StartDocument from 'src/components/document/StartDocument.vue';
 import DashboardDocument from 'src/components/document/DashboardDocument.vue';
@@ -19,277 +19,199 @@ import BondDocument from 'src/components/document/BondDocument.vue';
 import EnterpriseByCounterDocument from 'src/components/document/EnterpriseByCounterDocument.vue';
 import RegisterDocument from 'src/components/document/RegisterDocument.vue';
 
-defineOptions({
-  name: 'Help',
+defineOptions({ name: 'Help' });
+
+const splitterModel = ref<number>(280);
+const optionSelected = ref<string>('Introdução');
+const menuStructure = [
+  {
+    label: 'Introdução',
+    icon: 'auto_stories',
+    component: markRaw(IntroDocument),
+  },
+  {
+    label: 'Começando',
+    icon: 'rocket_launch',
+    component: markRaw(StartDocument),
+  },
+  {
+    label: 'Visão usuário',
+    icon: 'visibility',
+    component: markRaw(ViewUserDocument),
+  },
+  {
+    label: 'Visão contador',
+    icon: 'analytics',
+    component: markRaw(ViewCounterDocument),
+  },
+  {
+    label: 'Atividades',
+    icon: 'assignment',
+    component: markRaw(RegisterDocument),
+  },
+  {
+    label: 'Departamentos',
+    icon: 'lan',
+    component: markRaw(DepartmenDocument),
+  },
+  { label: 'Usuários', icon: 'people', component: markRaw(UsersDocument) },
+  {
+    category: 'Funcionalidades Cliente',
+    icon: 'person',
+    items: [
+      { label: 'Dashboard', component: markRaw(DashboardDocument) },
+      { label: 'Movimentações', component: markRaw(MovementDocument) },
+      { label: 'Agendamentos', component: markRaw(SchedulingDocument) },
+      { label: 'Contabilidade', component: markRaw(FinancialDocument) },
+      { label: 'Categorias', component: markRaw(CategoryDocument) },
+      { label: 'Contas', component: markRaw(AccountDocument) },
+      { label: 'Filiais', component: markRaw(OfficeDocument) },
+    ],
+  },
+  {
+    category: 'Funcionalidades Contador',
+    icon: 'calculate',
+    items: [
+      { label: 'Solicitações', component: markRaw(OrderDocument) },
+      { label: 'Vínculos', component: markRaw(BondDocument) },
+      { label: 'Organização', component: markRaw(EnterpriseByCounterDocument) },
+    ],
+  },
+];
+
+const currentComponent = computed(() => {
+  const selected = optionSelected.value;
+
+  const subItem = menuStructure
+    .filter((item) => 'items' in item && item.items)
+    .flatMap((item) => item.items!)
+    .find((s) => s.label === selected);
+
+  if (subItem) return subItem.component;
+
+  const rootItem = menuStructure.find(
+    (item) => !('items' in item) && item.label === selected
+  );
+
+  return rootItem?.component ?? markRaw(IntroDocument);
 });
 
-const openOptions = ref<boolean>(true);
-const splitterModel = ref<number>(300);
-const optionSelected = ref<string>('Introdução');
-
-const isActive = (option: string): boolean => {
-  return optionSelected.value === option;
-};
 const selectOption = (option: string): void => {
   optionSelected.value = option;
 };
 </script>
+
 <template>
-  <section>
-    <TitlePage title="Painel de ajuda" />
+  <section class="help-page">
+    <TitlePage title="Painel de Ajuda" />
+
     <q-splitter
       v-model="splitterModel"
-      style="height: 85vh"
+      style="height: calc(100vh - 110px)"
+      class="help-splitter"
       unit="px"
-      :limits="openOptions ? [200, 200] : [0, 0]"
     >
       <template v-slot:before>
-        <q-list class="column justify-around">
-          <q-item
-            @click="selectOption('Introdução')"
-            :active="isActive('Introdução')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Introdução </span>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item
-            @click="selectOption('Começando')"
-            :active="isActive('Começando')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Começando </span>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item
-            @click="selectOption('Visão usuário')"
-            :active="isActive('Visão usuário')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Visão usuário </span>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item
-            @click="selectOption('Visão contador')"
-            :active="isActive('Visão contador')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Visão contador </span>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item
-            @click="selectOption('Atividades')"
-            :active="isActive('Atividades')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Atividades </span>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item
-            @click="selectOption('Departamentos')"
-            :active="isActive('Departamentos')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Departamentos </span>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item
-            @click="selectOption('Usuários')"
-            :active="isActive('Usuários')"
-            active-class="text-bold"
-            clickable
-          >
-            <q-item-section>
-              <div class="column">
-                <span> Usuários </span>
-              </div>
-            </q-item-section>
-          </q-item>
+        <q-scroll-area class="fit bg-grey-1">
+          <q-list padding>
+            <template v-for="(node, index) in menuStructure" :key="index">
+              <q-item
+                v-if="'label' in node"
+                clickable
+                v-ripple
+                :active="optionSelected === node.label"
+                @click="selectOption(node.label ?? '')"
+                active-class="active-menu text-primary"
+              >
+                <q-item-section avatar>
+                  <q-icon :name="node.icon" size="22px" />
+                </q-item-section>
+                <q-item-section class="text-weight-medium">
+                  {{ node.label }}
+                </q-item-section>
+              </q-item>
 
-          <q-expansion-item
-            expand-separator
-            label="Funcionalidades para cliente"
-            dense-toggle
-          >
-            <q-item
-              @click="selectOption('Dashboard')"
-              :active="isActive('Dashboard')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Dashboard </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Movimentações')"
-              :active="isActive('Movimentações')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Movimentações </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Agendamentos')"
-              :active="isActive('Agendamentos')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Agendamentos </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Contabilidade')"
-              :active="isActive('Contabilidade')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Contabilidade </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Categorias')"
-              :active="isActive('Categorias')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Categorias </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Contas')"
-              :active="isActive('Contas')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Contas </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Filiais')"
-              :active="isActive('Filiais')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Filiais </span>
-                </div>
-              </q-item-section>
-            </q-item>
-          </q-expansion-item>
-          <q-expansion-item
-            expand-separator
-            label="Funcionalidades para contador"
-            dense-toggle
-          >
-            <q-item
-              @click="selectOption('Solicitações')"
-              :active="isActive('Solicitações')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Solicitações </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Vínculos')"
-              :active="isActive('Vínculos')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Vínculos </span>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item
-              @click="selectOption('Organização')"
-              :active="isActive('Organização')"
-              active-class="text-bold"
-              clickable
-            >
-              <q-item-section>
-                <div class="column">
-                  <span> Organização </span>
-                </div>
-              </q-item-section>
-            </q-item>
-          </q-expansion-item>
-        </q-list>
+              <q-expansion-item
+                v-else
+                :icon="node.icon"
+                :label="node.category"
+                header-class="text-weight-bold text-grey-9"
+                default-opened
+              >
+                <q-item
+                  v-for="sub in node.items"
+                  :key="sub.label"
+                  clickable
+                  v-ripple
+                  dense
+                  class="q-pl-xl"
+                  :active="optionSelected === sub.label"
+                  @click="selectOption(sub.label)"
+                  active-class="active-sub-menu text-primary"
+                >
+                  <q-item-section>{{ sub.label }}</q-item-section>
+                </q-item>
+              </q-expansion-item>
+            </template>
+          </q-list>
+        </q-scroll-area>
       </template>
 
       <template v-slot:after>
-        <div class="q-pa-sm" @click="openOptions = !openOptions">
-          <IntroDocument v-if="optionSelected === 'Introdução'" />
-          <StartDocument v-else-if="optionSelected === 'Começando'" />
-          <ViewUserDocument v-else-if="optionSelected === 'Visão usuário'" />
-          <ViewCounterDocument
-            v-else-if="optionSelected === 'Visão contador'"
-          />
-          <DashboardDocument v-else-if="optionSelected === 'Dashboard'" />
-          <MovementDocument v-else-if="optionSelected === 'Movimentações'" />
-          <SchedulingDocument v-else-if="optionSelected === 'Agendamentos'" />
-          <OrderDocument v-else-if="optionSelected === 'Solicitações'" />
-          <BondDocument v-else-if="optionSelected === 'Vínculos'" />
-          <EnterpriseByCounterDocument
-            v-else-if="optionSelected === 'Organização'"
-          />
-          <FinancialDocument v-else-if="optionSelected === 'Contabilidade'" />
-          <RegisterDocument v-else-if="optionSelected === 'Atividades'" />
-          <CategoryDocument v-else-if="optionSelected === 'Categorias'" />
-          <AccountDocument v-else-if="optionSelected === 'Contas'" />
-          <DepartmenDocument v-else-if="optionSelected === 'Departamentos'" />
-          <OfficeDocument v-else-if="optionSelected === 'Filiais'" />
-          <UsersDocument v-else-if="optionSelected === 'Usuários'" />
-        </div>
+        <q-scroll-area class="fit bg-white">
+          <div class="content-container q-pa-xl">
+            <transition name="fade-page" mode="out-in">
+              <div :key="optionSelected">
+                <component :is="currentComponent" />
+              </div>
+            </transition>
+          </div>
+        </q-scroll-area>
       </template>
     </q-splitter>
   </section>
 </template>
+
+<style scoped>
+.help-page {
+  padding: 12px;
+  background-color: #f8f9fa;
+}
+
+.help-splitter {
+  background: white;
+}
+
+.active-menu {
+  background: #e3f2fd;
+  border-right: 4px solid var(--q-primary);
+  font-weight: 600;
+}
+
+.active-sub-menu {
+  font-weight: 800;
+  background: #f1f8ff;
+}
+
+.content-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.fade-page-enter-active,
+.fade-page-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.fade-page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

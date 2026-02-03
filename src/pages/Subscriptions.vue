@@ -17,18 +17,15 @@ defineOptions({ name: 'Subscriptions' });
 const { filledData } = storeToRefs(useFeedStore());
 const { getFeed } = useFeedStore();
 
-const {
-  listSubscription,
-  loadingTableSubscription,
-  freeSubscriptionLoading
-} = storeToRefs(useSubscriptionStore());
+const { listSubscription, loadingTableSubscription, freeSubscriptionLoading } =
+  storeToRefs(useSubscriptionStore());
 
 const { user } = storeToRefs(useAuthStore());
 
 const planLabels: Record<string, string> = {
   free: 'Grátis',
   basic: 'Básico',
-  advanced: 'Avançado'
+  advanced: 'Avançado',
 };
 
 const getPlanLabel = (name?: string) =>
@@ -53,7 +50,7 @@ const subscriptionInfo = computed(() => {
     expireDate,
     diffDays,
     isExpired: diffDays <= 0,
-    isNearExpire: diffDays <= 7 && diffDays > 0
+    isNearExpire: diffDays <= 7 && diffDays > 0,
   };
 });
 
@@ -71,12 +68,32 @@ const statusColor = computed(() => {
 
 const columnsSubscriptions = reactive<QuasarTable[]>([
   { name: 'name', label: 'Assinatura', field: 'name', align: 'center' },
-  { name: 'movement', label: 'Movimentações financeiras', field: 'movement', align: 'center' },
-  { name: 'members', label: 'Gerenciamento de membros', field: 'members', align: 'center' },
-  { name: 'financial', label: 'Painel de contabilidade', field: 'financial', align: 'center' },
-  { name: 'assistent', label: 'Assistente de whatsapp', field: 'assistent', align: 'center' },
+  {
+    name: 'movement',
+    label: 'Movimentações financeiras',
+    field: 'movement',
+    align: 'center',
+  },
+  {
+    name: 'members',
+    label: 'Gerenciamento de membros',
+    field: 'members',
+    align: 'center',
+  },
+  {
+    name: 'financial',
+    label: 'Painel de contabilidade',
+    field: 'financial',
+    align: 'center',
+  },
+  {
+    name: 'assistent',
+    label: 'Assistente de whatsapp',
+    field: 'assistent',
+    align: 'center',
+  },
   { name: 'price', label: 'Valor', field: 'price', align: 'center' },
-  { name: 'actions', label: 'Ações', field: 'actions', align: 'center' }
+  { name: 'actions', label: 'Ações', field: 'actions', align: 'center' },
 ]);
 
 const subscriptionsTable = computed(() => {
@@ -93,7 +110,7 @@ const subscriptionsTable = computed(() => {
         members: mock?.members ?? false,
         financial: mock?.financial ?? false,
         assistent: mock?.assistent ?? false,
-        price: sub.price ?? '0.00'
+        price: sub.price ?? '0.00',
       };
     })
     .sort((a, b) => Number(a.price) - Number(b.price));
@@ -105,13 +122,23 @@ const showManageSubscription = ref(false);
 const showAlertDataEnterprise = ref(false);
 const showConfirmAction = ref(false);
 
-const fetchFeed = async () => await getFeed();
-const fetchSubscriptions = async () => await useSubscriptionStore().getSubscriptions();
+const fetchFeed = async () => {
+  await getFeed();
+};
+const fetchSubscriptions = async () => {
+  await useSubscriptionStore().getSubscriptions();
+};
 
-const openManageSubscription = () => (showManageSubscription.value = true);
-const closeManageSubscription = () => (showManageSubscription.value = false);
+const openManageSubscription = () => {
+  showManageSubscription.value = true;
+};
+const closeManageSubscription = () => {
+  showManageSubscription.value = false;
+};
 
-const openConfirmAction = () => (showConfirmAction.value = true);
+const openConfirmAction = () => {
+  showConfirmAction.value = true;
+};
 
 const openSubscriptionStepper = (open: boolean, id: string) => {
   const freeSubscription = listSubscription.value.find(
@@ -127,7 +154,9 @@ const openSubscriptionStepper = (open: boolean, id: string) => {
   }
 };
 
-const closeSubscriptionStepper = () => (showSubscriptionStepper.value = false);
+const closeSubscriptionStepper = () => {
+  showSubscriptionStepper.value = false;
+};
 
 const closeAlertDataEnterprise = async () => {
   showAlertDataEnterprise.value = false;
@@ -155,7 +184,6 @@ onMounted(async () => {
         <TitlePage title="Painel de assinaturas" />
 
         <div class="row q-gutter-sm q-mt-xs">
-
           <q-chip color="primary" text-color="white" dense class="q-ml-md">
             Plano atual: {{ currentPlanLabel }}
           </q-chip>
@@ -171,11 +199,10 @@ onMounted(async () => {
             </template>
 
             <template v-else>
-              Vence em {{ expireFormatted }} —
-              faltam {{ subscriptionInfo.diffDays }} dias
+              Vence em {{ expireFormatted }} — faltam
+              {{ subscriptionInfo.diffDays }} dias
             </template>
           </q-chip>
-
         </div>
       </div>
 
@@ -193,7 +220,6 @@ onMounted(async () => {
         />
       </div>
     </header>
-
 
     <main>
       <q-scroll-area class="main-scroll q-pa-sm">

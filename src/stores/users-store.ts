@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosError } from 'axios';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import { updateNotifications } from 'src/composables/NotificationsManage';
 import {
@@ -25,7 +25,6 @@ import {
 import { Inbox } from 'src/ts/interfaces/data/Inbox';
 import { SettingsCounter } from 'src/ts/interfaces/data/Settings';
 import { User } from 'src/ts/interfaces/data/User';
-import { storeToRefs } from 'pinia';
 import { useAuthStore } from './auth-store';
 
 const { user } = storeToRefs(useAuthStore());

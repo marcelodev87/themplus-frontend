@@ -85,7 +85,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <section>
+  <section class="department-management">
     <header
       :class="
         !$q.screen.lt.sm
@@ -111,84 +111,91 @@ onMounted(async () => {
         />
       </div>
     </header>
+
     <q-scroll-area class="main-scroll">
-      <main class="q-pa-sm q-mb-md">
-        <div class="row q-col-gutter-sm">
+      <main class="q-pa-md">
+        <div
+          v-if="treeDepartment.length === 0 && !loadingDepartment"
+          class="column items-center justify-center q-pa-xl text-grey-6"
+        >
+          <q-icon name="account_tree" size="64px" color="grey-4" />
+          <div class="text-h6 q-mt-md">Nenhum departamento encontrado</div>
+          <div class="text-caption">
+            Comece criando um departamento principal.
+          </div>
+        </div>
+
+        <div class="row">
           <q-tree
             v-show="treeDepartment.length > 0"
             v-model:selected="selectedObject"
             :nodes="treeDepartment"
             :filter="searchDepartment"
             node-key="id"
-            class="full-width"
+            class="full-width custom-department-tree"
+            default-expand-all
           >
             <template v-slot:default-header="prop">
-              <div class="row full-width wrap justify-between content-start">
-                <div class="row items-center justify-center">
+              <div
+                class="tree-node-container row items-center full-width q-pa-xs rounded-borders"
+              >
+                <div class="row items-center col">
                   <q-icon
-                    name="groups"
-                    color="black"
-                    size="22px"
+                    :name="prop.node.children?.length ? 'domain' : 'badge'"
+                    :color="prop.node.children?.length ? 'primary' : 'grey-7'"
+                    size="20px"
                     class="q-mr-sm"
                   />
-                  <q-btn
-                    size="sm"
-                    flat
-                    rounded
-                    color="black"
-                    :disable="loadingDepartment"
+                  <div
+                    class="text-subtitle2 text-weight-bold cursor-pointer hover-edit"
                     @click="handleEdit(prop.node)"
                   >
-                    <span class="text-subtitle2">{{ prop.node.label }}</span>
-                  </q-btn>
+                    {{ prop.node.label }}
+                    <q-tooltip shadow-2>Clique para editar</q-tooltip>
+                  </div>
                 </div>
-                <q-separator />
-                <div class="row items-center justify-center">
+
+                <div class="row items-center q-gutter-x-xs action-buttons">
                   <q-btn
-                    v-show="user?.enterprise_id === user?.view_enterprise_id"
-                    @click="openFormDepartment(prop.key)"
-                    :label="
-                      !$q.screen.lt.sm ? 'Adicionar um sub-departamento' : ''
-                    "
-                    :disable="loadingDepartment"
-                    size="sm"
-                    rounded
-                    flat
-                    icon="add"
-                    unelevated
-                  />
-                  <q-btn
-                    v-show="user?.enterprise_id === user?.view_enterprise_id"
-                    @click="openConfirmAction(prop.node.id)"
+                    v-if="user?.enterprise_id === user?.view_enterprise_id"
+                    @click.stop="openFormDepartment(prop.key)"
                     :disable="loadingDepartment"
                     size="sm"
                     flat
-                    rounded
+                    round
+                    color="primary"
+                    icon="add_circle_outline"
+                  >
+                    <q-tooltip>Adicionar Sub-departamento</q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    v-if="user?.enterprise_id === user?.view_enterprise_id"
+                    @click.stop="openConfirmAction(prop.node.id)"
+                    :disable="loadingDepartment"
+                    size="sm"
+                    flat
+                    round
                     color="negative"
-                    icon="delete"
-                  />
+                    icon="delete_outline"
+                  >
+                    <q-tooltip>Excluir Departamento</q-tooltip>
+                  </q-btn>
                 </div>
               </div>
             </template>
           </q-tree>
-          <div
-            v-show="treeDepartment.length == 0 && !loadingDepartment"
-            class="q-pa-md full-width"
-          >
-            <q-banner dense inline-actions class="text-white bg-red" rounded>
-              Não há departamentos registrados. Por favor, adicione um novo
-              departamento.
-            </q-banner>
-          </div>
-          <q-inner-loading
-            :showing="loadingDepartment"
-            label="Aguarde..."
-            label-class="text-black"
-            label-style="font-size: 1.1em"
-            color="primary"
-            size="50px"
-          />
         </div>
+
+        <q-inner-loading
+          :showing="loadingDepartment"
+          label="Aguarde..."
+          label-class="text-black"
+          label-style="font-size: 1.1em"
+          color="primary"
+          size="50px"
+        />
+
         <FormDepartment
           :open="showFormDepartment"
           :key-root="clickRootCreate"
@@ -202,8 +209,8 @@ onMounted(async () => {
         <ConfirmAction
           :open="showConfirmAction"
           label-action="Continuar"
-          title="Confirmação de exclusão de departamento"
-          message="Caso haja subdepartamentos vinculados, eles também serão excluídos. Caso tenha certeza de que deseja excluir o departamento, clique em 'Continuar'."
+          title="Excluir Departamento"
+          message="Atenção: Subdepartamentos vinculados também serão removidos. Esta ação não pode ser desfeita."
           @update:open="closeConfirmAction"
           @update:ok="closeConfirmActionOk"
         />
@@ -212,8 +219,48 @@ onMounted(async () => {
   </section>
 </template>
 
-<style>
-.teste {
-  border: 1px solid black;
+<style scoped>
+.department-management {
+  background-color: #fafafa;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.custom-department-tree :deep(.q-tree__node-header) {
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.custom-department-tree :deep(.q-tree__node-header:hover) {
+  background-color: #f0f4ff;
+}
+
+.tree-node-container {
+  border: 1px solid transparent;
+}
+
+.hover-edit:hover {
+  text-decoration: underline;
+  color: var(--q-primary);
+}
+
+.action-buttons {
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.tree-node-container:hover .action-buttons {
+  opacity: 1;
+}
+
+.custom-department-tree :deep(.q-tree__node:after) {
+  border-left: 1px dashed #bdbdbd;
+}
+
+.rounded-borders {
+  border-radius: 8px;
 }
 </style>

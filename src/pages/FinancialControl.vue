@@ -421,204 +421,214 @@ onMounted(async () => {
         />
       </q-expansion-item>
     </header>
-    <q-scroll-area class="main-scroll">
-      <main class="q-pa-sm q-mb-md">
-        <q-table
-          v-if="mode === 'reports'"
-          :rows="loadingDelivery ? [] : listDeliveryCurrent"
-          :columns="columnsDelivery"
-          :filter="filterDelivery"
-          :loading="loadingDelivery"
-          flat
-          bordered
-          dense
-          row-key="index"
-          no-data-label="Nenhuma entrega para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[rowsPerPageDelivery]"
-        >
-          <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <span style="font-size: 13px">{{ col.label }}</span>
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:top>
-            <span class="text-subtitle2">Lista de entregas</span>
-            <q-space />
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="month_year" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  convertMonthYear(props.row.month_year)
-                }}</span>
-              </q-td>
-              <q-td key="status" :props="props" class="text-left">
-                <q-badge
-                  rounded
-                  :color="props.row.status ? 'green' : 'red'"
-                  :label="props.row.status ? 'Entregue' : 'Não entregue'"
-                />
-              </q-td>
-              <q-td key="date_delivery" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  formatDateToBrazilian(props.row.date_delivery)
-                }}</span>
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  v-show="
-                    props.row.status === false &&
-                    user?.enterprise_id === user?.view_enterprise_id &&
-                    props.row.has_observation
-                  "
-                  @click="openTableMovements(props.row.month_year)"
-                  size="sm"
-                  flat
-                  round
-                  color="warning"
-                  icon="error"
-                >
-                  <q-tooltip> Anotações </q-tooltip>
-                </q-btn>
-                <q-btn
-                  @click="openFormFileFinancial(props.row.month_year)"
-                  v-show="
-                    props.row.status &&
-                    user?.enterprise_id === user?.view_enterprise_id
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="primary"
-                  icon="add_photo_alternate"
-                >
-                  <q-tooltip> Arquivos </q-tooltip>
-                </q-btn>
-                <q-btn
-                  v-show="
-                    props.row.status === false &&
-                    user?.enterprise_id === user?.view_enterprise_id
-                  "
-                  @click="finalize(props.row.month_year)"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="check_circle"
-                >
-                  <q-tooltip> Entregar </q-tooltip>
-                </q-btn>
-              </q-td>
-            </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPagesDelivery"
-              :length="listDelivery.length"
-            />
-          </template>
-        </q-table>
-        <q-table
-          v-else
-          :rows="loadingDelivery ? [] : listMovementeFinancialDeliveryCurrent"
-          :columns="columnsMovement"
-          :loading="loadingDelivery"
-          flat
-          bordered
-          dense
-          row-key="index"
-          no-data-label="Nenhuma movimentação para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[rowsPerPageMovementFinancial]"
-        >
-          <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <span style="font-size: 13px">{{ col.label }}</span>
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:top>
-            <span class="text-subtitle2">Lista de movimentações</span>
-          </template>
-          <template v-slot:body="props">
-            <q-tr
-              :props="props"
-              style="height: 28px"
-              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
-            >
-              <q-td key="name" :props="props" class="text-left">
-                {{ props.row.account.name }}
-              </q-td>
-              <q-td key="account_number" :props="props" class="text-left">
-                {{ props.row.account.account_number }}
-              </q-td>
-              <q-td key="agency_number" :props="props" class="text-left">
-                {{ props.row.account.agency_number }}
-              </q-td>
-              <q-td key="category" :props="props" class="text-left">
-                {{ props.row.category.name }}
-              </q-td>
-              <q-td key="value" :props="props" class="text-left">
-                {{ `${formatCurrencyBRL(props.row.value)}` }}
-              </q-td>
-              <q-td key="date_movement" :props="props" class="text-left">
-                {{ formatDate(props.row.date_movement) }}
-              </q-td>
-              <q-td key="description" :props="props" class="text-left">
-                {{ props.row.description }}
-              </q-td>
-              <q-td
-                @click="download(props.row.receipt)"
-                key="receipt"
+
+    <q-scroll-area class="main-scroll bg-grey-1 rounded-borders">
+      <main class="q-pa-md q-gutter-md">
+        <!-- ================== REPORTS TABLE ================== -->
+        <q-card v-if="mode === 'reports'" flat bordered class="shadow-1">
+          <q-card-section class="bg-grey-2 text-weight-medium">
+            Lista de entregas
+          </q-card-section>
+
+          <q-separator />
+
+          <q-table
+            :rows="loadingDelivery ? [] : listDeliveryCurrent"
+            :columns="columnsDelivery"
+            :filter="filterDelivery"
+            :loading="loadingDelivery"
+            flat
+            row-key="index"
+            no-data-label="Nenhuma entrega para mostrar"
+            virtual-scroll
+            :rows-per-page-options="[rowsPerPageDelivery]"
+          >
+            <template v-slot:header="props">
+              <q-tr :props="props" class="bg-grey-3 text-weight-medium">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
+
+            <template v-slot:body="props">
+              <q-tr :props="props" class="table-row">
+                <q-td key="month_year">
+                  <span class="text-weight-medium">
+                    {{ convertMonthYear(props.row.month_year) }}
+                  </span>
+                </q-td>
+
+                <q-td key="status">
+                  <q-chip
+                    dense
+                    icon="circle"
+                    :color="props.row.status ? 'green-1' : 'red-1'"
+                    :text-color="props.row.status ? 'green-8' : 'red-8'"
+                    class="text-caption"
+                  >
+                    {{ props.row.status ? 'Entregue' : 'Pendente' }}
+                  </q-chip>
+                </q-td>
+
+                <q-td key="date_delivery">
+                  {{ formatDateToBrazilian(props.row.date_delivery) }}
+                </q-td>
+
+                <q-td key="action" class="row justify-end">
+                  <q-btn
+                    v-show="
+                      props.row.status === false &&
+                      user?.enterprise_id === user?.view_enterprise_id &&
+                      props.row.has_observation
+                    "
+                    @click="openTableMovements(props.row.month_year)"
+                    size="sm"
+                    round
+                    unelevated
+                    color="amber-2"
+                    text-color="amber-10"
+                    icon="error"
+                  >
+                    <q-tooltip>Anotações</q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    v-show="
+                      props.row.status &&
+                      user?.enterprise_id === user?.view_enterprise_id
+                    "
+                    @click="openFormFileFinancial(props.row.month_year)"
+                    size="sm"
+                    round
+                    unelevated
+                    color="blue-2"
+                    text-color="blue-9"
+                    icon="attach_file"
+                  >
+                    <q-tooltip>Arquivos</q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    v-show="
+                      props.row.status === false &&
+                      user?.enterprise_id === user?.view_enterprise_id
+                    "
+                    @click="finalize(props.row.month_year)"
+                    size="sm"
+                    round
+                    unelevated
+                    flat
+                    color="green-2"
+                    text-color="green-9"
+                    icon="check_circle"
+                  >
+                    <q-tooltip>Entregar</q-tooltip>
+                  </q-btn>
+                </q-td>
+              </q-tr>
+            </template>
+
+            <template v-slot:bottom>
+              <Paginate
+                v-model="currentPage"
+                :max="maxPagesDelivery"
+                :length="listDelivery.length"
+              />
+            </template>
+          </q-table>
+        </q-card>
+
+        <q-card v-else flat bordered class="shadow-1">
+          <q-card-section class="bg-grey-2 text-weight-medium">
+            Lista de movimentações
+          </q-card-section>
+
+          <q-separator />
+
+          <q-table
+            :rows="loadingDelivery ? [] : listMovementeFinancialDeliveryCurrent"
+            :columns="columnsMovement"
+            :loading="loadingDelivery"
+            flat
+            dense
+            row-key="index"
+            no-data-label="Nenhuma movimentação para mostrar"
+            virtual-scroll
+            :rows-per-page-options="[rowsPerPageMovementFinancial]"
+          >
+            <template v-slot:header="props">
+              <q-tr :props="props" class="bg-grey-3 text-weight-medium">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
+
+            <template v-slot:body="props">
+              <q-tr
                 :props="props"
-                class="text-left"
-                :class="props.row.receipt ? 'cursor-pointer hover' : ''"
+                class="table-row"
+                :class="
+                  props.row.type === 'entrada' ? 'text-green-8' : 'text-red-8'
+                "
               >
-                <q-icon
-                  v-if="props.row.receipt"
-                  name="attach_file"
-                  size="20px"
-                />
-              </q-td>
-              <q-td key="observation" :props="props" class="text-left">
-                {{ props.row.observation }}
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  @click="handleEdit(props.row)"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                />
-              </q-td>
-            </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPagesMovementFinancial"
-              :length="listMovementFinancial.length"
-            />
-          </template>
-        </q-table>
-        <div class="q-mt-sm row justify-end">
+                <q-td>{{ props.row.account.name }}</q-td>
+                <q-td>{{ props.row.account.account_number }}</q-td>
+                <q-td>{{ props.row.account.agency_number }}</q-td>
+                <q-td>{{ props.row.category.name }}</q-td>
+
+                <q-td class="text-weight-bold">
+                  {{ formatCurrencyBRL(props.row.value) }}
+                </q-td>
+
+                <q-td>{{ formatDate(props.row.date_movement) }}</q-td>
+                <q-td>{{ props.row.description }}</q-td>
+
+                <q-td
+                  @click="download(props.row.receipt)"
+                  :class="props.row.receipt ? 'cursor-pointer hover' : ''"
+                >
+                  <q-icon v-if="props.row.receipt" name="attach_file" />
+                </q-td>
+
+                <q-td>{{ props.row.observation }}</q-td>
+
+                <q-td>
+                  <q-btn
+                    @click="handleEdit(props.row)"
+                    size="sm"
+                    round
+                    outline
+                    color="dark"
+                    icon="edit"
+                  />
+                </q-td>
+              </q-tr>
+            </template>
+
+            <template v-slot:bottom>
+              <Paginate
+                v-model="currentPage"
+                :max="maxPagesMovementFinancial"
+                :length="listMovementFinancial.length"
+              />
+            </template>
+          </q-table>
+        </q-card>
+
+        <div class="row justify-end">
           <q-btn
             v-show="mode === 'observations'"
             @click="closeTableMovements"
+            icon="arrow_back"
+            outline
             color="red"
             label="Voltar"
-            size="md"
-            unelevated
             no-caps
           />
         </div>
+
         <InviteCounter
           :open="showInviteCounter"
           @update:open="closeInviteCounter"

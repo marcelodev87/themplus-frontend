@@ -601,286 +601,350 @@ onMounted(async () => {
         class="q-pa-sm q-mb-md"
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
-        <q-card flat bordered class="q-my-sm">
-          <q-card-section class="row items-center">
-            <q-icon name="sync_alt" size="20px" class="q-mr-sm" color="black" />
-            <div class="text-h6">Movimentações</div>
+        <q-card
+          flat
+          bordered
+          class="q-my-md shadow-1 overflow-hidden"
+          style="border-radius: 12px"
+        >
+          <q-card-section class="bg-grey-1 row items-center q-py-sm">
+            <q-icon
+              name="swap_vertical_circle"
+              size="24px"
+              color="primary"
+              class="q-mr-sm"
+            />
+            <div
+              class="text-weight-bold text-subtitle1 text-uppercase text-grey-8"
+            >
+              Movimentações
+            </div>
           </q-card-section>
-          <q-card-section class="q-pt-none row justify-between">
-            <span class="text-subtitle1">Total de entrada: </span>
-            <span class="text-green">{{ dataMovement.valueEntry }}</span>
+
+          <q-separator />
+
+          <q-card-section class="q-pa-md q-gutter-y-sm">
+            <div class="row justify-between items-center">
+              <div class="row items-center text-grey-7">
+                <q-icon
+                  name="trending_up"
+                  color="green"
+                  size="xs"
+                  class="q-mr-xs"
+                />
+                <span class="text-weight-medium">Entradas</span>
+              </div>
+              <div class="text-weight-bold text-green">
+                {{ dataMovement.valueEntry }}
+              </div>
+            </div>
+
+            <div class="row justify-between items-center">
+              <div class="row items-center text-grey-7">
+                <q-icon
+                  name="trending_down"
+                  color="red"
+                  size="xs"
+                  class="q-mr-xs"
+                />
+                <span class="text-weight-medium">Saídas</span>
+              </div>
+              <div class="text-weight-bold text-red">
+                {{ dataMovement.valueOut }}
+              </div>
+            </div>
           </q-card-section>
-          <q-card-section class="q-pt-none row justify-between">
-            <span class="text-subtitle1"> Total de saída:</span>
-            <span class="text-red">{{ dataMovement.valueOut }} </span>
-          </q-card-section>
+
           <q-separator inset />
+
           <q-card-section
-            class="row justify-between"
+            class="row justify-between items-center q-py-md"
             :class="getClassTotal(dataMovement.total)"
           >
-            <span class="text-subtitle1">Saldo:</span>
-            <span>{{ dataMovement.total }}</span>
+            <span class="text-weight-medium text-subtitle1">Saldo Total</span>
+            <span class="text-h6 text-weight-bolder">
+              {{ dataMovement.total }}
+            </span>
           </q-card-section>
         </q-card>
+
         <q-table
           :rows="loadingMovement ? [] : filteredMovement"
           :columns="columnsMovement"
           :loading="loadingMovement"
           flat
           bordered
-          dense
-          row-key="index"
+          row-key="id"
           no-data-label="Nenhuma movimentação para mostrar"
           virtual-scroll
           :rows-per-page-options="[0]"
+          class="my-sticky-header-table"
+          style="border-radius: 12px"
         >
-          <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <span style="font-size: 13px">{{ col.label }}</span>
-              </q-th>
-            </q-tr>
-          </template>
           <template v-slot:top>
-            <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
-              <span class="text-subtitle2">Lista de movimentações</span>
-              <q-space />
-              <div v-if="!$q.screen.lt.md" class="row">
-                <q-toggle
-                  v-model="onlyEntry"
-                  :disable="loadingMovement || loadingExport"
-                  color="primary"
-                  label="Entradas"
-                  left-label
-                />
-                <q-toggle
-                  v-model="onlyOut"
-                  :disable="loadingMovement || loadingExport"
-                  color="primary"
-                  label="Saídas"
-                  left-label
-                />
-                <q-select
-                  v-model="filterMonthYear"
-                  :options="listMonthYear"
-                  :readonly="
-                    listMonthYear.length === 0 ||
-                    loadingMovement ||
-                    loadingExport
-                  "
-                  label="Filtrar momento"
-                  filled
-                  dense
-                  options-dense
-                  bg-color="grey-1"
-                  label-color="black"
-                  style="min-width: 200px"
-                  :class="!$q.screen.lt.md ? '' : 'full-width'"
-                  class="q-mr-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="calendar_today" color="black" size="20px" />
-                  </template>
-                </q-select>
-                <q-select
-                  v-model="selectedCategory"
-                  :options="optionsCategoriesFilter"
-                  :readonly="loadingMovement || loadingExport"
-                  label="Filtre categoria"
-                  filled
-                  dense
-                  options-dense
-                  bg-color="grey-1"
-                  label-color="black"
-                  style="min-width: 200px"
-                  :class="!$q.screen.lt.md ? '' : 'full-width'"
-                  class="q-mr-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="category" color="black" size="20px" />
-                  </template>
-                </q-select>
-                <q-select
-                  v-model="selectedAccount"
-                  :options="optionsAccountsFilter"
-                  :readonly="loadingMovement || loadingExport"
-                  label="Filtre conta"
-                  filled
-                  dense
-                  options-dense
-                  bg-color="grey-1"
-                  label-color="black"
-                  style="min-width: 200px"
-                  :class="!$q.screen.lt.md ? '' : 'full-width'"
-                  class="q-mr-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="account_balance" color="black" size="20px" />
-                  </template>
-                </q-select>
-                <q-input
-                  filled
-                  v-model="filterMovement"
-                  dense
-                  label="Pesquisar"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
+            <div class="column full-width q-gutter-y-md">
+              <div class="row items-center full-width">
+                <div class="text-h6 text-weight-bold text-grey-8">
+                  <q-icon
+                    name="swap_horizontal_circle"
+                    color="primary"
+                    class="q-mr-xs"
+                  />
+                  Movimentações
+                </div>
+                <q-space />
+                <div v-if="!$q.screen.lt.md" class="row q-gutter-x-sm">
+                  <q-toggle
+                    v-model="onlyEntry"
+                    :disable="loadingMovement"
+                    color="positive"
+                    label="Entradas"
+                    dense
+                    left-label
+                  />
+                  <q-toggle
+                    v-model="onlyOut"
+                    :disable="loadingMovement"
+                    color="negative"
+                    label="Saídas"
+                    dense
+                    left-label
+                  />
+                </div>
               </div>
+
+              <div
+                v-if="!$q.screen.lt.md"
+                class="row q-col-gutter-sm items-center"
+              >
+                <div class="col">
+                  <q-select
+                    v-model="filterMonthYear"
+                    :options="listMonthYear"
+                    label="Período"
+                    outlined
+                    dense
+                    bg-color="white"
+                    :readonly="listMonthYear.length === 0"
+                  >
+                    <template v-slot:prepend
+                      ><q-icon name="calendar_today" size="xs"
+                    /></template>
+                  </q-select>
+                </div>
+                <div class="col">
+                  <q-select
+                    v-model="selectedCategory"
+                    :options="optionsCategoriesFilter"
+                    label="Categoria"
+                    outlined
+                    dense
+                    bg-color="white"
+                  >
+                    <template v-slot:prepend
+                      ><q-icon name="category" size="xs"
+                    /></template>
+                  </q-select>
+                </div>
+                <div class="col">
+                  <q-select
+                    v-model="selectedAccount"
+                    :options="optionsAccountsFilter"
+                    label="Conta"
+                    outlined
+                    dense
+                    bg-color="white"
+                  >
+                    <template v-slot:prepend
+                      ><q-icon name="account_balance" size="xs"
+                    /></template>
+                  </q-select>
+                </div>
+                <div class="col">
+                  <q-input
+                    v-model="filterMovement"
+                    outlined
+                    dense
+                    bg-color="white"
+                    placeholder="Pesquisar..."
+                  >
+                    <template v-slot:append><q-icon name="search" /></template>
+                  </q-input>
+                </div>
+              </div>
+
               <q-expansion-item
                 v-else
-                expand-separator
                 icon="filter_alt"
                 label="Filtros"
-                class="border-form"
+                header-class="bg-grey-2 text-weight-bold"
+                class="border-form overflow-hidden"
+                style="border-radius: 8px"
               >
-                <q-toggle
-                  v-model="onlyEntry"
-                  :disable="loadingMovement || loadingExport"
-                  color="primary"
-                  label="Entradas"
-                  left-label
-                  class="q-ml-sm"
-                />
-                <q-toggle
-                  v-model="onlyOut"
-                  :disable="loadingMovement || loadingExport"
-                  color="primary"
-                  label="Saídas"
-                  left-label
-                />
-                <q-select
-                  v-model="filterMonthYear"
-                  :options="listMonthYear"
-                  :readonly="
-                    listMonthYear.length === 0 ||
-                    loadingMovement ||
-                    loadingExport
-                  "
-                  label="Filtrar momento"
-                  filled
-                  dense
-                  options-dense
-                  bg-color="grey-1"
-                  label-color="black"
-                  style="min-width: 200px"
-                  :class="!$q.screen.lt.md ? '' : 'full-width'"
-                  class="q-mt-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="calendar_today" color="black" size="20px" />
-                  </template>
-                </q-select>
-                <q-select
-                  v-model="selectedCategory"
-                  :options="optionsCategoriesFilter"
-                  :readonly="loadingMovement || loadingExport"
-                  label="Filtre categoria"
-                  filled
-                  dense
-                  options-dense
-                  bg-color="grey-1"
-                  label-color="black"
-                  style="min-width: 200px"
-                  :class="!$q.screen.lt.md ? '' : 'full-width'"
-                  class="q-mt-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="category" color="black" size="20px" />
-                  </template>
-                </q-select>
-                <q-input
-                  filled
-                  v-model="filterMovement"
-                  dense
-                  label="Pesquisar"
-                  class="q-mt-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
+                <div class="q-pa-md q-gutter-y-sm bg-grey-1">
+                  <div class="row justify-around">
+                    <q-toggle
+                      v-model="onlyEntry"
+                      color="positive"
+                      label="Entradas"
+                      dense
+                    />
+                    <q-toggle
+                      v-model="onlyOut"
+                      color="negative"
+                      label="Saídas"
+                      dense
+                    />
+                  </div>
+                  <q-select
+                    v-model="filterMonthYear"
+                    :options="listMonthYear"
+                    label="Período"
+                    outlined
+                    dense
+                  />
+                  <q-select
+                    v-model="selectedCategory"
+                    :options="optionsCategoriesFilter"
+                    label="Categoria"
+                    outlined
+                    dense
+                  />
+                  <q-select
+                    v-model="selectedAccount"
+                    :options="optionsAccountsFilter"
+                    label="Conta"
+                    outlined
+                    dense
+                  />
+                  <q-input
+                    v-model="filterMovement"
+                    outlined
+                    dense
+                    placeholder="Pesquisar..."
+                  />
+                </div>
               </q-expansion-item>
             </div>
           </template>
-          <template v-slot:body="props">
-            <q-tr
-              :props="props"
-              style="height: 28px"
-              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
-            >
-              <q-td key="name" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.account.name }}</span>
-              </q-td>
-              <q-td key="account_number" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.account.account_number
-                }}</span>
-              </q-td>
-              <q-td key="agency_number" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.account.agency_number
-                }}</span>
-              </q-td>
-              <q-td key="category" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.category.name
-                }}</span>
-              </q-td>
-              <q-td key="value" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  `${formatCurrencyBRL(props.row.value)}`
-                }}</span>
-              </q-td>
-              <q-td key="date_movement" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  formatDate(props.row.date_movement)
-                }}</span>
-              </q-td>
-              <q-td key="description" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.description }}</span>
-              </q-td>
-              <q-td
-                @click="download(props.row.receipt)"
-                key="receipt"
+
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-grey-1">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
                 :props="props"
-                class="text-left"
-                :class="props.row.receipt ? 'cursor-pointer hover' : ''"
+                class="text-grey-7 text-weight-bolder text-uppercase"
               >
-                <q-icon
-                  v-if="props.row.receipt"
-                  name="attach_file"
-                  size="20px"
-                />
+                <span style="font-size: 11px">{{ col.label }}</span>
+              </q-th>
+            </q-tr>
+          </template>
+
+          <template v-slot:body="props">
+            <q-tr :props="props" class="hover-shadow transition-all">
+              <q-td key="name" :props="props">
+                <div class="row items-center no-wrap">
+                  <div
+                    :class="
+                      props.row.type === 'entrada' ? 'bg-green' : 'bg-red'
+                    "
+                    style="width: 4px; height: 18px; border-radius: 10px"
+                    class="q-mr-sm"
+                  ></div>
+                  <span class="text-weight-bold text-grey-9">{{
+                    props.row.account.name
+                  }}</span>
+                </div>
               </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  v-show="
-                    !delivered &&
-                    user?.enterprise_id === user?.view_enterprise_id
+
+              <q-td key="account_number" :props="props" class="text-grey-8">{{
+                props.row.account.account_number
+              }}</q-td>
+              <q-td key="agency_number" :props="props" class="text-grey-8">{{
+                props.row.account.agency_number
+              }}</q-td>
+
+              <q-td key="category" :props="props">
+                <q-badge
+                  color="blue-grey-1"
+                  text-color="blue-grey-9"
+                  class="q-pa-xs"
+                  style="font-weight: 500"
+                >
+                  {{ props.row.category.name }}
+                </q-badge>
+              </q-td>
+
+              <q-td key="value" :props="props" class="text-right">
+                <span
+                  :class="
+                    props.row.type === 'entrada' ? 'text-green-8' : 'text-red-8'
                   "
-                  @click="handleEdit(props.row)"
-                  size="sm"
+                  class="text-weight-bolder"
+                >
+                  {{ formatCurrencyBRL(props.row.value) }}
+                </span>
+              </q-td>
+
+              <q-td
+                key="date_movement"
+                :props="props"
+                class="text-grey-9 text-weight-medium"
+              >
+                {{ formatDate(props.row.date_movement) }}
+              </q-td>
+
+              <q-td key="description" :props="props">
+                <div class="ellipsis text-grey-7" style="max-width: 150px">
+                  {{ props.row.description }}
+                </div>
+              </q-td>
+
+              <q-td key="receipt" :props="props" class="text-center">
+                <q-btn
+                  v-if="props.row.receipt"
                   flat
                   round
-                  color="black"
-                  icon="edit"
-                />
-                <q-btn
-                  v-show="
-                    !delivered &&
-                    user?.enterprise_id === user?.view_enterprise_id
-                  "
-                  @click="saveIdExclude(props.row.id)"
+                  dense
+                  icon="file_present"
                   size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                />
+                  color="primary"
+                  @click="download(props.row.receipt)"
+                >
+                  <q-tooltip>Ver comprovante</q-tooltip>
+                </q-btn>
+              </q-td>
+
+              <q-td key="action" :props="props" class="text-right">
+                <div class="row no-wrap q-gutter-x-xs justify-end">
+                  <q-btn
+                    v-if="
+                      !delivered &&
+                      user?.enterprise_id === user?.view_enterprise_id
+                    "
+                    flat
+                    round
+                    dense
+                    icon="edit"
+                    size="sm"
+                    color="grey-7"
+                    @click="handleEdit(props.row)"
+                  />
+                  <q-btn
+                    v-if="
+                      !delivered &&
+                      user?.enterprise_id === user?.view_enterprise_id
+                    "
+                    flat
+                    round
+                    dense
+                    icon="delete_outline"
+                    size="sm"
+                    color="red-4"
+                    @click="saveIdExclude(props.row.id)"
+                  />
+                </div>
               </q-td>
             </q-tr>
           </template>

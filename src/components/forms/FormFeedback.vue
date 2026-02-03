@@ -68,45 +68,59 @@ watch(open, () => {
       <q-card-section class="q-pa-none">
         <TitlePage title="Envie uma sugestão" />
       </q-card-section>
-      <q-card-section class="q-pa-sm q-gutter-y-sm">
+
+      <q-separator />
+
+      <q-card-section class="q-pa-lg">
+        <div class="row items-start q-gutter-md q-mb-md">
+          <div class="feedback-icon">
+            <q-icon name="rate_review" color="primary" size="22px" />
+          </div>
+          <div>
+            <div class="text-subtitle2 text-weight-bold text-grey-9">
+              Sua opinião é importante
+            </div>
+            <div class="text-caption text-grey-7">
+              Conte para nós sugestões, problemas ou melhorias.
+            </div>
+          </div>
+        </div>
         <q-form>
-          <q-input
-            v-model="dataFeedback.message"
-            style="height: 150px; max-height: 130px"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Digite aqui sua mensagem"
-            dense
-            input-class="text-black no-resize"
-            type="textarea"
-            class="no-resize"
-            counter
-            maxlength="5000"
-          >
-            <template v-slot:prepend>
-              <q-icon name="description" color="black" size="20px" />
-            </template>
-          </q-input>
+          <div class="input-wrapper">
+            <q-input
+              v-model="dataFeedback.message"
+              type="textarea"
+              filled
+              autogrow
+              counter
+              maxlength="5000"
+              bg-color="white"
+              label="Digite aqui sua mensagem"
+              label-color="black"
+              input-class="text-black no-resize"
+              class="textarea-soft"
+            >
+              <template #prepend>
+                <q-icon name="description" color="grey-8" size="20px" />
+              </template>
+            </q-input>
+          </div>
         </q-form>
       </q-card-section>
-      <q-card-actions align="right">
-        <div class="row justify-end items-center q-gutter-x-sm">
+      <q-card-actions class="q-pa-lg">
+        <div class="row full-width justify-end q-gutter-sm">
           <q-btn
             @click="open = false"
             color="red"
             label="Fechar"
-            size="md"
             flat
-            unelevated
             no-caps
           />
           <q-btn
             @click="save"
             :loading="loadingFeedback"
             color="primary"
-            label="Salvar"
-            size="md"
+            label="Enviar sugestão"
             unelevated
             no-caps
           />

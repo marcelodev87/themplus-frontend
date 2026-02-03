@@ -1,7 +1,6 @@
 <!-- eslint-disable no-restricted-globals -->
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { QuasarSelect } from 'src/ts/interfaces/framework/Quasar';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
@@ -81,62 +80,65 @@ watch(open, async () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2 form-basic">
-      <q-card-section class="q-pa-none">
-        <TitlePage title="Visualização de dados de organização" />
+    <q-card class="bg-white form-basic">
+      <q-card-section class="bg-grey-1 text-grey-9">
+        <div class="text-h6">Visualização de organização</div>
+        <div class="text-caption opacity-80">
+          Escolha qual organização deseja visualizar
+        </div>
       </q-card-section>
+
       <q-card-section class="q-pa-sm">
-        <q-form class="q-gutter-y-sm">
-          <q-banner dense inline-actions class="text-black bg-grey-4" rounded>
-            Caso você tenha filial criada pela sua organização
-            <span class="text-bold">matriz</span>, você poderá configurar a
-            organização que deseja <span class="text-bold">visualizar</span> os
-            dados da organização filial. Caso, selecione uma organização filial,
-            será permitido apenas ação de
-            <span class="text-bold">leitura.</span> Toda vez que você realizar
-            login novamente, será resetada a configuração para visualizar os
-            dados de sua organização, sendo necessário voltar aqui e selecionar
-            a organização que deseja novamente.
-          </q-banner>
-          <q-select
-            v-model="dataView.selectedEnterpriseView"
-            :readonly="loadingEnterprise"
-            :options="optionsEnteprise"
-            label="Lista de organizações"
-            filled
-            dense
-            options-dense
-            map-options
-            bg-color="white"
-            label-color="black"
-            use-input
-            input-debounce="0"
-            behavior="menu"
-          >
-            <template v-slot:prepend>
-              <q-icon name="task_alt" color="black" size="20px" />
-            </template>
-          </q-select>
-        </q-form>
+        <q-banner
+          dense
+          rounded
+          class="bg-blue-1 text-blue-10 q-mb-md"
+          icon="info"
+        >
+          Se sua organização possui filiais, você pode selecionar qual deseja
+          visualizar. Ao escolher uma filial, o acesso será somente leitura. Ao
+          fazer login novamente, a visualização volta para a organização atual.
+        </q-banner>
+
+        <div class="text-subtitle2 text-grey-8 q-mb-sm">
+          Organização para visualização
+        </div>
+
+        <q-select
+          v-model="dataView.selectedEnterpriseView"
+          :readonly="loadingEnterprise"
+          :options="optionsEnteprise"
+          label="Selecione a organização"
+          outlined
+          options-dense
+          map-options
+          use-input
+          input-debounce="0"
+          behavior="menu"
+          dense
+        >
+          <template v-slot:prepend>
+            <q-icon name="apartment" color="grey-7" />
+          </template>
+        </q-select>
       </q-card-section>
-      <q-card-actions align="right">
-        <div class="row justify-end items-center q-gutter-x-sm">
+
+      <q-card-actions class="q-pa-sm">
+        <div class="row justify-end full-width q-gutter-sm">
           <q-btn
+            flat
             color="red"
             label="Fechar"
-            size="md"
-            flat
             @click="open = false"
-            unelevated
             no-caps
           />
+
           <q-btn
-            @click="save"
+            unelevated
             color="primary"
             label="Salvar"
-            size="md"
             :loading="loadingEnterprise"
-            unelevated
+            @click="save"
             no-caps
           />
         </div>

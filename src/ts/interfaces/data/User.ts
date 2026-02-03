@@ -1,3 +1,4 @@
+import { Department } from './Department';
 import { Enterprise } from './Enterprise';
 
 export interface DataUser {
@@ -87,9 +88,11 @@ export interface User {
   name: string;
   email: string;
   phone: string | null;
+  active: number;
   position: string;
   enterprise_id: string;
   enterprise: Enterprise;
+  department: Department;
   department_id: string | null;
   created_by: string | null;
   created_at: string;

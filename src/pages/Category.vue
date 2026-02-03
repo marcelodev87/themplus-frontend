@@ -228,7 +228,7 @@ onMounted(async () => {
       :class="!$q.screen.lt.sm ? 'main-scroll' : 'category-scroll'"
     >
       <main
-        class="q-pa-sm q-mb-md"
+        class="q-pa-md q-mb-md"
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
@@ -245,181 +245,235 @@ onMounted(async () => {
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                class="text-weight-bold text-grey-8"
+              >
                 <span style="font-size: 13px">{{ col.label }}</span>
               </q-th>
             </q-tr>
           </template>
+
           <template v-slot:top>
             <div
-              :class="!$q.screen.lt.md ? 'row full-width' : 'column full-width'"
+              :class="
+                !$q.screen.lt.md
+                  ? 'row full-width items-center'
+                  : 'column full-width q-gutter-y-sm'
+              "
             >
-              <span class="text-subtitle2">Lista de categorias</span>
-              <q-space />
-              <div v-if="!$q.screen.lt.sm" class="row">
-                <q-toggle
-                  v-model="onlyDefault"
-                  color="primary"
-                  label="Padrão"
-                  left-label
-                />
-                <q-toggle
-                  v-model="onlyCreatedByMe"
-                  color="primary"
-                  label="Criados"
-                  left-label
-                />
+              <div class="row items-center">
+                <q-icon name="list" size="sm" class="q-mr-sm text-primary" />
+                <span class="text-subtitle1 text-weight-bold"
+                  >Lista de categorias</span
+                >
+              </div>
+
+              <q-space v-if="!$q.screen.lt.md" />
+
+              <div
+                v-if="!$q.screen.lt.sm"
+                class="row items-center q-gutter-x-md"
+              >
+                <div
+                  class="row items-center bg-grey-3 q-px-sm rounded-borders"
+                  style="height: 40px"
+                >
+                  <q-toggle
+                    v-model="onlyDefault"
+                    color="primary"
+                    label="Padrão"
+                    dense
+                  />
+                  <q-toggle
+                    v-model="onlyCreatedByMe"
+                    color="primary"
+                    label="Criados"
+                    dense
+                  />
+                </div>
+
                 <q-select
                   v-model="filterAllCategories"
                   :options="['Todas', 'Entradas', 'Saídas']"
                   dense
+                  filled
                   options-dense
-                  filled
                   label="Filtrar tipo"
-                  :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
-                  class="q-mr-sm"
+                  style="width: 180px"
                 />
+
                 <q-input
-                  filled
                   v-model="filterCategory"
+                  filled
                   dense
                   label="Pesquisar"
-                  :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                  style="width: 220px"
                 >
                   <template v-slot:prepend>
                     <q-icon name="search" />
                   </template>
                 </q-input>
               </div>
+
               <q-expansion-item
                 v-else
                 expand-separator
                 icon="filter_alt"
-                label="Filtros"
-                class="border-form"
+                label="Filtros e Pesquisa"
+                class="full-width border-form rounded-borders bg-grey-1"
+                header-class="text-weight-medium"
               >
-                <q-toggle
-                  v-model="onlyDefault"
-                  color="primary"
-                  label="Padrão"
-                  left-label
-                  class="q-ml-sm"
-                />
-                <q-toggle
-                  v-model="onlyCreatedByMe"
-                  color="primary"
-                  label="Criados"
-                  left-label
-                />
-                <q-select
-                  v-model="filterAllCategories"
-                  :options="['Todos', 'Entradas', 'Saídas']"
-                  dense
-                  options-dense
-                  filled
-                  label="Filtrar categorias"
-                  class="full-width q-mt-sm"
-                />
-                <q-input
-                  filled
-                  v-model="filterCategory"
-                  dense
-                  label="Pesquisar"
-                  class="full-width q-mt-sm"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
+                <div class="q-pa-sm q-gutter-y-sm">
+                  <div
+                    class="row justify-around bg-white q-pa-xs rounded-borders border-form"
+                  >
+                    <q-toggle
+                      v-model="onlyDefault"
+                      color="primary"
+                      label="Padrão"
+                    />
+                    <q-toggle
+                      v-model="onlyCreatedByMe"
+                      color="primary"
+                      label="Criados"
+                    />
+                  </div>
+                  <q-select
+                    v-model="filterAllCategories"
+                    :options="['Todos', 'Entradas', 'Saídas']"
+                    dense
+                    filled
+                    label="Filtrar categorias"
+                    class="full-width"
+                  />
+                  <q-input
+                    v-model="filterCategory"
+                    filled
+                    dense
+                    label="Pesquisar"
+                    class="full-width"
+                  >
+                    <template v-slot:prepend><q-icon name="search" /></template>
+                  </q-input>
+                </div>
               </q-expansion-item>
             </div>
           </template>
+
           <template v-slot:body="props">
             <q-tr
               :props="props"
-              style="height: 28px"
-              :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+              class="transition-row"
+              :class="[
+                props.row.type === 'entrada' ? 'row-entrada' : 'row-saida',
+                props.row.active === 0 ? 'bg-grey-2 opacity-60' : '',
+              ]"
             >
-              <q-td
-                key="name"
-                :props="props"
-                class="text-left"
-                :class="props.row.active === 0 ? 'text-grey-5' : ''"
-              >
-                <span class="text-subtitle2">{{ props.row.name }}</span>
+              <q-td key="name" :props="props" class="text-left">
+                <div class="row items-center no-wrap">
+                  <q-badge
+                    rounded
+                    :color="
+                      props.row.type === 'entrada' ? 'positive' : 'negative'
+                    "
+                    class="q-mr-sm"
+                    style="width: 8px; height: 8px; padding: 0"
+                  />
+                  <span
+                    class="text-subtitle2"
+                    :class="
+                      props.row.active === 0
+                        ? 'text-grey-7'
+                        : 'text-weight-medium'
+                    "
+                  >
+                    {{ props.row.name }}
+                  </span>
+                </div>
               </q-td>
-              <q-td
-                key="default"
-                :props="props"
-                class="text-left"
-                :class="props.row.active === 0 ? 'text-grey-5' : ''"
-              >
-                <span class="text-subtitle2">{{
-                  props.row.default === 1 ? 'Sim' : 'Não'
+
+              <q-td key="default" :props="props" class="text-left">
+                <q-chip
+                  dense
+                  :color="props.row.default === 1 ? 'blue-1' : 'orange-1'"
+                  :text-color="props.row.default === 1 ? 'blue-9' : 'orange-9'"
+                  :label="props.row.default === 1 ? 'Sistema' : 'Manual'"
+                  class="text-weight-bold"
+                  size="11px"
+                />
+              </q-td>
+
+              <q-td key="alert" :props="props" class="text-left">
+                <span class="text-caption text-grey-8">{{
+                  props.row.alert || '---'
                 }}</span>
               </q-td>
-              <q-td
-                key="alert"
-                :props="props"
-                class="text-left text-column"
-                :class="props.row.active === 0 ? 'text-grey-5' : ''"
-              >
-                <span class="text-subtitle2"> {{ props.row.alert }}</span>
-              </q-td>
-              <q-td key="action" :props="props">
+
+              <q-td key="action" :props="props" class="q-gutter-x-xs">
                 <q-btn
-                  @click="handleEdit(props.row)"
                   v-show="
                     props.row.enterprise_id !== null &&
                     props.row.active === 1 &&
                     props.row.default === 0 &&
                     user?.enterprise_id === user?.view_enterprise_id
                   "
+                  icon="edit"
                   size="sm"
                   flat
                   round
-                  color="black"
-                  icon="edit"
-                />
+                  color="grey-9"
+                  @click="handleEdit(props.row)"
+                >
+                  <q-tooltip>Editar</q-tooltip>
+                </q-btn>
                 <q-btn
-                  @click="exclude(props.row.id)"
                   v-show="
                     props.row.enterprise_id !== null &&
                     props.row.active === 1 &&
                     props.row.default === 0 &&
                     user?.enterprise_id === user?.view_enterprise_id
                   "
+                  icon="delete"
                   size="sm"
                   flat
                   round
                   color="negative"
-                  icon="delete"
-                />
+                  @click="exclude(props.row.id)"
+                >
+                  <q-tooltip>Excluir</q-tooltip>
+                </q-btn>
                 <q-btn
-                  @click="reactivate(props.row.id)"
                   v-show="
                     props.row.active === 0 &&
                     user?.enterprise_id === user?.view_enterprise_id
                   "
+                  icon="settings_backup_restore"
                   size="sm"
                   flat
                   round
-                  color="replay"
-                  icon="replay"
+                  color="primary"
+                  @click="reactivate(props.row.id)"
                 >
-                  <q-tooltip> Reativar </q-tooltip>
+                  <q-tooltip>Reativar</q-tooltip>
                 </q-btn>
               </q-td>
             </q-tr>
           </template>
+
           <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="filteredCategory.length"
-            />
+            <div class="row full-width justify-center q-py-sm">
+              <Paginate
+                v-model="currentPage"
+                :max="maxPages"
+                :length="filteredCategory.length"
+              />
+            </div>
           </template>
         </q-table>
+
         <FormCategory
           :open="showFormCategory"
           :data-edit="selectedDataEdit"

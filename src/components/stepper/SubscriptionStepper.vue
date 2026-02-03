@@ -250,7 +250,7 @@ const sendDataCreditCard = async (dataCreditCard: ICreditCardData) => {
   if (check.status) {
     const response =
       await useSubscriptionStore().creditCardPayment(dataCreditCard);
-      if (response?.status === 200) {
+    if (response?.status === 200) {
       step.value = 3;
       await useUsersMembersStore().getProfile();
     }

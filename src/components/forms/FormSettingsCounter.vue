@@ -77,122 +77,154 @@ watch(open, async () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2 form-basic">
+    <q-card class="form-basic bg-grey-2">
       <q-card-section class="q-pa-none">
-        <TitlePage
-          title="Configurações de vínculo com contabilidade"
-          class="bg-grey-4"
-        />
+        <div class="row items-center q-pa-sm bg-grey-1">
+          <TitlePage title="Acessos da contabilidade" />
+        </div>
       </q-card-section>
-      <q-card-section class="q-pa-sm q-gutter-y-sm">
-        <q-form class="column q-gutter-y-sm">
+
+      <q-card-section class="q-pa-md">
+        <q-form class="column q-gutter-y-md">
           <q-expansion-item
-            expand-separator
-            icon="perm_identity"
-            label="Configurações para usuários"
+            group="settings"
+            icon="manage_accounts"
+            label="Permissões de Usuários"
+            header-class="text-weight-bold text-primary"
+            class="overflow-hidden border-grey rounded-borders shadow-1"
+            default-opened
           >
-            <q-card>
-              <q-card-section>
-                <q-toggle
-                  v-model="dataSettings.allowAddUser"
-                  :true-value="1"
-                  :false-value="0"
-                >
-                  <span>
-                    Permitir contabilidade
-                    <span class="text-bold">adicionar usuários</span> á sua
-                    organização
-                  </span>
-                </q-toggle>
-                <q-toggle
-                  v-model="dataSettings.allowEditUser"
-                  :true-value="1"
-                  :false-value="0"
-                >
-                  <span>
-                    Permitir contabilidade
-                    <span class="text-bold">editar usuários</span> da sua
-                    organização
-                  </span>
-                </q-toggle>
-                <q-toggle
-                  v-model="dataSettings.allowDeleteUser"
-                  :true-value="1"
-                  :false-value="0"
-                >
-                  <span>
-                    Permitir contabilidade
-                    <span class="text-bold">deletar usuários</span> da sua
-                    organização
-                  </span>
-                </q-toggle>
-              </q-card-section>
-            </q-card>
+            <q-list separator>
+              <q-item tag="label" v-ripple>
+                <q-item-section>
+                  <q-item-label>Adicionar Usuários</q-item-label>
+                  <q-item-label caption
+                    >Permite criar novos perfis na organização</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle
+                    v-model="dataSettings.allowAddUser"
+                    :true-value="1"
+                    :false-value="0"
+                    color="green"
+                  />
+                </q-item-section>
+              </q-item>
+
+              <q-item tag="label" v-ripple>
+                <q-item-section>
+                  <q-item-label>Editar Usuários</q-item-label>
+                  <q-item-label caption
+                    >Permite alterar dados de membros existentes</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle
+                    v-model="dataSettings.allowEditUser"
+                    :true-value="1"
+                    :false-value="0"
+                    color="green"
+                  />
+                </q-item-section>
+              </q-item>
+
+              <q-item tag="label" v-ripple>
+                <q-item-section>
+                  <q-item-label>Deletar Usuários</q-item-label>
+                  <q-item-label caption
+                    >Permite remover perfis da organização</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle
+                    v-model="dataSettings.allowDeleteUser"
+                    :true-value="1"
+                    :false-value="0"
+                    color="red"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-expansion-item>
+
           <q-expansion-item
-            expand-separator
-            icon="sync_alt"
-            label="Configurações para movimentações"
+            group="settings"
+            icon="receipt_long"
+            label="Permissões de Movimentações"
+            header-class="text-weight-bold text-primary"
+            class="overflow-hidden border-grey rounded-borders shadow-1"
           >
-            <q-card>
-              <q-card-section>
-                <q-toggle
-                  v-model="dataSettings.allowEditMovement"
-                  :true-value="1"
-                  :false-value="0"
-                >
-                  <span>
-                    Permitir contabilidade
-                    <span class="text-bold">editar movimentações</span> de
-                    relatórios entregues da sua organização
-                  </span>
-                </q-toggle>
-                <q-toggle
-                  v-model="dataSettings.allowDeleteMovement"
-                  :true-value="1"
-                  :false-value="0"
-                >
-                  <span>
-                    Permitir contabilidade
-                    <span class="text-bold">deletar movimentações</span> de
-                    relatórios entregues da sua organização
-                  </span>
-                </q-toggle>
-              </q-card-section>
-            </q-card>
+            <q-list separator>
+              <q-item tag="label" v-ripple>
+                <q-item-section>
+                  <q-item-label>Editar Movimentações</q-item-label>
+                  <q-item-label caption
+                    >Alterar registros em relatórios já entregues</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle
+                    v-model="dataSettings.allowEditMovement"
+                    :true-value="1"
+                    :false-value="0"
+                    color="green"
+                  />
+                </q-item-section>
+              </q-item>
+
+              <q-item tag="label" v-ripple>
+                <q-item-section>
+                  <q-item-label>Deletar Movimentações</q-item-label>
+                  <q-item-label caption
+                    >Remover registros em relatórios já entregues</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle
+                    v-model="dataSettings.allowDeleteMovement"
+                    :true-value="1"
+                    :false-value="0"
+                    color="red"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-expansion-item>
         </q-form>
       </q-card-section>
-      <q-card-actions align="right">
-        <div class="row justify-end items-center q-gutter-x-sm">
-          <q-btn
-            @click="open = false"
-            color="red"
-            label="Fechar"
-            size="md"
-            flat
-            unelevated
-            no-caps
-          />
-          <q-btn
-            @click="update"
-            :loading="loadingDelivery"
-            color="primary"
-            label="Salvar"
-            size="md"
-            unelevated
-            no-caps
-          />
-        </div>
+
+      <q-separator />
+
+      <q-card-actions align="right" class="q-pa-md bg-grey-1">
+        <q-btn
+          flat
+          label="Cancelar"
+          color="red"
+          v-close-popup
+          no-caps
+          class="q-px-md"
+        />
+        <q-btn
+          @click="update"
+          :loading="loadingDelivery"
+          label="Salvar"
+          color="primary"
+          unelevated
+          no-caps
+          class="q-px-lg text-weight-bold"
+        />
       </q-card-actions>
-      <q-inner-loading
-        :showing="loadingDelivery"
-        label="Carregando os dados..."
-        label-class="black"
-        label-style="font-size: 1.1em"
-        color="primary"
-        size="50px"
-      />
+
+      <q-inner-loading :showing="loadingDelivery">
+        <q-spinner-dots size="50px" color="primary" />
+      </q-inner-loading>
     </q-card>
   </q-dialog>
 </template>
+
+<style scoped>
+.border-grey {
+  border: 1px solid #e0e0e0;
+}
+</style>

@@ -38,13 +38,6 @@ const columnsUser = reactive<QuasarTable[]>([
     sortable: true,
   },
   {
-    name: 'email',
-    label: 'E-mail',
-    field: 'email',
-    align: 'left',
-    sortable: true,
-  },
-  {
     name: 'phone',
     label: 'Telefone',
     field: 'phone',
@@ -210,131 +203,243 @@ onMounted(async () => {
         </q-btn-dropdown>
       </div>
     </header>
-    <q-scroll-area class="main-scroll">
-      <main
-        class="q-pa-sm q-mb-md"
-        :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
-      >
+
+    <q-scroll-area class="main-scroll" style="height: calc(100vh - 110px)">
+      <main class="q-pa-md">
+        <div class="row items-center q-mb-md">
+          <q-space />
+          <q-input
+            v-model="filterUser"
+            dense
+            outlined
+            placeholder="Pesquisar por nome ou e-mail..."
+            class="bg-white rounded-borders"
+            style="min-width: 300px"
+          >
+            <template v-slot:prepend><q-icon name="search" /></template>
+          </q-input>
+        </div>
+
+        <div v-if="$q.screen.lt.md" class="row q-col-gutter-md">
+          <div
+            v-for="member in listUserMemberCurrent"
+            :key="member.id"
+            class="col-12 col-sm-6"
+          >
+            <q-card flat bordered class="user-card transition-row">
+              <q-item class="q-py-md">
+                <q-item-section avatar>
+                  <q-avatar size="50px" color="grey-2" text-color="primary">
+                    {{ member.name.charAt(0).toUpperCase() }}
+                  </q-avatar>
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label class="text-weight-bold text-subtitle1">{{
+                    member.name
+                  }}</q-item-label>
+                  <q-item-label caption class="row items-center">
+                    <q-icon name="mail" size="xs" class="q-mr-xs" />
+                    {{ member.email }}
+                  </q-item-label>
+                </q-item-section>
+
+                <q-item-section side top>
+                  <q-badge
+                    :color="member.active ? 'green-1' : 'red-1'"
+                    :text-color="member.active ? 'green-9' : 'red-9'"
+                    class="text-weight-bold"
+                  >
+                    {{ member.active ? 'Ativo' : 'Inativo' }}
+                  </q-badge>
+                </q-item-section>
+              </q-item>
+
+              <q-separator inset />
+
+              <q-card-section class="q-py-sm">
+                <div class="row justify-between text-caption text-grey-7">
+                  <span
+                    ><q-icon name="work" class="q-mr-xs" />{{
+                      member.position === 'admin' ? 'Administrador' : 'Membro'
+                    }}</span
+                  >
+                  <span
+                    ><q-icon name="account_tree" class="q-mr-xs" />{{
+                      member.department?.name || 'Geral'
+                    }}</span
+                  >
+                </div>
+              </q-card-section>
+
+              <q-card-actions align="right" class="bg-grey-1">
+                <q-btn
+                  flat
+                  round
+                  size="sm"
+                  icon="edit"
+                  @click="handleEdit(member)"
+                  color="grey-8"
+                />
+                <q-btn
+                  flat
+                  round
+                  size="sm"
+                  :icon="member.active ? 'block' : 'check_circle'"
+                  :color="member.active ? 'negative' : 'positive'"
+                  @click="setActive(member.active === 1 ? 0 : 1, member.id)"
+                />
+                <q-btn
+                  flat
+                  round
+                  size="sm"
+                  icon="delete_outline"
+                  color="negative"
+                  @click="exclude(member.id)"
+                />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </div>
+
         <q-table
+          v-else
           :rows="loadingUsersMembers ? [] : listUserMemberCurrent"
           :columns="columnsUser"
           :loading="loadingUsersMembers"
           flat
           bordered
-          dense
           row-key="index"
-          no-data-label="Nenhum usuário para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[rowsPerPage]"
+          hide-pagination
+          :rows-per-page-options="[0]"
         >
           <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <span style="font-size: 13px">{{ col.label }}</span>
+            <q-tr :props="props" class="bg-grey-2 text-grey-8">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                class="text-weight-bold uppercase"
+              >
+                {{ col.label }}
               </q-th>
             </q-tr>
           </template>
-          <template v-slot:top>
-            <span class="text-subtitle2">Lista de usuários</span>
-            <q-space />
-            <q-input filled v-model="filterUser" dense label="Pesquisar">
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
+
           <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="name" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.name }}</span>
+            <q-tr
+              :props="props"
+              :class="!props.row.active ? 'bg-grey-1 opacity-60' : ''"
+            >
+              <q-td key="name" :props="props">
+                <div class="row items-center no-wrap">
+                  <q-avatar
+                    size="32px"
+                    color="blue-1"
+                    text-color="blue-8"
+                    class="q-mr-sm text-weight-bold"
+                  >
+                    {{ props.row.name.charAt(0).toUpperCase() }}
+                  </q-avatar>
+                  <div>
+                    <div class="text-weight-bold">{{ props.row.name }}</div>
+                    <div class="text-caption text-grey-6">
+                      {{ props.row.email }}
+                    </div>
+                  </div>
+                </div>
               </q-td>
-              <q-td key="email" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.email }}</span>
+
+              <q-td key="phone" :props="props">
+                <span class="text-grey-8">{{ props.row.phone || '---' }}</span>
               </q-td>
-              <q-td key="phone" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.phone ?? 'Não definido'
-                }}</span>
-              </q-td>
-              <q-td key="position" :props="props" class="text-left">
-                <span class="text-subtitle2">{{
-                  props.row.position === 'admin'
-                    ? 'Administrador'
-                    : 'Usuário comum'
-                }}</span>
-              </q-td>
-              <q-td key="department" :props="props" class="text-left">
-                <span class="text-subtitle2">
-                  {{
-                    props.row.department_id
-                      ? props.row.department.name
-                      : `Não definido`
-                  }}
-                </span>
-              </q-td>
-              <q-td key="active" :props="props" class="text-left">
-                <q-icon
-                  :name="props.row.active ? 'person_check' : 'person_cancel'"
-                  :color="props.row.active ? 'green' : 'red'"
-                />
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  v-show="
-                    user &&
-                    user.id !== props.row.id &&
-                    (user?.enterprise_id === user?.view_enterprise_id
-                      ? true
-                      : false)
+
+              <q-td key="position" :props="props">
+                <q-chip
+                  dense
+                  :color="
+                    props.row.position === 'admin' ? 'purple-1' : 'blue-grey-1'
                   "
-                  @click="
-                    setActive(props.row.active === 1 ? 0 : 1, props.row.id)
+                  :text-color="
+                    props.row.position === 'admin' ? 'purple-9' : 'blue-grey-9'
                   "
-                  size="sm"
-                  flat
-                  round
-                  :color="props.row.active ? 'red' : 'green'"
-                  :icon="props.row.active ? 'block' : 'check'"
+                  class="text-weight-bold"
                 >
-                  <q-tooltip>
-                    {{ props.row.active ? 'Inativar' : 'Ativar' }}
-                  </q-tooltip>
-                </q-btn>
-                <q-btn
-                  v-show="user && user.id !== props.row.id"
-                  @click="handleEdit(props.row)"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                />
-                <q-btn
-                  v-show="
-                    user &&
-                    user.id !== props.row.id &&
-                    (user?.enterprise_id === user?.view_enterprise_id
-                      ? true
-                      : false)
-                  "
-                  @click="exclude(props.row.id)"
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                />
+                  {{
+                    props.row.position === 'admin' ? 'Administrador' : 'Comum'
+                  }}
+                </q-chip>
+              </q-td>
+
+              <q-td key="department" :props="props">
+                <div class="row items-center">
+                  <q-icon
+                    name="business"
+                    color="grey-5"
+                    size="xs"
+                    class="q-mr-xs"
+                  />
+                  {{ props.row.department?.name || 'Não definido' }}
+                </div>
+              </q-td>
+
+              <q-td key="active" :props="props">
+                <q-badge rounded :color="props.row.active ? 'green' : 'red'" />
+                <span class="q-ml-xs text-caption">{{
+                  props.row.active ? 'Ativo' : 'Inativo'
+                }}</span>
+              </q-td>
+
+              <q-td
+                key="action"
+                :props="props"
+                class="q-gutter-x-xs text-right"
+              >
+                <template v-if="user && user.id !== props.row.id">
+                  <q-btn
+                    flat
+                    round
+                    size="sm"
+                    :icon="props.row.active ? 'block' : 'done'"
+                    :color="props.row.active ? 'negative' : 'positive'"
+                    @click="
+                      setActive(props.row.active === 1 ? 0 : 1, props.row.id)
+                    "
+                  >
+                    <q-tooltip>{{
+                      props.row.active ? 'Inativar' : 'Ativar'
+                    }}</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    flat
+                    round
+                    size="sm"
+                    icon="edit"
+                    color="grey-9"
+                    @click="handleEdit(props.row)"
+                  />
+                  <q-btn
+                    flat
+                    round
+                    size="sm"
+                    icon="delete"
+                    color="negative"
+                    @click="exclude(props.row.id)"
+                  />
+                </template>
               </q-td>
             </q-tr>
           </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="filteredUser.length"
-            />
-          </template>
         </q-table>
+
+        <div class="row justify-center q-mt-lg">
+          <Paginate
+            v-model="currentPage"
+            :max="maxPages"
+            :length="filteredUser.length"
+          />
+        </div>
+
         <FormUser
           :open="showFormUser"
           :data-edit="selectedDataEdit"
