@@ -184,19 +184,10 @@ const clear = (): void => {
   selectedCategory.value = { label: 'Todas categorias', value: null };
   selectedAccount.value = { label: 'Todas contas', value: null };
 };
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
+const formatDate = (dateString: string) => {
+  const [year, month, day] = dateString.split('-');
 
-  const options: Intl.DateTimeFormatOptions = {
-    timeZone: 'America/Sao_Paulo',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  };
-
-  return new Intl.DateTimeFormat('pt-BR', options).format(date);
+  return `${day}/${month}/${year}`;
 };
 const convertMonthYear = (monthYear: string): string => {
   const months: { [key: string]: string } = {
