@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useAuthStore } from 'src/stores/auth-store';

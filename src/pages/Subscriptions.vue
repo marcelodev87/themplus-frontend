@@ -26,6 +26,7 @@ const planLabels: Record<string, string> = {
   free: 'Grátis',
   basic: 'Básico',
   advanced: 'Avançado',
+  etika: 'Cliente Etika Contabilidade'
 };
 
 const getPlanLabel = (name?: string) =>
@@ -99,7 +100,7 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
 const subscriptionsTable = computed(() => {
   if (!listSubscription.value?.length) return [];
 
-  return listSubscription.value
+  return listSubscription.value.filter((item) => item.name !== 'etika')
     .map((sub) => {
       const mock = subscriptions.find((s) => s.name === sub.name);
 

@@ -5,7 +5,7 @@ export interface ISubscriptionInfo {
 
 export interface ISubscription {
   id: string;
-  name: 'free' | 'basic' | 'advanced';
+  name: 'free' | 'basic' | 'advanced' | 'etika';
   price: number;
 }
 
