@@ -39,6 +39,10 @@ const showMemberMovementInfo = ref<boolean>(false);
 const showManageRole = ref<boolean>(false);
 const showManagePreRegistration = ref<boolean>(false);
 // const showManageRelationship = ref<boolean>(false);
+const selectedStatusActive = ref({
+  value: 'all',
+  label: 'Todos',
+});
 const filterMember = ref<string>('');
 const selectedDataEdit = ref<MemberChurch | null>(null);
 const dataExclude = ref<string | null>(null);
@@ -63,6 +67,10 @@ const clear = (): void => {
   dataExclude.value = null;
   filterMember.value = '';
   dataPreRegistration.value = null;
+  selectedStatusActive.value = {
+    value: 'all',
+    label: 'Todos',
+  };
 };
 const fetchMembers = async () => {
   await getMembers();
@@ -151,13 +159,41 @@ const openFormMemberByPreRegistration = (data: PreRegistration): void => {
 };
 
 const listMemberCurrent = computed(() => {
+  const status = selectedStatusActive.value.value;
+
+  let filtered = listMember.value;
+
+  if (status !== 'all') {
+    filtered = listMember.value.filter((member) => {
+      if (status === 'active') return member.active === 1;
+      if (status === 'inactive') return member.active === 0;
+      return true;
+    });
+  }
+
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listMember.value.slice(start, end);
+
+  return filtered.slice(start, end);
 });
+
 const maxPages = computed(() => {
   return Math.ceil(listMember.value.length / rowsPerPage.value);
 });
+const optionsActive = computed(() => [
+  {
+    value: 'all',
+    label: 'Todos',
+  },
+  {
+    value: 'active',
+    label: 'Ativos',
+  },
+  {
+    value: 'inactive',
+    label: 'Inativos',
+  },
+]);
 
 watch(
   filledData,
@@ -272,12 +308,24 @@ onMounted(async () => {
               <span class="text-subtitle2">Lista de membros</span>
               <q-space />
               <div v-if="!$q.screen.lt.sm" class="row">
+                <q-select
+                  v-model="selectedStatusActive"
+                  :options="optionsActive"
+                  dense
+                  options-dense
+                  outlined
+                  label="Status"
+                  :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                  class="q-mr-sm"
+                  bg-color="white"
+                />
                 <q-input
-                  filled
+                  outlined
                   v-model="filterMember"
                   dense
                   label="Pesquisar"
                   :style="!$q.screen.lt.sm ? 'width: 200px' : 'width: 49%'"
+                  bg-color="white"
                 >
                   <template v-slot:prepend>
                     <q-icon name="search" />
