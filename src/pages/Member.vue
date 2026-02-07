@@ -1,6 +1,7 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -24,6 +25,8 @@ defineOptions({
 const { user } = storeToRefs(useAuthStore());
 const { listMember, loadingMember, filledData } = storeToRefs(useMemberStore());
 const { getMembers, deleteMember, updateActiveMember } = useMemberStore();
+
+const router = useRouter();
 
 const subscripitonName = computed(
   () => user.value?.enterprise.subscription.name
@@ -157,6 +160,9 @@ const openFormMemberByPreRegistration = (data: PreRegistration): void => {
   dataPreRegistration.value = data;
   openFormMember();
 };
+const openPlansPage = async () => {
+  await router.push({ name: 'admin-subscription' });
+};
 
 const listMemberCurrent = computed(() => {
   const status = selectedStatusActive.value.value;
@@ -275,6 +281,26 @@ onMounted(async () => {
         />
       </div>
     </header>
+    <q-banner v-if="subscripitonName === 'free'" class="q-pa-sm" rounded dense>
+      <div
+        class="bg-red-1 text-red-10 row items-center justify-between q-pa-sm rounded-borders"
+      >
+        <div class="text-subtitle2">
+          🚀 Para acessar a gestão completa de membros e recursos para igrejas,
+          contrate o <b>Plano Básico</b> ou seja cliente do
+          <b>Contabilidade para igrejas</b>.
+        </div>
+
+        <q-btn
+          label="Ver planos"
+          color="red"
+          text-color="white"
+          unelevated
+          no-caps
+          @click="openPlansPage"
+        />
+      </div>
+    </q-banner>
     <q-scroll-area
       :class="!$q.screen.lt.sm ? 'main-scroll' : 'category-scroll'"
     >
