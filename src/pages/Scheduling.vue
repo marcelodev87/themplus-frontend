@@ -198,6 +198,35 @@ const handleEdit = (scheduling: Scheduling): void => {
     openFormOut();
   }
 };
+const preview = reactive({
+  open: false,
+  url: '',
+  type: '' as 'image' | 'pdf' | '',
+});
+
+const getFileType = (url: string) => {
+  const ext = url.split('.').pop()?.toLowerCase();
+
+  if (!ext) return '';
+
+  if (['png', 'jpg', 'jpeg'].includes(ext)) return 'image';
+  if (ext === 'pdf') return 'pdf';
+
+  return '';
+};
+
+const openPreview = (url: string) => {
+  const type = getFileType(url);
+
+  if (!type) {
+    downloadFile(url);
+    return;
+  }
+
+  preview.url = url;
+  preview.type = type;
+  preview.open = true;
+};
 const download = async (url: string) => {
   await downloadFile(url);
 };
@@ -832,7 +861,7 @@ onMounted(async () => {
                   icon="description"
                   size="sm"
                   color="indigo-7"
-                  @click="download(props.row.receipt)"
+                  @click="openPreview(props.row.receipt)"
                 >
                   <q-tooltip>Ver comprovante</q-tooltip>
                 </q-btn>
@@ -874,6 +903,45 @@ onMounted(async () => {
             </q-tr>
           </template>
         </q-table>
+        <q-dialog v-model="preview.open" maximized>
+          <q-card style="width: 80%">
+            <q-bar>
+              <div>Pré-visualização</div>
+              <q-space />
+              <q-btn dense flat icon="close" v-close-popup />
+            </q-bar>
+
+            <q-card-section class="q-pa-sm flex flex-center">
+              <img
+                v-if="preview.type === 'image'"
+                :src="preview.url"
+                style="width: 100%; max-height: 90vh"
+              />
+
+              <iframe
+                v-else-if="preview.type === 'pdf'"
+                :src="preview.url"
+                style="width: 100%; height: 90vh; border: none"
+              />
+
+              <div v-else class="q-pa-lg">
+                Tipo de arquivo não suportado para visualização.
+              </div>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn
+                label="Baixar"
+                icon="download"
+                color="primary"
+                class="q-mr-sm"
+                unelevated
+                no-caps
+                @click="download(preview.url)"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
         <ConfirmDownloadFile
           :open="showConfirmDownloadFile"
           title="Selecione o tipo de arquivo"
