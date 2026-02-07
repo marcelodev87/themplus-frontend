@@ -1157,6 +1157,7 @@ watch(open, async () => {
                 :options="optionsMinistries"
                 label="Selecione o ministério"
                 outlined
+                clearable
                 dense
                 multiple
                 options-dense
