@@ -25,6 +25,15 @@ export const getMembersService = (
   });
 };
 
+export const showMemberService = (
+  memberID: string
+): Promise<{
+  status: number;
+  data: {
+    member: MemberChurch;
+  };
+}> => api.get(`${baseUrl}/${memberID}`);
+
 export const getPreRegistrationService = (): Promise<{
   status: number;
   data: {
@@ -117,3 +126,19 @@ export const deleteRegistrationService = (
     message: string;
   };
 }> => api.delete(`${baseUrl}/pre-registration/${id}`);
+
+export const deleteRelationshipService = (
+  memberID: string,
+  relatedMemberID: string,
+  relationshipID: string
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> =>
+  api.post(`${baseUrl}/relationship`, {
+    memberID,
+    relatedMemberID,
+    relationshipID,
+  });

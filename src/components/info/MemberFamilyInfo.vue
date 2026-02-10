@@ -7,6 +7,8 @@ import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import { useRelationshipStore } from 'src/stores/relationship-store';
 import { useMemberStore } from 'src/stores/member-store';
 import TitlePage from '../shared/TitlePage.vue';
+import ConfirmAction from '../confirm/ConfirmAction.vue';
+import MemberFamilyDetails from './MemberFamilyDetails.vue';
 
 defineOptions({
   name: 'MemberFamilyInfo',
@@ -14,17 +16,26 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
-  memberSelected: MemberChurch | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
+  'show:member-family-details': [string];
 }>();
 
 const { listMember } = storeToRefs(useMemberStore());
 const { listRelationship } = storeToRefs(useRelationshipStore());
-const { getMembers } = useMemberStore();
 const { getRelationships } = useRelationshipStore();
 
+const showConfirmAction = ref<boolean>(false);
+const excludeRelationShipData = reactive({
+  relatedMemberID: null as string | null,
+  relationshipID: null as string | null,
+});
+const showMemberFamilyDetails = reactive({
+  open: false as boolean,
+  memberFamilyID: null as string | null,
+});
+const model = defineModel<MemberChurch | null>({ required: true });
 const loading = ref<boolean>(false);
 const columnsMemberFamily = reactive<QuasarTable[]>([
   {
@@ -41,12 +52,71 @@ const columnsMemberFamily = reactive<QuasarTable[]>([
     align: 'left',
     sortable: true,
   },
+  {
+    name: 'actions',
+    label: 'Ações',
+    field: 'actions',
+    align: 'right',
+    sortable: true,
+  },
 ]);
-const fetchMembers = async () => {
-  await getMembers();
-};
+
 const fetchRelationships = async () => {
   await getRelationships();
+};
+const deleteRelationship = async (
+  memberID: string,
+  relatedMemberID: string,
+  relationshipID: string
+) => {
+  const response = await useMemberStore().deleteRelationship(
+    memberID,
+    relatedMemberID,
+    relationshipID
+  );
+
+  if (response?.status === 200 && model.value?.family) {
+    model.value.family = model.value.family.filter(
+      (item) =>
+        item.pivot.related_member_id !== relatedMemberID ||
+        item.pivot.relationship_id !== relationshipID
+    );
+  }
+};
+const clear = (): void => {
+  excludeRelationShipData.relatedMemberID = null;
+  excludeRelationShipData.relationshipID = null;
+};
+const closeConfirmActionOk = async (): Promise<void> => {
+  showConfirmAction.value = false;
+  await deleteRelationship(
+    model.value?.id ?? '',
+    excludeRelationShipData.relatedMemberID ?? '',
+    excludeRelationShipData.relationshipID ?? ''
+  );
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  clear();
+};
+const openConfirmAction = (
+  relatedMemberID: string,
+  relationshipID: string
+): void => {
+  excludeRelationShipData.relatedMemberID = relatedMemberID;
+  excludeRelationShipData.relationshipID = relationshipID;
+  showConfirmAction.value = true;
+};
+const openShowMemberFamilyDetails = (open: boolean, id: string) => {
+  Object.assign(showMemberFamilyDetails, {
+    open,
+    memberFamilyID: id,
+  });
+};
+const closeShowMemberFamilyDetails = () => {
+  showMemberFamilyDetails.open = false;
+  showMemberFamilyDetails.memberFamilyID = null;
 };
 
 const open = computed({
@@ -54,14 +124,11 @@ const open = computed({
   set: () => emit('update:open'),
 });
 const getListFamily = computed(() => {
-  if (
-    !props.memberSelected?.family ||
-    props.memberSelected.family.length === 0
-  ) {
+  if (!model.value?.family || model.value?.family.length === 0) {
     return [];
   }
 
-  return props.memberSelected.family
+  return model.value?.family
     .map((item) => {
       const foundMember = listMember.value.find(
         (member) => member.id === item.pivot.related_member_id
@@ -94,7 +161,6 @@ const getListFamily = computed(() => {
 watch(open, async () => {
   if (open.value) {
     loading.value = true;
-    await fetchMembers();
     await fetchRelationships();
     loading.value = false;
   }
@@ -104,9 +170,9 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic" style="min-width: 98vw">
       <q-card-section class="q-pa-sm">
-        <TitlePage :title="`Relações (${props.memberSelected?.name ?? ''})`" />
+        <TitlePage :title="`Relações (${model?.name ?? ''})`" />
         <q-table
-          :rows="loading ? [] : getListFamily"
+          :rows="loading || !getListFamily ? [] : getListFamily"
           :columns="columnsMemberFamily"
           :loading="loading"
           flat
@@ -134,6 +200,31 @@ watch(open, async () => {
                   props.row.relationship.label
                 }}</span>
               </q-td>
+              <q-td key="actions" :props="props" class="text-left">
+                <q-btn
+                  @click="
+                    openShowMemberFamilyDetails(true, props.row.member.value)
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="primary"
+                  icon="visibility"
+                />
+                <q-btn
+                  @click="
+                    openConfirmAction(
+                      props.row.member.value,
+                      props.row.relationship.value
+                    )
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="negative"
+                  icon="delete"
+                />
+              </q-td>
             </q-tr>
           </template>
         </q-table>
@@ -157,5 +248,18 @@ watch(open, async () => {
         size="50px"
       />
     </q-card>
+    <!-- Modals -->
+    <ConfirmAction
+      :open="showConfirmAction"
+      label-action="Continuar"
+      title="Confirmação de exclusão"
+      message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
+      @update:open="closeConfirmAction"
+      @update:ok="closeConfirmActionOk"
+    />
+    <MemberFamilyDetails
+      :data="showMemberFamilyDetails"
+      @update:open="closeShowMemberFamilyDetails"
+    />
   </q-dialog>
 </template>

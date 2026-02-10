@@ -12,6 +12,8 @@ import {
   getPreRegistrationService,
   deleteRegistrationService,
   getConfigPreRegistrationService,
+  deleteRelationshipService,
+  showMemberService,
 } from 'src/services/member-service';
 import {
   DataMemberChurch,
@@ -23,8 +25,10 @@ export const useMemberStore = defineStore('member', {
   state: () => ({
     filledData: true as boolean,
     loadingMember: false as boolean,
+    loadingShowMember: false as boolean,
     listMember: [] as MemberChurch[],
     listMemberPreRegistration: [] as PreRegistration[],
+    Member: {} as MemberChurch,
   }),
   actions: {
     clearListMember() {
@@ -33,17 +37,26 @@ export const useMemberStore = defineStore('member', {
     setListMember(members: MemberChurch[]) {
       members.map((item) => this.listMember.push(item));
     },
+    setMember(member: MemberChurch) {
+      this.Member = member;
+    },
     clearListMemberPreRegistration() {
       this.listMemberPreRegistration.splice(
         0,
         this.listMemberPreRegistration.length
       );
     },
+    clearMember() {
+      this.Member = {} as MemberChurch;
+    },
     setListMemberPreRegistration(members: PreRegistration[]) {
       members.map((item) => this.listMemberPreRegistration.push(item));
     },
     setLoading(loading: boolean) {
       this.loadingMember = loading;
+    },
+    setShowLoading(loading: boolean) {
+      this.loadingShowMember = loading;
     },
     setFilledData(data: boolean) {
       this.filledData = data;
@@ -80,6 +93,20 @@ export const useMemberStore = defineStore('member', {
         this.createError(error);
       } finally {
         this.setLoading(false);
+      }
+    },
+    async showMember(memberID: string) {
+      try {
+        this.setShowLoading(true);
+        const response = await showMemberService(memberID);
+        if (response.status === 200) {
+          this.clearMember();
+          this.setMember(response.data.member);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setShowLoading(false);
       }
     },
     async getPreRegistration() {
@@ -187,6 +214,29 @@ export const useMemberStore = defineStore('member', {
         }
       } catch (error) {
         this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteRelationship(
+      memberID: string,
+      relatedMemberID: string,
+      relationshipID: string
+    ) {
+      this.setLoading(true);
+      try {
+        const response = await deleteRelationshipService(
+          memberID,
+          relatedMemberID,
+          relationshipID
+        );
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

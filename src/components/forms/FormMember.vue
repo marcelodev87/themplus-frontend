@@ -88,8 +88,8 @@ const selectedActive = ref<QuasarSelect<number>>({
 const selectedRole = ref<QuasarSelect<string>[]>([]);
 const selectedMinistry = ref<QuasarSelect<string>[]>([]);
 const selectedTypeMinistry = ref<QuasarSelect<string>>({
-  label: 'Visitante',
-  value: 'visitor',
+  label: 'Membro',
+  value: 'member',
 });
 const selectedNaturalness = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
@@ -315,8 +315,8 @@ const clear = (): void => {
   };
 
   selectedTypeMinistry.value = {
-    label: 'Visitante',
-    value: 'visitor',
+    label: 'Membro',
+    value: 'member',
   };
 
   selectedMemberFamily.value = null;
@@ -690,12 +690,12 @@ const formattedPhoneProfessional = computed({
 });
 const optionsTypeMinistry = computed(() => [
   {
-    label: 'Visitante',
-    value: 'visitor',
-  },
-  {
     label: 'Membro',
     value: 'member',
+  },
+  {
+    label: 'Visitante',
+    value: 'visitor',
   },
 ]);
 const optionsActive = computed(() => [

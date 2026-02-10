@@ -312,6 +312,7 @@ onMounted(async () => {
           :rows="loadingMember ? [] : listMemberCurrent"
           :columns="columnsMember"
           :loading="loadingMember"
+          :filter="filterMember"
           flat
           bordered
           dense
@@ -411,7 +412,7 @@ onMounted(async () => {
                   @click="openMemberFamilyInfo(props.row)"
                   v-show="
                     user?.enterprise_id === user?.view_enterprise_id &&
-                    props.row.family.length > 0
+                    props.row.family?.length > 0
                   "
                   size="sm"
                   flat
@@ -480,7 +481,7 @@ onMounted(async () => {
         />
         <MemberFamilyInfo
           :open="showMemberFamily"
-          :member-selected="selectedDataEdit"
+          v-model="selectedDataEdit"
           @update:open="closeMemberFamilyInfo"
         />
         <ManageRole :open="showManageRole" @update:open="closeManageRole" />
