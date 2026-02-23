@@ -303,18 +303,18 @@ onMounted(async () => {
                   <q-btn
                     v-if="props.row.name === 'basic'"
                     rounded
-                    flat
-                    icon="attach_money"
+                    icon-right="attach_money"
+                    label="Contratar"
                     color="green"
+                    size="sm"
+                    unelevated
                     @click="openSubscriptionStepper(true, props.row.id)"
                     :loading="
                       props.row.name === 'free'
                         ? freeSubscriptionLoading
                         : false
                     "
-                  >
-                    <q-tooltip> Realizar pagamento </q-tooltip>
-                  </q-btn>
+                  />
                 </q-td>
               </q-tr>
             </template>
