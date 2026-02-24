@@ -165,6 +165,10 @@ const closeAlertDataEnterprise = async () => {
   await fetchFeed();
 };
 
+const allowTestSubscription = computed(() => {
+  return user.value?.enterprise?.allow_test_subscription === 1;
+});
+
 watch(
   filledData,
   () => {
@@ -181,6 +185,19 @@ onMounted(async () => {
 
 <template>
   <section>
+    <div v-if="allowTestSubscription" class="q-ma-md">
+      <q-banner
+        inline-actions
+        rounded
+        class="bg-green-1 text-green-10 border-green-2"
+      >
+        <template v-slot:avatar>
+          <q-icon name="star" color="green-9" />
+        </template>
+        Você possui um período de <b>teste gratuito de 7 dias</b> disponível!
+        Aproveite todos os recursos do plano que quiser testar.
+      </q-banner>
+    </div>
     <header class="row justify-between no-wrap bg-grey-1">
       <div>
         <TitlePage title="Painel de assinaturas" />
@@ -189,7 +206,6 @@ onMounted(async () => {
           <q-chip color="primary" text-color="white" dense class="q-ml-md">
             Plano atual: {{ currentPlanLabel }}
           </q-chip>
-
           <q-chip
             v-if="subscriptionInfo"
             :color="statusColor"

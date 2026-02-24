@@ -26,6 +26,16 @@ export const creditCardPaymentService = (
   };
 }> => api.post(`${baseUrl}/payment/credit-card`, data);
 
+export const activeSubscriptionTestService = (
+  subscriptionID: string
+): Promise<{
+  status: number;
+  data: {
+    notifications: number;
+    message: string;
+  };
+}> => api.post(`${baseUrl}/payment/test`, { subscriptionID });
+
 export const generateQrCodeService = (
   subscriptionID: string
 ): Promise<{

@@ -11,6 +11,7 @@ import {
   creditCardPaymentService,
   generateQrCodeService,
   updateForFreeSubscriptionService,
+  activeSubscriptionTestService,
 } from 'src/services/subscription-service';
 import { updateNotifications } from 'src/composables/NotificationsManage';
 
@@ -76,6 +77,21 @@ export const useSubscriptionStore = defineStore('subscription', {
       try {
         const response = await creditCardPaymentService(data);
         if (response.status === 200 && response.data.result) {
+          updateNotifications(response.data.notifications);
+          return response;
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+      return null;
+    },
+    async activeSubscriptionTest(subscriptionID: string) {
+      this.setLoading(true);
+      try {
+        const response = await activeSubscriptionTestService(subscriptionID);
+        if (response.status === 200) {
           updateNotifications(response.data.notifications);
           return response;
         }

@@ -196,7 +196,7 @@ watch(
           :max="Math.ceil(listInbox.length / totalPerPage)"
           direction-links
           flat
-          color="primary"
+          color="red"
           size="sm"
         />
         <div v-else />

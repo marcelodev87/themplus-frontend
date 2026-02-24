@@ -6,6 +6,7 @@ import { ICreditCardData } from 'src/ts/interfaces/data/Subscription';
 import { Notify } from 'quasar';
 import echo from 'src/plugins/echo';
 import { useUsersMembersStore } from 'src/stores/users-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import FormCreditCard from '../forms/FormCreditCard.vue';
 import QrCodePix from '../general/QrCodePix.vue';
 
@@ -22,8 +23,10 @@ const emit = defineEmits<{
 }>();
 
 const { loadingSubscription } = storeToRefs(useSubscriptionStore());
+const { user } = storeToRefs(useAuthStore());
 
 const step = ref<number>(1);
+const isTestSubscription = ref<boolean>(false);
 const type = ref<'credit' | 'pix' | null>(null);
 const dataPaymentCreditCard = reactive({
   subscriptionID: props.subscriptionId,
@@ -264,6 +267,7 @@ const sendDataCreditCard = async (dataCreditCard: ICreditCardData) => {
 const close = () => {
   step.value = 1;
   type.value = null;
+  isTestSubscription.value = false;
   Object.assign(dataPaymentCreditCard, {
     creditCard: {
       holderName: '',
@@ -310,6 +314,16 @@ const back = () => {
     },
   });
 };
+const activeSubscriptionTest = async () => {
+  isTestSubscription.value = true;
+  const response = await useSubscriptionStore().activeSubscriptionTest(
+    props.subscriptionId ?? ''
+  );
+  if (response?.status === 200) {
+    step.value = 3;
+    await useUsersMembersStore().getProfile();
+  }
+};
 
 const open = computed({
   get: () => props.open,
@@ -319,6 +333,9 @@ const stepTitle = computed(() => {
   if (type.value === 'credit') return 'Formulário do cartão de crédito';
   if (type.value === 'pix') return 'Escaneie o QRCode ou copie e cole';
   return '';
+});
+const allowTestSubscription = computed(() => {
+  return user.value?.enterprise?.allow_test_subscription === 1;
 });
 
 watch(
@@ -336,156 +353,195 @@ onMounted(() => {
     await useUsersMembersStore().getProfile();
   });
 });
-
 onUnmounted(() => {
   echo.leaveChannel('payments');
 });
 </script>
 
 <template>
-  <q-dialog v-model="open">
-    <q-card class="q-bg-grey-2 form-basic sub-page">
-      <q-card-section>
+  <q-dialog v-model="open" transition-show="scale" transition-hide="scale">
+    <q-card class="checkout-card shadow-10">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6 text-weight-bold text-grey-8">
+          <q-icon
+            name="shopping_cart"
+            color="primary"
+            size="sm"
+            class="q-mr-sm"
+          />
+          Finalizar Assinatura
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-pa-md">
         <q-stepper
           v-model="step"
-          color="red-10"
+          color="primary"
           flat
           animated
-          bordered
-          alternative-labels
+          class="no-border"
         >
           <q-step
             :name="1"
-            title="Informe a forma de pagamento"
-            icon="attach_money"
-            color="red-10"
+            title="Forma de Pagamento"
+            icon="payments"
             :done="step > 1"
           >
-            <div class="row items-center q-gutter-sm">
-              <q-separator class="col" />
-              <span
-                class="text-h5 text-bold text-weight-light"
-                style="color: #660000"
-              >
-                Selecione a forma do pagamento
-              </span>
-              <q-separator class="col" />
+            <div class="text-center q-mb-xl">
+              <h5 class="q-ma-none text-weight-bold text-grey-9">
+                Como deseja pagar?
+              </h5>
+              <p class="text-grey-6">Selecione uma das opções abaixo</p>
             </div>
-            <q-stepper-navigation align="right">
-              <div class="row justify-center items-center q-gutter-x-sm">
+
+            <div class="row q-col-gutter-md justify-center q-mb-lg">
+              <div class="col-12 " :class="allowTestSubscription ? 'col-sm-4' : 'col-sm-6'">
                 <q-btn
-                  label="Cartão de crédito"
+                  stack
+                  outline
                   color="primary"
-                  unelevated
-                  no-caps
-                  icon="credit_card"
+                  class="full-width q-pa-lg method-btn"
                   @click="changeType('credit')"
-                />
+                >
+                  <q-icon name="credit_card" size="3rem" class="q-mb-md" />
+                  <div class="text-weight-bold text-subtitle1">
+                    Cartão de Crédito
+                  </div>
+                  <div class="text-caption">Aprovação instantânea</div>
+                </q-btn>
+              </div>
+
+              <div class="col-12" :class="allowTestSubscription ? 'col-sm-4' : 'col-sm-6'">
                 <q-btn
-                  label="Gerar QR Code PIX"
-                  color="teal-6"
+                  stack
+                  outline
+                  color="teal-7"
+                  class="full-width q-pa-lg method-btn"
+                  @click="changeType('pix')"
+                >
+                  <q-icon name="qr_code_2" size="3rem" class="q-mb-md" />
+                  <div class="text-weight-bold text-subtitle1">PIX</div>
+                  <div class="text-caption">Liberação imediata</div>
+                </q-btn>
+              </div>
+
+              <div class="col-12 col-sm-4">
+                <q-btn
+                v-if="allowTestSubscription"
+                  stack
+                  outline
+                  color="orange-7"
+                  class="full-width q-pa-lg method-btn"
+                  @click="activeSubscriptionTest"
+                >
+                  <q-icon name="qr_code_2" size="3rem" class="q-mb-md" />
+                  <div class="text-weight-bold text-subtitle1">Teste Gratuito</div>
+                  <div class="text-caption">7 dias</div>
+                </q-btn>
+              </div>
+            </div>
+          </q-step>
+
+          <q-step :name="2" :title="stepTitle" icon="sync_alt" :done="step > 2">
+            <div class="step-container">
+              <q-inner-loading :showing="loadingSubscription" class="z-top">
+                <q-spinner-dots size="50px" color="primary" />
+                <div class="q-mt-sm text-bold">Processando informações...</div>
+              </q-inner-loading>
+
+              <div v-show="!loadingSubscription">
+                <div v-if="type === 'credit'">
+                  <FormCreditCard v-model="dataPaymentCreditCard" />
+                </div>
+                <div v-else>
+                  <QrCodePix :subscriptionID="props.subscriptionId" />
+                </div>
+              </div>
+            </div>
+
+            <q-stepper-navigation>
+              <div class="row justify-between items-center q-mt-md">
+                <q-btn
+                  label="Voltar"
+                  flat
+                  color="grey-7"
+                  @click="back"
+                  no-caps
+                  icon="arrow_back"
+                />
+
+                <q-btn
+                  v-if="type === 'credit'"
+                  label="Confirmar Pagamento"
+                  color="primary"
+                  @click="sendDataCreditCard(dataPaymentCreditCard)"
+                  :loading="loadingSubscription"
                   unelevated
                   no-caps
-                  icon="qr_code_2"
-                  @click="changeType('pix')"
                 />
               </div>
             </q-stepper-navigation>
           </q-step>
-          <q-step
-            :name="2"
-            :title="stepTitle"
-            icon="attach_money"
-            color="red-10"
-            :done="step > 2"
-          >
-            <div
-              v-show="loadingSubscription"
-              class="flex justify-center q-pa-xl q-ma-xl"
-            >
-              <q-inner-loading
-                :showing="loadingSubscription"
-                label="Carregando os dados..."
-                label-class="black"
-                label-style="font-size: 1.1em"
-                color="primary"
-                size="50px"
-              />
-            </div>
-            <div v-show="!loadingSubscription">
-              <div v-if="type === 'credit'">
-                <FormCreditCard v-model="dataPaymentCreditCard" />
+
+          <q-step :name="3" title="Concluído" icon="verified" color="positive">
+            <div class="column items-center q-pa-xl text-center">
+              <div class="success-icon-wrapper q-mb-lg">
+                <q-icon name="check" size="60px" color="white" />
               </div>
-              <div v-else>
-                <QrCodePix :subscriptionID="props.subscriptionId" />
+
+              <div class="text-h4 text-weight-bolder text-grey-9">Sucesso!</div>
+              <div class="text-subtitle1 text-grey-7 q-my-md">
+                <span v-if="isTestSubscription">Teste gratuito ativado com sucesso e você pode desfrutar do sistema nos próximos 7 dias.</span>
+                <span v-else>Sua assinatura foi ativada com sucesso.</span>
               </div>
-            </div>
-            <q-stepper-navigation align="right">
+
               <q-btn
-                label="Fechar"
+                label="Começar a usar"
                 @click="close"
-                class="q-mr-sm"
-                color="red"
-                :loading="loadingSubscription"
-                flat
-                no-caps
-              />
-              <q-btn
-                label="Voltar"
-                @click="back"
-                class="q-mr-sm"
-                color="primary"
-                :loading="loadingSubscription"
-                outline
-                no-caps
-              />
-              <q-btn
-                v-if="type === 'credit'"
-                label="Efetuar pagamento"
-                color="green-7"
-                @click="sendDataCreditCard(dataPaymentCreditCard)"
-                :loading="loadingSubscription"
+                color="positive"
                 unelevated
-                no-caps
-              />
-            </q-stepper-navigation>
-          </q-step>
-          <q-step
-            :name="3"
-            title="Pagamento aprovado"
-            icon="attach_money"
-            color="red-10"
-            :done="step > 3"
-          >
-            <div class="flex justify-center q-mb-md">
-              <q-img
-                src="/icons/check.png"
-                style="height: 100px; width: 100px"
+                class="text-weight-bold q-mt-lg "
               />
             </div>
-            <div class="flex justify-center">
-              <span class="text-weight-bolder text-teal-6 text-h4"
-                >Assinatura renovada com sucesso!</span
-              >
-              <span
-                class="text-weight-bolder text-teal-6 text-subtitle2 text-center"
-                >Seu pagamento foi confirmado e o acesso continua
-                liberado!</span
-              >
-            </div>
-            <q-stepper-navigation align="right">
-              <q-btn
-                label="Fechar"
-                @click="close"
-                class="q-mr-sm"
-                color="red"
-                flat
-                no-caps
-              />
-            </q-stepper-navigation>
           </q-step>
         </q-stepper>
       </q-card-section>
     </q-card>
   </q-dialog>
 </template>
+
+<style scoped>
+.checkout-card {
+  width: 750px;
+  max-width: 95vw;
+  border-radius: 20px;
+  background: #fdfdfd;
+}
+
+.method-btn {
+  border-radius: 16px;
+  border-width: 2px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  text-transform: none;
+}
+
+.step-container {
+  min-height: 350px;
+  position: relative;
+}
+
+.success-icon-wrapper {
+  background: linear-gradient(135deg, #43a047 0%, #1b5e20 100%);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(67, 160, 71, 0.3);
+}
+
+.no-border {
+  border: none !important;
+}
+</style>

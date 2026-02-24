@@ -37,6 +37,7 @@ export interface Enterprise {
   created_by: string | null;
   code_financial: number | null;
   expired_date: string | null;
+  allow_test_subscription: number;
 }
 
 export interface ResultEnterprise {

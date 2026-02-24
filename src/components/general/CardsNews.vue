@@ -81,11 +81,8 @@ onMounted(() => {
           width="90%"
         />
 
-        <q-card-section
-          class="text-body1 q-pa-none q-py-md"
-          style="width: 90%"
-          v-html="card.content"
-        >
+        <q-card-section class="text-body1 q-pa-none q-py-md" style="width: 90%">
+          <div v-html="card.content"></div>
         </q-card-section>
       </q-card>
     </div>
