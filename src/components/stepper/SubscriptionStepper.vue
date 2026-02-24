@@ -395,7 +395,10 @@ onUnmounted(() => {
             </div>
 
             <div class="row q-col-gutter-md justify-center q-mb-lg">
-              <div class="col-12 " :class="allowTestSubscription ? 'col-sm-4' : 'col-sm-6'">
+              <div
+                class="col-12"
+                :class="allowTestSubscription ? 'col-sm-4' : 'col-sm-6'"
+              >
                 <q-btn
                   stack
                   outline
@@ -411,7 +414,10 @@ onUnmounted(() => {
                 </q-btn>
               </div>
 
-              <div class="col-12" :class="allowTestSubscription ? 'col-sm-4' : 'col-sm-6'">
+              <div
+                class="col-12"
+                :class="allowTestSubscription ? 'col-sm-4' : 'col-sm-6'"
+              >
                 <q-btn
                   stack
                   outline
@@ -427,7 +433,7 @@ onUnmounted(() => {
 
               <div class="col-12 col-sm-4">
                 <q-btn
-                v-if="allowTestSubscription"
+                  v-if="allowTestSubscription"
                   stack
                   outline
                   color="orange-7"
@@ -435,7 +441,9 @@ onUnmounted(() => {
                   @click="activeSubscriptionTest"
                 >
                   <q-icon name="qr_code_2" size="3rem" class="q-mb-md" />
-                  <div class="text-weight-bold text-subtitle1">Teste Gratuito</div>
+                  <div class="text-weight-bold text-subtitle1">
+                    Teste Gratuito
+                  </div>
                   <div class="text-caption">7 dias</div>
                 </q-btn>
               </div>
@@ -491,7 +499,10 @@ onUnmounted(() => {
 
               <div class="text-h4 text-weight-bolder text-grey-9">Sucesso!</div>
               <div class="text-subtitle1 text-grey-7 q-my-md">
-                <span v-if="isTestSubscription">Teste gratuito ativado com sucesso e você pode desfrutar do sistema nos próximos 7 dias.</span>
+                <span v-if="isTestSubscription"
+                  >Teste gratuito ativado com sucesso e você pode desfrutar do
+                  sistema nos próximos 7 dias.</span
+                >
                 <span v-else>Sua assinatura foi ativada com sucesso.</span>
               </div>
 
@@ -500,7 +511,7 @@ onUnmounted(() => {
                 @click="close"
                 color="positive"
                 unelevated
-                class="text-weight-bold q-mt-lg "
+                class="text-weight-bold q-mt-lg"
               />
             </div>
           </q-step>
