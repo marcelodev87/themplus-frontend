@@ -12,11 +12,13 @@ import {
 import { useMemberStore } from 'src/stores/member-store';
 import { useRoleStore } from 'src/stores/role-store';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+import { Image, CustomFile } from 'src/ts/interfaces/data/Geral';
 import { states } from 'src/utils/state';
 import { education } from 'src/utils/education';
 import { marital } from 'src/utils/marital';
 import { useMinistryStore } from 'src/stores/ministry-store';
 import { useRelationshipStore } from 'src/stores/relationship-store';
+import imageCompression from 'browser-image-compression';
 
 defineOptions({
   name: 'FormMember',
@@ -80,11 +82,15 @@ const dataMember = reactive({
   endDate: '' as string,
   reasonEndDate: '' as string,
   churchEndDate: '' as string,
+  imageUrl: null as string | null,
+  photoAdd: null as File | null,
+  photoDelete: false as boolean,
 });
 const selectedActive = ref<QuasarSelect<number>>({
   label: 'Ativo',
   value: 1,
 });
+const fileRef = ref();
 const selectedRole = ref<QuasarSelect<string>[]>([]);
 const selectedMinistry = ref<QuasarSelect<string>[]>([]);
 const selectedTypeMinistry = ref<QuasarSelect<string>>({
@@ -260,6 +266,10 @@ const checkData = (): { status: boolean; messages?: string[] } => {
 
   return { status: true };
 };
+const clearImages = (): void => {
+  dataMember.photoAdd = null;
+  dataMember.photoDelete = false;
+};
 const clear = (): void => {
   tab.value = 'individual';
   Object.assign(dataMember, {
@@ -289,6 +299,9 @@ const clear = (): void => {
     endDate: '',
     reasonEndDate: '',
     churchEndDate: '',
+    imageUrl: null,
+    photoAdd: null,
+    photoDelete: false,
   });
 
   selectedActive.value = {
@@ -329,6 +342,8 @@ const clear = (): void => {
   filterRole.value = '';
   filterRelationship.value = '';
   filterMember.value = '';
+
+  clearImages();
 };
 const getDataFamily = () => {
   if (!dataListFamily.value || dataListFamily.value.length === 0) {
@@ -374,6 +389,8 @@ const save = async () => {
       roles: selectedRole.value.map((role) => role.value),
       ministries: selectedMinistry.value.map((ministry) => ministry.value),
       family: getDataFamily(),
+      photoAdd: dataMember.photoAdd,
+      photoDelete: dataMember.photoDelete,
     });
     if (response?.status === 201) {
       if (props.dataPreRegistration) {
@@ -421,6 +438,8 @@ const update = async () => {
       roles: selectedRole.value.map((role) => role.value),
       ministries: selectedMinistry.value.map((ministry) => ministry.value),
       family: getDataFamily(),
+      photoAdd: dataMember.photoAdd,
+      photoDelete: dataMember.photoDelete,
     });
     if (response?.status === 200) {
       emit('update:open');
@@ -485,6 +504,7 @@ const mountData = () => {
       churchStartDate: props.dataEdit.church_start_date ?? '',
       endDate: props.dataEdit.end_date ?? '',
       churchEndDate: props.dataEdit.church_end_date ?? '',
+      imageUrl: props.dataEdit.image_url ?? null,
     });
 
     selectedNaturalness.value = {
@@ -649,7 +669,83 @@ const filterFnRelationships = (
     filterRelationship.value = needle;
   });
 };
+const addPhoto = async (file: File) => {
+  try {
+    const options = {
+      maxSizeMB: 3,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    const compressedFile = await imageCompression(file, options);
+    dataMember.photoAdd = compressedFile;
+  } catch (error) {
+    Notify.create({
+      message: 'Erro ao processar a imagem.',
+      type: 'negative',
+    });
+    console.error('Erro ao fazer a compressão', error);
+  }
+};
+const getImageUrl = (
+  file: File | CustomFile | Image | null | undefined | string
+): string => {
+  if (!file) {
+    return '/icons/image-empty.png';
+  }
 
+  if (typeof file === 'string') {
+    return file;
+  }
+
+  if ('image_url' in file && file.image_url) {
+    return file.url;
+  }
+
+  if (file instanceof File) {
+    return URL.createObjectURL(file);
+  }
+
+  if ('img' in file && file.img) {
+    return file.img;
+  }
+
+  return '/icons/image-empty.png';
+};
+const handleAvatarClick = () => {
+  if (dataMember.photoAdd) {
+    dataMember.photoAdd = null;
+    return;
+  }
+
+  if (dataMember.imageUrl) {
+    dataMember.photoDelete = true;
+    dataMember.imageUrl = null;
+    return;
+  }
+
+  fileRef.value.pickFiles();
+};
+const getAvatarUrl = () => {
+  if (dataMember.photoAdd) {
+    if (typeof dataMember.photoAdd === 'string') {
+      return dataMember.photoAdd;
+    }
+    return getImageUrl(dataMember.photoAdd);
+  }
+
+  if (dataMember.imageUrl) {
+    return getImageUrl(dataMember.imageUrl);
+  }
+
+  return '/icons/image-empty.png';
+};
+
+const getStyleTooltip = computed(() => {
+  if (dataMember.photoAdd) {
+    return 'text-red bg-grey-2 text-subtitle2';
+  }
+  return 'text-green bg-grey-2 text-subtitle2';
+});
 const formattedPhonePessoal = computed({
   get() {
     const phone = dataMember.phone.replace(/\D/g, '');
@@ -744,7 +840,6 @@ const optionsStatusFamily = computed(() => {
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
 });
-
 const isLoading = computed(() => {
   return (
     loading.value ||
@@ -838,6 +933,41 @@ watch(open, async () => {
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="individual">
             <q-form class="q-gutter-y-sm">
+              <div class="flex justify-center">
+                <q-avatar
+                  color="grey-4"
+                  size="200px"
+                  class="hover avatar-img cursor-pointer"
+                  @click="handleAvatarClick"
+                >
+                  <img
+                    :src="getAvatarUrl()"
+                    :class="
+                      getAvatarUrl() === '/icons/image-empty.png'
+                        ? 'avatar-placeholder'
+                        : ''
+                    "
+                    draggable="false"
+                  />
+                  <q-file
+                    ref="fileRef"
+                    v-model="dataMember.photoAdd"
+                    hide-input
+                    accept="image/*"
+                    :multiple="false"
+                    @change="addPhoto"
+                    class="transparent-file"
+                    style="display: none"
+                  />
+                  <q-tooltip :class="getStyleTooltip">
+                    {{
+                      dataMember.photoAdd || dataMember.imageUrl
+                        ? 'Remover foto'
+                        : 'Adicionar foto'
+                    }}
+                  </q-tooltip>
+                </q-avatar>
+              </div>
               <q-input
                 v-model="dataMember.name"
                 bg-color="white"

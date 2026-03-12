@@ -24,7 +24,12 @@ defineOptions({
 
 const { user } = storeToRefs(useAuthStore());
 const { listMember, loadingMember, filledData } = storeToRefs(useMemberStore());
-const { getMembers, deleteMember, updateActiveMember } = useMemberStore();
+const {
+  getMembers,
+  deleteMember,
+  updateActiveMember,
+  downloadCertificateBaptismo,
+} = useMemberStore();
 
 const router = useRouter();
 
@@ -163,6 +168,9 @@ const openFormMemberByPreRegistration = (data: PreRegistration): void => {
 const openPlansPage = async () => {
   await router.push({ name: 'admin-subscription' });
 };
+const downloadCertificate = async (memberID: string) => {
+  await downloadCertificateBaptismo(memberID);
+};
 
 const listMemberCurrent = computed(() => {
   const status = selectedStatusActive.value.value;
@@ -182,7 +190,6 @@ const listMemberCurrent = computed(() => {
 
   return filtered.slice(start, end);
 });
-
 const maxPages = computed(() => {
   return Math.ceil(listMember.value.length / rowsPerPage.value);
 });
@@ -200,6 +207,17 @@ const optionsActive = computed(() => [
     label: 'Inativos',
   },
 ]);
+const getInitials = (name: string) => {
+  if (!name) return '';
+
+  const parts = name.split(' ');
+
+  return parts
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase();
+};
 
 watch(
   filledData,
@@ -309,26 +327,17 @@ onMounted(async () => {
         :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"
       >
         <q-table
+          grid
           :rows="loadingMember ? [] : listMemberCurrent"
           :columns="columnsMember"
           :loading="loadingMember"
           :filter="filterMember"
-          flat
-          bordered
-          dense
           row-key="index"
           no-data-label="Nenhum membro para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
         >
-          <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <span style="font-size: 13px">{{ col.label }}</span>
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:top>
+        <template v-slot:top>
             <div
               :class="!$q.screen.lt.md ? 'row full-width' : 'column full-width'"
             >
@@ -380,92 +389,129 @@ onMounted(async () => {
               </q-expansion-item>
             </div>
           </template>
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="name" :props="props" class="text-left">
-                <span class="text-subtitle2">{{ props.row.name }}</span>
-              </q-td>
-              <q-td key="action" :props="props">
-                <q-btn
-                  v-show="
-                    user &&
-                    subscripitonName !== 'free' &&
-                    (user?.enterprise_id === user?.view_enterprise_id
-                      ? true
-                      : false) &&
-                    props.row.enterprise_id === user?.enterprise_id
-                  "
-                  @click="
-                    setActive(props.row.active === 1 ? 0 : 1, props.row.id)
-                  "
-                  size="sm"
-                  flat
-                  round
-                  :color="props.row.active ? 'red' : 'green'"
-                  :icon="props.row.active ? 'block' : 'check'"
-                >
-                  <q-tooltip>
-                    {{ props.row.active ? 'Inativar' : 'Ativar' }}
-                  </q-tooltip>
-                </q-btn>
-                <q-btn
-                  @click="openMemberFamilyInfo(props.row)"
-                  v-show="
-                    user?.enterprise_id === user?.view_enterprise_id &&
-                    props.row.family?.length > 0
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="secondary"
-                  icon="group"
-                >
-                  <q-tooltip>Família</q-tooltip>
-                </q-btn>
-                <q-btn
-                  @click="openMemberMovementInfo(props.row)"
-                  v-show="user?.enterprise_id === user?.view_enterprise_id"
-                  size="sm"
-                  flat
-                  round
-                  color="primary"
-                  icon="attach_money"
-                >
-                  <q-tooltip>Contribuições</q-tooltip>
-                </q-btn>
-                <q-btn
-                  @click="handleEdit(props.row)"
-                  v-show="
-                    user?.enterprise_id === user?.view_enterprise_id &&
-                    subscripitonName !== 'free'
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                />
-                <q-btn
-                  @click="openConfirmAction(props.row.id)"
-                  v-show="
-                    user?.enterprise_id === user?.view_enterprise_id &&
-                    user?.position === 'admin'
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="negative"
-                  icon="delete"
-                />
-              </q-td>
-            </q-tr>
-          </template>
-          <template v-slot:bottom>
-            <Paginate
-              v-model="currentPage"
-              :max="maxPages"
-              :length="listMember.length"
-            />
+          <template v-slot:item="props">
+            <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+              <q-card flat bordered class="q-py-sm">
+                <q-item>
+                  <q-item-section avatar>
+                    <q-avatar size="50px" color="primary" text-color="white">
+                      <img
+                        v-if="props.row.image_url"
+                        :src="props.row.image_url"
+                      />
+                      <span v-else>{{ getInitials(props.row.name) }}</span>
+                    </q-avatar>
+                  </q-item-section>
+
+                  <q-item-section>
+                    <q-item-label class="text-bold text-subtitle1">
+                      {{ props.row.name }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      <q-badge
+                        :color="props.row.active ? 'positive' : 'negative'"
+                        rounded
+                        class="q-mr-xs"
+                      />
+                      {{ props.row.active ? 'Ativo' : 'Inativo' }}
+                    </q-item-label>
+                  </q-item-section>
+
+                  <q-item-section side>
+                    <div class="row items-center">
+                      <q-btn
+                        @click="handleEdit(props.row)"
+                        v-show="
+                          user?.enterprise_id === user?.view_enterprise_id &&
+                          subscripitonName !== 'free'
+                        "
+                        flat
+                        round
+                        size="sm"
+                        icon="edit"
+                        color="grey-7"
+                      />
+
+                      <q-btn flat round size="sm" icon="more_vert">
+                        <q-menu auto-close cover>
+                          <q-list style="min-width: 150px">
+                            <q-item
+                              clickable
+                              @click="downloadCertificate(props.row.id)"
+                              v-if="
+                                user?.enterprise_id ===
+                                  user?.view_enterprise_id &&
+                                props.row.date_baptismo
+                              "
+                            >
+                              <q-item-section avatar
+                                ><q-icon name="download" color="secondary"
+                              /></q-item-section>
+                              <q-item-section>Certificado</q-item-section>
+                            </q-item>
+
+                            <q-item
+                              clickable
+                              @click="
+                                setActive(
+                                  props.row.active === 1 ? 0 : 1,
+                                  props.row.id
+                                )
+                              "
+                              v-if="user && subscripitonName !== 'free'"
+                            >
+                              <q-item-section avatar>
+                                <q-icon
+                                  :name="props.row.active ? 'block' : 'check'"
+                                  :color="props.row.active ? 'red' : 'green'"
+                                />
+                              </q-item-section>
+                              <q-item-section>{{
+                                props.row.active ? 'Inativar' : 'Ativar'
+                              }}</q-item-section>
+                            </q-item>
+
+                            <q-item
+                              clickable
+                              @click="openMemberFamilyInfo(props.row)"
+                              v-if="props.row.family?.length > 0"
+                            >
+                              <q-item-section avatar
+                                ><q-icon name="group" color="secondary"
+                              /></q-item-section>
+                              <q-item-section>Família</q-item-section>
+                            </q-item>
+
+                            <q-item
+                              clickable
+                              @click="openMemberMovementInfo(props.row)"
+                            >
+                              <q-item-section avatar
+                                ><q-icon name="attach_money" color="primary"
+                              /></q-item-section>
+                              <q-item-section>Contribuições</q-item-section>
+                            </q-item>
+
+                            <q-separator />
+
+                            <q-item
+                              clickable
+                              @click="openConfirmAction(props.row.id)"
+                              v-if="user?.position === 'admin'"
+                            >
+                              <q-item-section avatar
+                                ><q-icon name="delete" color="negative"
+                              /></q-item-section>
+                              <q-item-section>Excluir</q-item-section>
+                            </q-item>
+                          </q-list>
+                        </q-menu>
+                      </q-btn>
+                    </div>
+                  </q-item-section>
+                </q-item>
+              </q-card>
+            </div>
           </template>
         </q-table>
         <FormMember

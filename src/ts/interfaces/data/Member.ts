@@ -34,6 +34,7 @@ export interface MemberChurch {
   church_end_date: string | null;
   roles: Role[];
   ministries: Ministry[];
+  image_url: string | null;
   family: {
     pivot: {
       member_id: string;
@@ -73,6 +74,8 @@ export interface DataMemberChurch {
   churchEndDate: string | null;
   roles: string[];
   ministries: string[];
+  photoAdd: File | null;
+  photoDelete: boolean;
   family:
     | {
         memberID: string;

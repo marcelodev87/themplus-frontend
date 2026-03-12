@@ -14,6 +14,7 @@ import {
   getConfigPreRegistrationService,
   deleteRelationshipService,
   showMemberService,
+  downloadCertificateBaptismoService,
 } from 'src/services/member-service';
 import {
   DataMemberChurch,
@@ -89,6 +90,16 @@ export const useMemberStore = defineStore('member', {
           updateNotifications(response.data.notifications);
           this.setFilledData(response.data.filled_data);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async downloadCertificateBaptismo(memberID: string) {
+      try {
+        this.setLoading(true);
+        await downloadCertificateBaptismoService(memberID);
       } catch (error) {
         this.createError(error);
       } finally {
