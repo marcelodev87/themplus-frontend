@@ -17,6 +17,7 @@ import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
 // import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
 import MemberFamilyInfo from 'src/components/info/MemberFamilyInfo.vue';
 import ManagePreRegistration from 'src/components/manage/ManagePreRegistration.vue';
+import { Notify } from 'quasar';
 
 defineOptions({
   name: 'Member',
@@ -29,6 +30,7 @@ const {
   deleteMember,
   updateActiveMember,
   downloadCertificateBaptismo,
+  downloadWalletMembers,
 } = useMemberStore();
 
 const router = useRouter();
@@ -37,6 +39,8 @@ const subscripitonName = computed(
   () => user.value?.enterprise.subscription.name
 );
 
+const selectedMemberIds = ref<string[]>([]);
+const startDownloadWallet = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
@@ -190,9 +194,6 @@ const listMemberCurrent = computed(() => {
 
   return filtered.slice(start, end);
 });
-const maxPages = computed(() => {
-  return Math.ceil(listMember.value.length / rowsPerPage.value);
-});
 const optionsActive = computed(() => [
   {
     value: 'all',
@@ -218,7 +219,33 @@ const getInitials = (name: string) => {
     .join('')
     .toUpperCase();
 };
+const changeDownloadWallet = () => {
+  if (!startDownloadWallet.value) {
+    Notify.create({
+      message: 'Selecione os membros para baixar a carteira',
+      color: 'primary',
+      timeout: 3000,
+    });
+  }
+  startDownloadWallet.value = !startDownloadWallet.value;
+};
+const downloadWallet = async () => {
+  if (selectedMemberIds.value.length === 0) {
+    Notify.create({
+      message: 'Nenhum membro selecionado para baixar a carteira',
+      color: 'negative',
+      timeout: 3000,
+    });
+    return;
+  }
+  await downloadWalletMembers(selectedMemberIds.value);
+  selectedMemberIds.value = [];
+  startDownloadWallet.value = false;
+};
 
+watch(startDownloadWallet, (val) => {
+  if (!val) selectedMemberIds.value = [];
+});
 watch(
   filledData,
   () => {
@@ -337,11 +364,81 @@ onMounted(async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
         >
-        <template v-slot:top>
+          <template v-slot:top>
             <div
               :class="!$q.screen.lt.md ? 'row full-width' : 'column full-width'"
             >
-              <span class="text-subtitle2">Lista de membros</span>
+              <q-btn
+                v-show="
+                  user?.enterprise_id === user?.view_enterprise_id &&
+                  !startDownloadWallet
+                "
+                @click="changeDownloadWallet"
+                icon="download"
+                class="q-mr-sm"
+                unelevated
+                no-caps
+                size="md"
+                color="primary"
+                :disable="loadingMember"
+                round
+              >
+                <q-tooltip>Download Carteira de Membro</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="
+                  user?.enterprise_id === user?.view_enterprise_id &&
+                  startDownloadWallet
+                "
+                @click="downloadWallet"
+                icon="download"
+                class="q-mr-sm"
+                unelevated
+                no-caps
+                size="md"
+                color="primary"
+                round
+                :disable="selectedMemberIds.length === 0"
+                :loading="loadingMember"
+              >
+                <q-tooltip>Gerar carteiras</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="
+                  user?.enterprise_id === user?.view_enterprise_id &&
+                  startDownloadWallet &&
+                  selectedMemberIds.length > 0
+                "
+                @click="selectedMemberIds = []"
+                icon="clear_all"
+                class="q-mr-sm"
+                unelevated
+                no-caps
+                size="md"
+                color="orange"
+                round
+                :disable="loadingMember"
+              >
+                <q-tooltip>Limpar seleção</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-show="
+                  user?.enterprise_id === user?.view_enterprise_id &&
+                  startDownloadWallet
+                "
+                @click="startDownloadWallet = false"
+                icon="close"
+                class="q-mr-sm"
+                unelevated
+                no-caps
+                size="md"
+                color="red"
+                :disable="loadingMember"
+                round
+              >
+                <q-tooltip>Cancelar</q-tooltip>
+              </q-btn>
+
               <q-space />
               <div v-if="!$q.screen.lt.sm" class="row">
                 <q-select
@@ -419,11 +516,19 @@ onMounted(async () => {
 
                   <q-item-section side>
                     <div class="row items-center">
+                      <q-checkbox
+                        v-if="startDownloadWallet"
+                        v-model="selectedMemberIds"
+                        :val="props.row.id"
+                        color="primary"
+                        class="q-mr-sm"
+                      />
                       <q-btn
                         @click="handleEdit(props.row)"
                         v-show="
                           user?.enterprise_id === user?.view_enterprise_id &&
-                          subscripitonName !== 'free'
+                          subscripitonName !== 'free' &&
+                          !startDownloadWallet
                         "
                         flat
                         round
@@ -432,7 +537,13 @@ onMounted(async () => {
                         color="grey-7"
                       />
 
-                      <q-btn flat round size="sm" icon="more_vert">
+                      <q-btn
+                        flat
+                        round
+                        size="sm"
+                        icon="more_vert"
+                        v-show="!startDownloadWallet"
+                      >
                         <q-menu auto-close cover>
                           <q-list style="min-width: 150px">
                             <q-item

@@ -15,6 +15,7 @@ import {
   deleteRelationshipService,
   showMemberService,
   downloadCertificateBaptismoService,
+  downloadWalletMembersService,
 } from 'src/services/member-service';
 import {
   DataMemberChurch,
@@ -100,6 +101,16 @@ export const useMemberStore = defineStore('member', {
       try {
         this.setLoading(true);
         await downloadCertificateBaptismoService(memberID);
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async downloadWalletMembers(memberIDs: string[]) {
+      try {
+        this.setLoading(true);
+        await downloadWalletMembersService(memberIDs);
       } catch (error) {
         this.createError(error);
       } finally {

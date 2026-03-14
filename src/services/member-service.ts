@@ -321,3 +321,30 @@ export const downloadCertificateBaptismoService = async (memberID: string) => {
     createError(error);
   }
 };
+
+export const downloadWalletMembersService = async (memberIds: string[]) => {
+  try {
+    const response = await api.post(
+      `${baseUrl}/wallet-member`,
+      { memberIds },
+      {
+        responseType: 'blob',
+      }
+    );
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+
+    const url2 = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url2;
+    link.setAttribute('download', `wallet_member_${timestamp}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    createError(error);
+  }
+};
