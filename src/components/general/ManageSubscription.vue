@@ -36,7 +36,6 @@ const fetchSubscription = async () => {
   const response = await getSubscriptionInfo();
   if (response?.status === 200) {
     dataSubscription.value = response.data.subscription;
-    console.log('dataSubscription.value', dataSubscription.value);
   }
 };
 const fetchCoupons = async () => {
@@ -60,8 +59,6 @@ watch(tab, async () => {
     await fetchSubscription();
   } else if (tab.value === 'coupon') {
     await fetchCoupons();
-  } else {
-    console.log('capacity');
   }
 });
 watch(

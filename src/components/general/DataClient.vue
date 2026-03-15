@@ -179,7 +179,6 @@ const getFileType = (url: string) => {
 };
 
 const openPreview = (url: string) => {
-  console.log('url', url);
   const type = getFileType(url);
 
   if (!type) {
