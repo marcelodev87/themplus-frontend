@@ -1,7 +1,9 @@
 const { configure } = require('quasar/wrappers');
 const dotenv = require('dotenv');
 
-dotenv.config();
+const envFile = `.env.${process.env.APP_ENV || 'local'}`
+
+dotenv.config({ path: envFile })
 
 module.exports = configure((/* ctx */) => ({
   boot: ['axios', 'pinia'],
