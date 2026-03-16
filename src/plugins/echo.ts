@@ -9,10 +9,10 @@ const echo = new Echo({
   wsHost: import.meta.env.VITE_REVERB_HOST,
   wsPort: Number(import.meta.env.VITE_REVERB_WS_PORT),
   wssPort: Number(import.meta.env.VITE_REVERB_WSS_PORT),
-  forceTLS: true, // Mantém true para usar WSS
-  wsPath: '/ws', // Deve bater com o 'location /ws' do Nginx
+  forceTLS: true,
   enabledTransports: ['ws', 'wss'],
   disableStats: true,
+  wsPath: '/ws',
 });
 
 export default echo;
