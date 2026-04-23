@@ -1304,7 +1304,7 @@ watch(open, async () => {
                   <q-icon name="arrow_right" color="black" size="20px" />
                 </template>
               </q-select>
-              <span ></span>
+              <span></span>
               <q-select
                 v-model="selectedRole"
                 :options="optionsRoles"
@@ -1325,7 +1325,13 @@ watch(open, async () => {
                 <template v-slot:prepend>
                   <q-icon name="arrow_right" color="black" size="20px" />
                 </template>
-                <q-tooltip v-if="props.dataPreRegistration && props.dataPreRegistration.role">Cargo informado no formulário: {{ props.dataPreRegistration.role }}</q-tooltip>
+                <q-tooltip
+                  v-if="
+                    props.dataPreRegistration && props.dataPreRegistration.role
+                  "
+                  >Cargo informado no formulário:
+                  {{ props.dataPreRegistration.role }}</q-tooltip
+                >
               </q-select>
               <q-input
                 v-model="dataMember.startDate"
