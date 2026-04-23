@@ -13,8 +13,8 @@
     "dev:dev": "APP_ENV=development quasar dev",
     "dev:prod": "APP_ENV=production quasar dev",
     "build": "quasar build",
-    "build:dev": "quasar build -m spa -- --mode development",
-    "build:prod": "quasar build -m spa -- --mode production",
+    "build:dev": "APP_ENV=development quasar build -m spa",
+    "build:prod": "APP_ENV=production quasar build -m spa",
     "format": "prettier --write \"src/**/*.{js,vue,css,html,ts}\""
   },
   "dependencies": {
