@@ -179,20 +179,15 @@ const downloadCertificate = async (memberID: string) => {
 const listMemberCurrent = computed(() => {
   const status = selectedStatusActive.value.value;
 
-  let filtered = listMember.value;
-
-  if (status !== 'all') {
-    filtered = listMember.value.filter((member) => {
-      if (status === 'active') return member.active === 1;
-      if (status === 'inactive') return member.active === 0;
-      return true;
-    });
+  if (status === 'all') {
+    return listMember.value;
   }
 
-  const start = (currentPage.value - 1) * rowsPerPage.value;
-  const end = start + rowsPerPage.value;
-
-  return filtered.slice(start, end);
+  return listMember.value.filter((member) => {
+    if (status === 'active') return member.active === 1;
+    if (status === 'inactive') return member.active === 0;
+    return true;
+  });
 });
 const optionsActive = computed(() => [
   {
