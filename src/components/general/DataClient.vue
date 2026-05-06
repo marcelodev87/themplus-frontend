@@ -726,39 +726,52 @@ watch(
           <q-tr
             :props="props"
             style="height: 28px"
-            :class="props.row.type === 'entrada' ? 'text-green' : 'text-red'"
+            :class="[
+              props.row.category?.name === 'Transferência'
+                ? 'text-grey-6 bg-grey-1'
+                : props.row.type === 'entrada'
+                  ? 'text-green'
+                  : 'text-red',
+            ]"
           >
             <q-td key="name" :props="props" class="text-left">
               <span class="text-subtitle2">{{ props.row.account.name }}</span>
             </q-td>
+
             <q-td key="account_number" :props="props" class="text-left">
               <span class="text-subtitle2">{{
                 props.row.account.account_number
               }}</span>
             </q-td>
+
             <q-td key="agency_number" :props="props" class="text-left">
               <span class="text-subtitle2">{{
                 props.row.account.agency_number
               }}</span>
             </q-td>
+
             <q-td key="category" :props="props" class="text-left">
-              <span class="text-subtitle2">{{ props.row.category.name }}</span>
+              <span class="text-subtitle2">{{ props.row.category?.name }}</span>
             </q-td>
+
             <q-td key="value" :props="props" class="text-left">
               <span class="text-subtitle2">{{
-                `${formatCurrencyBRL(props.row.value)}`
+                formatCurrencyBRL(props.row.value)
               }}</span>
             </q-td>
+
             <q-td key="date_movement" :props="props" class="text-left">
               <span class="text-subtitle2">{{
                 formatDate(props.row.date_movement)
               }}</span>
             </q-td>
+
             <q-td key="description" :props="props" class="text-left">
               <span class="text-subtitle2">{{ props.row.description }}</span>
             </q-td>
+
             <q-td
-              @click="openPreview(props.row.receipt)"
+              @click="props.row.receipt ? openPreview(props.row.receipt) : null"
               key="receipt"
               :props="props"
               class="text-left"
@@ -766,13 +779,25 @@ watch(
             >
               <q-icon v-if="props.row.receipt" name="attach_file" size="20px" />
             </q-td>
+
             <q-td key="observation" :props="props">
-              <q-icon name="edit" color="black" v-show="!finalizedReport" />
+              <q-icon
+                name="edit"
+                color="black"
+                v-show="
+                  !finalizedReport &&
+                  props.row.category?.name !== 'Transferência'
+                "
+              />
               <span class="text-subtitle2">{{ props.row.observation }}</span>
+
               <q-popup-edit
                 v-model="props.row.observation"
                 title="Escreva uma observação"
-                v-if="!finalizedReport"
+                v-if="
+                  !finalizedReport &&
+                  props.row.category?.name !== 'Transferência'
+                "
                 auto-save
                 v-slot="scope"
               >
@@ -784,31 +809,41 @@ watch(
                   style="min-width: 500px"
                   @keyup.enter="scope.set"
                   maxlength="400"
-                >
-                </q-input>
+                />
               </q-popup-edit>
             </q-td>
+
             <q-td key="action" :props="props">
-              <q-btn
-                @click="handleEdit(props.row)"
-                v-show="permissions?.allow_edit_movement && !finalizedReport"
-                size="sm"
-                flat
-                round
-                color="black"
-                icon="edit"
-                :disable="loadingReport || loadingMovement"
-              />
-              <q-btn
-                @click="exclude(props.row.id)"
-                v-show="permissions?.allow_delete_movement && !finalizedReport"
-                size="sm"
-                flat
-                round
-                color="red"
-                icon="delete"
-                :disable="loadingReport || loadingMovement"
-              />
+              <div
+                class="row no-wrap q-gutter-x-xs"
+                v-if="props.row.category?.name !== 'Transferência'"
+              >
+                <q-btn
+                  @click="handleEdit(props.row)"
+                  v-show="permissions?.allow_edit_movement && !finalizedReport"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                  :disable="loadingReport || loadingMovement"
+                />
+                <q-btn
+                  @click="exclude(props.row.id)"
+                  v-show="
+                    permissions?.allow_delete_movement && !finalizedReport
+                  "
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="delete"
+                  :disable="loadingReport || loadingMovement"
+                />
+              </div>
+              <q-icon v-else name="lock" color="grey-5" size="xs">
+                <q-tooltip>Transferências não podem ser editadas</q-tooltip>
+              </q-icon>
             </q-td>
           </q-tr>
         </template>

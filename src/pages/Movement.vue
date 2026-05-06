@@ -200,10 +200,12 @@ const dataMovement = computed(() => {
   let valueOut = 0;
 
   listMovement.value.forEach((item) => {
-    if (item.type === 'entrada') {
-      valueEntry += Number(item.value);
-    } else {
-      valueOut += Number(item.value);
+    if (item.category?.name !== 'Transferência') {
+      if (item.type === 'entrada') {
+        valueEntry += Number(item.value);
+      } else {
+        valueOut += Number(item.value);
+      }
     }
   });
 
@@ -876,7 +878,11 @@ onMounted(async () => {
                 <div class="row items-center no-wrap">
                   <div
                     :class="
-                      props.row.type === 'entrada' ? 'bg-green' : 'bg-red'
+                      props.row.category?.name === 'Transferência'
+                        ? 'bg-grey-4'
+                        : props.row.type === 'entrada'
+                          ? 'bg-green'
+                          : 'bg-red'
                     "
                     style="width: 4px; height: 18px; border-radius: 10px"
                     class="q-mr-sm"
