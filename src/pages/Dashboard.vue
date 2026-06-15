@@ -61,7 +61,9 @@ const columnsCategoriesDashboard = ref<QuasarTable[]>([
     sortable: true,
   },
 ]);
-const { sortRows: sortDashboardRows } = useSortMethod(columnsCategoriesDashboard.value);
+const { sortRows: sortDashboardRows } = useSortMethod(
+  columnsCategoriesDashboard.value
+);
 const optionsFilters = reactive<QuasarSelect<string>[]>([
   {
     label: 'Filtrar por mês',

@@ -3,8 +3,8 @@
 import { computed, reactive } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { PreRegistration } from 'src/ts/interfaces/data/Member';
-import TitlePage from '../shared/TitlePage.vue';
 import { useSortMethod } from 'src/composables/useTableSort';
+import TitlePage from '../shared/TitlePage.vue';
 
 defineOptions({
   name: 'RelationshipDetails',
@@ -35,7 +35,9 @@ const columnsRelationshipDetails = reactive<QuasarTable[]>([
   },
 ]);
 
-const { sortRows: sortRelationshipDetailsRows } = useSortMethod(columnsRelationshipDetails);
+const { sortRows: sortRelationshipDetailsRows } = useSortMethod(
+  columnsRelationshipDetails
+);
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),

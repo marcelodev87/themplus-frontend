@@ -6,8 +6,8 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useFinancialStore } from 'src/stores/financial-store';
 import { storeToRefs } from 'pinia';
 import imageCompression from 'browser-image-compression';
-import Paginate from '../general/Paginate.vue';
 import { useSortMethod } from 'src/composables/useTableSort';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'FormFileFinancial',
@@ -305,7 +305,9 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
           column-sort-order="da"
-          :sort-method="props.mode === 'client' ? sortFileClientRows : sortFileCounterRows"
+          :sort-method="
+            props.mode === 'client' ? sortFileClientRows : sortFileCounterRows
+          "
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

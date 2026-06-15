@@ -8,8 +8,8 @@ import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
 import FormEntry from 'src/components/forms/FormEntry.vue';
-import TitlePage from '../shared/TitlePage.vue';
 import { useSortMethod } from 'src/composables/useTableSort';
+import TitlePage from '../shared/TitlePage.vue';
 
 defineOptions({
   name: 'MemberMovementInfo',
@@ -121,7 +121,9 @@ const columnsMemberMovement = reactive<QuasarTable[]>([
       'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
 ]);
-const { sortRows: sortMemberMovementRows } = useSortMethod(columnsMemberMovement);
+const { sortRows: sortMemberMovementRows } = useSortMethod(
+  columnsMemberMovement
+);
 const clear = (): void => {
   selectedType.value = {
     label: 'Todos os tipos',

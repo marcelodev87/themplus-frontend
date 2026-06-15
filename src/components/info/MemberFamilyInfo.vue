@@ -6,10 +6,10 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { MemberChurch } from 'src/ts/interfaces/data/Member';
 import { useRelationshipStore } from 'src/stores/relationship-store';
 import { useMemberStore } from 'src/stores/member-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 import TitlePage from '../shared/TitlePage.vue';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import MemberFamilyDetails from './MemberFamilyDetails.vue';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'MemberFamilyInfo',

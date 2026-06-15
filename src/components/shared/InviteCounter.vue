@@ -5,9 +5,9 @@ import { storeToRefs } from 'pinia';
 import { useOrderStore } from 'src/stores/order-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useFinancialStore } from 'src/stores/financial-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 import TitlePage from './TitlePage.vue';
 import Paginate from '../general/Paginate.vue';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'InviteCounter',

@@ -74,7 +74,7 @@ const mountDashboard = () => {
         show: true,
         tick: {
           count: 10,
-          format: (d) =>
+          format: (d: number) =>
             d.toLocaleString('pt-BR', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -136,7 +136,7 @@ const mountDashboard = () => {
         show: true,
         tick: {
           values: yQuantityTicks,
-          format: (d) => d,
+          format: (d: number) => d,
         },
         min: 0,
         padding: {

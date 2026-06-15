@@ -8,11 +8,11 @@ import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useMovementStore } from 'src/stores/movement-store';
 import { Movement } from 'src/ts/interfaces/data/Movement';
 import FormFileFinancial from 'src/components/forms/FormFileFinancial.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import DataEnterprise from '../info/DataEnterprise.vue';
 import FormEntry from '../forms/FormEntry.vue';
 import FormOut from '../forms/FormOut.vue';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'DataClient',
@@ -909,7 +909,7 @@ watch(
       </div>
     </div>
     <q-dialog v-model="preview.open" maximized>
-      <q-card style="width: 90%; max-width: 500px; max-height:400px">
+      <q-card style="width: 90%; max-width: 500px; max-height: 400px">
         <q-bar>
           <div>Pré-visualização</div>
           <q-space />

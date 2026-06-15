@@ -5,10 +5,10 @@ import { storeToRefs } from 'pinia';
 import { useCategoryStore } from 'src/stores/category-store';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { CategoryPanel } from 'src/ts/interfaces/data/Category';
+import { useSortMethod } from 'src/composables/useTableSort';
 import TitlePage from '../shared/TitlePage.vue';
 import FormCategoryCode from '../forms/FormCategoryCode.vue';
 import Paginate from './Paginate.vue';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'ManageCategory',

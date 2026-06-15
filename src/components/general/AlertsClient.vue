@@ -5,8 +5,8 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useAlertStore } from 'src/stores/alert-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import Paginate from './Paginate.vue';
 import { useSortMethod } from 'src/composables/useTableSort';
+import Paginate from './Paginate.vue';
 
 defineOptions({
   name: 'AlertsClient',

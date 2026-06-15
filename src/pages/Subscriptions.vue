@@ -69,7 +69,13 @@ const statusColor = computed(() => {
 });
 
 const columnsSubscriptions = reactive<QuasarTable[]>([
-  { name: 'name', label: 'Assinatura', field: 'name', align: 'center', sortable: true },
+  {
+    name: 'name',
+    label: 'Assinatura',
+    field: 'name',
+    align: 'center',
+    sortable: true,
+  },
   {
     name: 'movement',
     label: 'Movimentações e Agendamentos',
@@ -98,7 +104,13 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
     align: 'center',
     sortable: true,
   },
-  { name: 'price', label: 'Valor', field: 'price', align: 'center', sortable: true },
+  {
+    name: 'price',
+    label: 'Valor',
+    field: 'price',
+    align: 'center',
+    sortable: true,
+  },
   { name: 'actions', label: 'Ações', field: 'actions', align: 'center' },
 ]);
 const { sortRows: sortSubscriptionRows } = useSortMethod(columnsSubscriptions);

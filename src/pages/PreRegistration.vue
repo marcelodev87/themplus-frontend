@@ -64,7 +64,9 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
     sortable: true,
   },
 ]);
-const { sortRows: sortPreRegistrationRows } = useSortMethod(columnsPreRegistration);
+const { sortRows: sortPreRegistrationRows } = useSortMethod(
+  columnsPreRegistration
+);
 const selectedNaturalness = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,

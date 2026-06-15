@@ -8,9 +8,9 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import { DataUserByCounter, User } from 'src/ts/interfaces/data/User';
 import { Notify } from 'quasar';
+import { useSortMethod } from 'src/composables/useTableSort';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import Paginate from '../general/Paginate.vue';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'FormManageUsers',

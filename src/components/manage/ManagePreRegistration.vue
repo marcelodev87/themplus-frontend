@@ -8,9 +8,9 @@ import { useMemberStore } from 'src/stores/member-store';
 import { PreRegistration } from 'src/ts/interfaces/data/Member';
 import { Notify } from 'quasar';
 import { updateConfigPreRegistration } from 'src/services/member-service';
+import { useSortMethod } from 'src/composables/useTableSort';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import RelationshipDetails from '../info/RelationshipDetails.vue';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'ManagePreRegistration',
