@@ -8,6 +8,7 @@ import { CategoryPanel } from 'src/ts/interfaces/data/Category';
 import TitlePage from '../shared/TitlePage.vue';
 import FormCategoryCode from '../forms/FormCategoryCode.vue';
 import Paginate from './Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'ManageCategory',
@@ -70,30 +71,35 @@ const columnsCategoryPanel = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'default',
     label: 'Tipo',
     field: 'default',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'organization_name',
     label: 'Organização',
     field: 'organization_name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'code_debt',
     label: 'Código débito',
     field: 'code_debt',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'code_credit',
     label: 'Código crédito',
     field: 'code_credit',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -102,6 +108,7 @@ const columnsCategoryPanel = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortCategoryPanelRows } = useSortMethod(columnsCategoryPanel);
 
 const clear = (): void => {
   selectedCategory.value = null;
@@ -193,6 +200,8 @@ onMounted(async () => {
           dense
           row-key="index"
           no-data-label="Nenhuma categoria para mostrar"
+          column-sort-order="da"
+          :sort-method="sortCategoryPanelRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

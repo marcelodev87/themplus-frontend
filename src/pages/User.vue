@@ -10,6 +10,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { User } from 'src/ts/interfaces/data/User';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import Paginate from 'src/components/general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'User',
@@ -42,24 +43,28 @@ const columnsUser = reactive<QuasarTable[]>([
     label: 'Telefone',
     field: 'phone',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'position',
     label: 'Cargo',
     field: 'position',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'department',
     label: 'Departamento',
     field: 'departments.name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'active',
     label: 'Ativo',
     field: 'active',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -68,6 +73,7 @@ const columnsUser = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortUserRows } = useSortMethod(columnsUser);
 
 const resetPage = (): void => {
   currentPage.value = 1;
@@ -312,6 +318,8 @@ onMounted(async () => {
           row-key="index"
           hide-pagination
           :rows-per-page-options="[0]"
+          column-sort-order="da"
+          :sort-method="sortUserRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2 text-grey-8">

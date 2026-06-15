@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useAlertStore } from 'src/stores/alert-store';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import Paginate from './Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'AlertsClient',
@@ -39,8 +40,10 @@ const columnsCategory = reactive<QuasarTable[]>([
     label: 'Alerta',
     field: 'alert.description',
     align: 'left',
+    sortable: true,
   },
 ]);
+const { sortRows: sortAlertRows } = useSortMethod(columnsCategory);
 
 const open = computed({
   get: () => props.open,
@@ -129,6 +132,8 @@ watch(open, async () => {
             no-data-label="Nenhuma categoria para mostrar"
             virtual-scroll
             :rows-per-page-options="[rowsPerPage]"
+            column-sort-order="da"
+            :sort-method="sortAlertRows"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-2">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { reactive } from 'vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
@@ -25,24 +26,28 @@ const columnsCoupon = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'type',
     label: 'Tipo de cupom',
     field: 'type',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'discount',
     label: 'Desconto',
     field: 'discount',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'date_expiration',
     label: 'Data de expiração',
     field: 'date_expiration',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -51,6 +56,8 @@ const columnsCoupon = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+
+const { sortRows: sortCouponRows } = useSortMethod(columnsCoupon);
 
 // const clear = (): void => {
 //   nameCoupon.value = '';
@@ -78,6 +85,8 @@ const columnsCoupon = reactive<QuasarTable[]>([
         no-data-label="Nenhuma cupom para mostrar"
         virtual-scroll
         :rows-per-page-options="[20]"
+        column-sort-order="da"
+        :sort-method="sortCouponRows"
       >
         <template v-slot:header="props">
           <q-tr :props="props" class="bg-grey-2">

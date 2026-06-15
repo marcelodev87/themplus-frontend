@@ -20,6 +20,7 @@ import ManageCategory from 'src/components/general/ManageCategory.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { Bond } from 'src/ts/interfaces/data/Bond';
 import Paginate from 'src/components/general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Bond',
@@ -76,18 +77,21 @@ const columnsBond = reactive<QuasarTable[]>([
     label: 'CNPJ',
     field: 'cnpj',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'cpf',
     label: 'CPF',
     field: 'cpf',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'no_verified',
     label: 'Entregas não analisadas',
     field: 'no_verified',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -96,6 +100,7 @@ const columnsBond = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortBondRows } = useSortMethod(columnsBond);
 const selectedVerified = ref<QuasarSelect<string>>({
   label: 'Todas as organizações',
   value: 'all',
@@ -343,6 +348,8 @@ onMounted(async () => {
           no-data-label="Nenhuma vinculação para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortBondRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

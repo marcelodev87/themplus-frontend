@@ -19,6 +19,7 @@ import FormOut from 'src/components/forms/FormOut.vue';
 import FormSettingsCounter from 'src/components/forms/FormSettingsCounter.vue';
 import FormFileFinancial from 'src/components/forms/FormFileFinancial.vue';
 import Paginate from 'src/components/general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'FinancialControl',
@@ -61,18 +62,21 @@ const columnsDelivery = reactive<QuasarTable[]>([
     label: 'Mês / Ano',
     field: 'month_year',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'status',
     label: 'Status',
     field: 'status',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'date_delivery',
     label: 'Data de entrega',
     field: 'date_delivery',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -87,36 +91,42 @@ const columnsMovement = reactive<QuasarTable[]>([
     label: 'Banco',
     field: 'account.name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'account_number',
     label: 'Conta',
     field: 'account.account_number',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'agency_number',
     label: 'Agência',
     field: 'account.agency_number',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'category',
     label: 'Categoria',
     field: 'category.name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'value',
     label: 'Valor',
     field: 'value',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'date_movement',
     label: 'Data de movimentação',
     field: 'date_movement',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'description',
@@ -147,6 +157,8 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortDeliveryRows } = useSortMethod(columnsDelivery);
+const { sortRows: sortFinancialMovementRows } = useSortMethod(columnsMovement);
 
 const fetchDelivery = async () => {
   await getDelivery();
@@ -442,6 +454,8 @@ onMounted(async () => {
             no-data-label="Nenhuma entrega para mostrar"
             virtual-scroll
             :rows-per-page-options="[rowsPerPageDelivery]"
+            column-sort-order="da"
+            :sort-method="sortDeliveryRows"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-3 text-weight-medium">
@@ -556,6 +570,8 @@ onMounted(async () => {
             no-data-label="Nenhuma movimentação para mostrar"
             virtual-scroll
             :rows-per-page-options="[rowsPerPageMovementFinancial]"
+            column-sort-order="da"
+            :sort-method="sortFinancialMovementRows"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-3 text-weight-medium">

@@ -10,6 +10,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { useCategoryStore } from 'src/stores/category-store';
 import { useAuthStore } from 'src/stores/auth-store';
 import Paginate from 'src/components/general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Category',
@@ -50,12 +51,14 @@ const columnsCategory = reactive<QuasarTable[]>([
     label: 'Padrão',
     field: 'default',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'alert',
     label: 'Alerta',
     field: 'alert.description',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -64,6 +67,7 @@ const columnsCategory = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortCategoryRows } = useSortMethod(columnsCategory);
 
 const resetPage = (): void => {
   currentPage.value = 1;
@@ -242,6 +246,8 @@ onMounted(async () => {
           no-data-label="Nenhuma categoria para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortCategoryRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

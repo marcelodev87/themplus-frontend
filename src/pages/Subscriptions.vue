@@ -11,6 +11,7 @@ import ManageSubscription from 'src/components/general/ManageSubscription.vue';
 import SubscriptionStepper from 'src/components/stepper/SubscriptionStepper.vue';
 import { useSubscriptionStore } from 'src/stores/subscription-store';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({ name: 'Subscriptions' });
 
@@ -68,34 +69,39 @@ const statusColor = computed(() => {
 });
 
 const columnsSubscriptions = reactive<QuasarTable[]>([
-  { name: 'name', label: 'Assinatura', field: 'name', align: 'center' },
+  { name: 'name', label: 'Assinatura', field: 'name', align: 'center', sortable: true },
   {
     name: 'movement',
     label: 'Movimentações e Agendamentos',
     field: 'movement',
     align: 'center',
+    sortable: true,
   },
   {
     name: 'members',
     label: 'Gestão de membros',
     field: 'members',
     align: 'center',
+    sortable: true,
   },
   {
     name: 'financial',
     label: 'Painel de contabilidade',
     field: 'financial',
     align: 'center',
+    sortable: true,
   },
   {
     name: 'assistent',
     label: 'Assistente de whatsapp',
     field: 'assistent',
     align: 'center',
+    sortable: true,
   },
-  { name: 'price', label: 'Valor', field: 'price', align: 'center' },
+  { name: 'price', label: 'Valor', field: 'price', align: 'center', sortable: true },
   { name: 'actions', label: 'Ações', field: 'actions', align: 'center' },
 ]);
+const { sortRows: sortSubscriptionRows } = useSortMethod(columnsSubscriptions);
 
 const subscriptionsTable = computed(() => {
   if (!listSubscription.value?.length) return [];
@@ -253,6 +259,8 @@ onMounted(async () => {
             virtual-scroll
             hide-pagination
             :rows-per-page-options="[10]"
+            column-sort-order="da"
+            :sort-method="sortSubscriptionRows"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-2">

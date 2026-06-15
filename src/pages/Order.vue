@@ -9,6 +9,7 @@ import FormRequestUser from 'src/components/forms/FormRequestUser.vue';
 import { useOrderStore } from 'src/stores/order-store';
 import { OrderCounter } from 'src/ts/interfaces/data/Order';
 import Paginate from 'src/components/general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Order',
@@ -58,6 +59,7 @@ const columnsOrder = reactive<QuasarTable[]>([
     label: 'Data de solicitação',
     field: 'created_at',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -66,6 +68,7 @@ const columnsOrder = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortOrderRows } = useSortMethod(columnsOrder);
 
 const resetPage = (): void => {
   currentPage.value = 1;
@@ -199,6 +202,8 @@ onMounted(async () => {
           no-data-label="Nenhuma solicitação para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortOrderRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

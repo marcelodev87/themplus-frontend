@@ -8,6 +8,7 @@ import { useMovementStore } from 'src/stores/movement-store';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+import { useSortMethod } from 'src/composables/useTableSort';
 import * as XLSX from 'xlsx';
 import {
   InsertMovement,
@@ -51,6 +52,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'dataMovimentacao',
     align: 'left',
     style: 'width: 120px;',
+    sortable: true,
   },
   {
     name: 'tipo',
@@ -58,6 +60,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'tipo',
     align: 'left',
     style: 'width: 120px;',
+    sortable: true,
   },
   {
     name: 'valor',
@@ -65,6 +68,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'valor',
     align: 'left',
     style: 'width: 120px;',
+    sortable: true,
   },
   {
     name: 'account',
@@ -72,6 +76,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'account',
     align: 'left',
     style: 'max-width: 120px;',
+    sortable: true,
   },
   {
     name: 'category',
@@ -79,6 +84,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'category',
     align: 'left',
     style: 'max-width:100px;',
+    sortable: true,
   },
   {
     name: 'descricao',
@@ -87,6 +93,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'left',
     style:
       'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+    sortable: true,
   },
   {
     name: 'receipt',
@@ -96,6 +103,8 @@ const columnsMovement = reactive<QuasarTable[]>([
     style: 'width: 10%;',
   },
 ]);
+
+const { sortRows: sortInsertMovementRows } = useSortMethod(columnsMovement);
 
 const open = computed({
   get: () => props.open,
@@ -685,6 +694,8 @@ watch(open, async () => {
           style="height: 450px"
           virtual-scroll
           :rows-per-page-options="[25]"
+          column-sort-order="da"
+          :sort-method="sortInsertMovementRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

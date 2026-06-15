@@ -4,6 +4,7 @@ import { computed, reactive } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { PreRegistration } from 'src/ts/interfaces/data/Member';
 import TitlePage from '../shared/TitlePage.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'RelationshipDetails',
@@ -34,6 +35,7 @@ const columnsRelationshipDetails = reactive<QuasarTable[]>([
   },
 ]);
 
+const { sortRows: sortRelationshipDetailsRows } = useSortMethod(columnsRelationshipDetails);
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
@@ -56,6 +58,8 @@ const open = computed({
           no-data-label="Nenhuma relação para mostrar"
           virtual-scroll
           :rows-per-page-options="[10]"
+          column-sort-order="da"
+          :sort-method="sortRelationshipDetailsRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

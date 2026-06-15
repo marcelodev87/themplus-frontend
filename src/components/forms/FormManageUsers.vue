@@ -10,6 +10,7 @@ import { DataUserByCounter, User } from 'src/ts/interfaces/data/User';
 import { Notify } from 'quasar';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import Paginate from '../general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'FormManageUsers',
@@ -71,12 +72,14 @@ const columnsUser = reactive<QuasarTable[]>([
     label: 'Telefone',
     field: 'phone',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'position',
     label: 'Cargo',
     field: 'position',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -85,6 +88,7 @@ const columnsUser = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortManageUserRows } = useSortMethod(columnsUser);
 
 const open = computed({
   get: () => props.open,
@@ -324,6 +328,8 @@ watch(open, async () => {
           no-data-label="Nenhum usuário para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortManageUserRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

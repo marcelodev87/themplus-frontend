@@ -7,6 +7,7 @@ import { useFinancialStore } from 'src/stores/financial-store';
 import { storeToRefs } from 'pinia';
 import imageCompression from 'browser-image-compression';
 import Paginate from '../general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'FormFileFinancial',
@@ -43,6 +44,7 @@ const columnsFileClient = reactive<QuasarTable[]>([
     label: 'Nome do arquivo',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'receipt',
@@ -63,6 +65,7 @@ const columnsFileCounter = reactive<QuasarTable[]>([
     label: 'Nome do arquivo',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'receipt',
@@ -71,6 +74,8 @@ const columnsFileCounter = reactive<QuasarTable[]>([
     align: 'left',
   },
 ]);
+const { sortRows: sortFileClientRows } = useSortMethod(columnsFileClient);
+const { sortRows: sortFileCounterRows } = useSortMethod(columnsFileCounter);
 
 const resetPage = (): void => {
   currentPage.value = 1;
@@ -299,6 +304,8 @@ watch(open, async () => {
           no-data-label="Nenhum arquivo para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="props.mode === 'client' ? sortFileClientRows : sortFileCounterRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

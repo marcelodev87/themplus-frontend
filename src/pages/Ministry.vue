@@ -11,6 +11,7 @@ import FormMinistry from 'src/components/forms/FormMinistry.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useMinistryStore } from 'src/stores/ministry-store';
 import { Ministry } from 'src/ts/interfaces/data/Ministry';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Ministry',
@@ -39,12 +40,14 @@ const columnsMinistry = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'leader',
     label: 'Líder',
     field: 'leader',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -53,6 +56,7 @@ const columnsMinistry = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortMinistryRows } = useSortMethod(columnsMinistry);
 
 // const resetPage = (): void => {
 //   currentPage.value = 1;
@@ -170,6 +174,8 @@ onMounted(async () => {
           no-data-label="Nenhum ministério para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortMinistryRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

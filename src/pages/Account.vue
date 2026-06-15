@@ -12,6 +12,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
 import Paginate from 'src/components/general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Account',
@@ -73,6 +74,7 @@ const columnsAccount = reactive<QuasarTable[]>([
   },
 ]);
 
+const { sortRows: sortAccountRows } = useSortMethod(columnsAccount);
 const resetPage = (): void => {
   currentPage.value = 1;
 };
@@ -247,6 +249,8 @@ onMounted(async () => {
           no-data-label="Nenhuma conta para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortAccountRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

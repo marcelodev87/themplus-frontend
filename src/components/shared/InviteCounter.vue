@@ -7,6 +7,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { useFinancialStore } from 'src/stores/financial-store';
 import TitlePage from './TitlePage.vue';
 import Paginate from '../general/Paginate.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'InviteCounter',
@@ -53,6 +54,7 @@ const columnsOrder = reactive<QuasarTable[]>([
     label: 'Data de solicitação',
     field: 'created_at',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -61,6 +63,7 @@ const columnsOrder = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortInviteCounterRows } = useSortMethod(columnsOrder);
 
 const open = computed({
   get: () => props.open,
@@ -155,6 +158,8 @@ watch(open, async () => {
           no-data-label="Nenhuma solicitação para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortInviteCounterRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

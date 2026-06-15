@@ -3,6 +3,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useRegisterStore } from 'src/stores/register-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
@@ -68,18 +69,21 @@ const columnsRegister = reactive<QuasarTable[]>([
     label: 'Data',
     field: 'date',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'type',
     label: 'Tipo',
     field: 'type',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'text',
     label: 'Descrição',
     field: 'text',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -88,6 +92,7 @@ const columnsRegister = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortRegisterRows } = useSortMethod(columnsRegister);
 
 const clear = (): void => {
   selectedDataView.value = null;
@@ -266,6 +271,8 @@ onMounted(async () => {
             no-data-label="Nenhum registro encontrado"
             virtual-scroll
             :rows-per-page-options="[0]"
+            column-sort-order="da"
+            :sort-method="sortRegisterRows"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-3 text-weight-medium">

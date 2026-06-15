@@ -11,6 +11,7 @@ import FormNetwork from 'src/components/forms/FormNetwork.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useNetworkStore } from 'src/stores/network-store';
 import { Network } from 'src/ts/interfaces/data/Network';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Network',
@@ -39,18 +40,21 @@ const columnsNetwork = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'coordinator',
     label: 'Coordenador',
     field: 'coordinator',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'congregation',
     label: 'Congregação',
     field: 'congregation',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -59,6 +63,7 @@ const columnsNetwork = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortNetworkRows } = useSortMethod(columnsNetwork);
 
 const clear = (): void => {
   selectedDataEdit.value = null;
@@ -173,6 +178,8 @@ onMounted(async () => {
           no-data-label="Nenhuma rede para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortNetworkRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

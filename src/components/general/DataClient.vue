@@ -12,6 +12,7 @@ import ConfirmAction from '../confirm/ConfirmAction.vue';
 import DataEnterprise from '../info/DataEnterprise.vue';
 import FormEntry from '../forms/FormEntry.vue';
 import FormOut from '../forms/FormOut.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'DataClient',
@@ -75,18 +76,21 @@ const columnsDataClient = reactive<QuasarTable[]>([
     label: 'Período',
     field: 'month_year',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'date_delivery',
     label: 'Data de entrega',
     field: 'date_delivery',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'check_counter',
     label: 'Verificado',
     field: 'check_counter',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -101,36 +105,42 @@ const columnsMovement = reactive<QuasarTable[]>([
     label: 'Banco',
     field: 'account.name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'account_number',
     label: 'Conta',
     field: 'account.account_number',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'agency_number',
     label: 'Agência',
     field: 'account.agency_number',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'category',
     label: 'Categoria',
     field: 'category.name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'value',
     label: 'Valor',
     field: 'value',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'date_movement',
     label: 'Data de movimentação',
     field: 'date_movement',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'description',
@@ -161,6 +171,8 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortDataClientRows } = useSortMethod(columnsDataClient);
+const { sortRows: sortDataMovementRows } = useSortMethod(columnsMovement);
 const preview = reactive({
   open: false,
   url: '',
@@ -452,6 +464,8 @@ watch(
         virtual-scroll
         :rows-per-page-options="[0]"
         bordered
+        column-sort-order="da"
+        :sort-method="sortDataClientRows"
       >
         <template v-slot:header="props">
           <q-tr :props="props" class="bg-grey-2">
@@ -599,6 +613,8 @@ watch(
         no-data-label="Nenhuma movimentação para mostrar"
         virtual-scroll
         :rows-per-page-options="[0]"
+        column-sort-order="da"
+        :sort-method="sortDataMovementRows"
       >
         <template v-slot:header="props">
           <q-tr :props="props" class="bg-grey-2">
@@ -893,7 +909,7 @@ watch(
       </div>
     </div>
     <q-dialog v-model="preview.open" maximized>
-      <q-card style="width: 80%">
+      <q-card style="width: 90%; max-width: 500px; max-height:400px">
         <q-bar>
           <div>Pré-visualização</div>
           <q-space />

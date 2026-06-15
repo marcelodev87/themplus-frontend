@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDashboardStore } from 'src/stores/dashboard-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
@@ -49,6 +50,7 @@ const columnsCategoriesDashboard = ref<QuasarTable[]>([
     field: 'name',
     align: 'left',
     style: 'min-width: 100px; max-width: 30%',
+    sortable: true,
   },
   {
     name: 'value',
@@ -56,8 +58,10 @@ const columnsCategoriesDashboard = ref<QuasarTable[]>([
     field: 'value',
     align: 'left',
     style: 'width: 70%',
+    sortable: true,
   },
 ]);
+const { sortRows: sortDashboardRows } = useSortMethod(columnsCategoriesDashboard.value);
 const optionsFilters = reactive<QuasarSelect<string>[]>([
   {
     label: 'Filtrar por mês',
@@ -749,6 +753,8 @@ onMounted(async () => {
             no-data-label="Nenhuma categoria de entrada para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
+            column-sort-order="da"
+            :sort-method="sortDashboardRows"
           >
             <template v-slot:top>
               <q-icon
@@ -811,6 +817,8 @@ onMounted(async () => {
             no-data-label="Nenhuma categoria de saída para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
+            column-sort-order="da"
+            :sort-method="sortDashboardRows"
           >
             <template v-slot:top>
               <q-icon name="sync_alt" size="20px" class="q-mr-sm" color="red" />
@@ -876,6 +884,8 @@ onMounted(async () => {
             no-data-label="Nenhuma categoria de entrada para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
+            column-sort-order="da"
+            :sort-method="sortDashboardRows"
           >
             <template v-slot:top>
               <q-icon name="event" size="20px" class="q-mr-sm" color="green" />
@@ -933,6 +943,8 @@ onMounted(async () => {
             no-data-label="Nenhuma categoria de saída para mostrar"
             virtual-scroll
             :rows-per-page-options="[5]"
+            column-sort-order="da"
+            :sort-method="sortDashboardRows"
           >
             <template v-slot:top>
               <q-icon name="event" size="20px" class="q-mr-sm" color="red" />

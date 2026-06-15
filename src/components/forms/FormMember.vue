@@ -19,6 +19,7 @@ import { marital } from 'src/utils/marital';
 import { useMinistryStore } from 'src/stores/ministry-store';
 import { useRelationshipStore } from 'src/stores/relationship-store';
 import imageCompression from 'browser-image-compression';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'FormMember',
@@ -117,12 +118,14 @@ const columnsListFamily = reactive<QuasarTable[]>([
     label: 'Membro',
     field: 'member',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'family',
     label: 'Parentesco',
     field: 'family',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -131,6 +134,7 @@ const columnsListFamily = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortFamilyRows } = useSortMethod(columnsListFamily);
 
 const open = computed({
   get: () => props.open,
@@ -1477,6 +1481,8 @@ watch(open, async () => {
                   dense
                   row-key="index"
                   no-data-label="Nenhum familiar para mostrar"
+                  column-sort-order="da"
+                  :sort-method="sortFamilyRows"
                 >
                   <template v-slot:header="props">
                     <q-tr :props="props" class="bg-grey-2">

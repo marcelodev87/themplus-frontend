@@ -13,6 +13,7 @@ import { states } from 'src/utils/state';
 import { marital } from 'src/utils/marital';
 import { education } from 'src/utils/education';
 import { searchCep } from 'src/services/cep-service';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'PreRegistration',
@@ -63,6 +64,7 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
     sortable: true,
   },
 ]);
+const { sortRows: sortPreRegistrationRows } = useSortMethod(columnsPreRegistration);
 const selectedNaturalness = ref<QuasarSelect<string | null>>({
   label: 'Não informado',
   value: null,
@@ -723,6 +725,8 @@ onMounted(async () => {
             no-data-label="Nenhuma relação para mostrar"
             :rows-per-page-options="[0]"
             :loading="loading"
+            column-sort-order="da"
+            :sort-method="sortPreRegistrationRows"
           >
             <template v-slot:header="props">
               <q-tr :props="props" class="bg-grey-2">

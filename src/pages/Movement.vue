@@ -15,6 +15,7 @@ import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import MovementsAnalyze from 'src/components/general/MovementsAnalyze.vue';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Movement',
@@ -117,6 +118,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortMovementRows } = useSortMethod(columnsMovement);
 const selectedCategory = ref<QuasarSelect<string | null>>({
   label: 'Todas categorias',
   value: null,
@@ -711,6 +713,8 @@ onMounted(async () => {
           :rows-per-page-options="[0]"
           class="my-sticky-header-table"
           style="border-radius: 12px"
+          column-sort-order="da"
+          :sort-method="sortMovementRows"
         >
           <template v-slot:top>
             <div class="column full-width q-gutter-y-md">

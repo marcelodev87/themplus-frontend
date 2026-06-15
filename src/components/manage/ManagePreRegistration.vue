@@ -10,6 +10,7 @@ import { Notify } from 'quasar';
 import { updateConfigPreRegistration } from 'src/services/member-service';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import RelationshipDetails from '../info/RelationshipDetails.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'ManagePreRegistration',
@@ -43,24 +44,28 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'email',
     label: 'E-mail',
     field: 'email',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'phone',
     label: 'Telefone',
     field: 'phone',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'created_at',
     label: 'Data de registro',
     field: 'created_at',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'description',
@@ -75,6 +80,7 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortPreRegRows } = useSortMethod(columnsPreRegistration);
 
 const clear = (): void => {
   filter.value = '';
@@ -228,6 +234,8 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[0]"
           :filter="filter"
+          column-sort-order="da"
+          :sort-method="sortPreRegRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

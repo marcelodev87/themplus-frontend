@@ -9,6 +9,7 @@ import { useMemberStore } from 'src/stores/member-store';
 import TitlePage from '../shared/TitlePage.vue';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import MemberFamilyDetails from './MemberFamilyDetails.vue';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'MemberFamilyInfo',
@@ -61,6 +62,7 @@ const columnsMemberFamily = reactive<QuasarTable[]>([
   },
 ]);
 
+const { sortRows: sortMemberFamilyRows } = useSortMethod(columnsMemberFamily);
 const fetchRelationships = async () => {
   await getRelationships();
 };
@@ -182,6 +184,8 @@ watch(open, async () => {
           no-data-label="Nenhum parentesco para mostrar"
           virtual-scroll
           :rows-per-page-options="[10]"
+          column-sort-order="da"
+          :sort-method="sortMemberFamilyRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

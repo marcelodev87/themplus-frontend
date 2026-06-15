@@ -9,6 +9,7 @@ import { DataMovementAnalyze, Movement } from 'src/ts/interfaces/data/Movement';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
 import { Notify } from 'quasar';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'MovementsAnalyze',
@@ -41,12 +42,14 @@ const columnsMovement = reactive<QuasarTable[]>([
     label: 'Data de movimentação',
     field: 'date_movement',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'value',
     label: 'Valor',
     field: 'value',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'account',
@@ -63,6 +66,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'left',
     style:
       'width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+    sortable: true,
   },
   {
     name: 'description',
@@ -87,6 +91,7 @@ const columnsMovement = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortMovementsAnalyzeRows } = useSortMethod(columnsMovement);
 
 const clear = (): void => {
   selectedDataEdit.value = null;
@@ -198,6 +203,8 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[10]"
           style="min-height: 250px"
+          column-sort-order="da"
+          :sort-method="sortMovementsAnalyzeRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

@@ -3,6 +3,7 @@
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { useOfficeStore } from 'src/stores/office-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
@@ -37,12 +38,14 @@ const columnsAlert = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'users',
     label: 'Total de usuários',
     field: 'users',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -51,6 +54,7 @@ const columnsAlert = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortOfficeRows } = useSortMethod(columnsAlert);
 
 const resetPage = (): void => {
   currentPage.value = 1;
@@ -177,6 +181,8 @@ onMounted(async () => {
           no-data-label="Nenhuma filial para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortOfficeRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

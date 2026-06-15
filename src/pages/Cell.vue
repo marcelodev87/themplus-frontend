@@ -11,6 +11,7 @@ import FormCell from 'src/components/forms/FormCell.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useCellStore } from 'src/stores/cell-store';
 import { Cell } from 'src/ts/interfaces/data/Cell';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Cell',
@@ -38,18 +39,21 @@ const columnsCell = reactive<QuasarTable[]>([
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'leader',
     label: 'Dirigente',
     field: 'leader',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'network',
     label: 'Rede',
     field: 'network',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'action',
@@ -58,6 +62,7 @@ const columnsCell = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+const { sortRows: sortCellRows } = useSortMethod(columnsCell);
 
 const clear = (): void => {
   selectedDataEdit.value = null;
@@ -170,6 +175,8 @@ onMounted(async () => {
           no-data-label="Nenhuma célula para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          column-sort-order="da"
+          :sort-method="sortCellRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">

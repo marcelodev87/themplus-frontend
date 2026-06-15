@@ -12,6 +12,7 @@ import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({
   name: 'Scheduling',
@@ -117,6 +118,7 @@ const columnsScheduling = reactive<QuasarTable[]>([
   },
 ]);
 
+const { sortRows: sortSchedulingRows } = useSortMethod(columnsScheduling);
 const dateActual = computed(() => {
   const currentDate = new Date();
 
@@ -609,6 +611,8 @@ onMounted(async () => {
           :rows-per-page-options="[0]"
           class="my-sticky-header-table"
           style="border-radius: 12px"
+          column-sort-order="da"
+          :sort-method="sortSchedulingRows"
         >
           <template v-slot:top>
             <div class="column full-width q-gutter-y-md">

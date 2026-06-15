@@ -6,6 +6,7 @@ import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 // import { useAuthStore } from 'src/stores/auth-store';
 import { useRelationshipStore } from 'src/stores/relationship-store';
 import { Relationship } from 'src/ts/interfaces/data/Relationship';
+import { useSortMethod } from 'src/composables/useTableSort';
 // import ConfirmAction from '../confirm/ConfirmAction.vue';
 // import FormRelationship from '../forms/FormRelationship.vue';
 
@@ -37,6 +38,7 @@ const columnsRelationship = reactive<QuasarTable[]>([
     label: 'Relação',
     field: 'name',
     align: 'left',
+    sortable: true,
   },
   // {
   //   name: 'action',
@@ -46,6 +48,7 @@ const columnsRelationship = reactive<QuasarTable[]>([
   // },
 ]);
 
+const { sortRows: sortRelationshipRows } = useSortMethod(columnsRelationship);
 const clear = (): void => {
   filterRelationship.value = '';
   selectedDataEdit.value = null;
@@ -126,6 +129,8 @@ watch(open, async () => {
           :rows-per-page-options="[0]"
           :filter="filterRelationship"
           style="max-height: 500px"
+          column-sort-order="da"
+          :sort-method="sortRelationshipRows"
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-grey-2">
