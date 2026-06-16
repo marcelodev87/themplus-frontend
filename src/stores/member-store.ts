@@ -30,7 +30,7 @@ export const useMemberStore = defineStore('member', {
     loadingShowMember: false as boolean,
     listMember: [] as MemberChurch[],
     listMemberPreRegistration: [] as PreRegistration[],
-    Member: {} as MemberChurch,
+    Member: null as MemberChurch | null,
   }),
   actions: {
     clearListMember() {
@@ -49,7 +49,7 @@ export const useMemberStore = defineStore('member', {
       );
     },
     clearMember() {
-      this.Member = {} as MemberChurch;
+      this.Member = null;
     },
     setListMemberPreRegistration(members: PreRegistration[]) {
       members.map((item) => this.listMemberPreRegistration.push(item));

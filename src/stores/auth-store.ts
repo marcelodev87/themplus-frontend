@@ -17,7 +17,7 @@ import {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     loadingAuth: false as boolean,
-    user: useStorage('themplus_user', {} as User | null),
+    user: useStorage('themplus_user', null as User | null),
     token: useStorage('themplus_token', null as string | null),
     enterpriseCreated: useStorage('enterprise_created', null as string | null),
     enterprisePosition: useStorage('enterprise_position', 'client' as string),

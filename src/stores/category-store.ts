@@ -22,7 +22,7 @@ export const useCategoryStore = defineStore('category', {
     loadingCategory: false as boolean,
     listCategory: [] as Category[],
     listCategoryPanel: [] as CategoryPanel[],
-    categoryEdit: {} as Category[],
+    categoryEdit: [] as Category[],
   }),
   actions: {
     clearListCategory() {

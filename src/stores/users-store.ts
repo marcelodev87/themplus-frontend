@@ -386,7 +386,6 @@ export const useUsersMembersStore = defineStore('members', {
     ) {
       try {
         this.setLoading(true);
-        this.setLoading(true);
         this.clearListUserByEnterprise();
         this.setSettingsCounter(null);
         const response = await updateUserMemberByCounter(
