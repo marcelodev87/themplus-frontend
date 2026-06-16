@@ -20,6 +20,7 @@ import FormSettingsCounter from 'src/components/forms/FormSettingsCounter.vue';
 import FormFileFinancial from 'src/components/forms/FormFileFinancial.vue';
 import Paginate from 'src/components/general/Paginate.vue';
 import { useSortMethod } from 'src/composables/useTableSort';
+import { useTableFilter } from 'src/composables/useTableFilter';
 
 defineOptions({
   name: 'FinancialControl',
@@ -159,6 +160,7 @@ const columnsMovement = reactive<QuasarTable[]>([
 ]);
 const { sortRows: sortDeliveryRows } = useSortMethod(columnsDelivery);
 const { sortRows: sortFinancialMovementRows } = useSortMethod(columnsMovement);
+const { filterMethod } = useTableFilter();
 
 const fetchDelivery = async () => {
   await getDelivery();
@@ -448,6 +450,7 @@ onMounted(async () => {
             :rows="loadingDelivery ? [] : listDeliveryCurrent"
             :columns="columnsDelivery"
             :filter="filterDelivery"
+            :filter-method="filterMethod"
             :loading="loadingDelivery"
             flat
             row-key="index"

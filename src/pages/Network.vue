@@ -12,6 +12,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useNetworkStore } from 'src/stores/network-store';
 import { Network } from 'src/ts/interfaces/data/Network';
 import { useSortMethod } from 'src/composables/useTableSort';
+import { useTableFilter } from 'src/composables/useTableFilter';
 
 defineOptions({
   name: 'Network',
@@ -45,14 +46,14 @@ const columnsNetwork = reactive<QuasarTable[]>([
   {
     name: 'coordinator',
     label: 'Coordenador',
-    field: 'coordinator',
+    field: (row) => row.member?.name,
     align: 'left',
     sortable: true,
   },
   {
     name: 'congregation',
     label: 'Congregação',
-    field: 'congregation',
+    field: (row) => row.congregation?.name,
     align: 'left',
     sortable: true,
   },
@@ -64,6 +65,7 @@ const columnsNetwork = reactive<QuasarTable[]>([
   },
 ]);
 const { sortRows: sortNetworkRows } = useSortMethod(columnsNetwork);
+const { filterMethod } = useTableFilter();
 
 const clear = (): void => {
   selectedDataEdit.value = null;
@@ -171,6 +173,7 @@ onMounted(async () => {
           :columns="columnsNetwork"
           :loading="loadingNetwork"
           :filter="filterNetwork"
+          :filter-method="filterMethod"
           flat
           bordered
           dense

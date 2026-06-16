@@ -12,6 +12,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { useMinistryStore } from 'src/stores/ministry-store';
 import { Ministry } from 'src/ts/interfaces/data/Ministry';
 import { useSortMethod } from 'src/composables/useTableSort';
+import { useTableFilter } from 'src/composables/useTableFilter';
 
 defineOptions({
   name: 'Ministry',
@@ -45,7 +46,7 @@ const columnsMinistry = reactive<QuasarTable[]>([
   {
     name: 'leader',
     label: 'Líder',
-    field: 'leader',
+    field: (row) => row.member?.name,
     align: 'left',
     sortable: true,
   },
@@ -57,6 +58,7 @@ const columnsMinistry = reactive<QuasarTable[]>([
   },
 ]);
 const { sortRows: sortMinistryRows } = useSortMethod(columnsMinistry);
+const { filterMethod } = useTableFilter();
 
 // const resetPage = (): void => {
 //   currentPage.value = 1;
@@ -167,6 +169,7 @@ onMounted(async () => {
           :columns="columnsMinistry"
           :loading="loadingMinistry"
           :filter="filterMinistry"
+          :filter-method="filterMethod"
           flat
           bordered
           dense

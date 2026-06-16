@@ -8,6 +8,7 @@ import type { Role } from 'src/ts/interfaces/data/Role';
 import FormRole from 'src/components/forms/FormRole.vue';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useSortMethod } from 'src/composables/useTableSort';
+import { useTableFilter } from 'src/composables/useTableFilter';
 
 defineOptions({
   name: 'ManageRole',
@@ -43,6 +44,7 @@ const columnsRole = reactive<QuasarTable[]>([
   },
 ]);
 const { sortRows: sortRoleRows } = useSortMethod(columnsRole);
+const { filterMethod } = useTableFilter();
 
 const clear = (): void => {
   filterRole.value = '';
@@ -110,6 +112,7 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[0]"
           :filter="filterRole"
+          :filter-method="filterMethod"
           column-sort-order="da"
           :sort-method="sortRoleRows"
         >

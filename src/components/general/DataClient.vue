@@ -908,8 +908,8 @@ watch(
         />
       </div>
     </div>
-    <q-dialog v-model="preview.open" maximized>
-      <q-card style="width: 90%; max-width: 500px; max-height: 400px">
+    <q-dialog v-model="preview.open">
+      <q-card style="width: 85vw; max-width: 1100px; max-height: 90vh">
         <q-bar>
           <div>Pré-visualização</div>
           <q-space />
@@ -920,13 +920,20 @@ watch(
           <img
             v-if="preview.type === 'image'"
             :src="preview.url"
-            style="width: 100%; max-height: 90vh"
+            style="
+              max-width: 100%;
+              max-height: 75vh;
+              width: auto;
+              height: auto;
+              object-fit: contain;
+              display: block;
+            "
           />
 
           <iframe
             v-else-if="preview.type === 'pdf'"
             :src="preview.url"
-            style="width: 100%; height: 90vh; border: none"
+            style="width: 100%; height: 75vh; border: none"
           />
 
           <div v-else class="q-pa-lg">

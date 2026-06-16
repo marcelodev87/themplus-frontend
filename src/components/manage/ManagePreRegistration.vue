@@ -9,6 +9,7 @@ import { PreRegistration } from 'src/ts/interfaces/data/Member';
 import { Notify } from 'quasar';
 import { updateConfigPreRegistration } from 'src/services/member-service';
 import { useSortMethod } from 'src/composables/useTableSort';
+import { useTableFilter } from 'src/composables/useTableFilter';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
 import RelationshipDetails from '../info/RelationshipDetails.vue';
 
@@ -81,6 +82,7 @@ const columnsPreRegistration = reactive<QuasarTable[]>([
   },
 ]);
 const { sortRows: sortPreRegRows } = useSortMethod(columnsPreRegistration);
+const { filterMethod } = useTableFilter();
 
 const clear = (): void => {
   filter.value = '';
@@ -234,6 +236,7 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[0]"
           :filter="filter"
+          :filter-method="filterMethod"
           column-sort-order="da"
           :sort-method="sortPreRegRows"
         >

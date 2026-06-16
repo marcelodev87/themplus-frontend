@@ -18,6 +18,7 @@ import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
 import MemberFamilyInfo from 'src/components/info/MemberFamilyInfo.vue';
 import ManagePreRegistration from 'src/components/manage/ManagePreRegistration.vue';
 import { Notify } from 'quasar';
+import { useTableFilter } from 'src/composables/useTableFilter';
 
 defineOptions({
   name: 'Member',
@@ -73,6 +74,8 @@ const columnsMember = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+
+const { filterMethod } = useTableFilter();
 
 const clear = (): void => {
   selectedDataEdit.value = null;
@@ -354,6 +357,7 @@ onMounted(async () => {
           :columns="columnsMember"
           :loading="loadingMember"
           :filter="filterMember"
+          :filter-method="filterMethod"
           row-key="index"
           no-data-label="Nenhum membro para mostrar"
           virtual-scroll
