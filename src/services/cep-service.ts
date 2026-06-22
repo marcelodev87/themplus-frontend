@@ -28,7 +28,7 @@ export const searchCep = async (
       status: response.status,
       data: response.data,
     };
-  } catch (error) {
+  } catch {
     throw new Error('Erro ao buscar o CEP');
   }
 };

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useStorage, StorageSerializers } from '@vueuse/core';
+import { useStorage } from '@vueuse/core';
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
@@ -20,7 +20,11 @@ export const useAuthStore = defineStore('auth', {
     user: useStorage('themplus_user', null as User | null, undefined, {
       serializer: {
         read: (v: string) => {
-          try { return v ? JSON.parse(v) : null; } catch { return null; }
+          try {
+            return v ? JSON.parse(v) : null;
+          } catch {
+            return null;
+          }
         },
         write: (v: User | null) => JSON.stringify(v),
       },
