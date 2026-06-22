@@ -11,6 +11,7 @@ import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import { Office } from 'src/ts/interfaces/data/Enterprise';
+import { User } from 'src/ts/interfaces/data/User';
 import { useAuthStore } from 'src/stores/auth-store';
 import Paginate from 'src/components/general/Paginate.vue';
 
@@ -28,7 +29,7 @@ const showConfirmAction = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const selectedOffice = ref<string | null>(null);
 const dataOffice = ref<Office | null>(null);
-const dataNull = ref<null>(null);
+const dataNull = ref<User | null>(null);
 const showFormUser = ref<boolean>(false);
 const showAlertDataEnterprise = ref<boolean>(false);
 const filterAlert = ref<string>('');

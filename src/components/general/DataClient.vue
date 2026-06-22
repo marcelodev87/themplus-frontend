@@ -452,6 +452,7 @@ watch(
       <DataEnterprise :enterprise="entepriseInspected" />
     </div>
     <div class="q-py-sm q-gutter-y-sm">
+      user {{ user }}
       <q-table
         v-if="modeTable === 'reports'"
         :rows="loadingReport ? [] : listReport"

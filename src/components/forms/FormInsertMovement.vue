@@ -9,7 +9,7 @@ import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { useSortMethod } from 'src/composables/useTableSort';
-import * as XLSX from 'xlsx';
+import readXlsxFile from 'read-excel-file';
 import {
   InsertMovement,
   InsertMovementData,
@@ -227,14 +227,15 @@ const save = async () => {
 const exportInsert = async () => {
   await exportMovementInsertExample();
 };
-const excelSerialToDate = (serial: number): string => {
-  const utcDays = serial - 25569;
-  const utcValue = utcDays * 86400;
-  const date = new Date(utcValue * 1000);
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const year = date.getUTCFullYear();
-  return `${day}/${month}/${year}`;
+const excelSerialToDate = (value: unknown): string => {
+  if (value instanceof Date) {
+    const day = String(value.getUTCDate()).padStart(2, '0');
+    const month = String(value.getUTCMonth() + 1).padStart(2, '0');
+    const year = value.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  if (typeof value === 'string') return value;
+  return '';
 };
 const normalizeAndValidateValue = (valor: string): number | null => {
   if (typeof valor !== 'string') return null;
@@ -392,7 +393,7 @@ const processOFXFile = (file: File) => {
 
   reader.readAsText(file, 'utf-8');
 };
-const process = () => {
+const process = async () => {
   const check = checkData();
   if (check.status) {
     const isOFX = dataInsert.file?.name?.toLowerCase().endsWith('.ofx');
@@ -410,182 +411,151 @@ const process = () => {
       return;
     }
     setLoading(true);
-    const reader = new FileReader();
 
-    reader.onload = (e) => {
-      if (!e.target) {
-        Notify.create({
-          message: 'Erro ao processar o arquivo: evento inválido.',
-          type: 'negative',
-        });
-        setLoading(false);
-        return;
-      }
-
-      const { result } = e.target;
-      if (!(result instanceof ArrayBuffer)) {
-        Notify.create({
-          message: 'Erro ao processar o arquivo: formato inválido.',
-          type: 'negative',
-        });
-        setLoading(false);
-        return;
-      }
-
-      const data = new Uint8Array(result);
-      const workbook = XLSX.read(data, { type: 'array' });
-
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-      const headers: any = jsonData[0];
-      const requiredHeaders = [
-        'DATA DE MOVIMENTAÇÃO',
-        'TIPO',
-        'VALOR',
-        'CONTA_ID',
-        'CATEGORIA_ID',
-        'DESCRIÇÃO',
-      ];
-      const missingHeaders = requiredHeaders.filter(
-        (header) => !headers.includes(header)
-      );
-      if (missingHeaders.length > 0) {
-        Notify.create({
-          type: 'negative',
-          message: `As seguintes colunas estão ausentes no arquivo: ${missingHeaders.join(', ')}`,
-        });
-        setLoading(false);
-        return;
-      }
-
-      const columnIndexes = requiredHeaders.map((header) =>
-        headers.indexOf(header)
-      );
-
-      const columnErrors = {
-        TIPO: 0,
-        VALOR: 0,
-        'DATA DE MOVIMENTAÇÃO': 0,
-      };
-
-      const validRows: any[] = [];
-      let errorIncomplete: number = 0;
-
-      jsonData.slice(1).forEach((row: any) => {
-        if (
-          row.length > 0 &&
-          (!row[columnIndexes[0]] ||
-            !row[columnIndexes[1]] ||
-            !row[columnIndexes[2]])
-        ) {
-          errorIncomplete += 1;
-          return;
-        }
-
-        if (row.length > 0) {
-          let dataMovimentacao = row[columnIndexes[0]];
-          const tipo = row[columnIndexes[1]];
-          const valor = row[columnIndexes[2]]?.toString() || '';
-          const accountID = row[columnIndexes[3]]?.toString() || '';
-          const categoryID = row[columnIndexes[4]]?.toString() || '';
-          const descricao = row[columnIndexes[5]];
-
-          let isValid = true;
-
-          dataMovimentacao = excelSerialToDate(dataMovimentacao);
-
-          if (!['entrada', 'saída'].includes(tipo?.toLowerCase())) {
-            columnErrors.TIPO++;
-            isValid = false;
-          }
-
-          const normalizedValue = normalizeAndValidateValue(valor);
-          if (!normalizedValue) {
-            columnErrors.VALOR++;
-            isValid = false;
-          }
-
-          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMovimentacao)) {
-            columnErrors['DATA DE MOVIMENTAÇÃO']++;
-            isValid = false;
-          }
-
-          if (isValid) {
-            validRows.push({
-              tipo,
-              valor: normalizedValue,
-              accountID,
-              categoryID,
-              dataMovimentacao,
-              descricao,
-            });
-          }
-        }
-      });
-
-      if (errorIncomplete > 0) {
-        Notify.create({
-          type: 'negative',
-          message:
-            'Alguns registros não foram processadas por estarem incompletas. Coluna Data de Movimentação, Tipo e Valor são obrigatórias.',
-          timeout: 10000,
-          progress: true,
-        });
-      }
-      if (Object.values(columnErrors).some((count) => count > 0)) {
-        const errorMessages = [];
-
-        if (columnErrors.TIPO > 0) {
-          errorMessages.push(
-            `A coluna "TIPO" contém ${columnErrors.TIPO} erros. Valores permitidos: "Entrada" ou "Saída".`
-          );
-        }
-        if (columnErrors.VALOR > 0) {
-          errorMessages.push(
-            `A coluna "VALOR" contém ${columnErrors.VALOR} erros. Formato esperado: numérico, ex: R$ 5.000,000 ou 650,00.`
-          );
-        }
-        if (columnErrors['DATA DE MOVIMENTAÇÃO'] > 0) {
-          errorMessages.push(
-            `A coluna "DATA DE MOVIMENTAÇÃO" contém ${columnErrors['DATA DE MOVIMENTAÇÃO']} erros. Formato esperado: DD/MM/AAAA.`
-          );
-        }
-
-        Notify.create({
-          type: 'negative',
-          message: `Erros encontrados nas colunas:\n${errorMessages.join('\n')}`,
-          timeout: 10000,
-          progress: true,
-        });
-        setLoading(false);
-        return;
-      }
-
-      listInsertMovement.value = checkAccountAndCategoryRows(validRows);
-
-      Notify.create({
-        message: 'Arquivo processado com sucesso',
-        type: 'positive',
-      });
-
-      setLoading(false);
-    };
-
-    reader.onerror = () => {
+    let jsonData: any[][];
+    try {
+      jsonData = await readXlsxFile(dataInsert.file as File);
+    } catch {
       Notify.create({
         message: 'Erro ao ler o arquivo',
         type: 'negative',
       });
       setLoading(false);
-    };
-
-    if (dataInsert.file) {
-      reader.readAsArrayBuffer(dataInsert.file);
+      return;
     }
 
+    const headers: any = jsonData[0];
+    const requiredHeaders = [
+      'DATA DE MOVIMENTAÇÃO',
+      'TIPO',
+      'VALOR',
+      'CONTA_ID',
+      'CATEGORIA_ID',
+      'DESCRIÇÃO',
+    ];
+    const missingHeaders = requiredHeaders.filter(
+      (header) => !headers.includes(header)
+    );
+    if (missingHeaders.length > 0) {
+      Notify.create({
+        type: 'negative',
+        message: `As seguintes colunas estão ausentes no arquivo: ${missingHeaders.join(', ')}`,
+      });
+      setLoading(false);
+      return;
+    }
+
+    const columnIndexes = requiredHeaders.map((header) =>
+      headers.indexOf(header)
+    );
+
+    const columnErrors = {
+      TIPO: 0,
+      VALOR: 0,
+      'DATA DE MOVIMENTAÇÃO': 0,
+    };
+
+    const validRows: any[] = [];
+    let errorIncomplete: number = 0;
+
+    jsonData.slice(1).forEach((row: any) => {
+      if (
+        row.length > 0 &&
+        (!row[columnIndexes[0]] ||
+          !row[columnIndexes[1]] ||
+          !row[columnIndexes[2]])
+      ) {
+        errorIncomplete += 1;
+        return;
+      }
+
+      if (row.length > 0) {
+        let dataMovimentacao = row[columnIndexes[0]];
+        const tipo = row[columnIndexes[1]];
+        const valor = row[columnIndexes[2]]?.toString() || '';
+        const accountID = row[columnIndexes[3]]?.toString() || '';
+        const categoryID = row[columnIndexes[4]]?.toString() || '';
+        const descricao = row[columnIndexes[5]];
+
+        let isValid = true;
+
+        dataMovimentacao = excelSerialToDate(dataMovimentacao);
+
+        if (!['entrada', 'saída'].includes(tipo?.toLowerCase())) {
+          columnErrors.TIPO++;
+          isValid = false;
+        }
+
+        const normalizedValue = normalizeAndValidateValue(valor);
+        if (!normalizedValue) {
+          columnErrors.VALOR++;
+          isValid = false;
+        }
+
+        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMovimentacao)) {
+          columnErrors['DATA DE MOVIMENTAÇÃO']++;
+          isValid = false;
+        }
+
+        if (isValid) {
+          validRows.push({
+            tipo,
+            valor: normalizedValue,
+            accountID,
+            categoryID,
+            dataMovimentacao,
+            descricao,
+          });
+        }
+      }
+    });
+
+    if (errorIncomplete > 0) {
+      Notify.create({
+        type: 'negative',
+        message:
+          'Alguns registros não foram processadas por estarem incompletas. Coluna Data de Movimentação, Tipo e Valor são obrigatórias.',
+        timeout: 10000,
+        progress: true,
+      });
+    }
+    if (Object.values(columnErrors).some((count) => count > 0)) {
+      const errorMessages = [];
+
+      if (columnErrors.TIPO > 0) {
+        errorMessages.push(
+          `A coluna "TIPO" contém ${columnErrors.TIPO} erros. Valores permitidos: "Entrada" ou "Saída".`
+        );
+      }
+      if (columnErrors.VALOR > 0) {
+        errorMessages.push(
+          `A coluna "VALOR" contém ${columnErrors.VALOR} erros. Formato esperado: numérico, ex: R$ 5.000,000 ou 650,00.`
+        );
+      }
+      if (columnErrors['DATA DE MOVIMENTAÇÃO'] > 0) {
+        errorMessages.push(
+          `A coluna "DATA DE MOVIMENTAÇÃO" contém ${columnErrors['DATA DE MOVIMENTAÇÃO']} erros. Formato esperado: DD/MM/AAAA.`
+        );
+      }
+
+      Notify.create({
+        type: 'negative',
+        message: `Erros encontrados nas colunas:\n${errorMessages.join('\n')}`,
+        timeout: 10000,
+        progress: true,
+      });
+      setLoading(false);
+      return;
+    }
+
+    listInsertMovement.value = checkAccountAndCategoryRows(validRows);
+
+    Notify.create({
+      message: 'Arquivo processado com sucesso',
+      type: 'positive',
+    });
+
+    setLoading(false);
     viewMode.value = 'process';
   } else {
     Notify.create({
