@@ -841,7 +841,7 @@ watch(
 
             <q-td key="observation" :props="props">
               <q-icon
-                name="edit"
+                name="add_comment"
                 color="black"
                 v-show="
                   !finalizedReport &&
