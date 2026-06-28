@@ -101,6 +101,33 @@ const columnsDataClient = reactive<QuasarTable[]>([
 ]);
 const columnsMovement = reactive<QuasarTable[]>([
   {
+    name: 'date_movement',
+    label: 'Data de movimentação',
+    field: 'date_movement',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'description',
+    label: 'Descrição',
+    field: 'description',
+    align: 'left',
+  },
+  {
+    name: 'value',
+    label: 'Valor',
+    field: 'value',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'category',
+    label: 'Categoria',
+    field: 'category.name',
+    align: 'left',
+    sortable: true,
+  },
+  {
     name: 'name',
     label: 'Banco',
     field: 'account.name',
@@ -120,33 +147,6 @@ const columnsMovement = reactive<QuasarTable[]>([
     field: 'account.agency_number',
     align: 'left',
     sortable: true,
-  },
-  {
-    name: 'category',
-    label: 'Categoria',
-    field: 'category.name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'value',
-    label: 'Valor',
-    field: 'value',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'date_movement',
-    label: 'Data de movimentação',
-    field: 'date_movement',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
-    align: 'left',
   },
   {
     name: 'receipt',
@@ -750,6 +750,22 @@ watch(
                   : 'text-red',
             ]"
           >
+          <q-td key="date_movement" :props="props" class="text-left">
+              <span class="text-subtitle2">{{
+                formatDate(props.row.date_movement)
+              }}</span>
+            </q-td>
+            <q-td key="description" :props="props" class="text-left">
+              <span class="text-subtitle2">{{ props.row.description }}</span>
+            </q-td>
+            <q-td key="value" :props="props" class="text-left">
+              <span class="text-subtitle2">{{
+                formatCurrencyBRL(props.row.value)
+              }}</span>
+            </q-td>
+            <q-td key="category" :props="props" class="text-left">
+              <span class="text-subtitle2">{{ props.row.category?.name }}</span>
+            </q-td>
             <q-td key="name" :props="props" class="text-left">
               <span class="text-subtitle2">{{ props.row.account.name }}</span>
             </q-td>
@@ -765,27 +781,6 @@ watch(
                 props.row.account.agency_number
               }}</span>
             </q-td>
-
-            <q-td key="category" :props="props" class="text-left">
-              <span class="text-subtitle2">{{ props.row.category?.name }}</span>
-            </q-td>
-
-            <q-td key="value" :props="props" class="text-left">
-              <span class="text-subtitle2">{{
-                formatCurrencyBRL(props.row.value)
-              }}</span>
-            </q-td>
-
-            <q-td key="date_movement" :props="props" class="text-left">
-              <span class="text-subtitle2">{{
-                formatDate(props.row.date_movement)
-              }}</span>
-            </q-td>
-
-            <q-td key="description" :props="props" class="text-left">
-              <span class="text-subtitle2">{{ props.row.description }}</span>
-            </q-td>
-
             <q-td
               @click="props.row.receipt ? openPreview(props.row.receipt) : null"
               key="receipt"

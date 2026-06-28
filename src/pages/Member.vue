@@ -370,7 +370,7 @@ onMounted(async () => {
               <q-btn
                 v-show="
                   user?.enterprise_id === user?.view_enterprise_id &&
-                  !startDownloadWallet
+                  !startDownloadWallet && listMemberCurrent.length > 0
                 "
                 @click="changeDownloadWallet"
                 icon="download"
