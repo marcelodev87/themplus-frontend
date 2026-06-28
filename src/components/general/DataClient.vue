@@ -36,7 +36,8 @@ const {
   finalizedReport,
 } = storeToRefs(useReportStore());
 const { user } = storeToRefs(useAuthStore());
-const { downloadFile, saveObservations } = useMovementStore();
+const { downloadFile, saveObservations, exportMovementExcel } =
+  useMovementStore();
 const { loadingMovement } = storeToRefs(useMovementStore());
 
 const props = defineProps<{
@@ -341,6 +342,30 @@ const openFormFileFinancial = (monthYear: string): void => {
 const closeFormFileFinancial = async () => {
   showFormFileFinancial.value = false;
 };
+const exportDataExcel = async (): Promise<void> => {
+  loadingMovement.value = true;
+
+  const filterMonthYear =
+    listMovement.value.length > 0
+      ? (() => {
+          const [day, month, year] =
+            listMovement.value[0].date_movement.split('/');
+          const date = new Date(`${year}-${month}-${day}`);
+          return `${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+        })()
+      : '';
+
+  await exportMovementExcel(
+    onlyEntry.value,
+    onlyOut.value,
+    filterMonthYear,
+    selectedCategory.value.value,
+    selectedAccount.value.value,
+    entepriseInspected.value?.id ?? ''
+  );
+
+  loadingMovement.value = false;
+};
 
 const optionsCategoriesFilter = computed(() => {
   const baseCategory = {
@@ -627,7 +652,7 @@ watch(
           <div :class="!$q.screen.lt.md ? '' : 'column full-width'">
             <span class="text-subtitle2">Lista de movimentações</span>
             <q-space />
-            <div v-if="!$q.screen.lt.md" class="row">
+            <div v-if="!$q.screen.lt.md" class="row q-my-sm">
               <q-toggle
                 v-model="onlyEntry"
                 :disable="loadingMovement"
@@ -683,6 +708,18 @@ watch(
                   <q-icon name="search" />
                 </template>
               </q-input>
+              <q-btn
+                @click="exportDataExcel"
+                :loading="loadingMovement"
+                round
+                color="primary"
+                icon="download"
+                unelevated
+                size="md"
+                class="q-ml-sm"
+              >
+                <q-tooltip> Exportar </q-tooltip>
+              </q-btn>
             </div>
             <q-expansion-item
               v-else
@@ -735,6 +772,17 @@ watch(
                   <q-icon name="search" />
                 </template>
               </q-input>
+              <q-btn
+                @click="exportDataExcel"
+                :loading="loadingMovement"
+                color="secondary"
+                icon="download"
+                unelevated
+                label="Exportar"
+                class="q-my-sm full-width"
+              >
+                <q-tooltip> Exportar </q-tooltip>
+              </q-btn>
             </q-expansion-item>
           </div>
         </template>
@@ -750,7 +798,7 @@ watch(
                   : 'text-red',
             ]"
           >
-          <q-td key="date_movement" :props="props" class="text-left">
+            <q-td key="date_movement" :props="props" class="text-left">
               <span class="text-subtitle2">{{
                 formatDate(props.row.date_movement)
               }}</span>

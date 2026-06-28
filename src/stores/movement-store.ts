@@ -260,11 +260,20 @@ export const useMovementStore = defineStore('movement', {
       entry: boolean,
       out: boolean,
       date: string,
-      categoryId: string | null
+      categoryId: string | null,
+      accountId?: string | null,
+      enterpriseId?: string | null
     ) {
       try {
         this.setLoading(true);
-        await exportMovementExcelService(entry, out, date, categoryId);
+        await exportMovementExcelService(
+          entry,
+          out,
+          date,
+          categoryId,
+          accountId,
+          enterpriseId
+        );
       } catch (error) {
         this.createError(error);
       } finally {

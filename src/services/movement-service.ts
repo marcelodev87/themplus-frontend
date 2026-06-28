@@ -251,16 +251,26 @@ export const exportMovementExcelService = async (
   entry: boolean,
   out: boolean,
   date: string,
-  categoryId: string | null
+  categoryId: string | null,
+  accountId?: string | null,
+  enterpriseId?: string | null
 ) => {
   try {
+    const params = new URLSearchParams();
+    params.append('entry', String(entry));
+    params.append('out', String(out));
+    if (categoryId) params.append('category', categoryId);
+    if (accountId) params.append('account', accountId);
+    if (enterpriseId) params.append('enterprise', enterpriseId);
+
     const response = await api.post(
-      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}&category=${categoryId}`,
+      `${baseUrl}/export/excel/${date}?${params.toString()}`,
       null,
       {
         responseType: 'blob',
       }
     );
+
     const now = new Date();
     const timestamp = now
       .toISOString()
