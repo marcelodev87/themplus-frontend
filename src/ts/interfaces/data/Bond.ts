@@ -8,4 +8,5 @@ export interface Bond {
   created_by: string | null;
   no_verified: number;
   manage_users: boolean;
+  code_financial: number | null;
 }

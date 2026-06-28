@@ -232,6 +232,7 @@ const setView = async (entepriseId: string | null): Promise<void> => {
 
 const filteredBonds = computed(() => {
   const normalize = (text: string): string => {
+    if (!text) return '';
     return text
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -241,8 +242,23 @@ const filteredBonds = computed(() => {
   const searchTerm = normalize(filterOrder.value);
   resetPage();
 
+  if (!searchTerm) return listBond.value;
+
   return listBond.value.filter((item) => {
-    return item.name && normalize(item.name).includes(searchTerm);
+    console.log('item', item);
+    const name = normalize(item.name || '');
+    const cpf = normalize(item.cpf || '');
+    const cnpj = normalize(item.cnpj || '');
+    const codeFinancial = normalize(
+      item.code_financial ? String(item.code_financial) : ''
+    );
+
+    return (
+      name.includes(searchTerm) ||
+      cpf.includes(searchTerm) ||
+      cnpj.includes(searchTerm) ||
+      codeFinancial.includes(searchTerm)
+    );
   });
 });
 
