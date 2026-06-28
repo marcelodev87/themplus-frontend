@@ -1,159 +1,133 @@
 <script setup lang="ts">
 import bb, { bar } from 'billboard.js';
 import { Enterprise } from 'src/ts/interfaces/data/Enterprise';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import 'billboard.js/dist/billboard.css';
 import { storeToRefs } from 'pinia';
 import { useReportStore } from 'src/stores/report-store';
 
-defineOptions({
-  name: 'DataEnterprise',
-});
+defineOptions({ name: 'DataEnterprise' });
 
-const props = defineProps<{
-  enterprise: Enterprise;
-}>();
+const props = defineProps<{ enterprise: Enterprise }>();
 
 const { listAmountRegister, listQuantityRegister, listYear, loadingReport } =
   storeToRefs(useReportStore());
 const { getReports } = useReportStore();
 
 const dataEnterprise = computed(() => props.enterprise);
-const yearActual = computed(() => {
-  const currentDate = new Date();
+const yearActual = computed(() => `${new Date().getFullYear()}`);
 
-  return `${currentDate.getFullYear()}`;
-});
+let chartAmount: ReturnType<typeof bb.generate> | null = null;
+let chartQuantity: ReturnType<typeof bb.generate> | null = null;
+
+const destroyCharts = () => {
+  chartAmount?.destroy();
+  chartQuantity?.destroy();
+  chartAmount = null;
+  chartQuantity = null;
+};
+
 const mountDashboard = () => {
+  destroyCharts();
+
   const maxQuantityEntry = Math.max(
-    ...listQuantityRegister.value.map((item) => item.entry_quantity)
+    ...listQuantityRegister.value.map((i) => i.entry_quantity)
   );
   const maxQuantityOut = Math.max(
-    ...listQuantityRegister.value.map((item) => item.out_quantity)
+    ...listQuantityRegister.value.map((i) => i.out_quantity)
   );
-  const maxQuantityValue = Math.max(maxQuantityEntry, maxQuantityOut);
-  const yQuantityTicks = Array.from(
-    { length: maxQuantityValue + 1 },
-    (_, i) => i
-  );
+  const maxQ = Math.max(maxQuantityEntry, maxQuantityOut);
+  const yQuantityTicks = Array.from({ length: maxQ + 1 }, (_, i) => i);
 
-  bb.generate({
-    title: {
-      text: 'Valores R$ x Mês',
+  const commonAxis = (formatFn: (d: number) => string | number) => ({
+    x: {
+      type: 'timeseries' as const,
+      tick: {
+        format: '%m/%Y',
+        rotate: 0,
+        multiline: false,
+        culling: false,
+        fit: true,
+      },
     },
+    y: {
+      show: true,
+      tick: {
+        count: 6,
+        format: formatFn,
+      },
+      padding: { top: 20, bottom: 0 },
+    },
+  });
+
+  chartAmount = bb.generate({
+    title: { text: 'Valores (R$) por Mês' },
     data: {
       x: 'x',
       columns: [
-        ['x', ...listAmountRegister.value.map((item) => item.period)],
-        [
-          'entrada',
-          ...listAmountRegister.value.map((item) => item.entry_value),
-        ],
-        ['saida', ...listAmountRegister.value.map((item) => item.out_value)],
+        ['x', ...listAmountRegister.value.map((i) => i.period)],
+        ['Entrada', ...listAmountRegister.value.map((i) => i.entry_value)],
+        ['Saída', ...listAmountRegister.value.map((i) => i.out_value)],
       ],
       type: bar(),
-      colors: {
-        entrada: 'green',
-        saida: 'red',
+      colors: { Entrada: '#16a34a', Saída: '#dc2626' },
+    },
+    axis: commonAxis((d: number) =>
+      d.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    ),
+    bar: { width: { ratio: 0.25 }, radius: { ratio: 0.1 } },
+    legend: { position: 'bottom' },
+    tooltip: {
+      format: {
+        value: (v: number) =>
+          `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
       },
     },
-    axis: {
-      x: {
-        type: 'timeseries',
-        tick: {
-          values: listAmountRegister.value.map((item) =>
-            new Date(item.period).getTime()
-          ),
-          format: '%m/%Y',
-          rotate: 0,
-          multiline: false,
-          culling: false,
-        },
-      },
-      y: {
-        show: true,
-        tick: {
-          count: 10,
-          format: (d: number) =>
-            d.toLocaleString('pt-BR', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }),
-        },
-        padding: {
-          top: 0,
-          bottom: 0,
-        },
-      },
-    },
-    bar: {
-      width: {
-        ratio: 0.7,
-      },
-    },
+    grid: { y: { show: true } },
     bindto: '#allRegister',
-  }).resize({
-    height: 200,
   });
 
-  bb.generate({
-    title: {
-      text: 'Registro x Mês',
-    },
+  chartAmount.resize();
+
+  chartQuantity = bb.generate({
+    title: { text: 'Quantidade de Registros por Mês' },
     data: {
       x: 'x',
       columns: [
-        ['x', ...listQuantityRegister.value.map((item) => item.period)],
-        [
-          'entrada',
-          ...listQuantityRegister.value.map((item) => item.entry_quantity),
-        ],
-        [
-          'saida',
-          ...listQuantityRegister.value.map((item) => item.out_quantity),
-        ],
+        ['x', ...listQuantityRegister.value.map((i) => i.period)],
+        ['Entrada', ...listQuantityRegister.value.map((i) => i.entry_quantity)],
+        ['Saída', ...listQuantityRegister.value.map((i) => i.out_quantity)],
       ],
       type: bar(),
-      colors: {
-        entrada: 'green',
-        saida: 'red',
-      },
+      colors: { Entrada: '#16a34a', Saída: '#dc2626' },
     },
-    axis: {
-      x: {
-        type: 'timeseries',
-        tick: {
-          values: listQuantityRegister.value.map((item) =>
-            new Date(item.period).getTime()
-          ),
-          format: '%m/%Y',
-          rotate: 0,
-          multiline: false,
-          culling: false,
-        },
-      },
-      y: {
-        show: true,
-        tick: {
-          values: yQuantityTicks,
-          format: (d: number) => d,
-        },
-        min: 0,
-        padding: {
-          top: 0,
-          bottom: 0,
-        },
-      },
+    axis: commonAxis((d: number) => (Number.isInteger(d) ? d : '')),
+    bar: { width: { ratio: 0.25 }, radius: { ratio: 0.1 } },
+    legend: { position: 'bottom' },
+    tooltip: {
+      format: { value: (v: number) => `${v} registro(s)` },
     },
-    bar: {
-      width: {
-        ratio: 0.7,
-      },
-    },
+    grid: { y: { show: true } },
     bindto: '#amountMovement',
-  }).resize({
-    height: 200,
   });
+
+  chartQuantity.resize();
+};
+
+// Responsividade via ResizeObserver
+let resizeObserver: ResizeObserver | null = null;
+
+const setupResize = () => {
+  const container = document.querySelector('#chart-container');
+  if (!container) return;
+  resizeObserver = new ResizeObserver(() => {
+    chartAmount?.resize();
+    chartQuantity?.resize();
+  });
+  resizeObserver.observe(container);
 };
 
 const selectedYear = ref<string>(yearActual.value);
@@ -165,8 +139,15 @@ watch(selectedYear, async () => {
 
 onMounted(() => {
   mountDashboard();
+  setupResize();
+});
+
+onUnmounted(() => {
+  resizeObserver?.disconnect();
+  destroyCharts();
 });
 </script>
+
 <template>
   <section>
     <q-expansion-item
@@ -179,14 +160,9 @@ onMounted(() => {
         <div class="row justify-between">
           <q-input
             v-model="dataEnterprise.name"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Nome da organização"
-            dense
-            class="input-divider"
-            input-class="text-black"
-            readonly
+            bg-color="white" label-color="black" filled
+            label="Nome da organização" dense class="input-divider"
+            input-class="text-black" readonly
           >
             <template v-slot:prepend>
               <q-icon name="person" color="black" size="20px" />
@@ -194,196 +170,63 @@ onMounted(() => {
           </q-input>
           <q-input
             v-model="dataEnterprise.code_financial"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Código da organização"
-            dense
-            class="input-divider"
-            input-class="text-black"
-            readonly
+            bg-color="white" label-color="black" filled
+            label="Código da organização" dense class="input-divider"
+            input-class="text-black" readonly
           >
             <template v-slot:prepend>
               <q-icon name="key" color="black" size="20px" />
             </template>
           </q-input>
         </div>
-        <q-input
-          v-model="dataEnterprise.email"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="E-mail da organização"
-          dense
-          input-class="text-black"
-          readonly
-        >
-          <template v-slot:prepend>
-            <q-icon name="mail" color="black" size="20px" />
-          </template>
+        <q-input v-model="dataEnterprise.email" bg-color="white" label-color="black" filled label="E-mail da organização" dense input-class="text-black" readonly>
+          <template v-slot:prepend><q-icon name="mail" color="black" size="20px" /></template>
         </q-input>
-        <q-input
-          v-model="dataEnterprise.phone"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Telefone da organização"
-          dense
-          input-class="text-black"
-          maxlength="15"
-          readonly
-        >
-          <template v-slot:prepend>
-            <q-icon name="call" color="black" size="20px" />
-          </template>
+        <q-input v-model="dataEnterprise.phone" bg-color="white" label-color="black" filled label="Telefone da organização" dense input-class="text-black" maxlength="15" readonly>
+          <template v-slot:prepend><q-icon name="call" color="black" size="20px" /></template>
         </q-input>
         <div class="row justify-between">
-          <q-input
-            v-if="dataEnterprise.cpf !== null"
-            v-model="dataEnterprise.cpf"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="CPF"
-            dense
-            input-class="text-black"
-            maxlength="15"
-            readonly
-            class="full-width"
-          >
-            <template v-slot:prepend>
-              <q-icon name="badge" color="black" size="20px" />
-            </template>
+          <q-input v-if="dataEnterprise.cpf !== null" v-model="dataEnterprise.cpf" bg-color="white" label-color="black" filled label="CPF" dense input-class="text-black" maxlength="15" readonly class="full-width">
+            <template v-slot:prepend><q-icon name="badge" color="black" size="20px" /></template>
           </q-input>
-          <q-input
-            v-else
-            v-model="dataEnterprise.cnpj"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="CNPJ"
-            dense
-            input-class="text-black"
-            readonly
-            class="full-width"
-          >
-            <template v-slot:prepend>
-              <q-icon name="badge" color="black" size="20px" />
-            </template>
+          <q-input v-else v-model="dataEnterprise.cnpj" bg-color="white" label-color="black" filled label="CNPJ" dense input-class="text-black" readonly class="full-width">
+            <template v-slot:prepend><q-icon name="badge" color="black" size="20px" /></template>
           </q-input>
         </div>
-        <q-input
-          v-model="dataEnterprise.cep"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="CEP"
-          dense
-          input-class="text-black"
-          readonly
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" color="black" size="20px" />
-          </template>
+        <q-input v-model="dataEnterprise.cep" bg-color="white" label-color="black" filled label="CEP" dense input-class="text-black" readonly>
+          <template v-slot:prepend><q-icon name="search" color="black" size="20px" /></template>
         </q-input>
         <div class="row justify-between">
-          <q-input
-            v-model="dataEnterprise.state"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="UF"
-            dense
-            input-class="text-black"
-            class="input-divider"
-            readonly
-          >
-            <template v-slot:prepend>
-              <q-icon name="map" color="black" size="20px" />
-            </template>
+          <q-input v-model="dataEnterprise.state" bg-color="white" label-color="black" filled label="UF" dense input-class="text-black" class="input-divider" readonly>
+            <template v-slot:prepend><q-icon name="map" color="black" size="20px" /></template>
           </q-input>
-          <q-input
-            v-model="dataEnterprise.city"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Cidade"
-            dense
-            input-class="text-black"
-            class="input-divider"
-            readonly
-          >
-            <template v-slot:prepend>
-              <q-icon name="pin_drop" color="black" size="20px" />
-            </template>
+          <q-input v-model="dataEnterprise.city" bg-color="white" label-color="black" filled label="Cidade" dense input-class="text-black" class="input-divider" readonly>
+            <template v-slot:prepend><q-icon name="pin_drop" color="black" size="20px" /></template>
           </q-input>
         </div>
-        <q-input
-          v-model="dataEnterprise.neighborhood"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Bairro"
-          dense
-          input-class="text-black"
-          readonly
-        >
-          <template v-slot:prepend>
-            <q-icon name="pin_drop" color="black" size="20px" />
-          </template>
+        <q-input v-model="dataEnterprise.neighborhood" bg-color="white" label-color="black" filled label="Bairro" dense input-class="text-black" readonly>
+          <template v-slot:prepend><q-icon name="pin_drop" color="black" size="20px" /></template>
         </q-input>
-        <q-input
-          v-model="dataEnterprise.address"
-          bg-color="white"
-          label-color="black"
-          filled
-          label="Logradouro"
-          dense
-          input-class="text-black"
-          readonly
-        >
-          <template v-slot:prepend>
-            <q-icon name="pin_drop" color="black" size="20px" />
-          </template>
+        <q-input v-model="dataEnterprise.address" bg-color="white" label-color="black" filled label="Logradouro" dense input-class="text-black" readonly>
+          <template v-slot:prepend><q-icon name="pin_drop" color="black" size="20px" /></template>
         </q-input>
         <div class="row justify-between">
-          <q-input
-            v-model="dataEnterprise.number_address"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Número"
-            dense
-            input-class="text-black"
-            class="input-divider"
-            readonly
-          >
-            <template v-slot:prepend>
-              <q-icon name="numbers" color="black" size="20px" />
-            </template>
+          <q-input v-model="dataEnterprise.number_address" bg-color="white" label-color="black" filled label="Número" dense input-class="text-black" class="input-divider" readonly>
+            <template v-slot:prepend><q-icon name="numbers" color="black" size="20px" /></template>
           </q-input>
-          <q-input
-            v-model="dataEnterprise.complement"
-            bg-color="white"
-            label-color="black"
-            filled
-            label="Complemento"
-            dense
-            input-class="text-black"
-            class="input-divider"
-            readonly
-          >
-            <template v-slot:prepend>
-              <q-icon name="numbers" color="black" size="20px" />
-            </template>
+          <q-input v-model="dataEnterprise.complement" bg-color="white" label-color="black" filled label="Complemento" dense input-class="text-black" class="input-divider" readonly>
+            <template v-slot:prepend><q-icon name="numbers" color="black" size="20px" /></template>
           </q-input>
         </div>
       </q-form>
     </q-expansion-item>
 
     <q-card flat bordered class="q-my-sm">
-      <q-card-section>
-        <div class="row item-center justify-end">
+      <q-card-section class="q-pb-none">
+        <div class="row items-center justify-between">
+          <span class="text-subtitle1 text-weight-medium text-grey-8">
+            Relatório anual
+          </span>
           <q-select
             v-model="selectedYear"
             :options="listYear"
@@ -394,21 +237,50 @@ onMounted(() => {
             options-dense
             bg-color="grey-1"
             label-color="black"
-            style="min-width: 200px"
-            :class="!$q.screen.lt.md ? '' : 'full-width'"
+            style="min-width: 160px"
+            :class="$q.screen.lt.md ? 'full-width q-mt-sm' : ''"
           >
             <template v-slot:prepend>
-              <q-icon name="calendar_today" color="black" size="20px" />
+              <q-icon name="calendar_today" color="black" size="18px" />
             </template>
           </q-select>
         </div>
       </q-card-section>
-      <q-card-section>
-        <div id="allRegister"></div>
-      </q-card-section>
-      <q-card-section>
-        <div id="amountMovement"></div>
+
+      <q-card-section id="chart-container" class="q-pa-sm">
+        <div
+          id="allRegister"
+          class="chart-wrapper"
+          style="width: 100%; min-height: 220px"
+        />
+        <q-separator class="q-my-md" />
+        <div
+          id="amountMovement"
+          class="chart-wrapper"
+          style="width: 100%; min-height: 220px"
+        />
       </q-card-section>
     </q-card>
   </section>
 </template>
+
+<style scoped>
+.chart-wrapper :deep(.bb svg) {
+  width: 100% !important;
+}
+.chart-wrapper :deep(.bb-title) {
+  font-size: 13px;
+  font-weight: 600;
+  fill: #374151;
+}
+.chart-wrapper :deep(.bb-axis text) {
+  font-size: 11px;
+  fill: #6b7280;
+}
+.chart-wrapper :deep(.bb-legend-item text) {
+  font-size: 12px;
+}
+.chart-wrapper :deep(.bb-grid line) {
+  stroke: #e5e7eb;
+}
+</style>

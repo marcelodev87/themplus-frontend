@@ -335,6 +335,18 @@ const handleEdit = (movement: Movement) => {
     openFormOut();
   }
 };
+const formatDateFull = (date: string | null): string => {
+  if (!date) return '-';
+  const d = new Date(date);
+  return d.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+};
 const openFormFileFinancial = (monthYear: string): void => {
   selectedFinancialMonthYear.value = monthYear;
   showFormFileFinancial.value = true;
@@ -517,7 +529,6 @@ watch(
                 formatDate(props.row.date_delivery)
               }}</span>
             </q-td>
-
             <q-td key="check_counter" :props="props" class="text-left">
               <q-icon
                 v-show="props.row.check_counter === user?.enterprise_id"
@@ -525,7 +536,13 @@ watch(
                 color="green"
                 size="20px"
               >
-                <q-tooltip> Verificado pela sua organização </q-tooltip>
+                <q-tooltip>
+                  Verificado pela sua organização
+                  <br />
+                  Usuário: {{ props.row.check_counter_user }}
+                  <br />
+                  Data: {{ formatDateFull(props.row.check_counter_date) }}
+                </q-tooltip>
               </q-icon>
               <q-icon
                 v-show="
@@ -536,7 +553,13 @@ watch(
                 color="red"
                 size="20px"
               >
-                <q-tooltip> Verificado por outra organização </q-tooltip>
+                <q-tooltip>
+                  Verificado por outra organização
+                  <br />
+                  Usuário: {{ props.row }}
+                  <br />
+                  Data: {{ formatDateFull(props.row.check_counter_date) }}
+                </q-tooltip>
               </q-icon>
             </q-td>
             <q-td key="action" :props="props">
