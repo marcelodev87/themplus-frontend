@@ -2,11 +2,9 @@
 import { ref } from 'vue';
 import ImageView from '../shared/ImageView.vue';
 
-defineOptions({
-  name: 'EnterpriseByCounterDocument',
-});
+defineOptions({ name: 'EnterpriseByCounterDocument' });
 
-const showImage = ref<boolean>(false);
+const showImage = ref(false);
 const urlImage = ref<string | null>(null);
 
 const openShowImage = (url: string) => {
@@ -18,20 +16,91 @@ const closeShowImage = () => {
   urlImage.value = null;
 };
 </script>
+
 <template>
-  <main>
-    <p class="text-h5 text-bold"># Cadastro e Vinculação de Organizações</p>
-    <p class="text-body1">
-      A página de Cadastro de Organizações permite registrar novas entidades e,
+  <main class="doc-content">
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-header-icon doc-header-icon--counter">
+        <q-icon name="add_business" color="white" size="28px" />
+      </div>
+      <div>
+        <p class="text-h5 text-weight-bold q-mb-xs">Organização</p>
+        <p class="text-body2 text-grey-6 q-mb-none">
+          Cadastre e vincule organizações cliente diretamente
+        </p>
+      </div>
+    </div>
+
+    <p class="text-body1 doc-lead">
+      A página de Organização permite registrar novas entidades cliente e,
       simultaneamente, estabelecer um vínculo direto com elas, agilizando o
-      processo de configuração inicial.
+      processo de configuração inicial sem necessitar de uma solicitação
+      separada.
     </p>
 
-    <q-img
-      @click="openShowImage('/images/document/form-enterprise-counter.png')"
-      src="/images/document/form-enterprise-counter.png"
-      style="width: 1000px; max-width: 95vw"
-    />
+    <!-- How it works -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="help_outline" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold">Como funciona</span>
+      </div>
+
+      <div class="row q-col-gutter-sm q-mb-lg">
+        <div class="col-12 col-sm-4">
+          <div class="doc-feature-card q-pa-md full-height text-center">
+            <q-icon name="edit_note" color="primary" size="32px" />
+            <p class="text-weight-bold text-body2 q-mt-sm q-mb-xs">
+              1. Preencha os dados
+            </p>
+            <p class="text-caption text-grey-7 q-mb-none">
+              Informe os dados da nova organização cliente no formulário
+            </p>
+          </div>
+        </div>
+        <div class="col-12 col-sm-4">
+          <div class="doc-feature-card q-pa-md full-height text-center">
+            <q-icon name="link" color="primary" size="32px" />
+            <p class="text-weight-bold text-body2 q-mt-sm q-mb-xs">
+              2. Vínculo automático
+            </p>
+            <p class="text-caption text-grey-7 q-mb-none">
+              Ao cadastrar, o vínculo com a organização é estabelecido
+              automaticamente
+            </p>
+          </div>
+        </div>
+        <div class="col-12 col-sm-4">
+          <div class="doc-feature-card q-pa-md full-height text-center">
+            <q-icon name="check_circle" color="positive" size="32px" />
+            <p class="text-weight-bold text-body2 q-mt-sm q-mb-xs">
+              3. Pronto para usar
+            </p>
+            <p class="text-caption text-grey-7 q-mb-none">
+              A organização já aparece nos Vínculos e está disponível para
+              análise
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <q-img
+        src="/images/document/form-enterprise-counter.png"
+        class="doc-image"
+        style="max-width: 100%"
+        @click="openShowImage('/images/document/form-enterprise-counter.png')"
+      />
+    </div>
+
+    <div class="doc-callout doc-callout--tip">
+      <q-icon name="lightbulb" size="20px" class="q-mt-xs" />
+      <p class="text-body2 q-mb-none">
+        Use esta funcionalidade quando você já tem a organização cliente e
+        deseja integrá-la ao Themplus de forma rápida, sem esperar por uma
+        solicitação de vínculo da organização.
+      </p>
+    </div>
+
     <ImageView
       :open="showImage"
       :url="urlImage"

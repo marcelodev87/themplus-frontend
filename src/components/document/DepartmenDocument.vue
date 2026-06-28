@@ -2,11 +2,9 @@
 import { ref } from 'vue';
 import ImageView from '../shared/ImageView.vue';
 
-defineOptions({
-  name: 'DepartmentDocument',
-});
+defineOptions({ name: 'DepartmentDocument' });
 
-const showImage = ref<boolean>(false);
+const showImage = ref(false);
 const urlImage = ref<string | null>(null);
 
 const openShowImage = (url: string) => {
@@ -18,73 +16,144 @@ const closeShowImage = () => {
   urlImage.value = null;
 };
 </script>
+
 <template>
-  <main>
-    <p class="text-h5 text-bold"># Gerenciamento de Departamentos</p>
-    <p class="text-body1">
+  <main class="doc-content">
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-header-icon">
+        <q-icon name="lan" color="white" size="28px" />
+      </div>
+      <div>
+        <p class="text-h5 text-weight-bold q-mb-xs">
+          Gerenciamento de Departamentos
+        </p>
+        <p class="text-body2 text-grey-6 q-mb-none">
+          Organize a estrutura interna da sua organização
+        </p>
+      </div>
+    </div>
+
+    <p class="text-body1 doc-lead">
       A página de Departamentos oferece uma visão geral de todos os
-      departamentos criados para sua organização. À medida que sua equipe
-      cresce, é fundamental categorizar os usuários em departamentos para
-      otimizar a organização e a estrutura interna. Acesse esta funcionalidade
-      navegando até "Configurações" no menu lateral esquerdo e selecionando a
-      opção "Departamentos".
+      departamentos criados para sua organização. Categorizar os usuários em
+      departamentos otimiza a organização e a estrutura interna. Acesse em
+      <strong>Configurações → Departamentos</strong> no menu lateral.
     </p>
-    <div style="position: relative; padding-bottom: 42.5%; height: 0">
+
+    <!-- Video -->
+    <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/d2edfe1c7cdd40eb870670c6755aa364?sid=b6bc942d-d9b6-4f99-a8b4-b91bb4640aaf"
-        frameborder="0"
+        allowfullscreen
         webkitallowfullscreen
         mozallowfullscreen
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"
-      ></iframe>
-    </div>
-
-    <p class="text-h6 q-mt-md"># Criando um Novo Departamento:</p>
-    <p class="text-body1">
-      Para cadastrar um novo departamento, clique no botão "Departamentos +".
-      Você pode definir o nível hierárquico do departamento que está criando.
-      Por exemplo, você pode criar um departamento principal chamado
-      "Supervisão" e, em seguida, criar um sub-departamento subordinado a ele,
-      como "Supervisão Setor Infantil". Essa estrutura hierárquica permite uma
-      organização refinada dos departamentos.
-    </p>
-    <div class="column">
-      <q-img
-        @click="openShowImage('/images/document/department.png')"
-        src="/images/document/department.png"
-        style="width: 600px; max-width: 95vw"
-      />
-      <q-img
-        @click="openShowImage('/images/document/form-department.png')"
-        src="/images/document/form-department.png"
-        style="width: 600px; max-width: 95vw"
-        class="q-mt-md"
       />
     </div>
 
-    <p class="text-h6 q-mt-md"># Utilização dos Departamentos:</p>
-    <ul class="text-body1 column q-gutter-y-md">
-      <li>
-        <p>
-          Agora, você pode associar os departamentos existentes aos usuários,
-          seja ao criar novos usuários ou ao editar os existentes.
+    <!-- Creating departments -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="add_circle" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Criando um novo departamento</span
+        >
+      </div>
+
+      <p class="text-body2 text-grey-8 q-mb-md" style="line-height: 1.7">
+        Clique no botão <strong>"Departamentos +"</strong> para cadastrar um
+        novo departamento. Você pode definir o nível hierárquico — por exemplo,
+        criar um departamento <em>"Supervisão"</em> e, em seguida, um
+        sub-departamento <em>"Supervisão Setor Infantil"</em> subordinado a ele.
+      </p>
+
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-sm-6">
           <q-img
-            @click="openShowImage('/images/document/use-department.png')"
-            src="/images/document/use-department.png"
-            style="width: 600px; max-width: 85vw"
-            class="q-mt-md"
+            src="/images/document/department.png"
+            class="doc-image"
+            @click="openShowImage('/images/document/department.png')"
           />
-        </p>
-      </li>
-      <li>
-        <p>
-          Caso <strong>você possua privilégios de administrador</strong>, você
-          pode <strong>alterar seu departamento</strong> clicando no avatar do
-          seu perfil, localizado no canto superior direito.
-        </p>
-      </li>
-    </ul>
+        </div>
+        <div class="col-12 col-sm-6">
+          <q-img
+            src="/images/document/form-department.png"
+            class="doc-image"
+            @click="openShowImage('/images/document/form-department.png')"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="how_to_use" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Utilização dos departamentos</span
+        >
+      </div>
+
+      <div class="row q-col-gutter-sm">
+        <div class="col-12">
+          <div class="doc-feature-card q-pa-md">
+            <div class="row no-wrap items-start q-gutter-sm">
+              <q-icon
+                name="person_add"
+                color="primary"
+                size="20px"
+                class="q-mt-xs"
+              />
+              <div>
+                <p class="text-weight-bold text-body2 q-mb-xs">
+                  Associar a usuários
+                </p>
+                <p
+                  class="text-caption text-grey-7 q-mb-sm"
+                  style="line-height: 1.5"
+                >
+                  Associe departamentos aos usuários ao criar ou editar perfis
+                  existentes.
+                </p>
+                <q-img
+                  src="/images/document/use-department.png"
+                  class="doc-image"
+                  style="max-width: min(500px, 100%)"
+                  @click="openShowImage('/images/document/use-department.png')"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="doc-feature-card q-pa-md">
+            <div class="row no-wrap items-start q-gutter-sm">
+              <q-icon
+                name="manage_accounts"
+                color="primary"
+                size="20px"
+                class="q-mt-xs"
+              />
+              <div>
+                <p class="text-weight-bold text-body2 q-mb-xs">
+                  Alterar próprio departamento
+                </p>
+                <p
+                  class="text-caption text-grey-7 q-mb-none"
+                  style="line-height: 1.5"
+                >
+                  Caso você possua
+                  <strong>privilégios de administrador</strong>, pode alterar
+                  seu departamento clicando no avatar do seu perfil, localizado
+                  no canto superior direito.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <ImageView
       :open="showImage"
       :url="urlImage"

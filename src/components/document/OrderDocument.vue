@@ -2,11 +2,9 @@
 import { ref } from 'vue';
 import ImageView from '../shared/ImageView.vue';
 
-defineOptions({
-  name: 'OrderDocument',
-});
+defineOptions({ name: 'OrderDocument' });
 
-const showImage = ref<boolean>(false);
+const showImage = ref(false);
 const urlImage = ref<string | null>(null);
 
 const openShowImage = (url: string) => {
@@ -18,39 +16,77 @@ const closeShowImage = () => {
   urlImage.value = null;
 };
 </script>
+
 <template>
-  <main>
-    <p class="text-h5 text-bold">
-      # Gerenciamento Centralizado de Solicitações de Cliente
-    </p>
-    <p class="text-body1">
+  <main class="doc-content">
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-header-icon doc-header-icon--counter">
+        <q-icon name="request_page" color="white" size="28px" />
+      </div>
+      <div>
+        <p class="text-h5 text-weight-bold q-mb-xs">Solicitações</p>
+        <p class="text-body2 text-grey-6 q-mb-none">
+          Gerencie pedidos de vínculo com organizações cliente
+        </p>
+      </div>
+    </div>
+
+    <p class="text-body1 doc-lead">
       A página de Solicitações oferece uma visão completa e organizada de todos
-      os pedidos de vínculo de organizações do tipo "cliente", permitindo um
-      gerenciamento eficiente do seu pipeline de novos relacionamentos.
+      os pedidos de vínculo de organizações do tipo <strong>cliente</strong>,
+      permitindo um gerenciamento eficiente do seu pipeline de novos
+      relacionamentos contábeis.
     </p>
-    <q-img
-      @click="openShowImage('/images/document/order.png')"
-      src="/images/document/order.png"
-      style="width: 1000px; max-width: 95vw"
-    />
-    <p class="text-h6 q-mt-md">
-      # Iniciando uma Solicitação de Cliente com Simplicidade:
-    </p>
-    <p class="text-body1">
-      Para iniciar uma solicitação de vínculo, clique no botão "Solicitações +".
-      Um modal intuitivo será exibido, contendo um formulário de fácil
-      preenchimento. Localize o cliente desejado, selecione-o, adicione uma
-      descrição concisa e envie sua solicitação.
-      <strong
-        >Utilize o ícone de lupa para uma pesquisa rápida e precisa da
-        organização desejada.</strong
-      >
-    </p>
-    <q-img
-      @click="openShowImage('/images/document/form-order.png')"
-      src="/images/document/form-order.png"
-      style="width: 1000px; max-width: 95vw"
-    />
+
+    <!-- List screenshot -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="list_alt" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Visão geral das solicitações</span
+        >
+      </div>
+
+      <q-img
+        src="/images/document/order.png"
+        class="doc-image"
+        style="max-width: 100%"
+        @click="openShowImage('/images/document/order.png')"
+      />
+    </div>
+
+    <!-- Creating request -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="add_circle" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Iniciando uma solicitação</span
+        >
+      </div>
+
+      <p class="text-body2 text-grey-8 q-mb-md" style="line-height: 1.7">
+        Clique em <strong>"Solicitações +"</strong>. Um modal será exibido com
+        formulário de fácil preenchimento. Localize o cliente, selecione-o,
+        adicione uma descrição e envie a solicitação.
+      </p>
+
+      <div class="doc-callout doc-callout--tip q-mb-md">
+        <q-icon name="search" size="20px" class="q-mt-xs" />
+        <p class="text-body2 q-mb-none">
+          Utilize o <strong>ícone de lupa</strong> para uma busca rápida e
+          precisa da organização desejada.
+        </p>
+      </div>
+
+      <q-img
+        src="/images/document/form-order.png"
+        class="doc-image"
+        style="max-width: 100%"
+        @click="openShowImage('/images/document/form-order.png')"
+      />
+    </div>
+
     <ImageView
       :open="showImage"
       :url="urlImage"

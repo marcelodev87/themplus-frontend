@@ -2,11 +2,9 @@
 import { ref } from 'vue';
 import ImageView from '../shared/ImageView.vue';
 
-defineOptions({
-  name: 'DashboardDocument',
-});
+defineOptions({ name: 'DashboardDocument' });
 
-const showImage = ref<boolean>(false);
+const showImage = ref(false);
 const urlImage = ref<string | null>(null);
 
 const openShowImage = (url: string) => {
@@ -17,107 +15,123 @@ const closeShowImage = () => {
   showImage.value = false;
   urlImage.value = null;
 };
+
+const features = [
+  {
+    icon: 'filter_list',
+    title: 'Filtragem inteligente',
+    text: 'Analise dados por período específico ou por mês. O filtro exibe apenas os meses com movimentações registradas.',
+  },
+  {
+    icon: 'label',
+    title: 'Categorização detalhada',
+    text: 'Visualize com "Todas as categorias" ou refine selecionando categorias específicas, impactando os gráficos exibidos.',
+  },
+  {
+    icon: 'picture_as_pdf',
+    title: 'Exportação profissional',
+    text: 'Exporte os dados do painel para PDF formatado, preservando todos os filtros aplicados. Ideal para relatórios.',
+  },
+  {
+    icon: 'swap_vert',
+    title: 'Análise de movimentações',
+    text: 'Acompanhe o total de entradas e saídas. O saldo final apresenta a diferença, revelando a saúde financeira.',
+  },
+  {
+    icon: 'calendar_month',
+    title: 'Controle de agendamentos',
+    text: 'Monitore agendamentos de entrada e saída com o saldo resultante. Ideal para planejamento e projeção.',
+  },
+  {
+    icon: 'people',
+    title: 'Gestão de usuários',
+    text: 'Veja a contagem de usuários comuns, administradores e o total de usuários cadastrados na organização.',
+  },
+  {
+    icon: 'emoji_events',
+    title: 'Ranking de contas (TOP 3)',
+    text: 'Identifique as contas com maiores saldos através do ranking das 3 primeiras posições.',
+  },
+  {
+    icon: 'bar_chart',
+    title: 'Gráfico movimentações × categoria',
+    text: 'Entradas ou saídas distribuídas por categoria em barras horizontais, com proporção relativa ao total.',
+  },
+  {
+    icon: 'stacked_bar_chart',
+    title: 'Gráfico agendamentos × categoria',
+    text: 'Agendamentos categorizados em barras horizontais, mostrando a proporção de cada categoria.',
+  },
+  {
+    icon: 'public',
+    title: 'Visão global',
+    text: 'Informações abrangentes sobre movimentações da organização sem restrição de período, para análises de longo prazo.',
+  },
+];
 </script>
+
 <template>
-  <main>
-    <p class="text-h5 text-bold"># O Painel de Controle: Visão Estratégica</p>
-    <p class="text-body1">
-      O Painel de Controle (Dashboard) oferece uma visão consolidada das
-      informações mais relevantes, permitindo uma análise rápida e eficiente do
-      panorama financeiro da sua organização.
+  <main class="doc-content">
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-header-icon">
+        <q-icon name="dashboard" color="white" size="28px" />
+      </div>
+      <div>
+        <p class="text-h5 text-weight-bold q-mb-xs">Dashboard</p>
+        <p class="text-body2 text-grey-6 q-mb-none">
+          Painel de controle com visão estratégica da organização
+        </p>
+      </div>
+    </div>
+
+    <p class="text-body1 doc-lead">
+      O Dashboard oferece uma visão consolidada das informações mais relevantes,
+      permitindo uma análise rápida e eficiente do panorama financeiro da sua
+      organização através de gráficos, indicadores e filtros inteligentes.
     </p>
+
     <q-img
-      @click="openShowImage('/images/document/dashboard.png')"
       src="/images/document/dashboard.png"
-      style="width: 1000px; max-width: 95vw"
+      class="doc-image"
+      style="max-width: 100%"
+      @click="openShowImage('/images/document/dashboard.png')"
     />
-    <p class="text-body1 q-mt-md">
-      Aproveite os diversos recursos de filtragem e visualização para obter
-      insights valiosos:
-    </p>
-    <ul class="text-body1 column q-gutter-y-md">
-      <li>
-        <p>
-          <strong>Filtragem Inteligente:</strong> Analise dados por período
-          específico ou concentre-se em um mês particular. Ao optar pelo "Filtro
-          por mês", o sistema exibirá apenas os meses com movimentações
-          registradas.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Categorização Detalhada:</strong> Visualize o panorama
-          completo com "Todas as categorias" ou refine sua análise selecionando
-          categorias específicas. A categoria escolhida impactará os gráficos
-          que apresentam dados categorizados.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Exportação Profissional:</strong> Exporte os dados exibidos no
-          painel para um arquivo PDF formatado, preservando os filtros
-          aplicados. Ideal para relatórios e apresentações.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Análise de Movimentações:</strong> Acompanhe o fluxo
-          financeiro através do valor total de entradas e saídas. O saldo final
-          apresenta a diferença entre esses valores, oferecendo uma visão clara
-          da saúde financeira.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Controle de Agendamentos:</strong> Monitore os agendamentos de
-          entrada e saída, visualizando o saldo resultante. Ideal para o
-          planejamento financeiro e projeção de resultados.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Gestão de Usuários:</strong> Tenha uma visão geral da
-          estrutura de usuários da sua organização, com a contagem de usuários
-          comuns e administradores, além do total de usuários cadastrados.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Ranking de Contas (TOP 3):</strong> Identifique as contas com
-          os maiores saldos, através de um ranking das 3 primeiras posições.
-          Permite identificar as áreas financeiramente mais significativas da
-          organização.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Gráfico de Movimentações x Categoria:</strong> Visualize as
-          movimentações (entradas ou saídas) distribuídas por categoria em um
-          gráfico de barras horizontais. O comprimento de cada barra representa
-          a proporção do valor total da categoria em relação ao total de
-          movimentações. Ex: Se 20% das movimentações do mês estão na categoria
-          "Campanha", a barra correspondente estará preenchida em 20%.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Gráfico de Agendamentos x Categoria:</strong> Analise os
-          agendamentos (entradas ou saídas) categorizados, visualizados em um
-          gráfico de barras horizontais. O comprimento de cada barra reflete a
-          proporção do valor total da categoria em relação ao total de
-          agendamentos. Ex: Se 50% dos agendamentos do mês são do tipo
-          "Doações", a barra correspondente estará preenchida em 50%.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Visão Global da Organização:</strong> Acesse informações
-          abrangentes sobre as movimentações da sua organização, sem restrição
-          de período. Ideal para análises de longo prazo e identificação de
-          tendências.
-        </p>
-      </li>
-    </ul>
+
+    <!-- Features -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="tune" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Recursos disponíveis</span
+        >
+      </div>
+
+      <div class="row q-col-gutter-sm">
+        <div v-for="f in features" :key="f.title" class="col-12 col-sm-6">
+          <div class="doc-feature-card q-pa-md full-height">
+            <div class="row no-wrap items-start q-gutter-sm">
+              <q-icon
+                :name="f.icon"
+                color="primary"
+                size="20px"
+                class="q-mt-xs"
+              />
+              <div>
+                <p class="text-weight-bold text-body2 q-mb-xs">{{ f.title }}</p>
+                <p
+                  class="text-caption text-grey-7 q-mb-none"
+                  style="line-height: 1.5"
+                >
+                  {{ f.text }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <ImageView
       :open="showImage"
       :url="urlImage"

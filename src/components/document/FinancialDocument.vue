@@ -2,11 +2,9 @@
 import { ref } from 'vue';
 import ImageView from '../shared/ImageView.vue';
 
-defineOptions({
-  name: 'FinancialDocument',
-});
+defineOptions({ name: 'FinancialDocument' });
 
-const showImage = ref<boolean>(false);
+const showImage = ref(false);
 const urlImage = ref<string | null>(null);
 
 const openShowImage = (url: string) => {
@@ -17,83 +15,142 @@ const closeShowImage = () => {
   showImage.value = false;
   urlImage.value = null;
 };
+
+const actions = [
+  {
+    icon: 'settings_applications',
+    title: 'Configurações de acesso',
+    text: 'Gerencie as permissões concedidas a escritórios de contabilidade para acessar e interagir com os dados da sua organização.',
+  },
+  {
+    icon: 'connect_without_contact',
+    title: 'Solicitações de vinculação',
+    text: 'Visualize e gerencie convites de conexão enviados por organizações contábeis.',
+  },
+  {
+    icon: 'contact_phone',
+    title: 'Informações do contador',
+    text: 'Exibido após a vinculação, permite acessar detalhes de contato e informações do seu parceiro contábil.',
+  },
+];
 </script>
+
 <template>
-  <main>
-    <p class="text-h5 text-bold"># Visão Geral da Contabilidade</p>
-    <p class="text-body1">
-      A página de Contabilidade oferece uma visão abrangente das movimentações
-      financeiras, organizadas mensalmente, com indicação clara do status:
-      'Entregue' ou 'Não entregue'.
-    </p>
-    <div
-      style="position: relative; padding-bottom: 52.7086383601757%; height: 0"
-    >
-      <iframe
-        src="https://www.loom.com/embed/db5886a49f7c4457b037d3dfd0cf75db?sid=28f8e576-4f68-401d-af98-00b8a9e0d838"
-        frameborder="0"
-        webkitallowfullscreen
-        mozallowfullscreen
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"
-      ></iframe>
+  <main class="doc-content">
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-header-icon">
+        <q-icon name="account_balance" color="white" size="28px" />
+      </div>
+      <div>
+        <p class="text-h5 text-weight-bold q-mb-xs">Contabilidade</p>
+        <p class="text-body2 text-grey-6 q-mb-none">
+          Gerencie a entrega mensal das movimentações ao contador
+        </p>
+      </div>
     </div>
 
-    <p class="text-h6 q-mt-md"># Propósito da Seção</p>
-    <p class="text-body1">
-      Esta seção exibe as movimentações financeiras agrupadas por mês,
-      permitindo o envio organizado dessas informações. Ao submeter a lista, ela
-      se torna acessível a uma organização contábil parceira para análise e
-      processamento.
+    <p class="text-body1 doc-lead">
+      A página de Contabilidade exibe as movimentações financeiras organizadas
+      mensalmente, com indicação clara do status: <strong>Entregue</strong> ou
+      <strong>Não entregue</strong>. Permite o envio organizado das informações
+      para análise e processamento pela sua organização contábil parceira.
     </p>
 
-    <p class="text-h6 q-mt-md"># Compreendendo as Funcionalidades:</p>
-    <q-img
-      @click="openShowImage('/images/document/financial.png')"
-      src="/images/document/financial.png"
-      style="width: 1000px; max-width: 95vw"
-    />
-    <ol class="text-body1 column q-gutter-y-md">
-      <li>
-        <p>
-          <strong>Configurações de Acesso:</strong> Gerencie as permissões
-          concedidas a escritórios de contabilidade para acessar e interagir com
-          os dados da sua organização.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Solicitações de Vinculação:</strong> Visualize e gerencie
-          convites de conexão enviados por organizações contábeis.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Informações do Contador:</strong> Exibido após a vinculação
-          com uma organização contábil, este botão permite acessar os detalhes
-          de contato e informações relevantes do seu parceiro contábil.
-        </p>
-      </li>
-    </ol>
-    <p class="text-h6 q-mt-md"># Considerações Importantes:</p>
-    <ul class="text-body1 column q-gutter-y-md">
-      <li>
-        <p>
-          Após <strong>entregar</strong> uma lista de movimentações, o
-          lançamento de novas transações para o período correspondente será
-          bloqueado, a menos que o mês seja reaberto pela organização contábil,
-          permitindo modificações adicionais.
-        </p>
-      </li>
-      <li>
-        <p>
-          O <strong>gerenciamento de permissões</strong> na seção "Configurações
-          de Acesso" concede à organização contábil parceira a capacidade de
-          realizar determinadas ações em nome da sua organização. Avalie
-          cuidadosamente o impacto dessas permissões antes de concedê-las.
-        </p>
-      </li>
-    </ul>
+    <!-- Video -->
+    <div class="doc-video-wrapper">
+      <iframe
+        src="https://www.loom.com/embed/db5886a49f7c4457b037d3dfd0cf75db?sid=28f8e576-4f68-401d-af98-00b8a9e0d838"
+        allowfullscreen
+        webkitallowfullscreen
+        mozallowfullscreen
+      />
+    </div>
+
+    <!-- Actions -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="tune" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Funcionalidades da tela</span
+        >
+      </div>
+
+      <q-img
+        src="/images/document/financial.png"
+        class="doc-image q-mb-md"
+        style="max-width: 100%"
+        @click="openShowImage('/images/document/financial.png')"
+      />
+
+      <div class="row q-col-gutter-sm">
+        <div v-for="(a, i) in actions" :key="a.title" class="col-12">
+          <div class="doc-feature-card q-pa-md">
+            <div class="row no-wrap items-start q-gutter-sm">
+              <div class="doc-step-number" style="background: #1976d2">
+                {{ i + 1 }}
+              </div>
+              <q-icon
+                :name="a.icon"
+                color="primary"
+                size="20px"
+                class="q-mt-xs"
+              />
+              <div>
+                <p class="text-weight-bold text-body2 q-mb-xs">{{ a.title }}</p>
+                <p
+                  class="text-caption text-grey-7 q-mb-none"
+                  style="line-height: 1.5"
+                >
+                  {{ a.text }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important notes -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="warning" color="warning" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Considerações importantes</span
+        >
+      </div>
+
+      <div class="doc-callout doc-callout--warning">
+        <q-icon name="lock" size="22px" class="q-mt-xs" />
+        <div>
+          <p class="text-body2 text-weight-bold q-mb-xs">
+            Bloqueio após entrega
+          </p>
+          <p class="text-body2 q-mb-none" style="line-height: 1.6">
+            Após <strong>entregar</strong> uma lista de movimentações, o
+            lançamento de novas transações para o período correspondente será
+            bloqueado, a menos que o mês seja reaberto pela organização
+            contábil.
+          </p>
+        </div>
+      </div>
+
+      <div class="doc-callout doc-callout--danger">
+        <q-icon name="admin_panel_settings" size="22px" class="q-mt-xs" />
+        <div>
+          <p class="text-body2 text-weight-bold q-mb-xs">
+            Atenção às permissões de acesso
+          </p>
+          <p class="text-body2 q-mb-none" style="line-height: 1.6">
+            O gerenciamento de permissões em
+            <strong>"Configurações de Acesso"</strong>
+            concede à organização contábil a capacidade de realizar ações em seu
+            nome. Avalie cuidadosamente o impacto antes de conceder permissões.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <ImageView
       :open="showImage"
       :url="urlImage"

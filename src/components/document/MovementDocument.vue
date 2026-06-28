@@ -2,11 +2,9 @@
 import { ref } from 'vue';
 import ImageView from '../shared/ImageView.vue';
 
-defineOptions({
-  name: 'MovementDocument',
-});
+defineOptions({ name: 'MovementDocument' });
 
-const showImage = ref<boolean>(false);
+const showImage = ref(false);
 const urlImage = ref<string | null>(null);
 
 const openShowImage = (url: string) => {
@@ -17,99 +15,163 @@ const closeShowImage = () => {
   showImage.value = false;
   urlImage.value = null;
 };
+
+const filters = [
+  {
+    icon: 'arrow_upward',
+    title: 'Entradas',
+    text: 'Isole transações de entrada para análise focada nas receitas da organização.',
+  },
+  {
+    icon: 'arrow_downward',
+    title: 'Saídas',
+    text: 'Concentre-se nas transações de saída para controle preciso das despesas.',
+  },
+  {
+    icon: 'date_range',
+    title: 'Filtro por período',
+    text: 'Selecione um período específico. Somente períodos com movimentações registradas são exibidos.',
+  },
+  {
+    icon: 'label',
+    title: 'Filtro por categoria',
+    text: 'Categorize as movimentações para obter insights sobre áreas específicas do negócio.',
+  },
+  {
+    icon: 'search',
+    title: 'Pesquisa inteligente',
+    text: 'Encontre rapidamente movimentações específicas através da função de busca.',
+  },
+];
 </script>
+
 <template>
-  <main>
-    <p class="text-h5 text-bold">
-      # Gerenciamento de Movimentações Financeiras
-    </p>
-    <p class="text-body1">
-      A página de Movimentações oferece um controle centralizado de todas as
-      transações financeiras da sua organização, proporcionando visibilidade e
-      flexibilidade através de recursos de filtragem avançados.
-    </p>
-    <div
-      style="position: relative; padding-bottom: 56.22254758418741%; height: 0"
-    >
-      <iframe
-        src="https://www.loom.com/embed/a3953213cf72425cab616386936a4cdb?sid=c993fba8-8d24-4511-b236-57cdb79d6dc8"
-        frameborder="0"
-        webkitallowfullscreen
-        mozallowfullscreen
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"
-      ></iframe>
+  <main class="doc-content">
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-header-icon">
+        <q-icon name="swap_vert" color="white" size="28px" />
+      </div>
+      <div>
+        <p class="text-h5 text-weight-bold q-mb-xs">
+          Movimentações Financeiras
+        </p>
+        <p class="text-body2 text-grey-6 q-mb-none">
+          Controle centralizado de todas as transações da organização
+        </p>
+      </div>
     </div>
 
-    <p class="text-h6 q-mt-md"># Registro Simplificado de Movimentações:</p>
-    <p class="text-body1">
-      Para registrar uma nova transação, clique no botão "Entrada +" para
-      lançamentos de entrada (receitas) ou no botão "Saída -" para lançamentos
-      de saída (despesas). O sistema guiará você através do processo.
+    <p class="text-body1 doc-lead">
+      A página de Movimentações oferece controle completo sobre as transações
+      financeiras da sua organização, com recursos avançados de filtragem e
+      visualização para uma gestão eficiente.
     </p>
-    <q-img
-      @click="openShowImage('/images/document/form-movement.png')"
-      src="/images/document/form-movement.png"
-      style="width: 600px; max-width: 95vw"
-    />
 
-    <p class="text-h6 q-mt-md"># Refinando sua Análise com Filtros:</p>
-    <ul class="text-body1 column q-gutter-y-md">
-      <li>
-        <p>
-          <strong>Visualização de Entradas:</strong> Isole as transações de
-          entrada para uma análise focada nas receitas da sua organização.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Visualização de Saídas:</strong> Concentre-se nas transações
-          de saída para um controle preciso das despesas.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Filtro por Período:</strong> Selecione um período específico
-          para analisar as movimentações financeiras relevantes para aquele
-          intervalo de tempo. Somente períodos com movimentações registradas
-          serão exibidos.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Filtro por Categoria:</strong> Refine sua análise
-          categorizando as movimentações para obter insights sobre áreas
-          específicas do seu negócio.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Pesquisa Inteligente:</strong> Encontre rapidamente
-          movimentações específicas através da função de pesquisa.
-        </p>
-      </li>
-    </ul>
-    <p class="text-h6 q-mt-md"># Considerações Importantes:</p>
-    <ul class="text-body1 column q-gutter-y-md">
-      <li>
-        <p>
-          <strong>Integridade Contábil:</strong> Para garantir a integridade dos
-          seus dados financeiros, o sistema restringe a criação, edição ou
-          exclusão de movimentações em períodos que já foram enviados à
-          contabilidade. Lançamentos futuros que incluam meses já entregues à
-          contabilidade serão automaticamente ignorados para esses meses.
-        </p>
-      </li>
-      <li>
-        <p>
-          <strong>Pré-Movimentações:</strong> O botão "Pré-Movimentações" é
-          exibido quando existem lançamentos de movimentações prévias realizados
-          através do WhatsApp pelo assistente. Nesse momento, você pode optar
-          por excluir a pré-movimentação ou preencher a informação restante para
-          concluir e lançar a movimentação no período selecionado.
-        </p>
-      </li>
-    </ul>
+    <!-- Video -->
+    <div class="doc-video-wrapper">
+      <iframe
+        src="https://www.loom.com/embed/a3953213cf72425cab616386936a4cdb?sid=c993fba8-8d24-4511-b236-57cdb79d6dc8"
+        allowfullscreen
+        webkitallowfullscreen
+        mozallowfullscreen
+      />
+    </div>
+
+    <!-- Creating -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="add_circle" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Registrando uma movimentação</span
+        >
+      </div>
+
+      <p class="text-body2 text-grey-8 q-mb-md" style="line-height: 1.7">
+        Clique em <strong>"Entrada +"</strong> para lançamentos de receita ou
+        <strong>"Saída –"</strong> para lançamentos de despesa. O sistema guiará
+        você pelo processo de preenchimento.
+      </p>
+
+      <q-img
+        src="/images/document/form-movement.png"
+        class="doc-image"
+        style="max-width: min(540px, 100%)"
+        @click="openShowImage('/images/document/form-movement.png')"
+      />
+    </div>
+
+    <!-- Filters -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="filter_list" color="primary" size="18px" />
+        <span class="text-subtitle1 text-weight-bold">Filtros disponíveis</span>
+      </div>
+
+      <div class="row q-col-gutter-sm">
+        <div v-for="f in filters" :key="f.title" class="col-12 col-sm-6">
+          <div class="doc-feature-card q-pa-md full-height">
+            <div class="row no-wrap items-start q-gutter-sm">
+              <q-icon
+                :name="f.icon"
+                color="primary"
+                size="20px"
+                class="q-mt-xs"
+              />
+              <div>
+                <p class="text-weight-bold text-body2 q-mb-xs">{{ f.title }}</p>
+                <p
+                  class="text-caption text-grey-7 q-mb-none"
+                  style="line-height: 1.5"
+                >
+                  {{ f.text }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important notes -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <q-icon name="warning" color="warning" size="18px" />
+        <span class="text-subtitle1 text-weight-bold"
+          >Considerações importantes</span
+        >
+      </div>
+
+      <div class="doc-callout doc-callout--warning">
+        <q-icon name="lock" size="22px" class="q-mt-xs" />
+        <div>
+          <p class="text-body2 text-weight-bold q-mb-xs">
+            Integridade contábil
+          </p>
+          <p class="text-body2 q-mb-none" style="line-height: 1.6">
+            O sistema restringe a criação, edição ou exclusão de movimentações
+            em
+            <strong>períodos já enviados à contabilidade</strong>. Lançamentos
+            futuros que incluam meses já entregues serão automaticamente
+            ignorados para esses meses.
+          </p>
+        </div>
+      </div>
+
+      <div class="doc-callout doc-callout--info">
+        <q-icon name="smartphone" size="22px" class="q-mt-xs" />
+        <div>
+          <p class="text-body2 text-weight-bold q-mb-xs">Pré-movimentações</p>
+          <p class="text-body2 q-mb-none" style="line-height: 1.6">
+            O botão <strong>"Pré-movimentações"</strong> aparece quando existem
+            lançamentos prévios realizados via WhatsApp pelo assistente. Você
+            pode excluir a pré-movimentação ou completar as informações
+            restantes para concluir o lançamento.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <ImageView
       :open="showImage"
       :url="urlImage"
