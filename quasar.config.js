@@ -8,11 +8,7 @@ dotenv.config({ path: envFile });
 export default configure(() => ({
   boot: ['axios', 'pinia'],
   css: ['app.scss'],
-  extras: [
-    'fontawesome-v6',
-    'roboto-font',
-    'material-icons',
-  ],
+  extras: ['fontawesome-v6', 'roboto-font', 'material-icons'],
   build: {
     env: process.env,
     target: {
