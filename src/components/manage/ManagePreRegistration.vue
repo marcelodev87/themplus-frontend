@@ -366,7 +366,6 @@ watch(open, async () => {
         </div>
       </q-card-actions>
 
-      <!-- Modals -->
       <ConfirmAction
         :open="showConfirmAction"
         label-action="Continuar"

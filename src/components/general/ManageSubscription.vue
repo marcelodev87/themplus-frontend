@@ -4,8 +4,6 @@ import type { ISubscriptionInfo } from 'src/ts/interfaces/data/Subscription';
 import { useManageResourceStore } from 'src/stores/manage-resource-store';
 import { storeToRefs } from 'pinia';
 import { CouponEnterprise } from 'src/ts/interfaces/data/Coupon';
-// import TableCouponEnterprise from '../tables/TableCouponEnterprise.vue';
-// import DashboardCapacity from './DashboardCapacity.vue';
 import SubscriptionInfo from './SubscriptionInfo.vue';
 
 defineOptions({

@@ -188,13 +188,11 @@ const checkData = () => {
       message: 'O email impresso no cartão não pode ultrapassar 100 caracteres',
     };
   }
-  if (
-    (dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj.trim().length < 14 &&
-      dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj.trim().length < 11) ||
-    dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj.trim().length === 12 ||
-    dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj.trim().length === 13 ||
-    dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj.trim().length > 14
-  ) {
+  const cpfCnpjValue = dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+  if (cpfCnpjValue.length !== 11 && cpfCnpjValue.length !== 14) {
     return { status: false, message: 'Digite um CPF ou CNPJ válido' };
   }
   if (dataPaymentCreditCard.creditCardHolderInfo.postalCode.trim() === '') {
@@ -344,6 +342,16 @@ watch(
     dataPaymentCreditCard.subscriptionID = id;
   },
   { immediate: true }
+);
+
+watch(
+  () => dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj,
+  (value) => {
+    const normalized = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (normalized !== value) {
+      dataPaymentCreditCard.creditCardHolderInfo.cpfCnpj = normalized;
+    }
+  }
 );
 
 onMounted(() => {

@@ -48,21 +48,6 @@ export const createOfficeService = (
     phone,
   });
 
-// export const updateAlertService = (
-//   id: string,
-//   description: string | null
-// ): Promise<{
-//   status: number;
-//   data: {
-//     alerts: Alert[];
-//     message: string;
-//   };
-// }> =>
-//   api.put(`${baseUrl}/`, {
-//     id,
-//     description,
-//   });
-
 export const deleteOfficeService = (
   id: string
 ): Promise<{

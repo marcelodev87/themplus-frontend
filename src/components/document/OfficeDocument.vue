@@ -19,7 +19,6 @@ const closeShowImage = () => {
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="business" color="white" size="28px" />
@@ -38,7 +37,6 @@ const closeShowImage = () => {
       das atividades com as devidas restrições de acesso.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/a9d3fc4e9e294216a1683f119e7e4dc0?sid=4f6ca6ab-8482-4530-beca-606c3e0558b7"
@@ -48,7 +46,6 @@ const closeShowImage = () => {
       />
     </div>
 
-    <!-- Creating branch -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_business" color="primary" size="18px" />
@@ -71,7 +68,6 @@ const closeShowImage = () => {
       />
     </div>
 
-    <!-- Features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="tune" color="primary" size="18px" />
@@ -108,7 +104,6 @@ const closeShowImage = () => {
       </div>
     </div>
 
-    <!-- Spectator mode -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="visibility" color="primary" size="18px" />

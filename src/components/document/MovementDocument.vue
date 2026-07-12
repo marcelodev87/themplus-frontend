@@ -47,7 +47,6 @@ const filters = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="swap_vert" color="white" size="28px" />
@@ -68,7 +67,6 @@ const filters = [
       visualização para uma gestão eficiente.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/a3953213cf72425cab616386936a4cdb?sid=c993fba8-8d24-4511-b236-57cdb79d6dc8"
@@ -78,7 +76,6 @@ const filters = [
       />
     </div>
 
-    <!-- Creating -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_circle" color="primary" size="18px" />
@@ -101,7 +98,6 @@ const filters = [
       />
     </div>
 
-    <!-- Filters -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="filter_list" color="primary" size="18px" />
@@ -133,7 +129,6 @@ const filters = [
       </div>
     </div>
 
-    <!-- Important notes -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="warning" color="warning" size="18px" />

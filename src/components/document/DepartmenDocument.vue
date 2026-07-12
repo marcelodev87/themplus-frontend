@@ -19,7 +19,6 @@ const closeShowImage = () => {
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="lan" color="white" size="28px" />
@@ -41,7 +40,6 @@ const closeShowImage = () => {
       <strong>Configurações → Departamentos</strong> no menu lateral.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/d2edfe1c7cdd40eb870670c6755aa364?sid=b6bc942d-d9b6-4f99-a8b4-b91bb4640aaf"
@@ -51,7 +49,6 @@ const closeShowImage = () => {
       />
     </div>
 
-    <!-- Creating departments -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_circle" color="primary" size="18px" />
@@ -85,7 +82,6 @@ const closeShowImage = () => {
       </div>
     </div>
 
-    <!-- Usage -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="how_to_use" color="primary" size="18px" />

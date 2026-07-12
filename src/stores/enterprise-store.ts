@@ -217,24 +217,6 @@ export const useEnterpriseStore = defineStore('enterprise', {
         this.setLoading(false);
       }
     },
-    // async createCategory(category: string, type: 'Entrada' | 'Saída') {
-    //   this.setLoading(true);
-    //   try {
-    //     const response = await createCategoryService(
-    //       category,
-    //       type.toLowerCase()
-    //     );
-    //     if (response.status === 201) {
-    //       this.clearListCategory();
-    //       this.setListCategory(response.data.categories);
-    //       this.createSuccess(response.data.message);
-    //     }
-    //   } catch (error) {
-    //     this.createError(error);
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
     async unlinkCounter() {
       this.setLoading(true);
       try {

@@ -17,9 +17,7 @@ const props = defineProps<{
 }>();
 
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
-// const { checkCoupon } = useEnterpriseStore();
 
-// const nameCoupon = ref<string>('');
 const columnsCoupon = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -58,14 +56,6 @@ const columnsCoupon = reactive<QuasarTable[]>([
 ]);
 
 const { sortRows: sortCouponRows } = useSortMethod(columnsCoupon);
-
-// const clear = (): void => {
-//   nameCoupon.value = '';
-// };
-// const check = async (): Promise<void> => {
-//   await checkCoupon(nameCoupon.value);
-//   clear();
-// };
 </script>
 
 <template>
@@ -99,25 +89,6 @@ const { sortRows: sortCouponRows } = useSortMethod(columnsCoupon);
           <div class="row items-center justify-between full-width">
             <span class="text-subtitle2">Lista de cupons</span>
             <q-separator />
-            <!-- <div class="row items-center justify-end q-gutter-x-sm">
-              <q-input
-                v-model="nameCoupon"
-                outlined
-                dense
-                label="Adicione um cupom"
-                :class="!$q.screen.lt.md ? '' : 'q-mt-sm'"
-              />
-              <q-btn
-                @click="check"
-                color="green"
-                size="sm"
-                round
-                icon="search"
-                unelevated
-              >
-                <q-tooltip>Validar cupom</q-tooltip>
-              </q-btn>
-            </div> -->
           </div>
         </template>
         <template v-slot:body="props">

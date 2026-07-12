@@ -255,7 +255,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Melhora a borda arredondada global dos inputs no componente */
 :deep(.q-field--outlined .q-field__control) {
   border-radius: 8px;
 }

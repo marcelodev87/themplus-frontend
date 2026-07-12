@@ -396,10 +396,6 @@ watch(
         selectedAccount.value.value
       );
     }
-    // else {
-    //   await getSchedulings(filterMonthYear.value.replace('/', '-'));
-    //   selectedCategory.value = { label: 'Todas categorias', value: null };
-    // }
   }
 );
 watch(

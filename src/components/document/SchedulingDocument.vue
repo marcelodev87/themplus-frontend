@@ -47,7 +47,6 @@ const filters = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="calendar_month" color="white" size="28px" />
@@ -66,7 +65,6 @@ const filters = [
       para uma gestão otimizada do fluxo de caixa.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/6cf8545f0a7e4825936718df35c1f55c?sid=535bac27-9c9e-4aab-a34b-a8857acd5d80"
@@ -76,7 +74,6 @@ const filters = [
       />
     </div>
 
-    <!-- Creating -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_circle" color="primary" size="18px" />
@@ -98,7 +95,6 @@ const filters = [
       />
     </div>
 
-    <!-- Filters -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="filter_list" color="primary" size="18px" />
@@ -130,7 +126,6 @@ const filters = [
       </div>
     </div>
 
-    <!-- Restrictions -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="warning" color="warning" size="18px" />

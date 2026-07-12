@@ -19,7 +19,6 @@ const closeShowImage = () => {
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon doc-header-icon--counter">
         <q-icon name="add_business" color="white" size="28px" />
@@ -39,7 +38,6 @@ const closeShowImage = () => {
       separada.
     </p>
 
-    <!-- How it works -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="help_outline" color="primary" size="18px" />

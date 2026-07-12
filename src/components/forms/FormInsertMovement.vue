@@ -748,9 +748,6 @@ watch(open, async () => {
                   </template>
                 </q-select>
               </q-td>
-              <!-- <q-td key="descricao" :props="props" class="text-left">
-                {{ props.row.descricao }}
-              </q-td> -->
               <q-td key="descricao" :props="props">
                 {{ props.row.descricao }}
                 <q-popup-edit

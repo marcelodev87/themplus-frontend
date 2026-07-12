@@ -370,14 +370,6 @@ onMounted(async () => {
         :subscriptionId="subscriptionID"
         @update:open="closeSubscriptionStepper"
       />
-      <!-- <ConfirmAction
-        :open="showConfirmAction"
-        @update:open="closeConfirmAction"
-        @update:ok="closeConfirmActionOk"
-        label-action="Atualizar"
-        title="Confirmação de atualização de assinatura"
-        message="Deseja realmente atualizar sua assinatura para a assinatura gratuita? Caso atualize e queira mudar de assinatura, terá que pagar as outras demais"
-      /> -->
     </main>
   </section>
 </template>

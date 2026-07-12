@@ -60,9 +60,6 @@ const columnsMinistry = reactive<QuasarTable[]>([
 const { sortRows: sortMinistryRows } = useSortMethod(columnsMinistry);
 const { filterMethod } = useTableFilter();
 
-// const resetPage = (): void => {
-//   currentPage.value = 1;
-// };
 const clear = (): void => {
   selectedDataEdit.value = null;
   dataExclude.value = null;

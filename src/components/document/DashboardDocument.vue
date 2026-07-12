@@ -72,7 +72,6 @@ const features = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="dashboard" color="white" size="28px" />
@@ -98,7 +97,6 @@ const features = [
       @click="openShowImage('/images/document/dashboard.png')"
     />
 
-    <!-- Features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="tune" color="primary" size="18px" />

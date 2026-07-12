@@ -30,15 +30,6 @@ const destroyCharts = () => {
 const mountDashboard = () => {
   destroyCharts();
 
-  // const maxQuantityEntry = Math.max(
-  //   ...listQuantityRegister.value.map((i) => i.entry_quantity)
-  // );
-  // const maxQuantityOut = Math.max(
-  //   ...listQuantityRegister.value.map((i) => i.out_quantity)
-  // );
-  // const maxQ = Math.max(maxQuantityEntry, maxQuantityOut);
-  // const yQuantityTicks = Array.from({ length: maxQ + 1 }, (_, i) => i);
-
   const commonAxis = (formatFn: (d: number) => string | number) => ({
     x: {
       type: 'timeseries' as const,
@@ -117,7 +108,6 @@ const mountDashboard = () => {
   chartQuantity.resize();
 };
 
-// Responsividade via ResizeObserver
 let resizeObserver: ResizeObserver | null = null;
 
 const setupResize = () => {

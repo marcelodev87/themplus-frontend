@@ -166,7 +166,6 @@ const selectOption = (option: string): void => {
   <section class="help-page">
     <TitlePage title="Painel de Ajuda" />
 
-    <!-- ── Desktop layout ─────────────────────────────────────────────── -->
     <q-splitter
       v-if="!$q.screen.lt.md"
       v-model="splitterModel"
@@ -267,7 +266,6 @@ const selectOption = (option: string): void => {
       </template>
     </q-splitter>
 
-    <!-- ── Mobile layout ──────────────────────────────────────────────── -->
     <template v-else>
       <div class="mobile-topbar row items-center q-px-sm q-py-xs">
         <q-btn
@@ -303,7 +301,6 @@ const selectOption = (option: string): void => {
       />
     </template>
 
-    <!-- ── Mobile menu dialog ─────────────────────────────────────────── -->
     <q-dialog v-model="mobileMenuOpen" position="left" :maximized="false">
       <q-card class="mobile-menu-card">
         <q-toolbar class="bg-grey-1 sidebar-toolbar">
@@ -450,7 +447,6 @@ const selectOption = (option: string): void => {
   margin: 0 auto;
 }
 
-/* Mobile */
 .mobile-topbar {
   background: white;
   border-radius: 8px;
@@ -475,7 +471,6 @@ const selectOption = (option: string): void => {
   flex-direction: column;
 }
 
-/* Transitions */
 .fade-page-enter-active,
 .fade-page-leave-active {
   transition:

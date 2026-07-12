@@ -3,13 +3,10 @@ import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { storeToRefs } from 'pinia';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-// import { useAuthStore } from 'src/stores/auth-store';
 import { useRelationshipStore } from 'src/stores/relationship-store';
 import { Relationship } from 'src/ts/interfaces/data/Relationship';
 import { useSortMethod } from 'src/composables/useTableSort';
 import { useTableFilter } from 'src/composables/useTableFilter';
-// import ConfirmAction from '../confirm/ConfirmAction.vue';
-// import FormRelationship from '../forms/FormRelationship.vue';
 
 defineOptions({
   name: 'ManageRole',
@@ -26,10 +23,7 @@ const { getRelationships } = useRelationshipStore();
 const { loadingRelationship, listRelationship } = storeToRefs(
   useRelationshipStore()
 );
-// const { user } = storeToRefs(useAuthStore());
 
-// const showConfirmAction = ref<boolean>(false);
-// const showFormRelationship = ref<boolean>(false);
 const selectedData = ref<string | null>(null);
 const filterRelationship = ref<string>('');
 const selectedDataEdit = ref<Relationship | null>(null);
@@ -41,12 +35,6 @@ const columnsRelationship = reactive<QuasarTable[]>([
     align: 'left',
     sortable: true,
   },
-  // {
-  //   name: 'action',
-  //   label: 'Ação',
-  //   field: 'action',
-  //   align: 'right',
-  // },
 ]);
 
 const { sortRows: sortRelationshipRows } = useSortMethod(columnsRelationship);
@@ -59,32 +47,6 @@ const clear = (): void => {
 const fetchRelationships = async () => {
   await getRelationships();
 };
-// const openFormRelationship = (): void => {
-//   showFormRelationship.value = true;
-// };
-// const closeFormRelationship = (): void => {
-//   showFormRelationship.value = false;
-//   clear();
-// };
-// const exclude = async (id: string) => {
-//   await deleteRelationship(id);
-// };
-// const closeConfirmActionOk = async (): Promise<void> => {
-//   showConfirmAction.value = false;
-//   await exclude(selectedData.value ?? '');
-// };
-// const closeConfirmAction = (): void => {
-//   showConfirmAction.value = false;
-//   selectedData.value = null;
-// };
-// const openConfirmAction = async (id: string): Promise<void> => {
-//   selectedData.value = id;
-//   showConfirmAction.value = true;
-// };
-// const handleEdit = (relationship: Relationship) => {
-//   selectedDataEdit.value = relationship;
-//   openFormRelationship();
-// };
 
 const open = computed({
   get: () => props.open,
@@ -191,32 +153,6 @@ watch(open, async () => {
               >
                 <span class="text-subtitle2">{{ props.row.name }}</span>
               </q-td>
-              <!-- <q-td key="action" :props="props">
-                <q-btn
-                  @click="handleEdit(props.row)"
-                  v-show="
-                    user?.enterprise_id === user?.view_enterprise_id &&
-                    props.row.default === 0
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                />
-                <q-btn
-                  @click="openConfirmAction(props.row.id)"
-                  v-show="
-                    user?.enterprise_id === user?.view_enterprise_id &&
-                    props.row.default === 0
-                  "
-                  size="sm"
-                  flat
-                  round
-                  color="negative"
-                  icon="delete"
-                />
-              </q-td> -->
             </q-tr>
           </template>
         </q-table>
@@ -231,32 +167,8 @@ watch(open, async () => {
             unelevated
             no-caps
           />
-          <!-- <q-btn
-            @click="openFormRelationship"
-            :loading="loadingRelationship"
-            color="primary"
-            label="Adicionar"
-            size="md"
-            unelevated
-            no-caps
-          /> -->
         </div>
       </q-card-actions>
-
-      <!-- Modals -->
-      <!-- <FormRelationship
-        :data-edit="selectedDataEdit"
-        :open="showFormRelationship"
-        @update:open="closeFormRelationship"
-      />
-      <ConfirmAction
-        :open="showConfirmAction"
-        label-action="Continuar"
-        title="Confirmação de exclusão"
-        message="Este processo é irreversível. Caso tenha certeza, clique em 'Continuar' para prosseguir."
-        @update:open="closeConfirmAction"
-        @update:ok="closeConfirmActionOk"
-      /> -->
     </q-card>
   </q-dialog>
 </template>

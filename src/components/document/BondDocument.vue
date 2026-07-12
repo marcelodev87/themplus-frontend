@@ -47,7 +47,6 @@ const features = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon doc-header-icon--counter">
         <q-icon name="link" color="white" size="28px" />
@@ -74,7 +73,6 @@ const features = [
       @click="openShowImage('/images/document/bond.png')"
     />
 
-    <!-- Features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="tune" color="primary" size="18px" />

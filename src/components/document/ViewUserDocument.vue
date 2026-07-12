@@ -80,7 +80,6 @@ const settingsFeatures = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="visibility" color="white" size="28px" />
@@ -107,7 +106,6 @@ const settingsFeatures = [
       @click="openShowImage('/images/document/view-user.png')"
     />
 
-    <!-- Main features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="tune" color="primary" size="18px" />
@@ -141,7 +139,6 @@ const settingsFeatures = [
       </div>
     </div>
 
-    <!-- Settings features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="settings" color="primary" size="18px" />

@@ -279,15 +279,24 @@ watch(
   }
 );
 watch(
-  [
-    () => dataEnterprise.cpf,
-    () => dataEnterprise.cnpj,
-    () => dataEnterprise.numberAddress,
-  ],
-  ([cpf, cnpj, numberAdress]) => {
+  () => dataEnterprise.cpf,
+  (cpf: string) => {
     dataEnterprise.cpf = cpf.replace(/\D/g, '');
-    dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
-    dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
+  }
+);
+watch(
+  () => dataEnterprise.cnpj,
+  (cnpj: string) => {
+    const normalized = cnpj.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (normalized !== cnpj) {
+      dataEnterprise.cnpj = normalized;
+    }
+  }
+);
+watch(
+  () => dataEnterprise.numberAddress,
+  (numberAddress: string) => {
+    dataEnterprise.numberAddress = numberAddress.replace(/\D/g, '');
   }
 );
 watch(

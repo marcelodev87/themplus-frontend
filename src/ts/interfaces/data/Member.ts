@@ -67,10 +67,8 @@ export interface DataMemberChurch {
   active: number;
   dateBaptismo: string | null;
   startDate: string | null;
-  // reasonStartDate: string | null;
   churchStartDate: string | null;
   endDate: string | null;
-  // reasonEndDate: string | null;
   churchEndDate: string | null;
   roles: string[];
   ministries: string[];

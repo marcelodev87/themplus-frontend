@@ -37,9 +37,6 @@ export const useCategoryStore = defineStore('category', {
     setListCategoryPanel(categories: CategoryPanel[]) {
       categories.map((item) => this.listCategoryPanel.push(item));
     },
-    // setCategoryEdit(category: Category[]) {
-    //   this.categoryEdit.push(category);
-    // },
     setLoading(loading: boolean) {
       this.loadingCategory = loading;
     },

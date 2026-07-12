@@ -52,7 +52,6 @@ const steps = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="rocket_launch" color="white" size="28px" />
@@ -70,7 +69,6 @@ const steps = [
       realizar o cadastro e configurar sua conta com sucesso.
     </p>
 
-    <!-- Steps -->
     <div class="doc-section">
       <div v-for="(step, i) in steps" :key="i" class="step-row q-mb-lg">
         <div class="row no-wrap q-gutter-md items-start">
@@ -103,7 +101,6 @@ const steps = [
       </div>
     </div>
 
-    <!-- Final screens -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="web" color="primary" size="18px" />

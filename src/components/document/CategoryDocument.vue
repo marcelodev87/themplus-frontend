@@ -42,7 +42,6 @@ const filters = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="label" color="white" size="28px" />
@@ -62,7 +61,6 @@ const filters = [
       estarão disponíveis nos formulários de movimentações e agendamentos.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/747a3ebd3b8d4a32a9d61a5608399e4c?sid=e040f5e2-f938-4276-87c4-4a857e439019"
@@ -72,7 +70,6 @@ const filters = [
       />
     </div>
 
-    <!-- Creating -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_circle" color="primary" size="18px" />
@@ -104,7 +101,6 @@ const filters = [
       </div>
     </div>
 
-    <!-- Filters -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="filter_list" color="primary" size="18px" />
@@ -136,7 +132,6 @@ const filters = [
       </div>
     </div>
 
-    <!-- Important notes -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="info" color="primary" size="18px" />

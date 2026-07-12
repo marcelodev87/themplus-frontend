@@ -62,6 +62,33 @@ const formattedPhone = computed({
     model.value.creditCardHolderInfo.phone = digits;
   },
 });
+
+const cpfCnpjMask = computed(() => {
+  const raw = (model.value.creditCardHolderInfo.cpfCnpj || '').replace(
+    /[^0-9A-Za-z]/g,
+    ''
+  );
+
+  if (raw.length <= 11) {
+    return '###########';
+  }
+
+  return 'NNNNNNNNNNNN##';
+});
+
+function onCpfCnpjInput(value: string | number | null) {
+  if (!value) {
+    return;
+  }
+
+  const stringValue = String(value);
+  const upper = stringValue.toUpperCase();
+
+  if (upper !== stringValue) {
+    model.value.creditCardHolderInfo.cpfCnpj = upper;
+  }
+}
+
 watch(
   () => model.value.creditCardHolderInfo.postalCode,
   async () => {
@@ -200,9 +227,10 @@ watch(
       <div class="row justify-between">
         <q-input
           label="CPF/CNPJ"
-          maxlength="14"
-          mask="##############"
+          :mask="cpfCnpjMask"
+          fill-mask=""
           v-model="model.creditCardHolderInfo.cpfCnpj"
+          @update:model-value="onCpfCnpjInput"
           class="bg-white input-divider"
           label-color="black"
           outlined

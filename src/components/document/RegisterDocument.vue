@@ -4,7 +4,6 @@ defineOptions({ name: 'RegisterDocument' });
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="assignment" color="white" size="28px" />
@@ -25,7 +24,6 @@ defineOptions({ name: 'RegisterDocument' });
       transparência em todas as operações.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/e2a2ecd61b18438c80f9f8cb178c8a59?sid=13248a08-6268-4920-9490-0ddb7c9a4281"
@@ -35,7 +33,6 @@ defineOptions({ name: 'RegisterDocument' });
       />
     </div>
 
-    <!-- Restrictions -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="info" color="primary" size="18px" />

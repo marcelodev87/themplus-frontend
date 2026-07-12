@@ -37,7 +37,6 @@ const actions = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="account_balance" color="white" size="28px" />
@@ -57,7 +56,6 @@ const actions = [
       para análise e processamento pela sua organização contábil parceira.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/db5886a49f7c4457b037d3dfd0cf75db?sid=28f8e576-4f68-401d-af98-00b8a9e0d838"
@@ -67,7 +65,6 @@ const actions = [
       />
     </div>
 
-    <!-- Actions -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="tune" color="primary" size="18px" />
@@ -111,7 +108,6 @@ const actions = [
       </div>
     </div>
 
-    <!-- Important notes -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="warning" color="warning" size="18px" />

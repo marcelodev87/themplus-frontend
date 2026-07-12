@@ -104,21 +104,6 @@ export const useOfficeStore = defineStore('office', {
         this.setLoading(false);
       }
     },
-    // async updateAlert(id: string, description: string | null) {
-    //   this.setLoading(true);
-    //   try {
-    //     const response = await updateAlertService(id, description ?? null);
-    //     if (response.status === 200) {
-    //       this.clearListAlert();
-    //       this.setListAlert(response.data.alerts);
-    //       this.createSuccess(response.data.message);
-    //     }
-    //   } catch (error) {
-    //     this.createError(error);
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
     async deleteOffice(officeId: string) {
       this.setLoading(true);
       try {

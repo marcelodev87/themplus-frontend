@@ -8,7 +8,7 @@ declare module 'pinia' {
   }
 }
 
-export default store((/* { ssrContext } */) => {
+export default store(() => {
   const pinia = createPinia();
 
   return pinia;

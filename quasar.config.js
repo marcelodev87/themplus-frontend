@@ -5,17 +5,11 @@ const envFile = `.env.${process.env.APP_ENV || 'local'}`;
 
 dotenv.config({ path: envFile });
 
-export default configure((/* ctx */) => ({
+export default configure(() => ({
   boot: ['axios', 'pinia'],
   css: ['app.scss'],
   extras: [
-    // 'ionicons-v4',
-    // 'mdi-v7',
     'fontawesome-v6',
-    // 'eva-icons',
-    // 'themify',
-    // 'line-awesome',
-    // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
     'roboto-font',
     'material-icons',
   ],

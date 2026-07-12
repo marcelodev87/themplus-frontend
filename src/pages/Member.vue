@@ -14,7 +14,6 @@ import FormMember from 'src/components/forms/FormMember.vue';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ManageRole from 'src/components/manage/ManageRole.vue';
 import MemberMovementInfo from 'src/components/info/MemberMovementInfo.vue';
-// import ManageRelationship from 'src/components/manage/ManageRelationship.vue';
 import MemberFamilyInfo from 'src/components/info/MemberFamilyInfo.vue';
 import ManagePreRegistration from 'src/components/manage/ManagePreRegistration.vue';
 import { Notify } from 'quasar';
@@ -51,7 +50,6 @@ const showFormMember = ref<boolean>(false);
 const showMemberMovementInfo = ref<boolean>(false);
 const showManageRole = ref<boolean>(false);
 const showManagePreRegistration = ref<boolean>(false);
-// const showManageRelationship = ref<boolean>(false);
 const selectedStatusActive = ref({
   value: 'all',
   label: 'Todos',
@@ -126,13 +124,6 @@ const closeManageRole = async (): Promise<void> => {
   clear();
   await fetchMembers();
 };
-// const openManageRelationship = (): void => {
-//   showManageRelationship.value = true;
-// };
-// const closeManageRelationship = (): void => {
-//   showManageRelationship.value = false;
-//   clear();
-// };
 const openMemberFamilyInfo = (member: MemberChurch): void => {
   selectedDataEdit.value = member;
   showMemberFamily.value = true;
@@ -274,16 +265,6 @@ onMounted(async () => {
         class="col-6 row items-center justify-end q-gutter-x-sm"
         :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
       >
-        <!-- <q-btn
-          v-show="user?.enterprise_id === user?.view_enterprise_id"
-          @click="openManageRelationship"
-          icon-right="add"
-          label="Família"
-          class="q-mr-sm bg-contabilidade"
-          unelevated
-          no-caps
-          flat
-        /> -->
         <q-btn
           v-show="
             user?.enterprise_id === user?.view_enterprise_id &&
@@ -648,10 +629,6 @@ onMounted(async () => {
           @update:open-by-registration="closeManagePreRegistrationWithoutData"
           @showFormMemberByRegistration="openFormMemberByPreRegistration"
         />
-        <!-- <ManageRelationship
-          :open="showManageRelationship"
-          @update:open="closeManageRelationship"
-        /> -->
         <AlertDataEnterprise
           :open="showAlertDataEnterprise"
           @update:open="closeAlertDataEnterprise"

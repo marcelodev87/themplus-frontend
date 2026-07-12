@@ -42,7 +42,6 @@ const features = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="people" color="white" size="28px" />
@@ -63,7 +62,6 @@ const features = [
       <strong>Configurações → Usuários</strong> no menu lateral.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/602351f4b2084158889dcbcac37fcefc?sid=0a658d6c-4c7e-458d-b59b-1e300fa285e9"
@@ -73,7 +71,6 @@ const features = [
       />
     </div>
 
-    <!-- Adding user -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="person_add" color="primary" size="18px" />
@@ -95,7 +92,6 @@ const features = [
       />
     </div>
 
-    <!-- Features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="tune" color="primary" size="18px" />

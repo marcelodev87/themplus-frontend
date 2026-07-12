@@ -220,7 +220,6 @@ watch(open, async () => {
         </div>
       </q-card-actions>
 
-      <!-- Modals -->
       <FormRole
         :data-edit="selectedDataEdit"
         :open="showFormRole"

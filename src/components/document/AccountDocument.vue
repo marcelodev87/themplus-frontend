@@ -19,7 +19,6 @@ const closeShowImage = () => {
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="account_balance_wallet" color="white" size="28px" />
@@ -39,7 +38,6 @@ const closeShowImage = () => {
       formulários de movimentações e agendamentos.
     </p>
 
-    <!-- Video -->
     <div class="doc-video-wrapper">
       <iframe
         src="https://www.loom.com/embed/23df90adcb3a4e6ab1f0408e03df71ce?sid=300fb592-508f-42eb-8595-a880fea5522b"
@@ -49,7 +47,6 @@ const closeShowImage = () => {
       />
     </div>
 
-    <!-- Adding account -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_circle" color="primary" size="18px" />
@@ -73,7 +70,6 @@ const closeShowImage = () => {
       />
     </div>
 
-    <!-- Features -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="info" color="primary" size="18px" />

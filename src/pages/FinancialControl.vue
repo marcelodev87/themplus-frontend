@@ -438,7 +438,6 @@ onMounted(async () => {
 
     <q-scroll-area class="main-scroll bg-grey-1 rounded-borders">
       <main class="q-pa-md q-gutter-md">
-        <!-- ================== REPORTS TABLE ================== -->
         <q-card v-if="mode === 'reports'" flat bordered class="shadow-1">
           <q-card-section class="bg-grey-2 text-weight-medium">
             Lista de entregas

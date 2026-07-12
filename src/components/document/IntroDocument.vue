@@ -27,7 +27,6 @@ const features = [
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon">
         <q-icon name="auto_stories" color="white" size="28px" />
@@ -48,7 +47,6 @@ const features = [
       fluxo de informações e garantindo uma gestão financeira mais eficiente.
     </p>
 
-    <!-- Feature grid -->
     <div class="row q-col-gutter-md">
       <div v-for="f in features" :key="f.title" class="col-12 col-sm-6">
         <div class="doc-feature-card q-pa-md full-height">
@@ -73,7 +71,6 @@ const features = [
       </div>
     </div>
 
-    <!-- Support callout -->
     <div class="doc-callout doc-callout--info q-mt-xl">
       <q-icon name="support_agent" size="22px" class="q-mt-xs" />
       <p class="text-body2 q-mb-none" style="line-height: 1.6">

@@ -19,7 +19,6 @@ const closeShowImage = () => {
 
 <template>
   <main class="doc-content">
-    <!-- Header -->
     <div class="doc-header">
       <div class="doc-header-icon doc-header-icon--counter">
         <q-icon name="request_page" color="white" size="28px" />
@@ -39,7 +38,6 @@ const closeShowImage = () => {
       relacionamentos contábeis.
     </p>
 
-    <!-- List screenshot -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="list_alt" color="primary" size="18px" />
@@ -56,7 +54,6 @@ const closeShowImage = () => {
       />
     </div>
 
-    <!-- Creating request -->
     <div class="doc-section">
       <div class="doc-section-title">
         <q-icon name="add_circle" color="primary" size="18px" />

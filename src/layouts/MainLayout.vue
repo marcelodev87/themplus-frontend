@@ -300,7 +300,6 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <!-- <q-icon name="category" /> -->
                 <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Categorias </q-item-section>
@@ -314,7 +313,6 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <!-- <q-icon name="account_balance" /> -->
                 <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Contas </q-item-section>
@@ -328,7 +326,6 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <!-- <q-icon name="group_work" /> -->
                 <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Departamentos </q-item-section>
@@ -347,7 +344,6 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <!-- <q-icon name="holiday_village" /> -->
                 <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Filiais </q-item-section>
@@ -361,7 +357,6 @@ watch(
               @click="closeDrawer"
             >
               <q-item-section avatar>
-                <!-- <q-icon name="person" /> -->
                 <q-icon name="arrow_right" />
               </q-item-section>
               <q-item-section> Usuários </q-item-section>
