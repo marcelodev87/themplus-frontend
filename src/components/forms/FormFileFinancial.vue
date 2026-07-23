@@ -217,7 +217,7 @@ watch(open, async () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2" style="min-width: 900px; max-width: 98vw">
+    <q-card class="bg-grey-2" style="min-width: 98vw; max-width: 98vw">
       <q-card-section class="q-pa-none">
         <TitlePage title="Painel de arquivos" />
       </q-card-section>
