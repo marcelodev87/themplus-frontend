@@ -32,7 +32,7 @@ export const getMovementsService = (
     movements: Movement[];
     months_years: string[];
     filled_data: boolean;
-    delivered: boolean;
+    closed_months: string[];
     categories: QuasarSelect<string>[];
     accounts: QuasarSelect<string>[];
     movements_analyze: number;
@@ -84,7 +84,7 @@ export const getMovementsWithParamsService = (
   data: {
     movements: Movement[];
     months_years: string[];
-    delivered: boolean;
+    closed_months: string[];
     categories: QuasarSelect<string>[];
     accounts: QuasarSelect<string>[];
     message: string;
@@ -125,7 +125,7 @@ export const createMovementService = (
   data: {
     movements: Movement[];
     months_years: string[];
-    delivered: boolean;
+    closed_months: string[];
     categories: QuasarSelect<string>[];
     accounts: QuasarSelect<string>[];
     message: string;
@@ -167,7 +167,7 @@ export const updateMovementService = (
   data: {
     movements: Movement[];
     months_years: string[];
-    delivered: boolean;
+    closed_months: string[];
     message: string;
     accounts: QuasarSelect<string>[];
     categories: QuasarSelect<string>[];
@@ -202,7 +202,7 @@ export const insertMovementService = (
   data: {
     movements: Movement[];
     months_years: string[];
-    delivered: boolean;
+    closed_months: string[];
     accounts: QuasarSelect<string>[];
     categories: QuasarSelect<string>[];
     notifications: number;

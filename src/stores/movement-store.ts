@@ -45,7 +45,7 @@ export const useMovementStore = defineStore('movement', {
     listAccount: [] as QuasarSelect<string>[],
     listCategoryAll: [] as CategoryInformation[],
     movementsAnalyze: 0 as number,
-    delivered: false as boolean,
+    closedMonths: [] as string[],
     listCategoryFilters: [] as QuasarSelect<string>[],
     listAccountFilters: [] as QuasarSelect<string>[],
   }),
@@ -88,8 +88,8 @@ export const useMovementStore = defineStore('movement', {
     setFilledData(data: boolean) {
       this.filledData = data;
     },
-    setDelivered(data: boolean) {
-      this.delivered = data;
+    setClosedMonths(data: string[]) {
+      this.closedMonths = data;
     },
     setMovementsAnalyze(data: number) {
       this.movementsAnalyze = data;
@@ -158,7 +158,7 @@ export const useMovementStore = defineStore('movement', {
           this.setListMovement(response.data.movements);
           this.setListMonthYear(response.data.months_years);
           this.setFilledData(response.data.filled_data);
-          this.setDelivered(response.data.delivered);
+          this.setClosedMonths(response.data.closed_months);
           this.setListCategoryFilters(response.data.categories);
           this.setListAccountFilters(response.data.accounts);
           this.setMovementsAnalyze(response.data.movements_analyze);
@@ -222,7 +222,7 @@ export const useMovementStore = defineStore('movement', {
         if (response.status === 200) {
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
-          this.setDelivered(response.data.delivered);
+          this.setClosedMonths(response.data.closed_months);
           this.setListCategoryFilters(response.data.categories);
           this.setListAccountFilters(response.data.accounts);
         }
@@ -346,7 +346,7 @@ export const useMovementStore = defineStore('movement', {
           this.setListMovement(response.data.movements);
           this.setListCategoryFilters(response.data.categories);
           this.setListAccountFilters(response.data.accounts);
-          this.setDelivered(response.data.delivered);
+          this.setClosedMonths(response.data.closed_months);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
@@ -405,7 +405,7 @@ export const useMovementStore = defineStore('movement', {
           this.clearListCategoryFilters();
           this.setListMonthYear(response.data.months_years);
           this.setListMovement(response.data.movements);
-          this.setDelivered(response.data.delivered);
+          this.setClosedMonths(response.data.closed_months);
           this.setListCategoryFilters(response.data.categories);
           this.setListAccountFilters(response.data.accounts);
           updateNotifications(response.data.notifications);
@@ -450,7 +450,7 @@ export const useMovementStore = defineStore('movement', {
           this.setListMovement(response.data.movements);
           this.setListCategoryFilters(response.data.categories);
           this.setListAccountFilters(response.data.accounts);
-          this.setDelivered(response.data.delivered);
+          this.setClosedMonths(response.data.closed_months);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

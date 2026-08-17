@@ -33,8 +33,7 @@ const {
   loadingMovement,
   listMovement,
   filledData,
-  listMonthYear,
-  delivered,
+  closedMonths,
   listCategoryFilters,
   listAccountFilters,
   movementsAnalyze,
@@ -54,6 +53,37 @@ const showFormOut = ref<boolean>(false);
 const filterMovement = ref<string>('');
 const selectedDataEdit = ref<Movement | null>(null);
 const selectedExclude = ref<string>('');
+const optionsFiltersPeriod = reactive<QuasarSelect<string>[]>([
+  {
+    label: 'Hoje',
+    value: 'today',
+  },
+  {
+    label: 'Esta semana',
+    value: 'this_week',
+  },
+  {
+    label: 'Este mês',
+    value: 'this_month',
+  },
+  {
+    label: 'Últimos 30 dias',
+    value: 'last_30_days',
+  },
+  {
+    label: 'Últimos 12 meses',
+    value: 'last_12_months',
+  },
+  {
+    label: 'Todo o período',
+    value: 'all',
+  },
+]);
+const defaultPeriod: QuasarSelect<string> = {
+  label: 'Este mês',
+  value: 'this_month',
+};
+const selectedPeriod = ref<QuasarSelect<string>>({ ...defaultPeriod });
 const columnsMovement = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -157,14 +187,6 @@ const openPreview = (url: string) => {
   preview.open = true;
 };
 
-const dateActual = computed(() => {
-  const currentDate = new Date();
-
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const year = currentDate.getFullYear();
-
-  return `${month}/${year}`;
-});
 const optionsCategoriesFilter = computed(() => {
   const baseCategories = [
     {
@@ -220,12 +242,15 @@ const dataMovement = computed(() => {
   };
 });
 
-const filterMonthYear = ref<string>(dateActual.value);
-
 const clear = (): void => {
   selectedDataEdit.value = null;
   selectedExclude.value = '';
-  filterMonthYear.value = dateActual.value;
+  selectedPeriod.value = { ...defaultPeriod };
+};
+const isMovementClosed = (dateMovement: string): boolean => {
+  const [year, month] = dateMovement.split('-');
+
+  return closedMonths.value.includes(`${month}-${year}`);
 };
 const openConfirmAction = (): void => {
   showConfirmAction.value = true;
@@ -288,7 +313,7 @@ const exportDataExcel = async (): Promise<void> => {
   await exportMovementExcel(
     onlyEntry.value,
     onlyOut.value,
-    filterMonthYear.value.replace('/', '-'),
+    selectedPeriod.value.value,
     selectedCategory.value.value
   );
   loadingExport.value = false;
@@ -298,7 +323,7 @@ const exportDataPdf = async (): Promise<void> => {
   await exportMovementPDF(
     onlyEntry.value,
     onlyOut.value,
-    filterMonthYear.value.replace('/', '-'),
+    selectedPeriod.value.value,
     selectedCategory.value.value
   );
   loadingExport.value = false;
@@ -452,12 +477,12 @@ watch(
       await getMovementsWithParams(
         newEntry,
         newOut,
-        filterMonthYear.value.replace('/', '-'),
+        selectedPeriod.value.value,
         selectedCategory.value.value,
         selectedAccount.value.value
       );
     } else {
-      await getMovements(filterMonthYear.value.replace('/', '-'));
+      await getMovements(selectedPeriod.value.value);
     }
   }
 );
@@ -470,23 +495,23 @@ watch(
   },
   { immediate: true }
 );
-watch(filterMonthYear, async () => {
+watch(selectedPeriod, async () => {
   await getMovementsWithParams(
     onlyEntry.value,
     onlyOut.value,
-    filterMonthYear.value.replace('/', '-'),
+    selectedPeriod.value.value,
     selectedCategory.value.value,
     selectedAccount.value.value
   );
 });
 watch(showMovementsAnalyze, async (analyze) => {
   if (!analyze) {
-    await getMovements(dateActual.value.replace('/', '-'));
+    await getMovements(selectedPeriod.value.value);
   }
 });
 
 onMounted(async () => {
-  await getMovements(dateActual.value.replace('/', '-'));
+  await getMovements(selectedPeriod.value.value);
 });
 </script>
 <template>
@@ -754,13 +779,12 @@ onMounted(async () => {
               >
                 <div class="col">
                   <q-select
-                    v-model="filterMonthYear"
-                    :options="listMonthYear"
+                    v-model="selectedPeriod"
+                    :options="optionsFiltersPeriod"
                     label="Período"
                     outlined
                     dense
                     bg-color="white"
-                    :readonly="listMonthYear.length === 0"
                   >
                     <template v-slot:prepend
                       ><q-icon name="calendar_today" size="xs"
@@ -832,8 +856,8 @@ onMounted(async () => {
                     />
                   </div>
                   <q-select
-                    v-model="filterMonthYear"
-                    :options="listMonthYear"
+                    v-model="selectedPeriod"
+                    :options="optionsFiltersPeriod"
                     label="Período"
                     outlined
                     dense
@@ -959,7 +983,7 @@ onMounted(async () => {
                 <div class="row no-wrap q-gutter-x-xs justify-end">
                   <q-btn
                     v-if="
-                      !delivered &&
+                      !isMovementClosed(props.row.date_movement) &&
                       user?.enterprise_id === user?.view_enterprise_id
                     "
                     flat
@@ -972,7 +996,7 @@ onMounted(async () => {
                   />
                   <q-btn
                     v-if="
-                      !delivered &&
+                      !isMovementClosed(props.row.date_movement) &&
                       user?.enterprise_id === user?.view_enterprise_id
                     "
                     flat

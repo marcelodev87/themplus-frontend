@@ -30,7 +30,7 @@ const filters = [
   {
     icon: 'date_range',
     title: 'Filtro por período',
-    text: 'Selecione um intervalo de tempo para visualizar apenas os agendamentos relevantes.',
+    text: 'Escolha entre Hoje, Esta semana, Este mês, Últimos 30 dias, Últimos 12 meses ou Todo o período.',
   },
   {
     icon: 'label',

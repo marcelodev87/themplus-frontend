@@ -23,7 +23,6 @@ const {
   loadingScheduling,
   listScheduling,
   filledData,
-  listMonthYear,
   listCategoryFilters,
   listAccountFilters,
 } = storeToRefs(useSchedulingStore());
@@ -55,6 +54,37 @@ const selectedAccount = ref<QuasarSelect<string | null>>({
   label: 'Todas contas',
   value: null,
 });
+const optionsFiltersPeriod = reactive<QuasarSelect<string>[]>([
+  {
+    label: 'Hoje',
+    value: 'today',
+  },
+  {
+    label: 'Esta semana',
+    value: 'this_week',
+  },
+  {
+    label: 'Este mês',
+    value: 'this_month',
+  },
+  {
+    label: 'Últimos 30 dias',
+    value: 'last_30_days',
+  },
+  {
+    label: 'Últimos 12 meses',
+    value: 'last_12_months',
+  },
+  {
+    label: 'Todo o período',
+    value: 'all',
+  },
+]);
+const defaultPeriod: QuasarSelect<string> = {
+  label: 'Este mês',
+  value: 'this_month',
+};
+const selectedPeriod = ref<QuasarSelect<string>>({ ...defaultPeriod });
 const columnsScheduling = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -119,14 +149,6 @@ const columnsScheduling = reactive<QuasarTable[]>([
 ]);
 
 const { sortRows: sortSchedulingRows } = useSortMethod(columnsScheduling);
-const dateActual = computed(() => {
-  const currentDate = new Date();
-
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const year = currentDate.getFullYear();
-
-  return `${month}/${year}`;
-});
 const optionsCategoriesFilter = computed(() => {
   const baseCategories = [
     {
@@ -166,14 +188,13 @@ const dataScheduling = computed(() => {
   };
 });
 
-const filterMonthYear = ref<string>(dateActual.value);
 const clear = (): void => {
   onlyEntry.value = false;
   onlyOut.value = false;
   onlyExpired.value = false;
   filterScheduling.value = '';
   selectedDataEdit.value = null;
-  filterMonthYear.value = dateActual.value;
+  selectedPeriod.value = { ...defaultPeriod };
 };
 const openFormEntry = (): void => {
   showFormEntry.value = true;
@@ -258,7 +279,7 @@ const exportDataExcel = async (): Promise<void> => {
     onlyEntry.value,
     onlyOut.value,
     onlyExpired.value,
-    filterMonthYear.value.replace('/', '-'),
+    selectedPeriod.value.value,
     selectedCategory.value.value
   );
   loadingExport.value = false;
@@ -269,7 +290,7 @@ const exportDataPdf = async (): Promise<void> => {
     onlyEntry.value,
     onlyOut.value,
     onlyExpired.value,
-    filterMonthYear.value.replace('/', '-'),
+    selectedPeriod.value.value,
     selectedCategory.value.value
   );
   loadingExport.value = false;
@@ -391,7 +412,7 @@ watch(
         newExpired,
         newEntry,
         newOut,
-        filterMonthYear.value.replace('/', '-'),
+        selectedPeriod.value.value,
         selectedCategory.value.value,
         selectedAccount.value.value
       );
@@ -407,19 +428,19 @@ watch(
   },
   { immediate: true }
 );
-watch(filterMonthYear, async () => {
+watch(selectedPeriod, async () => {
   await getSchedulingsWithParams(
     onlyExpired.value,
     onlyEntry.value,
     onlyOut.value,
-    filterMonthYear.value.replace('/', '-'),
+    selectedPeriod.value.value,
     selectedCategory.value.value,
     selectedAccount.value.value
   );
 });
 
 onMounted(async () => {
-  await getSchedulings(dateActual.value.replace('/', '-'));
+  await getSchedulings(selectedPeriod.value.value);
 });
 </script>
 <template>
@@ -649,9 +670,8 @@ onMounted(async () => {
               >
                 <div class="col">
                   <q-select
-                    v-model="filterMonthYear"
-                    :options="listMonthYear"
-                    :readonly="listMonthYear.length === 0"
+                    v-model="selectedPeriod"
+                    :options="optionsFiltersPeriod"
                     label="Período"
                     outlined
                     dense
@@ -738,8 +758,8 @@ onMounted(async () => {
                     />
                   </div>
                   <q-select
-                    v-model="filterMonthYear"
-                    :options="listMonthYear"
+                    v-model="selectedPeriod"
+                    :options="optionsFiltersPeriod"
                     label="Período"
                     outlined
                     dense
