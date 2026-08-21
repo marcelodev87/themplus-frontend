@@ -205,7 +205,9 @@ export const useMovementStore = defineStore('movement', {
       out: boolean,
       date: string,
       category: string | null,
-      account: string | null
+      account: string | null,
+      start: string | null = null,
+      end: string | null = null
     ) {
       try {
         this.setLoading(true);
@@ -217,7 +219,9 @@ export const useMovementStore = defineStore('movement', {
           out,
           date,
           category,
-          account
+          account,
+          start,
+          end
         );
         if (response.status === 200) {
           this.setListMonthYear(response.data.months_years);
@@ -262,7 +266,9 @@ export const useMovementStore = defineStore('movement', {
       date: string,
       categoryId: string | null,
       accountId?: string | null,
-      enterpriseId?: string | null
+      enterpriseId?: string | null,
+      start?: string | null,
+      end?: string | null
     ) {
       try {
         this.setLoading(true);
@@ -272,7 +278,9 @@ export const useMovementStore = defineStore('movement', {
           date,
           categoryId,
           accountId,
-          enterpriseId
+          enterpriseId,
+          start,
+          end
         );
       } catch (error) {
         this.createError(error);
@@ -284,11 +292,20 @@ export const useMovementStore = defineStore('movement', {
       entry: boolean,
       out: boolean,
       date: string,
-      categoryId: string | null
+      categoryId: string | null,
+      start?: string | null,
+      end?: string | null
     ) {
       try {
         this.setLoading(true);
-        await exportMovementPDFService(entry, out, date, categoryId);
+        await exportMovementPDFService(
+          entry,
+          out,
+          date,
+          categoryId,
+          start,
+          end
+        );
       } catch (error) {
         this.createError(error);
       } finally {

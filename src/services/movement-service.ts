@@ -78,7 +78,9 @@ export const getMovementsWithParamsService = (
   out: boolean,
   date: string,
   category: string | null,
-  account: string | null
+  account: string | null,
+  start: string | null = null,
+  end: string | null = null
 ): Promise<{
   status: number;
   data: {
@@ -91,7 +93,7 @@ export const getMovementsWithParamsService = (
   };
 }> =>
   api.get(
-    `${baseUrl}/filter/${date}?entry=${entry}&out=${out}&category=${category}&account=${account}`
+    `${baseUrl}/filter/${date}?entry=${entry}&out=${out}&category=${category}&account=${account}&start=${start ?? ''}&end=${end ?? ''}`
   );
 
 export const getMovementInformationsService = (
@@ -253,7 +255,9 @@ export const exportMovementExcelService = async (
   date: string,
   categoryId: string | null,
   accountId?: string | null,
-  enterpriseId?: string | null
+  enterpriseId?: string | null,
+  start?: string | null,
+  end?: string | null
 ) => {
   try {
     const params = new URLSearchParams();
@@ -262,6 +266,8 @@ export const exportMovementExcelService = async (
     if (categoryId) params.append('category', categoryId);
     if (accountId) params.append('account', accountId);
     if (enterpriseId) params.append('enterprise', enterpriseId);
+    if (start) params.append('start', start);
+    if (end) params.append('end', end);
 
     const response = await api.post(
       `${baseUrl}/export/excel/${date}?${params.toString()}`,
@@ -293,11 +299,20 @@ export const exportMovementPDFService = async (
   entry: boolean,
   out: boolean,
   date: string,
-  categoryId: string | null
+  categoryId: string | null,
+  start?: string | null,
+  end?: string | null
 ) => {
   try {
+    const params = new URLSearchParams();
+    params.append('entry', String(entry));
+    params.append('out', String(out));
+    if (categoryId) params.append('category', categoryId);
+    if (start) params.append('start', start);
+    if (end) params.append('end', end);
+
     const response = await api.post(
-      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}&category=${categoryId}`,
+      `${baseUrl}/export/pdf/${date}?${params.toString()}`,
       null,
       {
         responseType: 'blob',

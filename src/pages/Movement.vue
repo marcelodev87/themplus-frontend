@@ -78,12 +78,28 @@ const optionsFiltersPeriod = reactive<QuasarSelect<string>[]>([
     label: 'Todo o período',
     value: 'all',
   },
+  {
+    label: 'Personalizado',
+    value: 'custom',
+  },
 ]);
 const defaultPeriod: QuasarSelect<string> = {
   label: 'Este mês',
   value: 'this_month',
 };
 const selectedPeriod = ref<QuasarSelect<string>>({ ...defaultPeriod });
+const customStartDate = ref<string | null>(null);
+const customEndDate = ref<string | null>(null);
+const isCustomPeriod = computed(() => selectedPeriod.value.value === 'custom');
+const toIsoDate = (date: string | null): string | null => {
+  if (!date) return null;
+
+  const [day, month, year] = date.split('/');
+
+  if (!day || !month || !year || year.length !== 4) return null;
+
+  return `${year}-${month}-${day}`;
+};
 const columnsMovement = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -246,6 +262,8 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   selectedExclude.value = '';
   selectedPeriod.value = { ...defaultPeriod };
+  customStartDate.value = null;
+  customEndDate.value = null;
 };
 const isMovementClosed = (dateMovement: string): boolean => {
   const [year, month] = dateMovement.split('-');
@@ -314,7 +332,11 @@ const exportDataExcel = async (): Promise<void> => {
     onlyEntry.value,
     onlyOut.value,
     selectedPeriod.value.value,
-    selectedCategory.value.value
+    selectedCategory.value.value,
+    null,
+    null,
+    toIsoDate(customStartDate.value),
+    toIsoDate(customEndDate.value)
   );
   loadingExport.value = false;
 };
@@ -324,7 +346,9 @@ const exportDataPdf = async (): Promise<void> => {
     onlyEntry.value,
     onlyOut.value,
     selectedPeriod.value.value,
-    selectedCategory.value.value
+    selectedCategory.value.value,
+    toIsoDate(customStartDate.value),
+    toIsoDate(customEndDate.value)
   );
   loadingExport.value = false;
 };
@@ -479,7 +503,9 @@ watch(
         newOut,
         selectedPeriod.value.value,
         selectedCategory.value.value,
-        selectedAccount.value.value
+        selectedAccount.value.value,
+        toIsoDate(customStartDate.value),
+        toIsoDate(customEndDate.value)
       );
     } else {
       await getMovements(selectedPeriod.value.value);
@@ -496,12 +522,31 @@ watch(
   { immediate: true }
 );
 watch(selectedPeriod, async () => {
+  if (isCustomPeriod.value) {
+    return;
+  }
+
   await getMovementsWithParams(
     onlyEntry.value,
     onlyOut.value,
     selectedPeriod.value.value,
     selectedCategory.value.value,
     selectedAccount.value.value
+  );
+});
+watch([customStartDate, customEndDate], async ([newStart, newEnd]) => {
+  if (!isCustomPeriod.value) {
+    return;
+  }
+
+  await getMovementsWithParams(
+    onlyEntry.value,
+    onlyOut.value,
+    selectedPeriod.value.value,
+    selectedCategory.value.value,
+    selectedAccount.value.value,
+    toIsoDate(newStart),
+    toIsoDate(newEnd)
   );
 });
 watch(showMovementsAnalyze, async (analyze) => {
@@ -791,6 +836,70 @@ onMounted(async () => {
                     /></template>
                   </q-select>
                 </div>
+                <div v-if="isCustomPeriod" class="col">
+                  <q-input
+                    v-model="customStartDate"
+                    label="Data início"
+                    outlined
+                    dense
+                    clearable
+                    bg-color="white"
+                    mask="##/##/####"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer" size="xs">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date v-model="customStartDate" mask="DD/MM/YYYY">
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Fechar"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+                <div v-if="isCustomPeriod" class="col">
+                  <q-input
+                    v-model="customEndDate"
+                    label="Data fim"
+                    outlined
+                    dense
+                    clearable
+                    bg-color="white"
+                    mask="##/##/####"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer" size="xs">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date v-model="customEndDate" mask="DD/MM/YYYY">
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Fechar"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
                 <div class="col">
                   <q-select
                     v-model="selectedCategory"
@@ -862,6 +971,66 @@ onMounted(async () => {
                     outlined
                     dense
                   />
+                  <q-input
+                    v-if="isCustomPeriod"
+                    v-model="customStartDate"
+                    label="Data início"
+                    outlined
+                    dense
+                    clearable
+                    mask="##/##/####"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date v-model="customStartDate" mask="DD/MM/YYYY">
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Fechar"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                  <q-input
+                    v-if="isCustomPeriod"
+                    v-model="customEndDate"
+                    label="Data fim"
+                    outlined
+                    dense
+                    clearable
+                    mask="##/##/####"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date v-model="customEndDate" mask="DD/MM/YYYY">
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Fechar"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
                   <q-select
                     v-model="selectedCategory"
                     :options="optionsCategoriesFilter"

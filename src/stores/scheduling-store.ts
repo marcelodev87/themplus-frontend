@@ -162,7 +162,9 @@ export const useSchedulingStore = defineStore('scheduling', {
       out: boolean,
       date: string,
       category: string | null,
-      account: string | null
+      account: string | null,
+      start: string | null = null,
+      end: string | null = null
     ) {
       try {
         this.setLoading(true);
@@ -175,7 +177,9 @@ export const useSchedulingStore = defineStore('scheduling', {
           out,
           date,
           category,
-          account
+          account,
+          start,
+          end
         );
         if (response.status === 200) {
           this.setListCategoryFilters(response.data.categories);
@@ -212,7 +216,9 @@ export const useSchedulingStore = defineStore('scheduling', {
       out: boolean,
       expired: boolean,
       date: string,
-      categoryId: string | null
+      categoryId: string | null,
+      start?: string | null,
+      end?: string | null
     ) {
       try {
         this.setLoading(true);
@@ -221,7 +227,9 @@ export const useSchedulingStore = defineStore('scheduling', {
           out,
           expired,
           date,
-          categoryId
+          categoryId,
+          start,
+          end
         );
       } catch (error) {
         this.createError(error);
@@ -234,11 +242,21 @@ export const useSchedulingStore = defineStore('scheduling', {
       out: boolean,
       expired: boolean,
       date: string,
-      categoryId: string | null
+      categoryId: string | null,
+      start?: string | null,
+      end?: string | null
     ) {
       try {
         this.setLoading(true);
-        await exportSchedulingPDFService(entry, out, expired, date, categoryId);
+        await exportSchedulingPDFService(
+          entry,
+          out,
+          expired,
+          date,
+          categoryId,
+          start,
+          end
+        );
       } catch (error) {
         this.createError(error);
       } finally {

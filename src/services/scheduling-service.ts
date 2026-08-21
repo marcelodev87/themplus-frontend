@@ -76,7 +76,9 @@ export const getSchedulingsWithParamsService = (
   out: boolean,
   date: string,
   categoryId: string | null,
-  accountId: string | null
+  accountId: string | null,
+  start: string | null = null,
+  end: string | null = null
 ): Promise<{
   status: number;
   data: {
@@ -88,7 +90,7 @@ export const getSchedulingsWithParamsService = (
   };
 }> =>
   api.get(
-    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}&category=${categoryId}&account=${accountId}`
+    `${baseUrl}/filter/${date}?expired=${expired}&entry=${entry}&out=${out}&category=${categoryId}&account=${accountId}&start=${start ?? ''}&end=${end ?? ''}`
   );
 
 export const getSchedulingInformationsService = (
@@ -106,11 +108,21 @@ export const exportSchedulingExcelService = async (
   out: boolean,
   expired: boolean,
   date: string,
-  categoryId: string | null
+  categoryId: string | null,
+  start?: string | null,
+  end?: string | null
 ) => {
   try {
+    const params = new URLSearchParams();
+    params.append('entry', String(entry));
+    params.append('out', String(out));
+    params.append('expired', String(expired));
+    if (categoryId) params.append('category', categoryId);
+    if (start) params.append('start', start);
+    if (end) params.append('end', end);
+
     const response = await api.post(
-      `${baseUrl}/export/excel/${date}?entry=${entry}&out=${out}&expired=${expired}&category=${categoryId}`,
+      `${baseUrl}/export/excel/${date}?${params.toString()}`,
       null,
       {
         responseType: 'blob',
@@ -138,11 +150,21 @@ export const exportSchedulingPDFService = async (
   out: boolean,
   expired: boolean,
   date: string,
-  categoryId: string | null
+  categoryId: string | null,
+  start?: string | null,
+  end?: string | null
 ) => {
   try {
+    const params = new URLSearchParams();
+    params.append('entry', String(entry));
+    params.append('out', String(out));
+    params.append('expired', String(expired));
+    if (categoryId) params.append('category', categoryId);
+    if (start) params.append('start', start);
+    if (end) params.append('end', end);
+
     const response = await api.post(
-      `${baseUrl}/export/pdf/${date}?entry=${entry}&out=${out}&expired=${expired}&category=${categoryId}`,
+      `${baseUrl}/export/pdf/${date}?${params.toString()}`,
       null,
       {
         responseType: 'blob',
