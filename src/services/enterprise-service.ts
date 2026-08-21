@@ -120,10 +120,12 @@ export const createEnterpriseByCounterService = (payload: {
   email: string | null;
   phone: string | null;
   code: number | null;
+  grant_basic_subscription?: boolean;
 }): Promise<{
   status: number;
   data: {
     message: string;
+    grant_error: string | null;
   };
 }> => api.post(`${baseUrl}/enterprise-counter`, payload);
 

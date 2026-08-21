@@ -7,13 +7,15 @@ import {
 
 const baseUrl = 'subscription';
 
-export const getSubscriptionsService = (): Promise<{
+export const getSubscriptionsService = (
+  type?: 'client' | 'counter'
+): Promise<{
   status: number;
   data: {
     subscriptions: ISubscription[];
     notifications: number;
   };
-}> => api.get(`${baseUrl}`);
+}> => api.get(`${baseUrl}`, { params: type ? { type } : {} });
 
 export const creditCardPaymentService = (
   data: ICreditCardData

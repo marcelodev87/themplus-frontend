@@ -18,6 +18,7 @@ import { deleteEnterpriseService } from 'src/services/enterprise-service';
 import { Dialog } from 'quasar';
 import ManageCategory from 'src/components/general/ManageCategory.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { useCounterLicenseStore } from 'src/stores/counter-license-store';
 import { Bond } from 'src/ts/interfaces/data/Bond';
 import Paginate from 'src/components/general/Paginate.vue';
 import { useSortMethod } from 'src/composables/useTableSort';
@@ -31,6 +32,28 @@ const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 const { setViewEnterprise } = useEnterpriseStore();
 const { getBonds, deleteBond } = useOrderStore();
 const { user, enterprisePosition } = storeToRefs(useAuthStore());
+const { listCounterLicense, loadingCounterLicense } = storeToRefs(
+  useCounterLicenseStore()
+);
+const { getCounterLicenseUsage, grantCounterLicense, revokeCounterLicense } =
+  useCounterLicenseStore();
+
+const licensedClientIds = computed(
+  () =>
+    new Set(
+      listCounterLicense.value.map((license) => license.client_enterprise_id)
+    )
+);
+const toggleLicenseLoadingId = ref<string | null>(null);
+const toggleLicense = async (clientEnterpriseId: string) => {
+  toggleLicenseLoadingId.value = clientEnterpriseId;
+  if (licensedClientIds.value.has(clientEnterpriseId)) {
+    await revokeCounterLicense(clientEnterpriseId);
+  } else {
+    await grantCounterLicense(clientEnterpriseId);
+  }
+  toggleLicenseLoadingId.value = null;
+};
 
 const router = useRouter();
 const route = useRoute();
@@ -92,6 +115,12 @@ const columnsBond = reactive<QuasarTable[]>([
     field: 'no_verified',
     align: 'left',
     sortable: true,
+  },
+  {
+    name: 'basic_subscription',
+    label: 'Básico',
+    field: 'basic_subscription',
+    align: 'left',
   },
   {
     name: 'action',
@@ -313,6 +342,7 @@ watch(selectedVerified, async () => {
 
 onMounted(async () => {
   await fetchBonds();
+  await getCounterLicenseUsage();
 });
 </script>
 <template>
@@ -439,7 +469,41 @@ onMounted(async () => {
                   :label="props.row.no_verified"
                 />
               </q-td>
+              <q-td key="basic_subscription" :props="props" class="text-left">
+                <q-badge
+                  rounded
+                  :color="
+                    licensedClientIds.has(props.row.id) ? 'green' : 'grey'
+                  "
+                  :label="licensedClientIds.has(props.row.id) ? 'Sim' : 'Não'"
+                />
+              </q-td>
               <q-td key="action" :props="props">
+                <q-btn
+                  v-show="enterprisePosition === 'counter'"
+                  @click="toggleLicense(props.row.id)"
+                  :loading="
+                    loadingCounterLicense &&
+                    toggleLicenseLoadingId === props.row.id
+                  "
+                  size="sm"
+                  flat
+                  round
+                  :color="licensedClientIds.has(props.row.id) ? 'red' : 'green'"
+                  :icon="
+                    licensedClientIds.has(props.row.id)
+                      ? 'link_off'
+                      : 'add_link'
+                  "
+                >
+                  <q-tooltip>
+                    {{
+                      licensedClientIds.has(props.row.id)
+                        ? 'Remover assinatura Básica'
+                        : 'Conceder assinatura Básica'
+                    }}
+                  </q-tooltip>
+                </q-btn>
                 <q-btn
                   v-show="
                     user?.enterprise_id === user?.view_enterprise_id &&

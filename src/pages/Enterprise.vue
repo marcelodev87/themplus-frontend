@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { DataEnterprise } from 'src/ts/interfaces/data/Enterprise';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import { useCounterLicenseStore } from 'src/stores/counter-license-store';
 import { storeToRefs } from 'pinia';
 import { searchCep } from 'src/services/cep-service';
 import TitlePage from 'src/components/shared/TitlePage.vue';
@@ -13,6 +14,16 @@ defineOptions({
 
 const { createEnterpriseByCounter } = useEnterpriseStore();
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
+const { usage } = storeToRefs(useCounterLicenseStore());
+
+const grantBasicSubscription = ref<boolean>(false);
+
+const canGrantBasicSubscription = computed(() => {
+  if (!usage.value || !usage.value.is_active || usage.value.is_over_limit) {
+    return false;
+  }
+  return usage.value.limit === null || usage.value.used < usage.value.limit;
+});
 
 const selectedIdentifier = ref<string>('CNPJ');
 const loading = ref<boolean>(false);
@@ -169,10 +180,13 @@ const save = async () => {
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
       code:
         dataEnterprise.phone.trim() === '' ? null : Number(dataEnterprise.code),
+      grant_basic_subscription: grantBasicSubscription.value,
     });
 
     if (response?.status === 201) {
       clear();
+      grantBasicSubscription.value = false;
+      await useCounterLicenseStore().getCounterLicenseUsage();
     }
   } else {
     Notify.create({
@@ -260,8 +274,9 @@ watch(
   { immediate: true }
 );
 
-onMounted(() => {
+onMounted(async () => {
   clear();
+  await useCounterLicenseStore().getCounterLicenseUsage();
 });
 </script>
 
@@ -490,6 +505,24 @@ onMounted(() => {
             </q-input>
           </div>
         </q-form>
+        <div class="q-mt-md">
+          <q-checkbox
+            v-model="grantBasicSubscription"
+            :disable="!canGrantBasicSubscription"
+            color="primary"
+            label="Conceder assinatura Básica a este cliente (consome 1 licença do seu plano)"
+          />
+          <div v-if="usage" class="text-caption text-grey-8 q-ml-sm">
+            Licenças em uso: {{ usage.used }} /
+            {{ usage.limit === null ? 'Ilimitado' : usage.limit }}
+            <span v-if="!usage.is_active">
+              — nenhum plano de contador ativo</span
+            >
+            <span v-else-if="usage.is_over_limit">
+              — limite excedido, desvincule empresas na tela de Assinatura
+            </span>
+          </div>
+        </div>
         <div class="row justify-end q-mt-md">
           <q-btn
             @click="clear"

@@ -149,6 +149,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/Subscriptions.vue'),
       },
       {
+        path: 'assinatura-contador',
+        name: 'admin-subscription-counter',
+        component: () => import('src/pages/SubscriptionCounter.vue'),
+        beforeEnter: [isCounterGuard],
+      },
+      {
         path: 'ajuda',
         name: 'admin-help',
         component: () => import('src/pages/Help.vue'),
