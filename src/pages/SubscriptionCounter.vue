@@ -8,7 +8,6 @@ import { useSubscriptionStore } from 'src/stores/subscription-store';
 import { useCounterLicenseStore } from 'src/stores/counter-license-store';
 import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
 import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { useSortMethod } from 'src/composables/useTableSort';
 
 defineOptions({ name: 'SubscriptionCounter' });
 
@@ -22,10 +21,23 @@ const { usage, listCounterLicense, loadingCounterLicense } = storeToRefs(
 const planLabels: Record<string, string> = {
   C5: 'C5 - 5 licenças',
   C10: 'C10 - 10 licenças',
-  CIlimited: 'CI - 20 licenças',
+  CIlimited: 'C20 - 20 licenças',
 };
 const getPlanLabel = (name?: string) =>
   name ? (planLabels[name] ?? name) : '';
+
+const planOrder: Record<string, number> = {
+  C5: 0,
+  C10: 1,
+  CIlimited: 2,
+};
+const orderedSubscriptions = computed(() =>
+  [...listSubscription.value].sort(
+    (a, b) =>
+      (planOrder[a.name] ?? Number.MAX_SAFE_INTEGER) -
+      (planOrder[b.name] ?? Number.MAX_SAFE_INTEGER)
+  )
+);
 
 const subscriptionID = ref<string | null>(null);
 const showSubscriptionStepper = ref(false);
@@ -89,8 +101,6 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
   },
   { name: 'actions', label: 'Ações', field: 'actions', align: 'center' },
 ]);
-const { sortRows: sortSubscriptionRows } = useSortMethod(columnsSubscriptions);
-
 const columnsLicenses = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -187,7 +197,7 @@ onMounted(async () => {
         <section class="q-mt-md">
           <TitlePage title="Planos disponíveis" />
           <q-table
-            :rows="listSubscription"
+            :rows="orderedSubscriptions"
             :columns="columnsSubscriptions"
             :loading="loadingTableSubscription"
             flat
@@ -196,8 +206,6 @@ onMounted(async () => {
             no-data-label="Nenhum plano para mostrar"
             hide-pagination
             :rows-per-page-options="[10]"
-            column-sort-order="da"
-            :sort-method="sortSubscriptionRows"
           >
             <template v-slot:body="props">
               <q-tr :props="props" style="height: 28px">
