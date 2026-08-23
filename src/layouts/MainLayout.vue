@@ -211,6 +211,19 @@ watch(
             <q-item-section> Clientes </q-item-section>
           </q-item>
           <q-item
+            v-show="enterprisePosition === 'counter'"
+            clickable
+            :to="{ name: 'admin-subscription-counter' }"
+            :active="isActive('admin-subscription-counter')"
+            active-class=" active-option-menu text-bold"
+            @click="closeDrawer"
+          >
+            <q-item-section avatar>
+              <q-icon name="card_membership" />
+            </q-item-section>
+            <q-item-section> Assinatura </q-item-section>
+          </q-item>
+          <q-item
             v-show="user?.position === 'admin'"
             clickable
             :to="{ name: 'admin-records' }"

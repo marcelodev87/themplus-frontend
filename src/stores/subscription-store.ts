@@ -57,10 +57,10 @@ export const useSubscriptionStore = defineStore('subscription', {
         type: 'positive',
       });
     },
-    async getSubscriptions() {
+    async getSubscriptions(type?: 'client' | 'counter') {
       this.setTableLoading(true);
       try {
-        const response = await getSubscriptionsService();
+        const response = await getSubscriptionsService(type);
         if (response.status === 200) {
           this.clearListSubscription();
           this.setListSubscription(response.data.subscriptions);

@@ -248,12 +248,16 @@ export const useEnterpriseStore = defineStore('enterprise', {
       email: string | null;
       phone: string | null;
       code: number | null;
+      grant_basic_subscription?: boolean;
     }) {
       this.setLoading(true);
       try {
         const response = await createEnterpriseByCounterService(payload);
         if (response.status === 201) {
           this.createSuccess(response.data.message);
+          if (response.data.grant_error) {
+            this.createError(new Error(response.data.grant_error));
+          }
         }
 
         return response;
